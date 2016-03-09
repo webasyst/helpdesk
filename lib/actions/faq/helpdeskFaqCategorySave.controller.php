@@ -16,7 +16,7 @@ class helpdeskFaqCategorySaveController extends waJsonController
         if (!empty($data['is_public'])) {
             if ($data['url']) {
                 if (preg_match("/[^0-9a-z_\-]/i", $data['url'])) {
-                    $this->setError(_w('Please specify a valid URL'), 'url');
+                    $this->setError(_w('Category URL may contain only letters, digits, and hyphens'), 'url');
                     return false;
                 }
                 if ($fcm->checkUrlUniq($data['url'], $id)) {
@@ -59,6 +59,19 @@ class helpdeskFaqCategorySaveController extends waJsonController
         $data['is_backend'] = waRequest::request('is_backend', 0, waRequest::TYPE_INT);
         $data['url'] = waRequest::request('url', '', waRequest::TYPE_STRING_TRIM);
         $data['view_type'] = waRequest::request('view_type', null, waRequest::TYPE_STRING_TRIM);
+
+        $data['routes'] = array();
+        if (!waRequest::request('routes_all')) {
+            foreach ((array)waRequest::request('routes') as $route) {
+                if (trim($route)) {
+                    $data['routes'][] = array('route' => $route);
+                }
+            }
+        }
+
+        if (!waRequest::request('routes_all') && empty($data['routes'])) {
+            $data['is_public'] = 0;
+        }
 
         return $data;
     }

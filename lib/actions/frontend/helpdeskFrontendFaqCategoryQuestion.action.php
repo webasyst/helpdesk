@@ -16,6 +16,11 @@ class helpdeskFrontendFaqCategoryQuestionAction extends helpdeskFrontendViewActi
         if (!$category) {
             throw new waException('Category not found');
         }
+
+        if (!$this->checkCategoryAccess($category)) {
+            throw new waException('Category not found');
+        }
+
         $fm = new helpdeskFaqModel();
         $faq = $fm->getByField('url', $faq_url);
         if (!$faq) {

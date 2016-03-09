@@ -517,7 +517,10 @@ select { min-width: 80px; }
             $('input[name="params[ssl]"]').prop('checked', false);
         }
     });
+
     {include file="js/wf_actions.js"}
+    wfActionsBlock({json_encode($wf_actions)});
+
 })();
 
 function checkForm() {

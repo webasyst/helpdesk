@@ -11,6 +11,16 @@
  */
 class helpdeskCronCli extends waCliController
 {
+    /**
+     * @var helpdeskConfig
+     */
+    private $config;
+
+    public function __construct()
+    {
+        $this->config = wa('helpdesk')->getConfig();
+    }
+
     public function execute()
     {
         $asm = new waAppSettingsModel();
@@ -20,9 +30,12 @@ class helpdeskCronCli extends waCliController
         // making app active
         wa('helpdesk', true);
 
-        wa('helpdesk')->getConfig('helpdesk')->checkMail();
+        $this->config->checkMail();
 
-        wa('helpdesk')->getConfig('helpdesk')->sendMessagesFromQueue();
+        // performAutoActions before send messages from queue, because perform auto actions could push messages into queue
+        $this->config->performAutoActions();
+
+        $this->config->sendMessagesFromQueue();
 
         /**
          * @event cron
@@ -33,6 +46,17 @@ class helpdeskCronCli extends waCliController
             'last_cron_time' => $last_cron_time,
         );
         wa('helpdesk')->event('cron', $params);
+    }
+
+    /**
+     * Use by hosting app
+     * @return bool
+     */
+    public function isCanBeScheduled()
+    {
+        return helpdeskSourceType::cronSourceTypesExist() ||
+                helpdeskWorkflow::workflowsAutoActionsExist() ||
+                !helpdeskSendMessages::isQueueIsEmpty();
     }
 }
 

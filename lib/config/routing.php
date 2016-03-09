@@ -156,9 +156,12 @@ $routes_with_public_frontend = array(
 // Second routing option: no public frontend, customer portal only
 $routes_customer_portal_only = $routes_with_public_frontend;
 unset($routes_customer_portal_only['portal_requests']);
-$routes_customer_portal_only['root']['action'] = 'myRequests';
-$routes_customer_portal_only['root']['secure'] = true;
-
+$routes_customer_portal_only['root'] = array(
+    'url' => 'my/',
+    'module' => 'frontend',
+    'action' => 'myRequests',
+    'secure' => true
+);
 
 return array(
     0 => $routes_with_public_frontend,

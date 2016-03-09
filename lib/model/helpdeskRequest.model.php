@@ -103,5 +103,38 @@ class helpdeskRequestModel extends waModel
 
     }
 
+    /**
+     * @param array $period
+     * @param string $fields list of fields
+     * @param array $filter filter map
+     * @return array
+     * @throws waException
+     */
+    public function getRequestsNotExecutedInPeriod($period, $fields = '*', $filter = array())
+    {
+        $where = $this->getWhereByField($filter);
+
+        $fields_ar = array();
+        foreach (explode(',', $fields) as $fld_id) {
+            if ($this->fieldExists($fld_id) || $fld_id === '*') {
+                $fields_ar[] = $fld_id;
+            }
+        }
+
+        $fetch_all_params = array('id', false);
+        if (count($fields_ar) == 1 && $fields_ar[0] != '*') {
+            $fetch_all_params = array(null, true);
+        }
+        $fields = implode(',', $fields_ar);
+
+        return $this->select($fields)->where(
+            "updated BETWEEN :below_datetime AND :up_datetime" . ($where? " AND {$where}" : ""),
+            array(
+                'below_datetime' => $period[0],
+                'up_datetime' => $period[1]
+            ))
+            ->order('updated')->limit(0, 500)->fetchAll($fetch_all_params[0], $fetch_all_params[1]);
+    }
+
 }
 

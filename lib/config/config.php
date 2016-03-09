@@ -12,6 +12,7 @@ return array(
     'messages_queue_max_size' => 100000,
 
     // Turn on or turn off loging email cron job
-    'email_cron_job_logs' => false,
+    'email_cron_job_logs' => false
+
 );
 

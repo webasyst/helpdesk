@@ -17,14 +17,11 @@
                         <i class="icon16 {$category.icon}"></i>
                     {/if}
                     <span class="name">{$category.name|escape}</span>
-                    {if $category.draft && $category.id > 0}
+                    {if $category.id > 0}
                         {$category.draft_html}
-                    {/if}
-                    {if $category.site_only && $category.id > 0}
                         {$category.site_only_html}
-                    {/if}
-                    {if $category.backend_only && $category.id > 0}
                         {$category.backend_only_html}
+                        {$category.backend_and_site_html}
                     {/if}
                 </a>
             </li>

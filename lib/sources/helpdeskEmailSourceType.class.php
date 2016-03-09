@@ -271,11 +271,13 @@ class helpdeskEmailSourceType extends helpdeskCommonST implements helpdeskCronST
             return null;
         }
         if ($main_candidate && isset($contacts[$main_candidate])) {
-            try {
-                return new waContact($main_candidate);
-            } catch (waException $e) {
+            $contact = new waContact($main_candidate);
+            if ($contact->exists()) {
+                return $contact;
+            } else {
                 return null;
             }
+            return $contact;
         } else {
             reset($contacts);
             $contact_id = key($contacts);
@@ -293,7 +295,16 @@ class helpdeskEmailSourceType extends helpdeskCommonST implements helpdeskCronST
             return false;
         }
 
+        $default_contact = new waContact();
+        $default_contact['email'] = $email;
+        $default_contact['name'] = $name;
+
         $contact = $this->findContactByEmail($email);
+        if (empty($contact)) {
+            waLog::log("Fail when find by email = {$email}", 'helpdesk/find_contact_by_email.log');
+            $contact = $default_contact;
+        }
+
         $message['client_contact'] = $contact;
         if ($message['client_contact'] && $message['client_contact']->get('is_user') == -1) { // this contact is blocked
             return false;
@@ -333,13 +344,8 @@ class helpdeskEmailSourceType extends helpdeskCommonST implements helpdeskCronST
             $message['client_contact'] = $contact;
         }
 
-        if (empty($message['client_contact'])) {
-            $message['client_contact'] = new waContact();
-            $message['client_contact']['email'] = $email;
-            $message['client_contact']['name'] = $name;
-            if (isset($message['request'])) {
-                $message['client_contact']['name'] = $message['request']->getContactNameFromData();
-            }
+        if (isset($message['request'])) {
+            $message['client_contact']['name'] = $message['request']->getContactNameFromData();
         }
 
         // this contact is blocked

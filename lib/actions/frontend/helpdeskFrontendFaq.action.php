@@ -10,7 +10,10 @@ class helpdeskFrontendFaqAction extends helpdeskFrontendViewAction
     public function execute()
     {
         $fcm = new helpdeskFaqCategoryModel();
-        $categories = $fcm->getAll(null, false, true);
+        $categories = $fcm->getList('', array(
+            'is_public' => true,
+            'routes' => array($this->getCurrentRoute())
+        ));
 
         if (!empty($categories[0]['url'])) {
             $this->redirect(wa()->getRouteUrl('helpdesk/frontend/faq') . $categories[0]['url'] . '/');

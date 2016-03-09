@@ -29,7 +29,15 @@ class helpdeskFaqCategoryModel extends waModel
             $data['url'] = helpdeskHelper::transliterate($data['name']);
         }
 
-        return $this->insert($data);
+        $id = $this->insert($data);
+
+        if (array_key_exists('routes', $data)) {
+            $fcrm = new helpdeskFaqCategoryRoutesModel();
+            $fcrm->set(array($id => $data['routes']));
+        }
+
+        return $id;
+
     }
 
     public function update($id, $data)
@@ -43,6 +51,11 @@ class helpdeskFaqCategoryModel extends waModel
             }
         }
         $this->updateById($id, $data);
+
+        if (array_key_exists('routes', $data)) {
+            $fcrm = new helpdeskFaqCategoryRoutesModel();
+            $fcrm->set(array($id => $data['routes']));
+        }
     }
 
     public function get($id, $is_public = null, $is_backend = null) {
@@ -66,6 +79,9 @@ class helpdeskFaqCategoryModel extends waModel
                 }
             }
             $this->setMarks($category);
+
+            $fcrm = new helpdeskFaqCategoryRoutesModel();
+            $category['routes'] = $fcrm->get($category['id']);
         }
         return $category;
     }
@@ -79,6 +95,8 @@ class helpdeskFaqCategoryModel extends waModel
             $data['backend_only_html'] = $data['backend_only'] ? helpdeskHelper::getFaqMarkHtml('backend_only') : '';
             $data['site_only'] = empty($data['is_backend']) && !empty($data['is_public']);
             $data['site_only_html'] = $data['site_only'] ? helpdeskHelper::getFaqMarkHtml('site_only') : '';
+            $data['backend_and_site'] = !empty($data['is_backend']) && !empty($data['is_public']);
+            $data['backend_and_site_html'] = $data['backend_and_site'] ?  helpdeskHelper::getFaqMarkHtml('backend_and_site') : '';
         } else {
             foreach ($data as &$item) {
                 $this->setMarks($item, false);
@@ -153,25 +171,79 @@ class helpdeskFaqCategoryModel extends waModel
         return $item;
     }
 
-    public function getList($query) {
-        if ($query) {
+    /**
+     * @param $query
+     * @param array $filter
+     * @return array
+     */
+    public function getList($query, $filter = array())
+    {
 
-            $where = array();
+        $filter_str = '';
+        if ($filter) {
+            $filter_str = array();
+            foreach ($filter as $field => $value) {
+                if ($this->fieldExists($field)) {
+                    if ($value === null) {
+                        $filter_str[] = $field . "IS NULL";
+                    } else {
+                        $filter_str[] = $field . "='" . $this->escape($value) . "'";
+                    }
+                    unset($filter[$field]);
+                }
+            }
+            $filter_str = join(' AND ', $filter_str);
+        }
+
+        $where = array();
+        if ($filter_str) {
+            $where[] = $filter_str;
+        }
+
+        if ($query) {
             foreach(preg_split('~\s+~su', $query) as $part) {
                 $part = trim($part);
                 if (strlen($part) > 0) {
                     $p = $this->escape($part, 'like');
-                    $where[] = "(f.answer LIKE '%{$p}%' OR f.question LIKE '%{$p}%')";
+                    $where[] = "(fc.answer LIKE '%{$p}%' OR fc.question LIKE '%{$p}%')";
                 }
             }
-
-            $sql = "SELECT * FROM `{$this->table}` f " . ($where ? " WHERE " . implode($where, ' AND ') : '');
-            return $this->query($sql)->fetchAll();
-
-
-        } else {
-            return $this->getAll();
         }
+
+        $joins = array();
+        if (!empty($filter['routes'])) {
+            $routes = array();
+            foreach ($filter['routes'] as $route) {
+                $route = trim(rtrim($route, '/'));
+                if ($route) {
+                    $routes[] = $this->escape($route);
+                }
+            }
+            if ($routes) {
+                $joins[] = "LEFT JOIN `helpdesk_faq_category_routes` fcr ON fc.id = fcr.category_id";
+                $where[] = "(fcr.route IS NULL OR fcr.route IN ('".join("','", $routes)."'))";
+            }
+        }
+
+
+        $sql = "SELECT * FROM `{$this->table}` fc ";
+
+        foreach ($joins as $join) {
+            $sql .= PHP_EOL . $join . PHP_EOL;
+        }
+
+        if ($where) {
+            $sql .= "WHERE " . join(' AND ', $where);
+        }
+
+        $items = $this->query($sql)->fetchAll();
+        foreach ($items as &$el) {
+            $el['icon'] = $el['icon'] ? $el['icon'] : 'folder';
+        }
+        unset($el);
+        $this->setMarks($items, true);
+
+        return $items;
     }
 
     public function getAllCategories()

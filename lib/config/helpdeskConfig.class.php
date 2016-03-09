@@ -3,14 +3,16 @@
 class helpdeskConfig extends waAppConfig
 {
     /**
+     * @var string datetime Y-m-d H:i:s
+     */
+    private $auto_actions_feature_release;
+
+    /**
      * Automagically called in background by system JS.
      * Returns the number of unread messages to show near app icon in header.
      */
     public function onCount()
     {
-        $asm = new waAppSettingsModel();
-        $asm->set('helpdesk', 'backend_url', wa('helpdesk')->getConfig()->getBackendUrl());
-
         // check new mail
         $this->checkMail();
 
@@ -122,6 +124,70 @@ class helpdeskConfig extends waAppConfig
         $sender->sendMessagesFromQueue();
     }
 
+
+    public function performAutoActions()
+    {
+        $rl = new helpdeskRequestModel();
+        foreach (helpdeskWorkflow::getWorkflowsAutoActions() as $wf_id => $actions) {
+            foreach ($actions as $action_id => $action) {
+                /**
+                 * @var helpdeskWorkflowActionAutoInterface|helpdeskWorkflowAction $action
+                 */
+                $timeout = $action->getTimeout();
+                $states = $action->getAvailableStates();
+                if (empty($states)) {
+                    continue;
+                }
+
+                $day = (int) ifset($timeout['day'], 0);
+                $hour = (int) ifset($timeout['hour'], 1);
+                $minute = (int) ifset($timeout['minute'], 0);
+
+                $period = array(
+                    $action->getCreatedDatetime(),
+                    date('Y-m-d H:i:s', strtotime("-{$day} day -{$hour} hour -{$minute} minute"))
+                );
+
+                if (empty($period[0])) {
+                    $period[0] = $this->getAutoActionsFeatureReleaseDatetime();
+                }
+
+                $request_ids = $rl->getRequestsNotExecutedInPeriod(
+                    $period,
+                    'id',
+                    array(
+                        'workflow_id' => $wf_id,
+                        'state_id' => array_keys($states)
+                    ));
+
+                foreach ($request_ids as $request_id) {
+                    $r = new helpdeskRequest($request_id);
+                    $action->run($r);
+                }
+
+            }
+        }
+    }
+
+    /**
+     * @return array|string
+     */
+    public function getAutoActionsFeatureReleaseDatetime()
+    {
+        if (!$this->auto_actions_feature_release) {
+            $asm = new waAppSettingsModel();
+            $default = date('23-02-2016 00:00:00');
+            $datetime = $asm->get('helpdesk', 'auto_actions_feature_release', $default);
+            $time = (int)strtotime($datetime);
+            if ($time < strtotime($default)) {
+                $this->auto_actions_feature_release = $default;
+            } else {
+                $this->auto_actions_feature_release = $datetime;
+            }
+        }
+        return $this->auto_actions_feature_release;
+    }
+
     public function getRouting($route = array(), $dispatch = false)
     {
         $url_type = isset($route['url_type']) ? $route['url_type'] : 0;
@@ -143,20 +209,62 @@ class helpdeskConfig extends waAppConfig
     }
 
 
+    /**
+     * @return string
+     */
     public function getHelpdeskBackendUrl()
     {
         if (wa()->getEnv() !== 'cli') {
-            return wa()->getRootUrl(true).wa()->getConfig()->getBackendUrl()."/helpdesk";
+            return $this->getBackendEnvHelpdeskBackendUrl();
         } else {
+            return $this->getCliEnvHelpdeskBackendUrl();
+        }
+    }
+
+    /**
+     * @return string
+     */
+    public function getBackendEnvHelpdeskBackendUrl()
+    {
+        return wa()->getRootUrl(true).wa()->getConfig()->getBackendUrl()."/helpdesk";
+    }
+
+    /**
+     * @return string
+     */
+    public function getCliEnvHelpdeskBackendUrl()
+    {
+        $app_id = $this->getApplication();
+        $asm = new waAppSettingsModel();
+        $backend_url = $asm->get($app_id, 'cli_backend_url');
+        if ($backend_url && (substr($backend_url, 0, 6) === 'https:' || substr($backend_url, 0, 5))) {
+            return rtrim($backend_url, '/');
+        } else {
+            $domains = wa($app_id)->getRouting()->getDomains();
+            $root_url = $domains ? 'http://' . reset($domains) . '/' : '';
+            return $root_url . wa()->getConfig()->getBackendUrl()."/helpdesk";
+        }
+    }
+
+    /**
+     * Update backend url app setting, set it to current backend url in backend env
+     */
+    public function updateCliEnvHelpdeskBackendUrl()
+    {
+        $this->setCliEnvHelpdeskBackendUrl(
+            $this->getBackendEnvHelpdeskBackendUrl()
+        );
+    }
+
+    /**
+     * @param string $backend_url
+     */
+    protected function setCliEnvHelpdeskBackendUrl($backend_url)
+    {
+        if ($backend_url && (substr($backend_url, 0, 6) === 'https:' || substr($backend_url, 0, 5))) {
+            $app_id = $this->getApplication();
             $asm = new waAppSettingsModel();
-            $backend_url = $asm->get('helpdesk', 'backend_url');
-            if ($backend_url) {
-                return $backend_url;
-            } else {
-                $domains = wa('helpdesk')->getRouting()->getDomains();
-                $root_url = $domains ? 'http://' . reset($domains) . '/' : '';
-                return $root_url . wa()->getConfig()->getBackendUrl()."/helpdesk";
-            }
+            $asm->set($app_id, 'cli_backend_url', $backend_url);
         }
     }
 

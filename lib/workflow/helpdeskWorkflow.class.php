@@ -41,6 +41,7 @@ class helpdeskWorkflow extends waWorkflow
 
     protected $client_triggerable_actions;
 
+
     const PREFIX_ONE_CLICK_FEEDBACK_HREF = '1_click_feedback_';
 
     //
@@ -69,7 +70,8 @@ class helpdeskWorkflow extends waWorkflow
 
         $wfs = self::getWorkflowsConfig();
         if (!wa_is_int($id) || !isset($wfs['workflows'][$id])) {
-            throw new waException('Unknown workflow: '.htmlspecialchars(print_r($id, true)), 404);
+            self::$workflows_cfg = null;
+            throw new waException('Unknown workflow: ' . htmlspecialchars(print_r($id, true)), 404);
         }
         if (! ( $class = $wfs['workflows'][$id]['classname'])) {
             $class = 'helpdeskWorkflow';
@@ -145,6 +147,60 @@ class helpdeskWorkflow extends waWorkflow
     }
 
     /**
+     * @param bool $flatten
+     * @return array of helpdeskWorkflowAction|helpdeskWorkflowActionAutoInterface
+     *     If flatten then one-dimensional array of objects (not indexed)
+     *     If not flatten then one-dimensional array of objects (indexed by workflow_id and action_id)
+     * @throws waException
+     */
+    public static function getWorkflowsAutoActions($flatten = false)
+    {
+        $auto_actions = array();
+
+        $wfs = self::getWorkflowsConfig();
+        foreach (ifempty($wfs['workflows'], array()) as $wfid => $data) {
+            try {
+                $wf = self::get($wfid);
+                foreach (ifset($data['actions'], array()) as $action_id => $action) {
+                    $action = $wf->getActionById($action_id);
+                    if ($action instanceof helpdeskWorkflowActionAutoInterface) {
+                        $auto_actions[$wfid][$action_id] = $action;
+                    }
+                };
+            } catch (waException $e) {}
+        }
+
+        if (!$flatten) {
+            return $auto_actions;
+        }
+
+        $flatten_actions = array();
+        foreach ($auto_actions as $wf => $actions) {
+            foreach ($actions as $action) {
+                $flatten_actions[] = $action;
+            }
+        }
+        return $flatten_actions;
+    }
+
+    public static function workflowsAutoActionsExist()
+    {
+        $wfs = self::getWorkflowsConfig();
+        foreach (ifempty($wfs['workflows'], array()) as $wfid => $data) {
+            try {
+                $wf = self::get($wfid);
+                foreach (ifset($data['actions'], array()) as $action_id => $action) {
+                    $action = $wf->getActionById($action_id);
+                    if ($action instanceof helpdeskWorkflowActionAutoInterface) {
+                        return true;
+                    }
+                }
+            } catch (waException $e) {}
+        }
+        return false;
+    }
+
+    /**
      * Returns an array from workflows.php config file.
      */
     public static function getWorkflowsConfig()
@@ -152,6 +208,9 @@ class helpdeskWorkflow extends waWorkflow
         if (self::$workflows_cfg === null) {
             $file = wa()->getConfig()->getConfigPath('workflows.php', true, 'helpdesk');
             if(file_exists($file)) {
+                if (function_exists('opcache_invalidate')) {
+                    opcache_invalidate($file, true);
+                }
                 self::$workflows_cfg = include($file);
             }
             if (empty(self::$workflows_cfg)) {
@@ -186,10 +245,10 @@ class helpdeskWorkflow extends waWorkflow
         waUtils::varExportToFile($data, $file);
         self::$workflows_cfg = $data;
         self::$workflows = null;
-
         if (!file_exists($file) || !is_writable($file)) {
             throw new waException('Config file is not writable: '.$file);
         }
+        clearstatcache();
     }
 
     //
@@ -258,17 +317,21 @@ class helpdeskWorkflow extends waWorkflow
     }
 
     /**
+     * @param string $state
+     * @param array|null $params = null
+     *
      * List of actions that can be performed from given state.
      * uses func_get_args() instead of signature args for historical reasons (i.e. waWorkflow)
      *
      * @param mixed $state helpdeskWorkflowState or state_id
      * @return array id => helpdeskWorkflowAction
      */
-    public function getActions()
+    public function getActions(/*$state, $params = null*/)
     {
         $args = func_get_args();
         $state = $args[0];
-        $params = isset($args[1]) ? $args[1] : null;
+        // not used already
+        // $params = isset($args[1]) ? $args[1] : null;
 
         if ($state instanceof helpdeskWorkflowState) {
             $state = $state->getId();
@@ -291,6 +354,21 @@ class helpdeskWorkflow extends waWorkflow
                 }
             } catch (Exception $e) {
                 // No such action for some reason. Ignore.
+            }
+        }
+        return $actions;
+    }
+
+    /**
+     * @param string $state
+     * @return array[helpdeskWorkflowActionAutoInterface]
+     */
+    public function getAutoActions($state)
+    {
+        $actions = array();
+        foreach ($this->getActions($state) as $action) {
+            if ($action instanceof helpdeskWorkflowActionAutoInterface) {
+                $actions[$action->getId()] = $action;
             }
         }
         return $actions;

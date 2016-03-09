@@ -2849,10 +2849,6 @@ msgstr ""
 msgid "performed an action with request"
 msgstr ""
 
-#: /wa-apps/helpdesk/lib/actions/faq/helpdeskFaqCategorySave.controller.php:20
-msgid "Please specify a valid URL"
-msgstr ""
-
 #: /wa-apps/helpdesk/js/wa.controller.js:478
 msgid "What is this?"
 msgstr ""
@@ -3586,4 +3582,76 @@ msgstr ""
 
 #: /wa-apps/helpdesk/lib/workflow/helpdeskWorkflow.class.php:548
 msgid "Available values for \"%s\""
+msgstr ""
+
+#: /wa-apps/helpdesk/lib/classes/helpdeskRequest.class.php:778
+msgid "Auto action"
+msgstr ""
+
+#: /wa-apps/helpdesk/lib/workflow/templates/timer_settings.include.html:7
+msgid "Time-out"
+msgstr ""
+
+#: /wa-apps/helpdesk/lib/workflow/templates/choose_action_type.include.html:6
+msgid "Action performed by user"
+msgstr ""
+
+#: /wa-apps/helpdesk/lib/workflow/templates/choose_action_type.include.html:9
+msgid "Users perform this action manually on the request's page or in their Customer portals."
+msgstr ""
+
+#: /wa-apps/helpdesk/lib/workflow/templates/choose_action_type.include.html:14
+msgid "Action performed automatically"
+msgstr ""
+
+#: /wa-apps/helpdesk/lib/workflow/templates/choose_action_type.include.html:17
+#: /wa-apps/helpdesk/lib/workflow/templates/Basic_settings.html:76
+msgid "This action will be triggered automatically (by time-out) if no other actions are performed with request during a certain period of time."
+msgstr ""
+
+#: /wa-apps/helpdesk/templates/actions/editor/EditorNewaction.html:29
+msgid "Create a new action to be performed by user"
+msgstr ""
+
+#: /wa-apps/helpdesk/templates/actions/editor/EditorNewaction.html:38
+msgid "Create a new action to be performed automatically"
+msgstr ""
+
+#: /wa-apps/helpdesk/templates/actions/settings/SettingsWorkflow.html:626
+#: /wa-apps/helpdesk/lib/workflow/templates/timer_settings.include.html:19
+msgid "d"
+msgstr ""
+
+#: /wa-apps/helpdesk/templates/actions/settings/SettingsWorkflow.html:626
+#: /wa-apps/helpdesk/lib/workflow/templates/timer_settings.include.html:26
+msgid "h"
+msgstr ""
+
+#: /wa-apps/helpdesk/lib/workflow/templates/timer_settings.include.html:19
+msgid "days"
+msgstr ""
+
+#: /wa-apps/helpdesk/lib/workflow/templates/timer_settings.include.html:26
+msgid "hours"
+msgstr ""
+
+#: /wa-apps/helpdesk/templates/actions/faq/FaqCategory.html:75
+msgid "All sites"
+msgstr ""
+
+#: /wa-apps/helpdesk/templates/actions/faq/FaqCategory.html:81
+msgid "Only selected sites"
+msgstr ""
+
+#: /wa-apps/helpdesk/templates/actions/faq/FaqCategory.html:58
+msgid "Helpdesk app is not settled on any site. Use %s app to manage settlements."
+msgstr ""
+
+#: /wa-apps/helpdesk/templates/actions/faq/FaqCategory.html:101
+msgid "Shown above are only sites where Helpdesk app is settled. Use %s app to manage settlements."
+msgstr ""
+
+#: /wa-apps/helpdesk/lib/actions/faq/helpdeskFaqCategorySave.controller.php:19
+#: /wa-apps/helpdesk/lib/actions/faq/helpdeskFaqSave.controller.php:20
+msgid "Category URL may contain only letters, digits, and hyphens"
 msgstr ""

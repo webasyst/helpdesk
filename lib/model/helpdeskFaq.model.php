@@ -117,7 +117,8 @@ class helpdeskFaqModel extends waModel
             $data['backend_only_html'] = $data['backend_only'] ? helpdeskHelper::getFaqMarkHtml('backend_only') : '';
             $data['site_only'] = empty($data['is_backend']) && !empty($data['is_public']);
             $data['site_only_html'] = $data['site_only'] ? helpdeskHelper::getFaqMarkHtml('site_only') : '';
-
+            $data['backend_and_site'] = !empty($data['is_backend']) && !empty($data['is_public']);
+            $data['backend_and_site_html'] = $data['backend_and_site'] ?  helpdeskHelper::getFaqMarkHtml('backend_and_site') : '';
         } else {
             foreach ($data as &$item) {
                 $this->setMarks($item, false);

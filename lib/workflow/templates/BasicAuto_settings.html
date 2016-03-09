@@ -1,0 +1,479 @@
+{$container_id = uniqid('h-workflow-action-settings-container')}
+
+{* TODO move to stylus *}
+
+<style>
+
+    /* Dirty hack for redactorjs in Chrome. If div wrappers has "fields" classes, redactorjs doesn't work
+    -------------------------------------------- */
+    .h-fields { float: left /* to handle clear within the form */; margin-bottom: 10px; overflow: visible; } /* wrapper for .field */
+    .field-group { margin: 5px 0 30px; }
+    .field { clear: left; margin: 0; padding-top: 3px; }
+    .field .name { float: left; width: 155px; padding-top: 0.05em; padding-bottom: 10px; color: #888; font-size: 0.95em; font-family: 'Helvetica Neue', Arial, sans-serif; }
+    .field .name.large { font-size: 1.2em; font-weight:bold; color:#000; }
+    .h-fields.form .field .name { padding-top: 0.45em; /* color: #000; */ /* class="fields form" is for forms with text inputs */ }
+    .h-fields.form .field .value.no-shift { padding-top: 0.3em; /* use in class="fields form" forms for elements with no inputs within class="value" to exclude unwanted paddings */ }
+    .h-fields .field .value.bottom-padded { padding-bottom: 10px; }
+    .field .value { margin-left: 180px; margin-bottom: 5px; position: relative; }
+    .field .value.submit { margin-left: 170px /* a little offset */; }
+    .field .value .error-message { display: none; }
+    .field .value input[type="text"], .field .value input[type="password"], .field .value textarea { width: 30%; min-width: 200px; margin: 0; }
+    .field .value textarea { min-width: 400px; height: 70px; }
+    .field .value input.semi { width: 10%; min-width: 80px; }
+    .field .value input[type="text"].large, .field .value input[type="password"].large { width: 35%; }
+    .field .value img.overhanging { position: absolute; left: -20px; }
+    .field .value i.icon16.overhanging { position: absolute; left: -20px; margin: 0; top: 2px; }
+    .field .value i.icon10.overhanging { position: absolute; margin-left: -17px; margin-right: 7px; }
+    .field .value i.icon16 { vertical-align: middle; }
+    .field .value.no-shift i.icon16.overhanging { top: 8px; }
+    .field .value .address-subfield { padding:1px 0; }
+    .field .value input, .field .value select { vertical-align:middle; }
+    .h-fields.width100px .name { width: 105px; }
+    .h-fields.width100px .value { margin-left: 120px; }
+    .h-fields.width100px .value.submit { margin-left: 110px; }
+
+    #{$container_id} .h-section { width: 100%; font-size: 1.3em; }
+    #{$container_id} .fields .field .value p i.icon16 { float: none; position: static; }
+    #{$container_id} .textarea-with-variables { margin-left: 20px; }
+</style>
+
+<div class="h-workflow-action-settings-container" id="{$container_id}">
+
+    <div class="block h-action-settings-title-wrapper">
+        <h1 class="h-action-settings-title">
+            {if !strlen($action->getId())}
+                <div class="h-action-id">
+                    <div class="h-name">[`ID:`]</div>
+                    <div class="h-value">
+                        <input type="text" name="action_new_id" value="{ifset($action_new_id)}">
+                        <i class="icon16 loading hidden"></i>
+                    </div>
+                </div>
+            {/if}
+
+            <div class="h-action-name" style="">
+                <div>
+                    <input type="text" name="options[name]" value="{ifset($options.name)|escape}">
+                    {if strlen($action->getId())}
+                        <span class="hint" style="font-size:12px;">[`ID:`] {$action->getId()}</span>
+                    {/if}
+                </div>
+            </div>
+
+        </h1>
+    </div>
+
+    <div class="h-fields width100px block" style="width:100%">
+
+        {include file='./timer_settings.include.html' container_id=$container_id inline}
+
+        <div class="field">
+            <hr>
+        </div>
+
+        <div class="field">
+            <div class="bold name h-section">[`After this action is submitted`]</div>
+        </div>
+
+        <div class="field">
+            <div class="name"></div>
+            <div class="value">
+                <label>
+                    <input type="radio" name="after_action_submit" value="" {if empty($transition)}checked="checked"{/if}>
+                    [`Leave request in the same state`]
+                    <input type="hidden" name="transition" value="" {if !empty($transition)}disabled="disabled"{/if}>
+                </label><br><br>
+                <label>
+                    <input type="radio"  name="after_action_submit" value="1" {if !empty($transition)}checked="checked"{/if}> [`Forward request to state`]:
+                </label>
+                <select name="transition" {if empty($transition)}disabled="disabled"{/if}>
+                    {foreach $states as $s}
+                        <option value="{$s->getId()}"{if $transition == $s->getId()} selected="selected"{/if}>{$s->getName()|escape}</option>
+                    {/foreach}
+                    {if count($workflows) > 1}
+                        <option disabled="disabled">&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;</option>
+                        {foreach $workflows as $wfid => $wrk}
+                            {if $wfid != $workflow->getId()}
+                                {foreach $wrk->getAllStates() as $s}
+                                    {$val = $wfid|cat:":":$s->getId()}
+                                    <option value="{$val}" {if $transition == $val} selected="selected"{/if}>{$wrk->getName()|escape} &mdash; {$s->getName()|escape}</option>
+                                {/foreach}
+                            {/if}
+                        {/foreach}
+                    {/if}
+                </select>
+                <span class="hint" style="display:block;">[`When a user performs this action the request state will be changed to the state you select here. Your choice will be shown by an arrow in the workflow setup diagram.`]</span>
+            </div>
+
+        </div>
+
+        <div class="field">
+
+            <div class="name"></div>
+
+            <div class="value">
+                <div class="h-allow-attachments-settings" style="margin-top: 10px;">
+                    [`Assigned user`]:
+                    <select name="options[default_assignee]">
+                        <option value="0"{if !isset($options.default_assignee) || $options.default_assignee !== ''} selected{/if}>[`clear previous assignment`]</option>
+                        <option value=""{if isset($options.default_assignee) && $options.default_assignee == ''} selected{/if}>[`keep previous assignment`]</option>
+                        <option disabled>---</option>
+                        {foreach $assignees as $id => $name}
+                            <option value="{$id}"{if ifset($options.default_assignee) == $id} selected{/if}>{$name|escape}</option>
+                        {/foreach}
+                    </select><br>
+                    {helpdeskHelper::rightsToAppMessageParagraph('hint no-bold', 'margin-bottom: 0px')}
+                </div>
+            </div>
+
+        </div>
+
+        <div class="field">
+            <hr>
+        </div>
+
+        <div class="field">
+            <div class="bold name h-section">[`Customer`]</div>
+        </div>
+
+        <div class="field">
+            <div class="name"></div>
+            <div class="value">
+                [`Choose if this action is available for customer (request's originator) in their customer portal.`]
+                {sprintf_wp('To setup Customer portal use the <a href="%s">Site app</a>.', "`$wa_backend_url`site/")}
+            </div>
+        </div>
+        <div class="field">
+            <div class="name"></div>
+            <div class="value">
+                <label class="radio">
+                    <input type="radio" name="customer_portal" value=""{if empty($options.client_visible)} checked{/if}>
+                    [`Not available`]
+                    <br><span class="hint">[`Clients do not see any information associated with this action in their Customer Portal`]</span>
+                </label>
+                <label class="radio">
+                    <input type="radio" name="customer_portal" value="visible_all"{if !empty($options.client_visible) && empty($options.client_triggerable)} checked{/if}>
+                    [`Available for viewing only`]
+                    <br><span class="hint">[`Clients can see this action record and it's description (except assignments info) in their Customer Portal`]</span>
+                </label>
+            </div>
+        </div>
+
+        <div class="field">
+            <div class="name"></div>
+            <div class="value">
+                <a href="javascript:void(0);" onclick="$('#customer-advanced').toggle('fast')">[`Advanced settings`]</a>
+            </div>
+        </div>
+        <div class="field" id="customer-advanced" style="display:none;">
+            <div class="name"></div>
+            <div class="value">
+                <label>
+                    <input type="checkbox" name="options[ban_user]"{if !empty($options.ban_user)} checked{/if}>
+                    [`Revoke all access rights for customer`]
+                    <br>
+                    <span class="hint">
+                        [`If you turn on this option, then execution of this action will automatically cause a complete banning of the contact who sent you this request.`]
+                        [`The contact will not be able to log in to your site and customer portal anymore, and all further requests from this contact will be bounced.`]
+                        [`This option can be used for banning contacts for spam or other illegal actions.`]
+                    </span>
+                </label>
+            </div>
+        </div>
+
+        <div class="field">
+            <hr>
+        </div>
+
+        <div class="field">
+            <div class="bold name h-section">[`Messages`]</div>
+        </div>
+
+        <div class="field-group" style="margin-top:20px;">
+            <div class="field">
+                <div class="name"></div>
+
+                <div class="value messages-wrapper" style="padding-top:1px;">
+                    {if !empty($options.messages) && is_array($options.messages)}
+                        {foreach $options.messages as $i => $m}
+                            <div class="one-message email-template-editor"><div class="h-fields width100px">
+                                <div class="expandable expanded">
+                                    <label class="expandable-legend">
+                                        <input type="checkbox" class="remove-message-checkbox" checked>
+                                        [`Send email message`]
+                                    </label>
+
+                                    <div class="editor-wrapper" data-i="{$i}">
+                                        {include file="templates/actions/editor/email_template_editor.html"
+                                            tpl='auto_action'
+                                            input_name="options[messages][{$i}][tmpl]"
+                                            variables=$message_vars
+                                            template=ifset($m.tmpl)
+                                            to_name="options[messages][{$i}][to]"
+                                            to_value=ifset($m.to)
+                                            sourcefrom_name="options[messages][{$i}][sourcefrom]"
+                                            sourcefrom_set=ifset($m.sourcefrom)
+                                        }
+                                    </div>
+                                </div>
+                            </div><div class="clear-left"></div></div>
+                        {/foreach}
+                    {/if}
+
+                    <div class="one-message hidden template email-template-editor">
+                        <div class="h-fields width100px">
+                            <div class="field-group expandable expanded">
+                                <label class="expandable-legend">
+                                    <input type="checkbox" class="remove-message-checkbox" checked>
+                                    [`Send email message`]
+                                </label>
+                                <div class="editor-wrapper" style="min-width:530px;">
+                                    <div class="block"><i class="icon16 loading"></i></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="clear-left"></div>
+                    </div>
+
+                    <div class="h-fields width100px">
+                        <div class="field">
+                            <label>
+                                <input type="checkbox" class="add-message-checkbox">
+                                <span class="when-no-messages">
+                                    [`Send email message`]
+                                </span>
+                                <span class="when-messages">
+                                    [`Send another email message`]
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="clear-both"></div>
+
+    <div class="other-errors block"></div>
+
+</div>
+
+<script>$(function() { "use strict";
+
+    var container = $('#{$container_id}');
+
+    //
+    // Show/hide parts of the form depending on checkbox status
+    //
+    (function() {
+        var f, controllers = [
+            ['[name="options[send_email_to_client]"]', container.find('[name="options[email_to_client_template]"]').closest('.h-fields')],
+            ['[name="options[send_email_to_assignee]"]', container.find('[name="options[email_to_assignee_template]"]').closest('.h-fields')]
+        ];
+        var delay = 0;
+        for (var i = 0; i < controllers.length; i++) {
+            (function() {
+                var selector = controllers[i][0];
+                var element = controllers[i][1];
+                var no_animation = controllers[i][2];
+                container.on('change', selector, f = function() {
+                    if ($(this).is(':checked')) {
+                        if (no_animation) {
+                            element.show();
+                        } else {
+                            element.slideDown(delay);
+                        }
+                    } else {
+                        if (no_animation) {
+                            element.hide();
+                        } else {
+                            element.slideUp(delay);
+                        }
+                    }
+                });
+                f.apply(container.find(selector)[0]);
+            })();
+        }
+        delay = 200;
+
+    })();
+
+
+    (function() {
+        {if $submit_errors}
+            // Validation errors
+            {foreach $submit_errors as $field_name => $e}(function() {
+                {if $field_name !== ''}
+                    {if preg_match("/options\[messages\]\[(\d+)\]\[to\]/", $field_name, $match)}
+                        var el = $('[data-field-name="options[messages][{$match[1]}][to]"]');
+                        if (el.length) {
+                            el.find('ul:first').show();
+                            el.find('ul li.hr.show-if-custom').before('<li class="errormsg"><em class="errormsg">{$e|escape}</em></li>');
+                            return;
+                        }
+                    {/if}
+                    var el = container.find('[name="{$field_name|escape}"]').addClass('error').parent();
+                {else}
+                    var el = null;
+                {/if}
+                if (!el || !el.length) {
+                    el = container.find('.other-errors');
+                }
+                el.append($('<em class="errormsg"></em>').html("{$e|escape}"));
+            })();{/foreach}
+
+            container.on('keyup', 'input.error:text,textarea.error', function(e) {
+                !e.isTrigger && $(this).removeClass('error').siblings('.errormsg').remove();
+            });
+            container.on('change', '.error', function(e) {
+                !e.isTrigger && $(this).removeClass('error').siblings('.errormsg').remove();
+            });
+        {/if}
+    })();
+
+
+    // Controller for email messages editor
+    (function() {
+        var add_message_checkbox = container.find('.add-message-checkbox');
+        var messages_wrapper = add_message_checkbox.closest('.messages-wrapper');
+
+        // Add another email editor block when user clicks "Send another email message" checkbox
+        add_message_checkbox.change(function() {
+            var fields = messages_wrapper.children('.hidden.template').clone().insertBefore(add_message_checkbox.closest('.h-fields'));
+            fields.removeClass('template').removeClass('hidden');
+            add_message_checkbox.prop('disabled', true);
+
+            var last_i = messages_wrapper.find('.editor-wrapper[data-i]').last().data('i');
+            if (last_i) {
+                last_i = parseInt(last_i+'', 10);
+            } else if (last_i !== 0) {
+                last_i = -1;
+            }
+            var i = last_i + 1;
+            fields.find('.editor-wrapper').data('i', ''+i).attr('data-i', ''+i);
+
+            $.post('?module=editor&action=emailTemplate&tpl=action', {
+                input_name: 'options[messages]['+i+'][tmpl]',
+                variables: {json_encode($message_vars)},
+                workflow_id: {$workflow_id},
+                to_name: 'options[messages]['+i+'][to]',
+                sourcefrom_name: 'options[messages]['+i+'][sourcefrom]'
+            }, function(r) {
+                fields.find('.editor-wrapper').html(r);
+                add_message_checkbox.prop({ disabled: false, checked: false });
+            });
+
+            updateAddCheckbox();
+        });
+
+        // Hide email editor block when user unchecks "Send email message" checkbox
+        container.on('change', '.remove-message-checkbox', function() {
+            $(this).closest('.h-fields').parent().slideUp(200, function() {
+                $(this).remove();
+                updateAddCheckbox();
+            });
+        });
+
+        updateAddCheckbox();
+
+        function updateAddCheckbox() {
+            var label = add_message_checkbox.parent();
+            if (messages_wrapper.find('.one-message:not(.template)').length > 0) {
+                label.find('.when-no-messages').hide();
+                label.find('.when-messages').show();
+            } else {
+                label.find('.when-no-messages').show();
+                label.find('.when-messages').hide();
+            }
+        }
+    })();
+
+    $('.h-action-settings-fields').sortable({
+        distance: 5,
+        helper: 'clone',
+        items: '.h-field',
+        opacity: 0.75,
+        handle: '.sort',
+        tolerance: 'pointer'
+    });
+
+    {if !strlen($action->getId())}
+        container.attr('placeholder', '[`action name`]');
+    {/if}
+
+    var checkboxClickHanlder = function() {
+        if ($(this).is(':checked')) {
+            $(this).closest('label').css({
+                fontWeight: 'bold'
+            });
+        } else {
+            $(this).closest('label').css({
+                fontWeight: 'normal'
+            });
+        }
+    };
+    $('.h-action-settings-fields input:checkbox', container).click(checkboxClickHanlder).each(function() {
+        checkboxClickHanlder.call(this);
+    });
+
+    $('input[name="after_action_submit"]', container).click(function() {
+        var el = $(this);
+        if (!el.val()) {
+            $('select[name="transition"]').attr('disabled', true);
+            $('input[name="transition"]').attr('disabled', false);
+            $('#{$container_id}-color-selector .visible-when-transition-selected').hide().find('input:checkbox').prop('checked', false);
+        } else {
+            $('select[name="transition"]').attr('disabled', false);
+            $('input[name="transition"]').attr('disabled', true);
+            $('#{$container_id}-color-selector .visible-when-transition-selected').show();
+        }
+    });
+
+    {if !strlen($action->getId())}
+        // Transliterate action name into ID
+        (function() {
+            var ignore_name_change = false;
+            var id_field = container.find('[name="action_new_id"]');
+            var name_field = container.find('[name="options[name]"]');
+
+            // When user changes ID by hand, do not replace it via transliteration (unless field is empty)
+            id_field.on('keyup', function() {
+                setTimeout(function() {
+                    ignore_name_change = !!id_field.val();
+                }, 0);
+            });
+
+            // Transliterate name into id when user changes it
+            var timeout = null;
+            var handler = function() {
+                if (ignore_name_change) {
+                    return;
+                }
+                if (timeout) {
+                    clearTimeout(timeout);
+                } else {
+                    id_field.siblings('.loading').removeClass('hidden');
+                }
+                timeout = setTimeout(function() {
+                    timeout = null;
+                    if (ignore_name_change) {
+                        id_field.siblings('.loading').addClass('hidden');
+                        return;
+                    }
+                    $.get('?action=translit', { str: name_field.val() }, function(r) {
+                        id_field.siblings('.loading').addClass('hidden');
+                        if (ignore_name_change) {
+                            return;
+                        }
+                        id_field.val(r.data);
+                    }, 'json');
+                }, 1000);
+            };
+
+            name_field.on('keypress', handler).on('change', handler);
+        })();
+        container.find('input:text:first').focus();
+    {/if}
+
+});</script>

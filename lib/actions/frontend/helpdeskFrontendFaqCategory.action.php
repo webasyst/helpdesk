@@ -15,6 +15,11 @@ class helpdeskFrontendFaqCategoryAction extends helpdeskFrontendViewAction
         if (!$category) {
             throw new waException('Category not found');
         }
+
+        if (!$this->checkCategoryAccess($category)) {
+            throw new waException('Category not found');
+        }
+
         $fm = new helpdeskFaqModel();
         $faq_list = $fm->getByFaqCategory($category['id'], true);
 

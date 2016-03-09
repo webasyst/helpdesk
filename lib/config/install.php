@@ -127,6 +127,40 @@ $csm->set(wa()->getUser()->getId(), 'helpdesk', array(
     'mark_read_when_open' => 1
 ));
 
+if (waLocale::getLocale() === 'ru_RU') {
+    // create rate select-field for one-click-feedback
+    $rate_field = new helpdeskRequestSelectField('rate',
+        array('en_US' => 'Rate', 'ru_RU' => 'Оценка'),
+        array(
+            'options' => array(
+                'отлично' => 'отлично',
+                'хорошо' => 'хорошо',
+                'не очень' => 'не очень',
+                'плохо' => 'плохо'
+            ),
+            'my_visible' => '1'
+        )
+    );
+} else {
+    // create rate select-field for one-click-feedback
+    $rate_field = new helpdeskRequestSelectField('rate',
+        array('en_US' => 'Rate'),
+        array(
+            'options' => array(
+                'excellent' => 'excellent',
+                'good' => 'good',
+                'moderate' => 'moderate',
+                'bad' => 'bad'
+            ),
+            'my_visible' => '1'
+        )
+    );
+}
+if (!helpdeskRequestFields::fieldExists($rate_field->getId())) {
+    helpdeskRequestFields::updateField($rate_field);
+}
+
+
 /**
  * @event installed
  * @return void

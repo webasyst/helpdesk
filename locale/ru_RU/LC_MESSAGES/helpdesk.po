@@ -2354,10 +2354,6 @@ msgstr "создал новый запрос"
 msgid "performed an action with request"
 msgstr "выполнил действие с запросом"
 
-#: /wa-apps/helpdesk/lib/actions/faq/helpdeskFaqCategorySave.controller.php:20
-msgid "Please specify a valid URL"
-msgstr "Пожалуйста, укажите правильный URL"
-
 #: /wa-apps/helpdesk/js/wa.controller.js:478
 msgid "What is this?"
 msgstr "Что это?"
@@ -3008,3 +3004,75 @@ msgstr "Нет доступных полей для выбора"
 #: /wa-apps/helpdesk/lib/workflow/helpdeskWorkflow.class.php:548
 msgid "Available values for \"%s\""
 msgstr "Варианты значений для поля \"%s\""
+
+#: /wa-apps/helpdesk/lib/classes/helpdeskRequest.class.php:778
+msgid "Auto action"
+msgstr "Автодействие"
+
+#: /wa-apps/helpdesk/lib/workflow/templates/timer_settings.include.html:7
+msgid "Time-out"
+msgstr "Тайм-аут"
+
+#: /wa-apps/helpdesk/lib/workflow/templates/choose_action_type.include.html:6
+msgid "Action performed by user"
+msgstr "Действие выполняется пользователем"
+
+#: /wa-apps/helpdesk/lib/workflow/templates/choose_action_type.include.html:9
+msgid "Users perform this action manually on the request's page or in their Customer portals."
+msgstr "Пользователь будет вручную выполнять это действие на странице запроса в бекенде или в личном кабинете клиента."
+
+#: /wa-apps/helpdesk/lib/workflow/templates/choose_action_type.include.html:14
+msgid "Action performed automatically"
+msgstr "Действие выполняется автоматически"
+
+#: /wa-apps/helpdesk/lib/workflow/templates/choose_action_type.include.html:17
+#: /wa-apps/helpdesk/lib/workflow/templates/Basic_settings.html:76
+msgid "This action will be triggered automatically (by time-out) if no other actions are performed with request during a certain period of time."
+msgstr "Данное действие будет выполнено автоматически, если в течение определенного времени (тайм-аут) с запросом не выполняется никаких других действий."
+
+#: /wa-apps/helpdesk/templates/actions/editor/EditorNewaction.html:29
+msgid "Create a new action to be performed by user"
+msgstr "Добавить новое действие, выполняемое пользователем"
+
+#: /wa-apps/helpdesk/templates/actions/editor/EditorNewaction.html:38
+msgid "Create a new action to be performed automatically"
+msgstr "Добавить новое действие, выполняемое автоматически"
+
+#: /wa-apps/helpdesk/templates/actions/settings/SettingsWorkflow.html:626
+#: /wa-apps/helpdesk/lib/workflow/templates/timer_settings.include.html:19
+msgid "d"
+msgstr "д"
+
+#: /wa-apps/helpdesk/templates/actions/settings/SettingsWorkflow.html:626
+#: /wa-apps/helpdesk/lib/workflow/templates/timer_settings.include.html:26
+msgid "h"
+msgstr "ч"
+
+#: /wa-apps/helpdesk/lib/workflow/templates/timer_settings.include.html:19
+msgid "days"
+msgstr "дней"
+
+#: /wa-apps/helpdesk/lib/workflow/templates/timer_settings.include.html:26
+msgid "hours"
+msgstr "часов"
+
+#: /wa-apps/helpdesk/templates/actions/faq/FaqCategory.html:75
+msgid "All sites"
+msgstr "Все сайты"
+
+#: /wa-apps/helpdesk/templates/actions/faq/FaqCategory.html:81
+msgid "Only selected sites"
+msgstr "Только выбранные сайты"
+
+#: /wa-apps/helpdesk/templates/actions/faq/FaqCategory.html:58
+msgid "Helpdesk app is not settled on any site. Use %s app to manage settlements."
+msgstr "Приложение «Поддержка» не поселено ни на одном сайте. Используйте приложение %s для настройки поселений."
+
+#: /wa-apps/helpdesk/templates/actions/faq/FaqCategory.html:101
+msgid "Shown above are only sites where Helpdesk app is settled. Use %s app to manage settlements."
+msgstr "Показаны только те сайты, на которых поселено приложение «Поддержка». Используйте приложение %s для настройки поселений."
+
+#: /wa-apps/helpdesk/lib/actions/faq/helpdeskFaqCategorySave.controller.php:19
+#: /wa-apps/helpdesk/lib/actions/faq/helpdeskFaqSave.controller.php:20
+msgid "Category URL may contain only letters, digits, and hyphens"
+msgstr "URL категории может содержать только латинские буквы, цифры и дефисы"

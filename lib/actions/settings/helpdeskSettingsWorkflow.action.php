@@ -6,6 +6,8 @@ class helpdeskSettingsWorkflowAction extends helpdeskViewAction
 {
     public function execute()
     {
+        $this->getConfig()->updateCliEnvHelpdeskBackendUrl();
+
         // only allowed to admin
         if ($this->getRights('backend') <= 1) {
             throw new waRightsException(_w('Access denied.'));
@@ -142,8 +144,13 @@ class helpdeskSettingsWorkflowAction extends helpdeskViewAction
             'states' => array(),
             'color' => $action->getOption('user_button_border_color'),
             'user_button_css_class' => $action->getOption('user_button_css_class'),
-            'workflow_id' => $action->getWorkflow()->getId(),
+            'workflow_id' => $action->getWorkflow()->getId()
         );
+
+        if ($action instanceof helpdeskWorkflowActionAutoInterface) {
+            $action_data['auto'] = 1;
+            $action_data['timeout'] = $action->getTimeout();
+        }
 
         // States this action can possibly transit to
         foreach($action->getWorkflow()->getTransition($action) as $t) {

@@ -102,11 +102,16 @@ class helpdeskEditorNewactionAction extends helpdeskViewAction
         }
 
         $actions = array();
-        $cfg = helpdeskWorkflow::getWorkflowsConfig();
-        foreach(array_diff_key(ifempty($cfg['workflows'][$workflow_id]['actions'], array()), $wf->getActions($state_id)) as $id => $a) {
+        foreach(array_diff_key($wf->getAllActions(), $wf->getActions($state_id)) as $id => $a) {
             $actions[$id] = $wf->getActionById($id)->getName();
         }
 
+        $auto_action_already_exists = false;
+        if ($wf->getAutoActions($state_id)) {
+            $auto_action_already_exists = true;
+        }
+
+        $this->view->assign('auto_action_already_exists', $auto_action_already_exists);
         $this->view->assign('wf', $wf);
         $this->view->assign('data', $data);
         $this->view->assign('errors', $errors);

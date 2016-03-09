@@ -235,6 +235,35 @@ abstract class helpdeskSourceType
     {
         return helpdeskHelper::getPluginByClass(get_class($this));
     }
+
+    /**
+     * @return bool
+     */
+    public static function cronSourceTypesExist()
+    {
+        try {
+            $sm = new helpdeskSourceModel();
+            foreach ($sm->getAll(true) as $source_id => $source) {
+                if ($source['status'] <= 0) {
+                    continue;
+                }
+                try {
+                    $s = helpdeskSource::get($source);
+                    $st = $s->getSourceType();
+                } catch (Exception $e) {
+                    continue;
+                }
+
+                if ($st instanceof helpdeskCronSTInterface) {
+                    return true;
+                }
+            }
+        } catch (Exception $e) {
+            return false;
+        }
+
+        return false;
+    }
 }
 
 interface helpdeskCronSTInterface

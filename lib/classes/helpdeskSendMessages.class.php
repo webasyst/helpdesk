@@ -25,8 +25,16 @@ class helpdeskSendMessages
                 continue;
             }
 
-            $client = $request->getClient();
-            $client_emails_map = $client->exists() ? array_fill_keys($client->get('email', 'value'), true) : array();
+            $client_emails_map = array();
+
+            try {
+                $client = $request->getClient();
+                if ($client->exists()) {
+                    $client_emails_map = array_fill_keys($client->get('email', 'value'), true);
+                }
+            } catch (waException $e) {
+                // noting to do
+            }
 
             // Email vars (locale dependent)
             $email_vars = array();
@@ -363,21 +371,34 @@ class helpdeskSendMessages
             }
         }
 
+        $actor_name = '';
+        /**
+         * @var waContact|null $actor_contact
+         */
+        $actor_contact = null;
+        if ($log->actor_contact_id > 0) {
+            $actor_contact = new waContact($log->actor_contact_id);
+            if (!$actor_contact->exists()) {
+                $actor_contact = null;
+                $actor_name = _w('Unknown contact');
+            }
+        } else {
+            $actor_contact = wa()->getUser();
+            $actor_name = $actor_contact->getName();
+        }
+
         $action_name = !empty($log->action_name) ? _w($log->action_name) : _w('creates request');
         if ($log) {
             try {
                 $wf = $request->getWorkflow();
                 $action = $wf->getActionById($log['action_id']);
                 $action_name = htmlspecialchars($action->getName());
+                if ($action instanceof helpdeskWorkflowActionAutoInterface) {
+                    $action_name = $action->getActorName();
+                }
             } catch (Exception $e) {
                 $action_name = helpdeskRequest::getSpecialActionName($log['action_id']);
             }
-        }
-        if (!empty($log->actor_contact_id)) {
-            $c = new waContact($log->actor_contact_id);
-            $actor_name = $c->getName();
-        } else {
-            $actor_name = wa()->getUser()->getName();
         }
 
         // Template variables
@@ -397,7 +418,7 @@ class helpdeskSendMessages
             '{COMPANY_NAME}' => wa()->accountName(),
             '{ACTION_NAME}' => $action_name
         );
-        $vars += self::getActorVars();
+        $vars += self::getActorVars($actor_contact);
         $vars += self::getCustomerVars($request);
         $vars += self::getAssigneeVars($assigned_contact_id);
         $vars += self::getLocaleStringVars();
@@ -440,9 +461,13 @@ class helpdeskSendMessages
     }
 
     /** Helper for getMessageVars(). Returns {ACTOR_*} vars from waContact. */
-    public static function getActorVars()
+    public static function getActorVars(waContact $contact = null)
     {
-        return self::getContactVars('ACTOR_', wa()->getUser());
+        if ($contact instanceof waContact) {
+            return self::getContactVars('ACTOR_', wa()->getUser());
+        } else {
+            return array();
+        }
     }
 
     /** Helper for getMessageVars(). Returns {CUSTOMER_*} vars from waContact. */
@@ -533,7 +558,13 @@ class helpdeskSendMessages
         $messages_queue->sendAll();
     }
 
-    public static function getMessageVarsDescriptions($workflow_id = null)
+    public static function isQueueIsEmpty()
+    {
+        $messages_queue = new helpdeskMessagesQueueModel();
+        return $messages_queue->countAll() <= 0;
+    }
+
+    public static function getMessageVarsDescriptions()
     {
         return helpdeskHelper::getVars(array(
             '{REQUEST_ID}',
@@ -555,26 +586,6 @@ class helpdeskSendMessages
             '{COMPANY_NAME}',
         )) + helpdeskRequestFields::getFieldsVars()
                 + helpdeskHelper::getContactFieldsVars();
-    }
-
-    /**
-     * Helper for settingsPrepareView()
-     */
-    public static function getDefaulttextVarsDescriptions()
-    {
-        return helpdeskHelper::getVars(array(
-            '{REQUEST_ID}',
-            '{REQUEST_SUBJECT}',
-            '{REQUEST_SUBJECT_WITH_ID}',
-            '{REQUEST_TEXT}',
-            '{REQUEST_BACKEND_URL}',
-            '{REQUEST_CUSTOMER_PORTAL_URL}',
-            '{REQUEST_CUSTOMER_CONTACT_ID}',
-            '{REQUEST_CUSTOMER_EMAIL}',
-            '{CUSTOMER_NAME}',
-            '{ACTOR_NAME}',
-            '{COMPANY_NAME}',
-        )) + helpdeskRequestFields::getFieldsVars() + helpdeskHelper::getContactFieldsVars();
     }
 
 }

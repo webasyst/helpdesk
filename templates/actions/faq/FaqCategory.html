@@ -1,4 +1,4 @@
-<div class="block not-padded" {if $category.id > 0 && empty($category.questions)}style="background: #eee;"{/if}>
+<div class="block not-padded " {if $category.id > 0 && empty($category.questions)}style="background: #eee;"{/if}>
     <div class="block h-header-block h-h1-inline h-category-name-block">
 
         <h1 class="h-category-name">
@@ -7,8 +7,11 @@
                 {$category.draft_html}
                 {$category.backend_only_html}
                 {$category.site_only_html}
+                {$category.backend_and_site_html}
             {/if}
         </h1>
+
+        {$site_link = '<a href="'|cat:$site_url:'#/routing/" target="_blank" style="display:inline;">':_w('Site'):'</a>'}
 
 
         <i class="icon16 loading h-header-loading" style="display:none;" {if !$category.id}data-ignore="1"{/if}></i>
@@ -46,12 +49,74 @@
                     </div>
                     <div class="value">
                         <label>
-                            <input type="checkbox" name="is_public" value="1" {if $category.is_public}checked="checked"{/if}>
+                            <input type="checkbox" name="is_public" value="1" {if !$category.routes}disabled="disabled"{/if}
+                                {if $category.is_public}checked="checked"{/if}>
                             [`Site`]<br/>
-                            <span class="hint">[`Category is visible in the public part of your site`]</span>
+                            <span class="hint">
+                                {if $category.routes}
+                                    [`Category is visible in the public part of your site`]
+                                {else}
+                                    {strip}
+                                        {* [`Helpdesk app is not settled on any site. Use %s app to manage settlements.`] *}
+                                        {sprintf(_w('Helpdesk app is not settled on any site. Use %s app to manage settlements.'), $site_link)}
+                                    {/strip}
+                                {/if}
+                            </span>
                         </label>
                     </div>
                 </div>
+
+                {if $category.routes}
+                    <div class="field h-sites-choose-block">
+                        <div class="name"></div>
+                        <div class="value">
+                            <ul class="menu-v">
+                                <li>
+                                    <label>
+                                        <input type="radio" name="routes_all" value="1" {if $category.routes_all}checked="checked"{/if}>
+                                        <span>[`All sites`]</span>
+                                    </label>
+                                </li>
+                                <li>
+                                    <label>
+                                        <input type="radio" name="routes_all" value="" {if !$category.routes_all}checked="checked"{/if}>
+                                        <span>[`Only selected sites`]</span>
+                                        <div class="h-routes-list-block {if $category.routes_all}hidden{/if}">
+                                            <ul class="menu-v">
+                                                {foreach $category.routes as $route}
+                                                    <li class="h-route-item">
+                                                        <label>
+                                                            <input type="checkbox" name="routes[]" value="{$route.route}" {if $route.checked}checked="checked"{/if}>
+                                                            <span>{$route.route}</span>
+                                                            {if $route.url}
+                                                                <a class="h-preview-link {if !empty($route.route.url_type)}h-disabled{/if}"
+                                                                   target="_blank" href="{$route.url}"
+                                                                   {if !$route.checked  || $category.id <= 0}style="display: none;"{/if}>
+                                                                    <i class="icon10 new-window"></i>
+                                                                </a>
+                                                            {/if}
+                                                        </label>
+                                                    </li>
+                                                {/foreach}
+                                            </ul>
+                                            {if !$all_settled}
+                                                <span class="hint" style="">
+                                                    {* [`Shown above are only sites where Helpdesk app is settled. Use %s app to manage settlements.`] *}
+                                                    {strip}
+                                                        {sprintf(
+                                                            _w('Shown above are only sites where Helpdesk app is settled. Use %s app to manage settlements.'),
+                                                            $site_link
+                                                        )}
+                                                    {/strip}
+                                                <span>
+                                            {/if}
+                                        </label>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                {/if}
 
                 <div class="field h-frontend-url" {if !$category.is_public}style="display:none;"{/if}>
                     <div class="name">
@@ -59,8 +124,7 @@
                     </div>
                     <div class="value">
                         <div>
-                            {$wa->getUrl('/', true)}faq/<input type="text" name="url" value="{$category.url}">/
-                            {if $category.id > 0}<a class="small h-faq-category-url-link" target="_blank" href="{$wa->getUrl('/', true)}faq/{$category.url|default:''}/">[`Preview`] <i class="icon10 new-window" style="margin-top: 7px;"></i></a>{/if}
+                            http://site.address/<input type="text" name="url" value="{$category.url}">/
                         </div>
                     </div>
                 </div>
@@ -112,6 +176,7 @@
                             {$q.draft_html}
                             {$q.backend_only_html}
                             {$q.site_only_html}
+                            {$q.backend_and_site_html}
                         {/strip}</a>
                         <div class="h-answer hidden">{$q.answer}</div>
                         <input type="hidden" class="h-is_public" value="{$q.is_public}">
@@ -339,11 +404,38 @@
             if ($(this).is(':checked')) {
                 $('.h-frontend-url', form).slideDown();
                 $('.h-view', form).slideDown();
+                $('.h-sites-choose-block').slideDown();
             } else {
                 $('.h-frontend-url').slideUp();
                 $('.h-view', form).slideUp();
+                $('.h-sites-choose-block').slideUp();
             }
             $('input[name="name"]', form).trigger('keydown'); // for translit
+        }).change();
+
+        // routes block
+        $(':radio[name="routes_all"]', form).change(function() {
+            if ($(this).val()) {
+                $('.h-routes-list-block').slideUp();
+            } else {
+                $('.h-routes-list-block').slideDown();
+            }
+        });
+
+
+        $(':checkbox[name="routes[]"]', form).change(function() {
+            var item = $(this);
+            var link = item.closest('.h-route-item').find('.h-preview-link');
+            if (item.is(':checked')) {
+                link.show();
+            } else {
+                link.hide();
+            }
+        });
+
+        // disabled preview link reaction
+        $('.h-preview-link', form).click(function(e) {
+            $(this).hasClass('h-disabled') && e.preventDefault();
         });
 
         $('input:checkbox, input:radio', form).change(function() {
@@ -355,6 +447,7 @@
         });
         $.helpdesk_faq.onChangeInput($('input[name="url"]', form), function() {
             $.helpdesk_faq.changeButton(button);
+            $(':checkbox[name="routes[]"]').closest('.h-route-item').find('.h-preview-link').addClass('h-disabled');
         });
 
         $.helpdesk_faq.translitInput(

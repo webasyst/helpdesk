@@ -121,32 +121,100 @@ class helpdeskWorkflowBasicAction extends helpdeskWorkflowAction
     }
 
     /**
+     * Use careful, this method save workflows config in file immediately
+     * @param $opt
+     * @param $value
+     * @return helpdeskWorkflowBasicAction $this
+     * @throws waException
+     */
+    public function setOption($opt, $value)
+    {
+        if (array_key_exists($this->options, $opt) && $this->options[$opt] === $value) {
+            // option isn't changed
+            return $this;
+        }
+
+        $this->options[$opt] = $value;
+        $cfg = helpdeskWorkflow::getWorkflowsConfig();
+        $wf = $this->getWorkflow();
+        $wf_id = $wf->getId();
+        $cfg['workflows'][$wf_id]['actions'][$this->getId()]['options'][$opt] = $value;
+        helpdeskWorkflow::saveWorkflowsConfig($cfg);
+        return $this;
+    }
+
+    /**
+     * Use careful, this method save workflows config in file immediately
+     * @param $options string key => value
+     * @return $this
+     * @throws waException
+     */
+    public function setOptions($options)
+    {
+        $cfg = helpdeskWorkflow::getWorkflowsConfig();
+        $wf = $this->getWorkflow();
+        $wf_id = $wf->getId();
+
+        $changed = false;
+        foreach ($options as $key => $value) {
+            if (array_key_exists($this->options, $key) && $this->options[$key] === $value) {
+                continue;
+            }
+            $changed = true;
+            $this->options[$key] = $value;
+            $cfg['workflows'][$wf_id]['actions'][$this->getId()]['options'][$key] = $value;
+        }
+
+        if ($changed) {
+            helpdeskWorkflow::saveWorkflowsConfig($cfg);
+        }
+        return $this;
+    }
+
+    /**
      * Helper for settingsController()
      * Save data from POST to workflow config when validation is already passed.
      */
     protected function settingsSave()
     {
+        $cfg = $this->settingsSavePrepareConfig();
+        helpdeskWorkflow::saveWorkflowsConfig($cfg);
+    }
+
+    /**
+     * Prepare data from POST before actually save workflow config when validation is already passed.
+     * @return array
+     */
+    protected function settingsSavePrepareConfig()
+    {
         $cfg = helpdeskWorkflow::getWorkflowsConfig();
+
+        $wf = $this->getWorkflow();
+        $wf_id = $wf->getId();
 
         // Save action data to config
         $just_created = false;
         if (!strlen($this->getId())) {
             $just_created = true;
             $this->id = waRequest::post('action_new_id', uniqid('a'), 'string');
-            $cfg['workflows'][$this->getWorkflow()->getId()]['actions'][$this->getId()] = array();
+            $cfg['workflows'][$wf_id]['actions'][$this->getId()] = array();
         }
-        $cfg['workflows'][$this->getWorkflow()->getId()]['actions'][$this->getId()]['options'] = $this->getOptionsSettingsFromPost();
-        $cfg['workflows'][$this->getWorkflow()->getId()]['actions'][$this->getId()]['transition'] = $this->getTransitionSettingsFromPost();
-        $cfg['workflows'][$this->getWorkflow()->getId()]['actions'][$this->getId()]['classname'] = get_class($this);
+
+        $options = $this->getOptionsSettingsFromPost();
+
+        $cfg['workflows'][$wf_id]['actions'][$this->getId()]['options'] = $options;
+        $cfg['workflows'][$wf_id]['actions'][$this->getId()]['transition'] = $this->getTransitionSettingsFromPost();
+        $cfg['workflows'][$wf_id]['actions'][$this->getId()]['classname'] = get_class($this);
 
         // Add this action to state, if action has just been created
         if ($just_created) {
             $state_id = waRequest::request('state_id', '', 'string');
-            $cfg['workflows'][$this->getWorkflow()->getId()]['states'][$state_id]['available_actions'][] = $this->getId();
-            $cfg['workflows'][$this->getWorkflow()->getId()]['states'][$state_id]['available_actions'] = array_values(array_unique($cfg['workflows'][$this->getWorkflow()->getId()]['states'][$state_id]['available_actions']));
+            $cfg['workflows'][$wf_id]['states'][$state_id]['available_actions'][] = $this->getId();
+            $cfg['workflows'][$wf_id]['states'][$state_id]['available_actions'] =
+                array_values(array_unique($cfg['workflows'][$wf_id]['states'][$state_id]['available_actions']));
         }
 
-        helpdeskWorkflow::saveWorkflowsConfig($cfg);
+        return $cfg;
     }
 
     /**
@@ -165,6 +233,7 @@ class helpdeskWorkflowBasicAction extends helpdeskWorkflowAction
 
     /**
      * Helper for settingsSave()
+     * @return array
      */
     protected function getOptionsSettingsFromPost()
     {
@@ -334,13 +403,42 @@ class helpdeskWorkflowBasicAction extends helpdeskWorkflowAction
             'options' => $options,
             'transition' => $transition,
             'submit_errors' => $submit_errors,
-            'message_vars' => helpdeskHelper::categorizeVars(helpdeskSendMessages::getMessageVarsDescriptions($workflow_id)),
-            'oneclick_feedback_fields' => helpdeskWorkflow::getOneClickFeedbackFields(true),
-            'default_text_vars' => helpdeskHelper::categorizeVars(helpdeskSendMessages::getDefaulttextVarsDescriptions()),
+            'message_vars' => $this->getMessageVars(),
             'request_fields' => helpdeskRequestFields::getFields(),
             'allowed_fields_order' => $order_fields[0],
-            'unallowed_fields_order' => $order_fields[1]
+            'unallowed_fields_order' => $order_fields[1],
+            'oneclick_feedback_fields' => helpdeskWorkflow::getOneClickFeedbackFields(true)
         ));
+    }
+
+    /**
+     * Message vars of this action
+     *
+     * @param bool $plain
+     * @return array
+     *      If plain is true
+     *          [
+     *              string var_id => string var_description,
+     *          ]
+     *      Otherwise
+     *          [
+     *              string category_id =>
+     *                  [
+     *                      'name' => string name_of_category
+     *                      'vars' =>
+     *                          [
+     *                              string var_id => string var_description
+     *                          ]
+     *                  ]
+     *          ]
+     */
+    public function getMessageVars($plain = false)
+    {
+        $vars = helpdeskSendMessages::getMessageVarsDescriptions();
+        if (!$plain) {
+            $vars = helpdeskHelper::categorizeVars($vars);
+        }
+        return $vars;
     }
 
     /*
@@ -421,6 +519,7 @@ class helpdeskWorkflowBasicAction extends helpdeskWorkflowAction
                 $with_form = true;
             }
         }
+
         if (!$with_form) {
             return null;
         }
@@ -688,6 +787,8 @@ class helpdeskWorkflowBasicAction extends helpdeskWorkflowAction
         }
         $sender = new helpdeskSendMessages();
 
+        $actor = wa()->getUser();
+
         $r_info = $request->getInfo();
         $vars = array_map('htmlspecialchars', array(
             '{REQUEST_ID}' => $request->id,
@@ -699,12 +800,13 @@ class helpdeskWorkflowBasicAction extends helpdeskWorkflowAction
             '{REQUEST_CUSTOMER_CONTACT_ID}' => $request->client_contact_id,
             '{REQUEST_CUSTOMER_EMAIL}' => $client_email,
             '{CUSTOMER_NAME}' => $client_name,
-            '{ACTOR_NAME}' => wa()->getUser()->getName(),
+            '{ACTOR_NAME}' => $actor->getName(),
             '{COMPANY_NAME}' => wa()->accountName(),
-        ) + $sender->getActorVars($request)) + $sender->getCustomerVars($request);
+        ) + $sender->getActorVars($actor)) + $sender->getCustomerVars($request);
         $vars += array(
             '{REQUEST_TEXT}' => $r_info['text'],
         );
+
 
         $textarea_default_text = helpdeskHelper::substituteVars($vars, $this->getOption('textarea_default_text'), false);
         if (wa()->getEnv() != 'frontend') {
@@ -1121,4 +1223,13 @@ class helpdeskWorkflowBasicAction extends helpdeskWorkflowAction
         }
         return parent::getOption($opt, $default);
     }
+
+    public function getButton()
+    {
+        if ($this->getOption('type') === 'auto') {
+            return null;
+        }
+        return parent::getButton();
+    }
+
 }

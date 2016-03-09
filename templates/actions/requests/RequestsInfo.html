@@ -455,7 +455,11 @@
     </div>
 {/if}
 
-<script>(function() { "use strict";
+<script>
+
+    (function() { "use strict";
+
+
 
     // Helper to tell if current page has been changed.
     // $.wa.helpdesk_controller.random is changed every page load by .loadHTML() and .loadGrid()
@@ -464,91 +468,200 @@
         return wa_controller_page_random != $.wa.helpdesk_controller.random;
     }
 
-    // 'Back to', 'prev' and 'next' links
-    (function() {
+    if ($.wa.helpdesk_controller.lastView) {
+        var hblock = $('.hd-last-view').closest('.block').show();
+        hblock.data('left', hblock.offset().left);
+    }
 
-        var fixRequestHeader = function(block, top_offset_wrapper, top_offset_block) {
-            var width = $('#h-request-top-block').width();
-            var height = block.height();
-            top_offset_wrapper = typeof top_offset_wrapper === 'undefined' ? 0 : top_offset_wrapper;
-            top_offset_block = typeof top_offset_block === 'undefined' ? 0 : top_offset_block;
-            block.wrap('<div class="h-tmp-wrap"></div>');
-            var wrapper = block.parent();
-            var offset = wrapper.offset();
-            wrapper.css({
-                position: 'fixed',
-                top: top_offset_wrapper,
-                width: width - 16,
-                left: offset.left - 46,
-                paddingLeft: 35,
-                marginTop: top_offset_wrapper,
-                height: height,
-                background: '#f3f3ee',
-                zIndex: 101
-            });
-            wrapper.addClass('shadowed');
-            block.css({
-                position: 'fixed',
-                top: top_offset_block
-            });
-            var status_block = $('#h-request-status-block-wrapper');
-            var clone_status_block = status_block.clone();
-            clone_status_block.attr('id', 'h-request-status-block-wrapper-clone');
-            status_block.after(clone_status_block);
-            status_block.css({
-                position: 'fixed',
-                top: top_offset_block,
-                right: 41,
-                width: '200px',
-                maxWidth: '400px',
-                background: '#f3f3ee',
-                height: height
-            }).find('.h-request-right-field').hide();
-            wrapper.append(status_block);
+    $('#h-contact-info').data('left', $('#h-request-top-block').offset().left);
 
-            $('#h-contact-info').after('<div id="h-contact-info-dummy"></div>');
-            wrapper.prepend($('#h-contact-info'));
-            $('#h-contact-info').css({
-                marginLeft: '-45px'
-            });
+    var makeFixableRequestHeader = function() {
 
-            $(window).bind('resize.fix_request_header', function() {
-                wrapper.css({
-                    width: $('#h-request-top-block').width() - 16
-                });
-            });
-        };
+        if ($.wa.helpdesk_controller.lastView) {
+            var hblock = $('.hd-last-view').closest('.block');
+            hblock.fixedBlock()
+                .bind('fixed', function() {
+                    var self = $(this);
+                    var width = self.width();
+                    self.css({
+                        top: 0,
+                        background: 'white',
+                        zIndex: 101,
+                        height: 28,
+                        left: hblock.data('left') - 10,
+                        width: width,
+                        padding: '10px 20px'
+                    });
+                    var block = $('#h-request-top-block .request-header');
+                    fixRequestHeader(24, 50);
+                    var wrapper = block.parent();
+                    wrapper.css({
+                        paddingLeft: 30,
+                        width: wrapper.width() + 5
+                    });
 
-        var unfixRequestHeader = function(block) {
-            if (block.parent().hasClass('h-tmp-wrap')) {
-                $('#h-contact-info-dummy').replaceWith($('#h-contact-info'));
-                $('#h-contact-info').css({
-                    marginLeft: ''
-                });
-                $('#h-request-status-block-wrapper-clone').replaceWith(
-                    $('#h-request-status-block-wrapper').css({
-                        position: '',
+                    $(window).unbind('.fix_request_header').bind('resize.fix_request_header', function() {
+                        var width = $('#h-request-top-block').width();
+                        wrapper.css({
+                            width: width - 11
+                        });
+                        self.css({
+                            width: width - 20
+                        })
+                    });
+
+                })
+                .bind('unfixed', function() {
+                    unfixRequestHeader();
+                    var self = $(this);
+                    self.css({
                         top: '',
-                        right: '',
-                        width: '',
-                        maxWidth: '',
                         background: '',
-                        height: ''
-                    }).find('.h-request-right-field').show().end());
-                block.unwrap();
-                block.css({
+                        zIndex: '',
+                        width: '',
+                        left: '',
+                        padding: ''
+                    });
+                });
+        } else {
+
+            $('#h-request-top-block .request-header').fixedBlock( { css: { top: 0 } } )
+                    .bind('fixed', function () {
+                        fixRequestHeader();
+                    })
+                    .bind('unfixed', function () {
+                        unfixRequestHeader();
+                    });
+        }
+    };
+
+    var unmakeFixableRequestHeader = function() {
+        if ($.wa.helpdesk_controller.lastView) {
+            var hblock = $('.hd-last-view').closest('.block');
+            hblock.fixedBlock('destroy');
+        } else {
+            $('#h-request-top-block .request-header').fixedBlock('destroy');
+        }
+    };
+
+    var makeFixableContactInfo = function() {
+        $('#h-contact-info').fixedBlock({
+                css: {
+                    top: 0,
+                    margin: 0,
+                    left: $('#h-contact-info').data('left') - 20,
+                    right: 0
+                }
+            })
+            .bind('unfixed', function() {
+                $(this).css({
+                    margin: ''
+                });
+            });
+    };
+
+    var unmakeFixableContactInfo = function() {
+        $('#h-contact-info').fixedBlock('destroy');
+    };
+
+    var fixRequestHeader = function(top_offset_wrapper, top_offset_block) {
+
+        // header for fixing
+        var header = $('#h-request-top-block .request-header');
+        if (header.parent().hasClass('h-tmp-wrap')) {
+            return;
+        }
+
+        // some offsets
+        top_offset_wrapper = top_offset_wrapper || 0;
+        top_offset_block = top_offset_block || 0;
+
+        // width, cause we will stretch header to width of top-block
+        var width = $('#h-request-top-block').width();
+        // height of header
+        var height = header.height();
+
+        // wrapper of header, we will work with it not with header, for easy reset (unfix) and
+        // for compose with status block (see below)
+        header.wrap('<div class="h-tmp-wrap"></div>');
+
+        var wrapper = header.parent();
+        var offset = wrapper.offset();
+        wrapper.css({
+            position: 'fixed',
+            top: top_offset_wrapper,
+            width: width - 16,
+            left: offset.left - 46,
+            paddingLeft: 35,
+            marginTop: top_offset_wrapper,
+            height: height,
+            background: '#f3f3ee',
+            zIndex: 101
+        });
+        wrapper.addClass('shadowed');
+        header.css({
+            position: 'fixed',
+            top: top_offset_block
+        });
+
+        // status block on the left, its content inserted to wrapper
+        var status_block = $('#h-request-status-block-wrapper');
+        var clone_status_block = status_block.clone();
+        clone_status_block.attr('id', 'h-request-status-block-wrapper-clone');
+        status_block.after(clone_status_block);
+        status_block.css({
+            position: 'fixed',
+            top: top_offset_block,
+            right: 41,
+            width: '200px',
+            maxWidth: '400px',
+            background: '#f3f3ee',
+            height: height
+        }).find('.h-request-right-field').hide();
+        wrapper.append(status_block);
+
+        $(window).bind('resize.fix_request_header', function() {
+            wrapper.css({
+                width: $('#h-request-top-block').width() - 16
+            });
+        });
+    };
+
+    var unfixRequestHeader = function() {
+        // that header
+        var header = $('#h-request-top-block .request-header');
+        if (header.parent().hasClass('h-tmp-wrap')) {
+            $('#h-request-status-block-wrapper-clone').replaceWith(
+                $('#h-request-status-block-wrapper').css({
                     position: '',
                     top: '',
-                    width: ''
-                });
-            }
-            $(window).unbind('.fix_request_header');
-        };
+                    right: '',
+                    width: '',
+                    maxWidth: '',
+                    background: '',
+                    height: ''
+                }).find('.h-request-right-field').show().end()
+            );
+            header.unwrap();
+            header.css({
+                position: '',
+                top: '',
+                width: ''
+            });
+        }
+        $(window).unbind('.fix_request_header');
+    };
 
-        if($.wa.helpdesk_controller.lastView) {
+    setTimeout(function () {
+        makeFixableRequestHeader();
+    }, 500);
+
+    // 'Back to', 'prev' and 'next' links
+    (function() {
+        if ($.wa.helpdesk_controller.lastView) {
 
             var link = $('.hd-last-view');
-            var hblock = link.closest('.block').show();
+            var hblock = link.closest('.block');
 
             if ($.wa.helpdesk_controller.lastView.title) {
                 link.removeClass('hidden').attr('href', $.wa.helpdesk_controller.lastView.hash || '#/');
@@ -592,62 +705,6 @@
                     });
                 }
             }
-
-            hblock.fixedBlock()
-            .bind('fixed', function() {
-                var self = $(this);
-                var width = self.width();
-                var offset = self.offset();
-                self.css({
-                    top: 0,
-                    background: 'white',
-                    zIndex: 101,
-                    height: 28,
-                    left: offset.left - 10,
-                    width: width,
-                    padding: '10px 20px'
-                });
-                var block = $('#h-request-top-block .request-header');
-                fixRequestHeader(block, 24, 50);
-                var wrapper = block.parent();
-                wrapper.css({
-                    paddingLeft: 30,
-                    width: wrapper.width() + 5
-                });
-
-                $(window).unbind('.fix_request_header').bind('resize.fix_request_header', function() {
-                    var width = $('#h-request-top-block').width();
-                    wrapper.css({
-                        width: width - 11
-                    });
-                    self.css({
-                        width: width - 20
-                    })
-                });
-
-            })
-            .bind('unfixed', function() {
-                unfixRequestHeader($('#h-request-top-block .request-header'));
-                var self = $(this);
-                self.css({
-                    top: '',
-                    background: '',
-                    zIndex: '',
-                    left: '',
-                    width: '',
-                    padding: ''
-                });
-            });
-
-        } else {
-            $('#h-request-top-block .request-header').fixedBlock({
-                css: { top: 0 }
-            })
-            .bind('fixed', function() {
-                fixRequestHeader($(this));
-            }).bind('unfixed', function() {
-                unfixRequestHeader($(this));
-            });
         }
     })();
 
@@ -882,8 +939,7 @@
             $loading = $('<i class="icon16 loading" style="margin: 0 5px;"></i>'),
             $details_contact_name = $('.request-header .profile .details a[data-contact-id]'),
             $contact_tabs = $('.request-header .profile .contact-tabs'),
-            $details = $('.request-header .profile .details'),
-            contact_info_visible = false;
+            $details = $('.request-header .profile .details');
 
         // Hide contact info block when user clicks on a 'close' link
         $contact_container.on('click', '.killer', function() {
@@ -898,84 +954,78 @@
                 tab_id = $this.data('tab-id'),
                 contact_id = $this.data('contact-id');
 
-            if (contact_info_visible) {
+            if ($contact_container.is(':not(:hidden)')) {
                 hideContactInfo(contact_id);
-            } else {
-                $this.after($loading);
-                $.get('{$wa_backend_url}contacts/?module=contacts&action=info', {
-                        id: contact_id,
-                        no_backlink: 1,
-                        no_switchtab: 1,
-                        standalone: 1,
-                        no_update_title: 1,
-                        no_delete: 1,
-                        tab: tab_id || ''
-                    },
-                    function(html) {
-                        $contact_container.html(
-                            '<a class="killer" href="javascript:void(0);">' +
-                                '<i class="icon16 close"></i>' +
-                            '</a>'
-                        );
-                        $contact_container.off('click', '.killer').on('click', '.killer', function() {
-                            hideContactInfo(contact_id);
-                        });
-                        $contact_container.append(html);
-
-                        var tab_height = $('#tc-contact').height();
-                        $("#h-contact-info .tab-contents-wrapper .tab-content").each(function() {
-                            $(this).height(tab_height);
-                        });
-
-                        $('#h-contact-info  #contact-fullname .name').css({
-                            display: 'inline'
-                        }).wrap('<a href="{$wa_backend_url}contacts/#/contact/' + contact_id  + '/"></a>');
-
-                        showContactInfo();
-                    }
-                );
+                return;
             }
+
+            $this.after($loading);
+            $.get('{$wa_backend_url}contacts/?module=contacts&action=info', {
+                    id: contact_id,
+                    no_backlink: 1,
+                    no_switchtab: 1,
+                    standalone: 1,
+                    no_update_title: 1,
+                    no_delete: 1,
+                    tab: tab_id || ''
+                },
+                function(html) {
+                    $contact_container.html(
+                            '<a class="killer" href="javascript:void(0);">' +
+                            '<i class="icon16 close"></i>' +
+                            '</a>'
+                    );
+                    $contact_container.off('click', '.killer').on('click', '.killer', function() {
+                        hideContactInfo(contact_id);
+                    });
+                    $contact_container.append(html);
+
+                    showContactInfo(contact_id);
+                }
+            );
 
             return false;
         });
 
-        function showContactInfo() {
-            var delay = 400;
+        function showContactInfo(contact_id) {
+            var delay = 500;
             $image.fadeOut(delay);
             $details_contact_name.fadeOut(delay);
             $contact_tabs.fadeOut(delay);
-            contact_info_visible = true;
 
-            setTimeout(function() {
-                $contact_container.css({
-                    position: 'absolute',
-                    right: '20px',
-                    left: '20px'
-                }).slideDown(delay, function() {
-                    $contact_container.css({
-                        position: 'relative',
-                        right: 0,
-                        left: 0
-                    });
-                    $details.css({
-                        marginLeft: 0
-                    });
-                    $loading.remove();
-                    $(window).bind('keydown.helpdesk-contact-info', function(e) {
-                        if (e.keyCode == 27) {    // Ecs
-                            hideContactInfo();
-                        }
-                    });
+            $contact_container.find('#contact-fullname .name').css({ display: 'inline'}).wrap(
+                '<a href="{$wa_backend_url}contacts/#/contact/' + contact_id  + '/"></a>'
+            );
+
+            $contact_container.css({
+                position: 'relative',
+                left: 0,
+                right: 0
+            }).slideDown(delay, function() {
+                $loading.remove();
+
+                // there some bugs without set-timeout.
+                // It is javascript indeed, so relax
+                setTimeout(function () {
+                    unmakeFixableRequestHeader();
+                    setTimeout(function() {
+                        makeFixableContactInfo();
+                    }, 100);
+                }, 0);
+
+                $(window).bind('keydown.helpdesk-contact-info', function(e) {
+                    if (e.keyCode == 27) {    // Ecs
+                        hideContactInfo();
+                    }
                 });
-            }, 0);
+            });
         }
 
         function hideContactInfo(contact_id) {
-            var delay = 400;
+            var delay = 300;
             $image.fadeIn(delay);
             $details_contact_name.fadeIn(delay);
             $contact_tabs.fadeIn(delay);
-            contact_info_visible = false;
 
             if (contact_id) {
                 $('.contact-tabs').load('?action=contactTabs&id=' + contact_id);
@@ -984,15 +1034,24 @@
             $(window).unbind('keydown.helpdesk-contact-info');
 
             $contact_container.css({
-                position: 'absolute',
-                right: '20px',
-                left: '20px'
-            }).slideUp(delay, function(e){
-                $contact_container.empty();
-                $details.css({
-                    marginLeft: ''
+                    width: '',
+                    margin: ''
+                })
+                .slideUp(delay, function(e){
+                    $contact_container.empty();
+                    $details.css({
+                        marginLeft: ''
+                    });
+
+                    // there some bugs without set-timeout.
+                    // It is javascript indeed, so relax
+                    setTimeout(function () {
+                        unmakeFixableContactInfo();
+                        setTimeout(function () {
+                            makeFixableRequestHeader();
+                        }, 100)
+                    }, 0);
                 });
-            });
         }
     })();
 

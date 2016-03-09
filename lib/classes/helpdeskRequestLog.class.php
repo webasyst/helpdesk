@@ -37,7 +37,7 @@ class helpdeskRequestLog extends helpdeskRecordWithFiles
     /** @return waContact author of this log entry, or null for system actions */
     public function getAuthor()
     {
-        if (!$this['actor_contact_id']) {
+        if ($this['actor_contact_id'] <= 0) {
             return null;
         }
         if (!$this->author) {

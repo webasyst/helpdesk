@@ -46,6 +46,14 @@ return array(
         ),
     ),
 
+    'helpdesk_faq_category_routes' => array(
+        'category_id' => array('int', 11, 'null' => 0),
+        'route' => array('varchar', 255, 'null' => 0),
+        ':keys' => array(
+            'PRIMARY' => array('category_id', 'route')
+        )
+    ),
+
     // sidebar links for list views
     'helpdesk_filter' => array(
         'id' => array('int', 11, 'null' => 0, 'autoincrement' => 1),
@@ -158,7 +166,7 @@ return array(
         'request_id' => array('int', 11, 'null' => 0),
         'datetime' => array('datetime', 'null' => 0),
         'action_id' => array('varchar', 64, 'null' => 0),
-        'actor_contact_id' => array('bigint', 20, 'unsigned' => 1, 'null' => 0),
+        'actor_contact_id' => array('bigint', 20, 'null' => 0),
         'text' => array('mediumtext', 'null' => 0),
         'to' => array('text', 'null' => 0),
         'assigned_contact_id' => array('bigint', 20),

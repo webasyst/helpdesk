@@ -251,7 +251,7 @@ class helpdeskRequestsCollection
             $sql = "SELECT id, datetime, action_id, actor_contact_id FROM helpdesk_request_log WHERE id IN (?)";
             foreach($this->model->query($sql, array(array_keys($last_logs))) as $l) {
                 $last_logs[$l['id']] = $l;
-                if (!empty($l['actor_contact_id'])) {
+                if ($l['actor_contact_id'] > 0) {
                     $contacts[$l['actor_contact_id']] = array();
                 }
             }
@@ -311,7 +311,7 @@ class helpdeskRequestsCollection
                 $row['last_action_id'] = $l['action_id'];
                 $row['last_action_datetime'] = $l['datetime'];
                 $row['actor_contact_id'] = $l['actor_contact_id'];
-                if ($row['actor_contact_id'] && !empty($contacts[$row['actor_contact_id']])) {
+                if ($row['actor_contact_id'] > 0 && !empty($contacts[$row['actor_contact_id']])) {
                     $row['actor_name'] = $contacts[$row['actor_contact_id']]['name'];
                     $row['actor_photo_ts'] = $contacts[$row['actor_contact_id']]['photo'];
                 }

@@ -1740,73 +1740,24 @@ $.wa.helpdesk_controller = {
         }
 
         buttons.append($('<input type="submit" class="button green" id="h-save-action" value="'+save+'">'));
-        var wrapper = $('#h-action-settings');
-        $('#h-action-settings').html('<form>' + html + '</form>');
-        $('#h-action-settings').find('div:first').wrap('<div class="block"></div>');
-        $('#h-action-settings').find('h1.h-action-settings-title').css({
-            minWidth: '200px',
-            whiteSpace: 'nowrap'
-        }).wrap('<div class="block" style="border-top: 1px solid #ccc; border-bottom: 1px solid #ccc;"></div>');
-        $('#h-action-settings').prepend(
-            '<div class="block">' +
-                '<a class="cancel no-underline" href="javascript:void(0);"><i class="icon10 larr"></i> ' +
-                        $_('Back to workflow customizing page') +
-                '</a> <i class="icon16 loading h-header-loading" style="display:none;"></i>' +
-            '</div>'
-        );
+        var wrapper = $('#h-action-settings')
+            .html('<form>' + html + '</form>');
+        wrapper.prepend(
+                '<div class="block">' +
+                    '<a class="cancel no-underline" href="javascript:void(0);"><i class="icon10 larr"></i> ' +
+                            $_('Back to workflow customizing page') +
+                    '</a> <i class="icon16 loading h-header-loading" style="display:none;"></i>' +
+                '</div>'
+            );
 
-        var name_field =
-                $('#h-action-settings .field.h-action-name')
-                    .removeClass('field')
-                    .find('.name').remove()
-                    .end()
-                    .find('.value')
-                    .removeClass('value')
-                    .end();
-        var id_field =
-                $('#h-action-settings .field.h-action-id')
-                    .removeClass('field')
-                    .find('.name').css({
-                        display: 'inline',
-                        marginLeft: '15px'
-                    })
-                    .end()
-                    .find('.value').css({
-                        marginTop: '-30px',
-                        marginLeft: '45px',
-                        marginRight: '20px'
-                    })
-                    .removeClass('value')
-                    .end();
 
-        $('#h-action-settings').find('h1.h-action-settings-title').html('').append(id_field);
-        id_field.css({
-            'float': 'right',
-            width: '400px',
-            fontSize: '0.6em',
-            marginTop: '8px'
-        }).find('input').css({
-            width: '100%'
-        }).end().find('.errormsg').css({
-            fontSize: '0.8em'
-        });
-
-        $('#h-action-settings').find('h1.h-action-settings-title').append(name_field);
-        name_field.css({
-            marginRight: '400px'
-        }).find('input').css({
-            width: '100%'
-        }).end().find('.errormsg').css({
-            fontSize: '0.5em',
-            marginTop: '3px'
-        });
-
-        $('#h-action-settings .cancel').click(function() {
+        $('.cancel', wrapper).click(function() {
             $.wa.helpdesk_controller.redispatch();
         });
         buttons.find(':submit').parent().append('<i class="icon16 loading" style="display:none;"></i>');
+
         var button = buttons.find(':submit');
-        var form = $('#h-action-settings').find('form');
+        var form = $('form', wrapper);
         $.each(serialize_data, function(i, item) {
             var name = item.name;
             var value = item.value;
@@ -1814,7 +1765,8 @@ $.wa.helpdesk_controller = {
             if (el.length) {
                 if (el.is(':checkbox')) {
                     el.attr('checked', true);
-                } else if (el.is(':radio') && el.val() === value) {
+                } else if (el.is(':radio')) {
+                    el = el.filter('[value="' + value + '"]');
                     el.attr('checked', true);
                 } else if (el.is('select')) {
                     el.find('option[value="' + value + '"]').attr('selected', true);

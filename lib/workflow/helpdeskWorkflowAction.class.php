@@ -56,6 +56,7 @@ class helpdeskWorkflowAction extends waWorkflowAction
         $plugin = $this->getPlugin();
         $plugin && waSystem::pushActivePlugin($plugin, 'helpdesk');
 
+        $params = self::typecastParams($params);
         $params = self::prepareParams($params, $this->getId());
 
         // Make sure request log record is created and have an ID before entering execute()
@@ -80,13 +81,18 @@ class helpdeskWorkflowAction extends waWorkflowAction
         }
 
         // Wrapping code for plugins requred for localization
-        $plugin && waSystem::popActivePlugin();
-        helpdeskHelper::logAction('perform_action', null, null, $params['request_log']->actor_contact_id);
+        $plugin && waSystem::popActivePlugin($params);
+        $this->logPerformAction($params);
 
         if ($exception) {
             throw $exception;
         }
         return $result;
+    }
+
+    public function logPerformAction($params)
+    {
+        helpdeskHelper::logAction('perform_action', null, null, $params['request_log']->actor_contact_id);
     }
 
     /**
@@ -110,8 +116,12 @@ class helpdeskWorkflowAction extends waWorkflowAction
         }
     }
 
-    /** $this->run() helper. Builds $params for $this->execute() */
-    public static function prepareParams($params, $action_id)
+    /**
+     * @param array|helpdeskRequest|int $params
+     * @return array
+     * @throws waException
+     */
+    protected static function typecastParams($params)
     {
         // Prepare $params['request'] and $params['request_id'], and run basic sanity checks
         if (!is_array($params)) {
@@ -139,21 +149,31 @@ class helpdeskWorkflowAction extends waWorkflowAction
             throw new waException('Request must be saved for workflow actions to run on them.');
         }
 
-        // Prepare $params['request_log']
         if (empty($params['request_log'])) {
             $params['request_log'] = new helpdeskRequestLog();
         }
+        return $params;
+    }
+
+    /**
+     * @param array|helpdeskRequest|int $params
+     * @param string
+     *
+     * $this->run() helper. Builds $params for $this->execute()
+     */
+    public static function prepareParams($params, $action_id)
+    {
+        $params = self::typecastParams($params);
         foreach(array(
             'request_id' => $params['request_id'],
             'action_id' => $action_id,
             'before_state_id' => $params['request']['state_id'],
-            'actor_contact_id' => wa()->getUser()->getId(),
+            'actor_contact_id' => ifset($params['actor_contact_id'], wa()->getUser()->getId()),
         ) as $k => $v) {
             if (empty($params['request_log'][$k])) {
                 $params['request_log'][$k] = $v;
             }
         }
-
         return $params;
     }
 
@@ -392,6 +412,18 @@ class helpdeskWorkflowAction extends waWorkflowAction
             }
         }
         return $states;
+    }
+
+    /**
+     * @param $options
+     * @return $this
+     */
+    public function setOptions($options)
+    {
+        foreach ($options as $key => $value) {
+            $this->setOption($key, $value);
+        }
+        return $this;
     }
 
 }

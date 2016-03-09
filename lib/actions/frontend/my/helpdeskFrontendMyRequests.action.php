@@ -54,6 +54,11 @@ class helpdeskFrontendMyRequestsAction extends helpdeskFrontendViewAction
         parent::execute();
     }
 
+    public function getFaqCategories()
+    {
+        return array();
+    }
+
     public function getBreadcrumbs()
     {
         $result = parent::getBreadcrumbs();

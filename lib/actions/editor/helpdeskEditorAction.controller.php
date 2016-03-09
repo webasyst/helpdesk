@@ -9,11 +9,38 @@ class helpdeskEditorActionController extends waController
 {
     public function execute()
     {
+        $this->checkRights();
+
+
+        $action = $this->getAction();
+
+        $plugin = $action->getPlugin();
+        $plugin && waSystem::pushActivePlugin($plugin, 'helpdesk');
+        $form_html = $action->settingsController();
+        $plugin && waSystem::popActivePlugin();
+
+        if ($form_html) {
+            echo $form_html;
+        } else {
+            echo '<script>(function() { "use strict"; $("#c-core-content .tab-content:first").html(\'<div class="triple-padded block"><i class="icon16 loading"></i></div>\'); $.wa.helpdesk_controller.redispatch(); $.wa.dialogHide(); })();</script>';
+            $params = array();
+            wa('helpdesk')->event('action_editor', $params);
+        }
+    }
+
+    public function checkRights()
+    {
         // only allowed to admin
         if ($this->getRights('backend') <= 1) {
             throw new waRightsException(_w('Access denied.'));
         }
+    }
 
+    /**
+     * @return helpdeskWorkflowAction
+     */
+    public function getAction()
+    {
         $workflow_id = waRequest::request('wid');
         $wf = helpdeskWorkflow::getWorkflow($workflow_id);
 
@@ -36,15 +63,6 @@ class helpdeskEditorActionController extends waController
             $action = new $action_class('', $wf, array());
         }
 
-        $plugin = $action->getPlugin();
-        $plugin && waSystem::pushActivePlugin($plugin, 'helpdesk');
-        $form_html = $action->settingsController();
-        $plugin && waSystem::popActivePlugin();
-
-        if ($form_html) {
-            echo $form_html;
-        } else {
-            echo '<script>(function() { "use strict"; $("#c-core-content .tab-content:first").html(\'<div class="triple-padded block"><i class="icon16 loading"></i></div>\'); $.wa.helpdesk_controller.redispatch(); $.wa.dialogHide(); })();</script>';
-        }
+        return $action;
     }
 }

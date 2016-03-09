@@ -1,10 +1,56 @@
 (function($) { "use strict";
 
     $.fn.fixedBlock = function(options) {
+
         var block = $(this);
+
+        if (arguments[0] === 'setDummyHeight') {
+            var fixedBlock = block.data('fixedBlock');
+            if (!fixedBlock) {
+                return block;
+            }
+            if (fixedBlock.options.insertDummy) {
+                var dummy = $('#' + fixedBlock.dummy_id);
+                dummy.height(arguments[1]);
+            }
+            return block;
+        }
+
+        if (arguments[0] === 'destroy') {
+            var fixedBlock = block.data('fixedBlock');
+            if (!fixedBlock) {
+                return block;
+            }
+
+            var ns = fixedBlock.ns;
+
+            // unfix
+            block.trigger('unfix.' + ns, [true]);
+
+            // unbind handlers
+            block.unbind('.' + ns);
+            $(window).unbind('.' + ns);
+
+            // clear timer
+            var timer_id = fixedBlock.timer_id;
+            if (timer_id) {
+                clearTimeout(timer_id);
+            }
+
+            // remove dummy
+            var dummy_id = fixedBlock.dummy_id;
+            $('#' + dummy_id).remove();
+
+            // reset data
+            block.data('fixedBlock', null);
+
+            return block;
+        }
+
         if (block.data('fixedBlock')) {
             return block;
         }
+
         var dummy_id = 'fixedBlock' + ('' + Math.random()).slice(2);
         var width = block.width();
         var block_offset = block.offset();
@@ -23,6 +69,7 @@
         var fixed = 0;
 
         var makeFixed = function() {
+
             if (fixed) return;
             var css = $.extend({
                 left: block_offset.left,
@@ -36,7 +83,6 @@
             } else {
                 css.right = block_offset.right;
             }
-
             block.css(css);
             if (options.insertDummy) {
                 insertDummy();
@@ -50,7 +96,7 @@
         var insertDummy = function() {
             var dummy = $('#' + dummy_id).show();
             if (!dummy.length) {
-                dummy = $('<div id="'+dummy_id+'">').css($.extend({
+                dummy = $('<div id="'+dummy_id+'" class="fixedBlock-dummy">').css($.extend({
                     width: width,
                     height: height
                 }, options.dummyCss || {}));
@@ -60,6 +106,7 @@
         var unmakeFixed = function() {
             if (!fixed) return;
             block.css({
+                left: '',
                 position: '',
                 top: '',
                 background: ''
@@ -74,14 +121,16 @@
             $('#' + dummy_id).hide();
         };
 
+        var ns = 'fixedBlock' + ('' + Math.random()).slice(2);
 
-        block.bind('fix', function() {
+        block.bind('fix.' + ns, function() {
             makeFixed();
-        }).bind('unfix', function() {
+        }).bind('unfix.' + ns, function(e, force) {
+            if (force) {
+                fixed = 1;
+            }
             unmakeFixed();
         });
-
-        var ns = 'fixedBlock' + ('' + Math.random()).slice(2);
 
         if (options.automatic) {
             var el_offset = block.offset();
@@ -96,22 +145,22 @@
                 }
             };
             var timer_id = null;
-            $(window).bind('scroll.' + ns, handler).bind('resize.' + ns, handler).mousemove(function() {
-                if (!timer_id) {
-                    timer_id = setTimeout(function() {
-                        handler();
-                        clearTimeout(timer_id);
-                        timer_id = null;
-                    }, 250);
-                }
-            });
+            $(window)
+                .bind('scroll.' + ns, handler)
+                .bind('resize.' + ns, handler);
+            handler();
         }
 
         $(window).bind('resize.' + ns, function() {
             block.trigger('win_resize', [fixed]);
         });
 
-        block.data('fixedBlock', 1);
+        block.data('fixedBlock', {
+            options: options,
+            dummy_id: dummy_id,
+            ns: ns,
+            timer_id: timer_id
+        });
 
         return block;
     };

@@ -28,7 +28,7 @@ class helpdeskHelper
 
 
         // Mark request as read for person who performed an action
-        if (!empty($log->actor_contact_id)) {
+        if ($log->actor_contact_id > 0) {
             $um->read($log->request_id, $log->actor_contact_id);
         }
 
@@ -50,6 +50,8 @@ class helpdeskHelper
     }
 
     /**
+     * @param helpdeskRequest $r
+     * @param helpdeskRequestLog $log
      * Makes sure corresponding pieces of data in helpdeskRequest $r and helpdeskRequestLog $log are in sync:
      * - $r->state_id, $log->after_state_id and $log->before_state_id (also makes sure after_state_id exists)
      * - $log->assigned_contact_id and $r->assigned_contact_id
@@ -1069,6 +1071,9 @@ class helpdeskHelper
                     return '<span class="h-faq-site-only">' . _w('site') . '</span>';
                 case 'backend_only':
                     return '<span class="h-faq-backend-only">' . _w('backend') . '</span>';
+                case 'backend_and_site':
+                    return '<span class="h-faq-backend-only">' . _w('backend') . '</span>' .
+                                '<span>+</span><span class="h-faq-site-only">' . _w('site') . '</span>';
                 default:
                     return '';
             }

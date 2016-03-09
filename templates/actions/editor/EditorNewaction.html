@@ -1,27 +1,53 @@
-{if $actions}
-<h1>[`Add a new action`] <span class="hint" style="font-size:12px;">{sprintf_wp('for state &ldquo;%s&rdquo;', $state->getName())}</span></h1>
+{if $actions || !$auto_action_already_exists}
+    <h1>[`Add a new action`] <span class="hint" style="font-size:12px;">{sprintf_wp('for state &ldquo;%s&rdquo;', $state->getName())}</span></h1>
 
-<form><div class="fix-p">
-    <input type="hidden" name="wid" value="{$wf->getId()}">
-    <input type="hidden" name="state_id" value="{$state->getId()}">
-    <p><label>
-        <input type="radio" name="new_or_existing" value="existing"{if ifempty($data.new_or_existing) != 'new'} checked{/if}>
-        [`Add existing actions from other states, which are not used in the current state:`]
-    </label></p>
-    <ul class="menu-v with-icons" id="action-selector">
-        {foreach $actions as $id => $name}
-            <li><label>
-                <input type="checkbox" name="existing_action_ids[]" value="{$id|escape}"{if in_array($id, ifempty($data.existing_action_ids, array()))} checked{/if}>
-                {$name|escape}
-            </label></li>
-        {/foreach}
-    </ul>
+    <div class="h-action-create-block">
+        <form>
+            <div class="fix-p">
+                <input type="hidden" name="wid" value="{$wf->getId()}">
+                <input type="hidden" name="state_id" value="{$state->getId()}">
 
-    <p><label>
-        <input type="radio" name="new_or_existing" value="new"{if ifempty($data.new_or_existing) == 'new'} checked{/if}>
-        [`Create a new action`]
-    </label></p>
-</div></form>
+                {if $actions}
+                    <p><label>
+                        <input type="radio" name="new_or_existing" value="existing"{if ifempty($data.new_or_existing) != 'new'} checked{/if}>
+                        [`Add existing actions from other states, which are not used in the current state:`]
+                    </label></p>
+
+                    <ul class="menu-v with-icons" id="action-selector">
+                        {foreach $actions as $id => $name}
+                            <li><label>
+                                <input type="checkbox" name="existing_action_ids[]" value="{$id|escape}"{if in_array($id, ifempty($data.existing_action_ids, array()))} checked{/if}>
+                                {$name|escape}
+                            </label></li>
+                        {/foreach}
+                    </ul>
+                {/if}
+
+                <ul class="menu-v h-action-type-selector">
+                    <li>
+                        <label>
+                            <input type="radio" name="new_or_existing" value="helpdeskWorkflowBasicAction" {if ifempty($data.new_or_existing) == 'new'} checked{/if}>
+                            [`Create a new action to be performed by user`]
+                        </label><br>
+                        <div class="hint">
+                            [`Users perform this action manually on the request's page or in their Customer portals.`]
+                        </div>
+                    </li>
+                    {if !$auto_action_already_exists}
+                        <li>
+                            <label>
+                                <input type="radio" name="new_or_existing" value="helpdeskWorkflowBasicAutoAction" {if ifempty($data.new_or_existing) == 'new'} checked{/if}>
+                                [`Create a new action to be performed automatically`]
+                            </label><br>
+                            <div class="hint">
+                                [`This action will be triggered automatically (by time-out) if no other actions are performed with request during a certain period of time.`]
+                            </div>
+                        </li>
+                    {/if}
+                </ul>
+            </div>
+        </form>
+    </div>
 
 <script>(function() { "use strict";
 
@@ -31,11 +57,39 @@
                 var dialog = $(this);
                 var ul = $('#action-selector');
                 var dialog_buttons = dialog.find('.dialog-buttons-gradient');
-                var radios = ul.parent().find(':radio');
+                var radios = dialog.find('input[name=new_or_existing]');
+                var checkboxes = dialog.find('input[name="existing_action_ids[]"]');
                 var form = ul.closest('form');
 
+                var enableButton = function() {
+                    dialog_buttons.find('[type=submit]').attr('disabled', false);
+                };
+
+                var disabledButton = function () {
+                    dialog_buttons.find('[type=submit]').attr('disabled', true);
+                };
+
+                var isAllCheckboxesUnchecked = function() {
+                    return !checkboxes.filter(':checked').length;
+                };
+
+                var isCurrentRadioIsExisting = function() {
+                    return radios.filter(':checked').val() === 'existing';
+                };
+
+                var onChange = function(isTrigger) {
+                    if (!isTrigger) {
+                        if (isCurrentRadioIsExisting() && isAllCheckboxesUnchecked()) {
+                            disabledButton();
+                        } else {
+                            enableButton();
+                        }
+                    }
+                };
+
+
                 // Checkbox controllers
-                ul.on('change', 'input:checkbox', function() {
+                ul.on('change', 'input:checkbox', function(e) {
                     var input = $(this);
                     if (input.is(':checked')) {
                         input.closest('label').addClass('highlighted');
@@ -43,13 +97,15 @@
                     } else {
                         input.closest('label').removeClass('highlighted');
                     }
+                    onChange(e.isTrigger);
                 });
 
                 // Radio buttons controller
-                radios.change(function() {
+                radios.change(function(e) {
                     if (!radios.first().is(':checked')) {
                         ul.find(':checkbox:checked').prop('checked', false).change();
                     }
+                    onChange(e.isTrigger);
                 });
 
                 {if $data}
@@ -58,7 +114,7 @@
                 {/if}
 
                 dialog_buttons.empty();
-                dialog_buttons.append($('<input type="submit" class="button green" value="'+"[`Proceed`]"+'">').click(function() {
+                dialog_buttons.append($('<input type="submit" class="button green" disabled="disabled" value="'+"[`Proceed`]"+'">').click(function() {
                     if (radios.filter(':checked').attr('value') == 'existing') {
                         dialog_buttons.append('<i class="icon16 loading"></i>');
                         $.post('?module=editor&action=newaction', form.serialize(), function(r) {
@@ -66,7 +122,7 @@
                         });
                     } else {
                         dialog_buttons.append('<i class="icon16 loading"></i>');
-                        var action_class = 'helpdeskWorkflowBasicAction';
+                        var action_class = radios.filter(':checked').val();
                         $.wa.dialogHide();
                         $.wa.helpdesk_controller.showActionSettings('{$wf->getId()}', "{$state->getId()}", '', action_class, "[`Save`]", "[`or`]", "[`cancel`]", "[`Delete this action`]", "[`The action will be eliminated only for the state &ldquo;%s&rdquo;. For other states this action will stay available.`]", function() {
                             dialog.remove();
@@ -83,10 +139,14 @@
 })();</script>
 
 {else}
-    <script>(function() { "use strict";
-        $.wa.helpdesk_controller.showActionSettings("{$wf->getId()}", "{$state->getId()}", "", "helpdeskWorkflowBasicAction", 
-            "[`Save`]", "[`or`]", "[`cancel`]", "[`Delete this action`]", 
-            "{sprintf_wp('The action will be eliminated only for the state &ldquo;%s&rdquo;. For other states this action will stay available.', $state->getName())}");
-        })();</script>
+    <script>
+        (function() { "use strict";
+            $.wa.helpdesk_controller.showActionSettings(
+                "{$wf->getId()}", "{$state->getId()}", "", "helpdeskWorkflowBasicAction",
+                "[`Save`]", "[`or`]", "[`cancel`]", "[`Delete this action`]",
+                "{sprintf_wp('The action will be eliminated only for the state &ldquo;%s&rdquo;. For other states this action will stay available.',
+                    $state->getName())}"
+            );
+        })();
+    </script>
 {/if}
-

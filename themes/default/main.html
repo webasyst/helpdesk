@@ -1,29 +1,37 @@
-{if !empty($categories)}
-    <nav class="page-nav" role="navigation">
-        <div class="nav-sidebar">
-            <ul class="menu-v stack" id="h-faq-categories">
+{$_current_url = $wa->currentUrl()}
+{$_my_directory = $wa->globals('isMyAccount')}
 
-                {foreach $categories as $_c}
-                    {$_url = "`$wa->getUrl('helpdesk/frontend/faq')``$_c.url`/"}
-                    <li data-category-id="{$_c.id}"{if $wa->currentUrl() == $_url} class="selected"{/if}>
-                        <a href="{$_url}">
-                            <span class="name">{$_c.name|escape}</span>
-                        </a>
-                    </li>
-                {/foreach}
+<div class="h-main-wrapper">
 
-            </ul>
+    {if !$_my_directory}
+        <nav class="h-sidebar-wrapper" role="navigation">
+            {if !empty($categories)}
+                <ul class="menu-v stack">
+                    {foreach $categories as $_c}
+                        {$_url = "`$wa->getUrl('helpdesk/frontend/faq')``$_c.url`/"}
+                        <li data-category-id="{$_c.id}"{if $_current_url == $_url} class="selected"{/if}>
+                            <a href="{$_url}">
+                                <span class="name">{$_c.name|escape}</span>
+                            </a>
+                        </li>
+                    {/foreach}
+                </ul>
+            {/if}
 
-        </div>
-    </nav>
-{/if}
+            <div class="h-search-wrapper">
+                <form method="get" action="{$wa->getUrl('/frontend/search')}">
+                    <input class="h-text-input" type="search" name="query" value="{$wa->request('query')|escape}" placeholder="[`Find the answer`]">
+                    <input class="h-submit-input" type="submit" value="">
+                </form>
+            </div>
 
-<article class="page-content container{if !empty($categories)} with-sidebar{/if}">
+            <div class="add-request-wrapper">
+                <button class="add-request-button" onclick="location.href='{$wa->getUrl('/frontend/ask')}'">[`Support request`]</button>
+            </div>
+        </nav>
+    {/if}
 
-    <div id="page-content">
-        {$content} {* see page.html *}
-    </div>
-
-    <div class="clear-both"></div>
-
-</article>
+    <article class="h-content-wrapper" id="page-content">
+        {$content}
+    </article>
+</div>

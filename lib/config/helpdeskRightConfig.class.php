@@ -31,6 +31,9 @@ class helpdeskRightConfig extends waRightConfig
 
             $items = array();
             foreach($wf->getAllActions() as $a) {
+                if ($a instanceof helpdeskWorkflowActionAutoInterface) {
+                    continue;
+                }
                 $items['@'.$a->getId()] = $a->getName();
             }
             if ($items) {

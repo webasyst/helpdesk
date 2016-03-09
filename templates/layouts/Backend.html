@@ -13,49 +13,20 @@
 <link type="text/css" rel="stylesheet" href="{$wa_url}wa-content/js/jquery-plugins/jquery-tagsinput/jquery.tagsinput.css">
 
 {*
- * jQuery with plugins and WA core assets
+ * Js
  *}
 <script src="{$wa_url}wa-content/js/jquery/jquery-1.11.1.min.js" type="text/javascript"></script>
 <script src="{$wa_url}wa-content/js/jquery/jquery-migrate-1.2.1.min.js" type="text/javascript"></script>
-{wa_js file="js/compiled/helpdesk-jquery.js"}
-    {$wa_url}wa-content/js/jquery-plugins/jquery.history.js
-    {$wa_url}wa-content/js/jquery-plugins/jquery.json.js
-    {$wa_url}wa-content/js/jquery-plugins/jquery.scrollTo-min.js
-    {$wa_url}wa-content/js/jquery-plugins/jquery.store.js
-    {$wa_app_static_url}js/jquery.sticky.js
-    {$wa_app_static_url}js/jquery.fixedBlock.js
-    {$wa_url}wa-content/js/jquery-wa/wa.core.js
-    {$wa_url}wa-content/js/jquery-wa/wa.dialog.js
-    {$wa_url}wa-content/js/jquery-plugins/jquery.hoverIntent.minified.js
-    {$wa_url}wa-content/js/jquery-ui/jquery-ui.custom.min.js
-    {$wa_url}wa-content/js/jquery-ui/jquery.ui.autocomplete.min.js
-    {$wa_url}wa-content/js/jquery-plugins/ibutton/jquery.ibutton.min.js
-    {$wa_url}wa-content/js/jquery-wa/editor.js
-    {$wa_app_static_url}js/vendor/raphael-min.js
-    {$wa_app_static_url}js/vendor/tmpl.min.js
-    {$wa_app_static_url}js/redactor.faq.js
-    {$wa_app_static_url}js/redactor.codeblock.js
-    {$wa_app_static_url}js/faq.js
-{/wa_js}
+<script src="{$wa_app_static_url}/js/helpdesk.min.js?v{$wa->version(true)}"></script>
 
 <script type="text/javascript" src="{$wa_url}wa-content/js/ace/ace.js?v{$wa->version(true)}"></script>
-
 <script src="{$wa_url}wa-content/js/redactor/redactor.min.js?v{$wa->version(true)}"></script>
 {if $wa->locale() !== 'en_US'}
 <script src="{$wa_url}wa-content/js/redactor/{substr($wa->locale(), 0, 2)}.js?v{$wa->version(true)}"></script>
 {/if}
+<script src="{$wa_url}wa-content/js/jquery-wa/editor.js"></script>
 
-
-{*
- * Helpdesk app
- *}
 <script type="text/javascript" src="?action=loc&v={$wa->version()}"></script>
-{wa_js file="js/compiled/helpdesk.js"}
-    {$wa_app_static_url}js/wa.controller.js
-    {$wa_app_static_url}js/wa.grid.js
-    {$wa_app_static_url}js/wa.history.js
-{/wa_js}
-
 <script type="text/javascript" src="{$wa_url}wa-content/js/jquery-plugins/jquery-tagsinput/jquery.tagsinput.min.js"></script>
 
 {*
@@ -64,7 +35,9 @@
 {$wa->js()}
 
 </head>
-<body id="{$wa_app}"><div id="wa">
+<body id="{$wa_app}">
+
+<div id="wa">
     {wa_header}
     <div id="wa-app">
         <div class="sidebar left200px h-sidebar">
@@ -88,6 +61,31 @@
         </div>
     </div>
 </div>
+
+{*
+ * Init wa.controller
+ *}
+<script type="text/javascript">
+    $.wa.helpdesk_controller.init({
+        url: "{$wa_url|escape:javascript}",
+        user_id: {$wa->user('id')},
+        backend_url: "{wa_backend_url()|escape:javascript}",
+        admin: {$admin|intval},
+        accountName: "{$wa->accountName(false)|escape:javascript}",
+        global_admin: {$global_admin|intval},
+        disable_shared_filters: {$disable_shared_filters|intval},
+        is_debug: {waSystemConfig::isDebug()|intval},
+        paginator_type: {json_encode($paginator_type|default:'page')}
+    });
+
+    {if empty($content)}
+    if($.wa.helpdesk_controller.getHash()) {
+        $.wa.helpdesk_controller.dispatch();
+    } else {
+        $.wa.helpdesk_controller.lastPage();
+    }
+    {/if}
+</script>
 
 
 {*
@@ -129,31 +127,6 @@
         {/if}
     </div>
 </div>
-
-{*
- * Init wa.controller
- *}
-<script type="text/javascript">
-    $.wa.helpdesk_controller.init({
-        url: "{$wa_url|escape:javascript}",
-        user_id: {$wa->user('id')},
-        backend_url: "{wa_backend_url()|escape:javascript}",
-        admin: {$admin|intval},
-        accountName: "{$wa->accountName(false)|escape:javascript}",
-        global_admin: {$global_admin|intval},
-        disable_shared_filters: {$disable_shared_filters|intval},
-        is_debug: {waSystemConfig::isDebug()|intval},
-        paginator_type: {json_encode($paginator_type|default:'page')}
-    });
-
-    {if empty($content)}
-        if($.wa.helpdesk_controller.getHash()) {
-            $.wa.helpdesk_controller.dispatch();
-        } else {
-            $.wa.helpdesk_controller.lastPage();
-        }
-    {/if}
-</script>
 
 {* Custom HTML and JS from plugins. *}
 {foreach $plugin_blocks as $html}

@@ -758,8 +758,10 @@ class helpdeskRequest extends helpdeskRequestRecord
                     }
                 }
 
+                $l['contact_name'] = '';
+
                 // contact name and photo of a person who performed the action
-                if ($l['actor_contact_id'] && $contacts_cache[$l['actor_contact_id']]) {
+                if ($l['actor_contact_id'] && $l['actor_contact_id'] > 0 && $contacts_cache[$l['actor_contact_id']]) {
                     $c = $contacts_cache[$l['actor_contact_id']];
                     if ($c['photo']) {
                         $l['upic'] = $c->getPhoto(50);
@@ -774,7 +776,9 @@ class helpdeskRequest extends helpdeskRequestRecord
                     $l['contact_name'] = $c->getName();
                 } else {
                     $l['upic'] = helpdeskHelper::getGravatar('');
-                    $l['contact_name'] = 'contact_id='.$l['actor_contact_id'];
+                    if ($l['actor_contact_id'] >= 0) {
+                        $l['contact_name'] = 'contact_id=' . $l['actor_contact_id'];
+                    }
                 }
 
                 // Time in different formats
@@ -826,11 +830,17 @@ class helpdeskRequest extends helpdeskRequestRecord
                     $l['performs_action_string'] = $action->getPerformsActionString($l);
                     $client_visible = $action->getOption('client_visible');
                     $l['visible_to_client'] = $this['client_contact_id'] && ($client_visible === 'all' || ($client_visible && $l['actor_contact_id'] == $this['client_contact_id']));
+                    if ($action instanceof helpdeskWorkflowActionAutoInterface) {
+                        $l['contact_name'] = $action->getActorName();
+                    }
                 } catch(Exception $e) {
                     $l['visible_to_client'] = false;
                     $l['performs_action_string'] = self::getPerformsActionStringSpecial($l['action_id']);
                     if ($l['action_id'] === '!email' || $l['action_id'] === helpdeskOneClickFeedback::REQUEST_LOG_ACTION_ID) {
                         $l['visible_to_client'] = true;
+                    }
+                    if ($l['actor_contact_id'] == helpdeskWorkflowBasicAutoAction::ACTOR_CONTACT_ID) {
+                        $l['contact_name'] = helpdeskWorkflowBasicAutoAction::getDefaultActorName();
                     }
                 }
                 if ($l['action_id'] == '!email' && $l['actor_contact_id'] != $this->info['client_contact_id']) {

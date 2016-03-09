@@ -96,7 +96,7 @@ class helpdeskRequestsListController extends helpdeskJsonController
 
         $this->response['f'] = array(
             'id' => $this->filter ? $this->filter['id'] : null,
-            'shared' => $this->filter ? $this->filter['shared'] : 1,
+            'shared' => $this->filter ? $this->filter['shared'] : 0,
             'contact_id' => $this->filter ? $this->filter['contact_id'] : wa()->getUser()->getId(),
             'hash' => $this->filter ? $this->filter['hash'] : $this->filters_hash,
             'name' => $this->filter ? $this->filter['name'] : trim($header),

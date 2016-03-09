@@ -369,19 +369,28 @@ $(function() { "use strict";
             state.actions = { };
 
             // draw shapes and calculate width and height
-            var a;
+            var width_expand = 25;
             for(var i = 0; i < state_data.actions.length; i++) {
-                if (!actions_data[state_data.actions[i]]) {
+                var action_data = actions_data[state_data.actions[i]];
+                if (action_data && action_data.auto) {
+                    width_expand = 55;  // take into account timeout
+                    break;
+                }
+            }
+
+            for(var i = 0; i < state_data.actions.length; i++) {
+                var action_data = actions_data[state_data.actions[i]];
+                if (!action_data) {
                     continue;
                 }
                 height += 5;
-                a = state.actions[state_data.actions[i]] = r.action(actions_data[state_data.actions[i]], x+10, y+height);
+                var a = state.actions[state_data.actions[i]] = r.action(action_data, x+10, y+height);
                 bbox = jQuery.extend({ }, a.getBBox());
                 height += bbox.height;
-                if (bbox.width + 20 > width) {
-                    width = bbox.width + 20;
-                }
 
+                if (bbox.width + width_expand > width) {
+                    width = bbox.width + width_expand;
+                }
                 state.push(a);
             }
         }
@@ -509,6 +518,22 @@ $(function() { "use strict";
             state.settings_button.attr({ cursor: "pointer", 'fill': '#555' });
         }
 
+        // timeout labels
+        if (state_data.actions.length) {
+            for(var i = 0; i < state_data.actions.length; i++) {
+                var action_data = actions_data[state_data.actions[i]];
+                if (!action_data || !action_data.auto) {
+                    continue;
+                }
+                height += 5;
+                var a = state.actions[state_data.actions[i]];
+                bbox = jQuery.extend({ }, a.getBBox());
+                var t = r.timeout(action_data.timeout, bbox.x + width - 10, bbox.y + 8);
+                a.timeout = t;
+                state.push(t);
+            }
+        }
+
         // connector points for a state
         state.connectors = function() {
             var bbox = jQuery.extend({ }, state.name.getBBox());
@@ -553,38 +578,78 @@ $(function() { "use strict";
             b.remove();
         }
 
-        // Text
-        var text = r.text(tlx+4, tly+1, action_data.name).attr({
-            stroke: 'none',
-            fill: color || '#000',
-            'stroke-width': 0,
-            'font-family': "'Lucida Grande', Helvetica, Arial, sans-serif",
-            'font-size': '13px',
-            'font-weight': 'bold',
-            'text-anchor': 'start'
-        });
+        var makeActionTextElement = function() {
+            var common_attrs = {
+                stroke: 'none',
+                'stroke-width': 0,
+                fill: '#000',
+                'font-size': '13px',
+                'font-family': "'Lucida Grande', Helvetica, Arial, sans-serif",
+                'text-anchor': 'start'
+            };
+            return r.text(tlx+4, tly+1, action_data.name)
+                .attr(jQuery.extend(
+                    common_attrs,
+                    !action_data.auto ? {
+                        'font-weight': 'bold',
+                        fill: color || common_attrs.fill
+                        } : { }
+                ));
+        };
+
+
+        var text = makeActionTextElement();
+        var bbox = jQuery.extend({ }, text.getBBox());
+        text.remove();
 
         var result = r.set();
-        result.push(text);
-        var bbox = jQuery.extend({ }, result.getBBox());
-        result.border_rect = r.rect(bbox.x-4, bbox.y-1, bbox.width+8, bbox.height+2).attr({ 'stroke-width': 0, 'fill-opacity': 0.1, 'fill': '#fff' });
+        result.border_rect = r.rect(bbox.x-4, bbox.y-1, bbox.width+8, bbox.height+2).attr({ 'stroke-width': 0, 'fill': '#fff' });
         result.push(result.border_rect);
-        if (action_data.states && action_data.states.length) {
-            var state_present = false;
-            for (var i = 0; i < action_data.states.length; i++) {
-                state_present = true;
+        result.push(makeActionTextElement());
+
+        if (!action_data.auto) {
+            if (action_data.states && action_data.states.length) {
+                var state_present = false;
+                for (var i = 0; i < action_data.states.length; i++) {
+                    state_present = true;
+                }
+                if (state_present) {
+                    result.border_rect.attr({
+                        'stroke-width': 1,
+                        'stroke': color || '#000'
+                    });
+                }
             }
-            if (state_present) {
-                result.border_rect.attr({
-                    'stroke-width': 1,
-                    'stroke': color || '#000'
-                });
-            }
+        } else {
+            result.border_rect.attr({
+                'stroke-width': 1,
+                'stroke': '#999',
+                fill: '#ddd'
+            });
         }
 
         result.attr('cursor', 'pointer');
         result.color = color || '#000';
         return result;
+    };
+
+    Raphael.fn.timeout = function(timeout, x, y) {
+        var txt = timeout.day + '[`d`] ' + timeout.hour + '[`h`]';
+        var attrs = {
+            stroke: 'none',
+            'stroke-width': 0,
+            fill: '#aaa',
+            'font-size': '9px',
+            'font-weight': 'bold',
+            'font-family': "'Lucida Grande', Helvetica, Arial, sans-serif",
+            'text-anchor': 'left'
+        };
+        var text = r.text(x, y, txt).attr(attrs);
+        var bbox = jQuery.extend({ }, text.getBBox());
+        text.remove();
+        text = r.text(x - bbox.width - 2, y, txt).attr(attrs);
+        text.attr('cursor', 'pointer');
+        return text;
     };
 
     Raphael.fn.workflow = function(workflow_data, tlx, tly) {
@@ -669,8 +734,7 @@ $(function() { "use strict";
                 }
                 (function() {
                     var action_id = i, state_id = id;
-                    states[id].actions[action_id].click(function() {
-
+                    var handler = function() {
                         if (states_data[state_id].foreign) {
                             window.location.hash = "#/settings/workflow/"+states_data[state_id].workflow_id;
                             return false;
@@ -694,7 +758,13 @@ $(function() { "use strict";
                         }
 
                         $.wa.helpdesk_controller.showActionSettings('{$wf->getId()}', state_id, action_id, '', "[`Save`]", "[`or`]", "[`cancel`]", "[`Delete this action`]", are_you_sure);
-                    });
+                    };
+
+                    states[id].actions[action_id].click(handler);
+
+                    if (states[id].actions[action_id].timeout) {
+                        states[id].actions[action_id].timeout.click(handler);
+                    }
                 })();
             }
         }

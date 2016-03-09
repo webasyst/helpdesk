@@ -17,7 +17,7 @@ class helpdeskFaqSaveController extends waJsonController
         if (!empty($data['is_public'])) {
             if ($data['url']) {
                 if (preg_match("/[^0-9a-z_\-]/i", $data['url'])) {
-                    $this->setError(_w('Please specify a valid URL'), 'faq_url');
+                    $this->setError(_w('Category URL may contain only letters, digits, and hyphens'), 'faq_url');
                     return false;
                 }
                 if ($fm->checkUrlUniq($data['url'], $category_id, $id)) {

@@ -14,8 +14,17 @@ class helpdeskFrontendViewAction extends helpdeskViewAction
                 $this->layout->assign('nofollow', true);
             }
         }
+
+        $this->layout->assign('categories', $this->getFaqCategories());
+    }
+
+    public function getFaqCategories()
+    {
         $fcm = new helpdeskFaqCategoryModel();
-        $this->layout->assign('categories', $fcm->getAll(null, false, true));
+        return $fcm->getList('', array(
+            'is_public' => true,
+            'routes' => array($this->getCurrentRoute())
+        ));
     }
 
     public function getBreadcrumbs()
@@ -109,6 +118,35 @@ class helpdeskFrontendViewAction extends helpdeskViewAction
         $msg .= "\nError: ".$e->getMessage().' ('.$e->getCode().')';
         $msg .= "\nTrace:\n".$e->getTraceAsString();
         return $msg;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCurrentRoute()
+    {
+        $current_route = wa()->getRouting()->getDomain(null, true).'/'.wa()->getRouting()->getRoute('url');
+        return trim(rtrim($current_route, '*/'));
+    }
+
+    public function checkCategoryAccess($category)
+    {
+        if (empty($category['is_public'])) {
+            return false;
+        }
+        $fcrm = new helpdeskFaqCategoryRoutesModel();
+        $routes = $fcrm->get($category['id']);
+        if (empty($routes)) {
+            return true;
+        }
+
+        $current_route = $this->getCurrentRoute();
+        foreach ($routes as $route) {
+            if ($route['route'] === $current_route) {
+                return true;
+            }
+        }
+        return false;
     }
 }
 
