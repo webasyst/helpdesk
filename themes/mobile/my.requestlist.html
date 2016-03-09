@@ -1,0 +1,31 @@
+<h1>[`Requests`]</h1>
+
+{if $forms}
+    {foreach $forms as $form}
+    <input type="button" onClick="window.location.href='{$wa->getUrl('helpdesk/frontend/myNew', ['id' => $form->getId()])}';" value="{$form->name}" />
+    {/foreach}
+{/if}
+
+{if $requests}
+    <div class="requests-list-wrapper">
+        {foreach $requests as $r}
+        <div class="request-item">
+            <div class="left-column">
+                [`ID`]: <a href="{$r.link}">#{$r.id}</a>
+            </div>
+            <div class="right-column">
+                [`Sent`]: <a href="{$r.link}">{$r.dt_formatted}</a>
+            </div>
+            <div class="cl"></div>
+            <div class="request-text">
+                <a href="{$r.link}" class="text">{$r.summary}</a>
+                <a href="{$r.link}" class="state" style="{$r.list_row_css}">({$r.state})</a>
+            </div>
+        </div>
+        {/foreach}
+    </div>
+{else}
+    <p class="no-records"><em>[`&lt;no support requests&gt;`]</em></p>
+{/if}
+
+{$wa->globals('isMyAccount', true)}

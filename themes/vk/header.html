@@ -1,0 +1,15 @@
+<!-- App page list -->
+
+{$_pages = $wa->helpdesk->pages()}
+
+{if count($_pages)}
+    <ul class="pages">
+
+        {if count($_pages)}
+            {foreach $_pages as $_p}
+                <li{if strlen($_p.url)>1 && $wa->currentUrl() == $_p.url} class="selected"{/if}><a href="{$_p.url}">{$_p.name}</a></li>
+            {/foreach}
+        {/if}
+
+    </ul>
+{/if}

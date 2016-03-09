@@ -1,0 +1,145 @@
+{* Single request page in customer portal. *}
+
+<div class="request-page-wrapper">
+
+    {if $just_confirmed}
+        {* User came from antispam confirmation link from email *}
+        <div class="green info-block-wrapper">
+            <div class="info-block">
+                {if $wa->locale() == 'ru_RU'}
+                    <p>Ваш запрос получен и поставлен в очередь на обработку.</p>
+                    <p>Мы ответим вам в ближайшее время.</p>
+                    <p>Спасибо!</p>
+                {else}
+                    <p>Your request has been received and queued into our support tracking system.</p>
+                    <p>We shall reply to you as soon as possible.</p>
+                    <p>Thank you!</p>
+                {/if}
+            </div>
+        </div>
+    {/if}
+
+    <h1>
+        {sprintf_wp('Request #%s', $request.id)}
+        {if $request.status}
+            <span class="hint reques-status" style="{$request.status_css}">{$request.status|escape}</span>
+        {/if}
+    </h1>
+
+    <article class="request" id="ticket">
+
+        <h2>{$request.summary}</h2>
+
+        <section id="request-and-log">
+
+            <div class="request-text">
+                {if $request.text}
+                    {$request.text}
+                {/if}
+            </div>
+
+            {if $request_data}
+                <div class="wa-form">
+                {foreach $request_data as $row}
+                    <div class="wa-field">
+                        <div class="wa-name">{$row.name}</div>
+                        <div class="wa-value">{$row.value}</div>
+                    </div>
+                {/foreach}
+                </div>
+                <div class="clear-both"></div>
+            {/if}
+
+            {if $request.attachments}
+                <div class="attachment">
+                    {foreach $request.attachments as $a}
+                        <a href="{$a.link}" class="same-tab">{$a.orig_name|escape}</a>
+                        ({$a.size|wa_format_file_size}){if !$a@last},{/if}
+                    {/foreach}
+                </div>
+            {/if}
+
+            <div class="hint request-created">[`Request created`] {$request.created|wa_datetime:"humandatetime"}</div>
+
+            {if $request_data_original}
+                [`Attention: initial request parameters <a href="javascript:void(0);" class="request-params-changed-link">was changed</a>`]
+                <div class="request-changed-params">
+                    <div class="wa-form">
+                    {foreach $request_data_original as $row}
+                        <div class="wa-field  {if $row.status == -1}request-param-changed{/if}">
+                            <div class="wa-name">{$row.name|escape}</div>
+                            <div class="wa-value">{$row.value|escape}</div>
+                        </div>
+                    {/foreach}
+                    </div>
+                    <div class="clear-both"></div>
+                </div>
+            {/if}
+
+
+            {*
+             * Request log (most recent last)
+             *}
+            {foreach array_reverse($log) as $action}
+                <div class="log">
+                    <div class="details text">
+                        <div class="hint">
+                            {$action.datetime|wa_datetime:"humandatetime"}
+                        </div>
+                        <p>
+                            <strong>{$action.contact_name|escape}</strong>
+                            {$action.performs_action_string}
+                        </p>
+
+                        <div class="log-text">{$action.text}</div>
+
+                        {if $action.fields}
+                            <div class="wa-form">
+                                {foreach $action.fields as $param}
+                                    <div class="wa-field">
+                                        <div class="wa-name">{$param.name}</div>
+                                        <div class="wa-value">{$param.value}</div>
+                                    </div>
+                                {/foreach}
+                            </div>
+                            <div class="clear-both"></div>
+                        {/if}
+
+                        {if $action.attachment}
+                            <div class="attachment">
+                                <i class="icon16 box"></i>
+                                {foreach $action.attachment as $a}
+                                    <a href="{$a.link}" class="same-tab">{$a.orig_name|escape}</a>
+                                    ({$a.size|wa_format_file_size}){if !$a@last},{/if}
+                                {/foreach}
+                            </div>
+                        {/if}
+                    </div>
+                    <div class="clear"></div>
+                </div>
+            {/foreach}
+        </section>
+
+        {*
+         * Buttons for available actions
+         *}
+        <div class="buttons ticket-buttons">
+            {foreach $buttons as $html}
+                {$html}
+            {/foreach}
+        </div>
+        <div id="action-form-wrapper" style="display:none"></div>
+    </article>
+
+    <script type="text/javascript" src="{$wa_theme_url}my.requestpage.js"></script>
+    <script>$(function() {
+        initRequestpage({
+            display_original_message: "- [`Display original message`] -",
+            hide_original_message: "- [`Hide original message`] -",
+            form_url: "{$form_url}"
+        });
+    });</script>
+
+    {$wa->globals('isMyAccount', true)}
+
+</div>

@@ -1,0 +1,12 @@
+<!-- search form -->
+<form method="get" action="{$wa->getUrl('/frontend/search')}" class="search">
+    <div class="search-wrapper">
+        <input type="search" name="query" value="{$wa->request('query')|escape}" placeholder="[`Find the answer`]">
+        <button type="submit"></button>
+    </div>
+</form>
+
+{if !empty($main_source.name)}
+    <input type="button" value="{$main_source.name}" onclick="location.href='{$wa->getUrl('/frontend/ask')}'"
+        style="border: 1px solid rgba(0,0,0,0.3); border-color: rgba(0,0,0,0.2) rgba(0,0,0,0.3) rgba(0,0,0,0.3) rgba(0,0,0,0.3); -webkit-appearance: none; box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1); border-radius: 3px; text-shadow: 0 1px 0px rgba(255,255,255,0.5);background: #fcd630 linear-gradient(to bottom, rgba(255,255,255,0.5) 0%,rgba(255,255,255,0.0) 100%); font-size: 17px; margin-left: 30px; margin-top: 10px; position: absolute; padding: 7px;">
+{/if}

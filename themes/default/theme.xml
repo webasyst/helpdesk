@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
+<theme id="default" system="1" vendor="webasyst" author="Webasyst" app="helpdesk" parent_theme_id="site:default" version="3.1.0">
+    <name locale="en_US">Default 3.0</name>
+    <name locale="ru_RU">Дефолт 3.0</name>
+    <files>
+        <file path="default.helpdesk.css"></file>
+        <file path="home.html">
+            <description locale="en_US">Helpdesk home page</description>
+            <description locale="ru_RU">Начальная страница</description>
+        </file>
+        <file path="my.requestlist.css"></file>
+        <file path="my.requestlist.html">
+            <description locale="en_US">Customer portal interface: list of requests</description>
+            <description locale="ru_RU">Личный кабинет клиента: список запросов</description>
+        </file>
+        <file path="my.requestpage.html">
+            <description locale="en_US">Customer portal interface: single request page</description>
+            <description locale="ru_RU">Личный кабинет клиента: страница одного запроса</description>
+        </file>
+        <file path="my.newrequest.html">
+            <description locale="en_US">Customer portal interface: form to submit requests</description>
+            <description locale="ru_RU">Личный кабинет клиента: форма отправки запроса</description>
+        </file>
+        <file path="my.profile.html">
+            <description locale="en_US">Customer portal interface: contact info editing form</description>
+            <description locale="ru_RU">Личный кабинет клиента: редактирование контактной информации</description>
+        </file>
+
+        <file path="my.requestpage.js">
+            <description locale="en_US">JavaScript counterpart for my.newrequest.html</description>
+            <description locale="ru_RU">JavaScript для страницы my.newrequest.html</description>
+        </file>
+
+        <file path="my.nav.html">
+            <description locale="en_US">Customer portal interface: сommon navigation elements</description>
+            <description locale="ru_RU">Личный кабинет клиента: общие элементы навигации</description>
+        </file>
+
+       	<file path="main.html">
+            <description locale="en_US">Main layout for Site app content</description>
+            <description locale="ru_RU">Основной вывод приложения «Сайт»</description>
+        </file>
+
+        <file path="page.html">
+            <description locale="en_US">Static page content</description>
+            <description locale="ru_RU">Содержимое информационной страницы</description>
+        </file>
+        <file path="faq.category.html"></file>
+        <file path="faq.category.question.html"></file>
+        <file path="search.html"></file>
+        <file path="banner.html"></file>
+        <file path="content.html">
+            <description locale="en_US">Main content layout and navigation</description>
+            <description locale="ru_RU">Основной макет вывода содержимого и навигации</description>
+        </file>
+        <file path="main.html">
+            <description locale="en_US">Main content layout and navigation</description>
+            <description locale="ru_RU">Основной макет вывода содержимого и навигации</description>
+        </file>
+        <file path="footer.html">
+            <description locale="en_US">App specific footer content</description>
+            <description locale="ru_RU">Содержимое футера приложения</description>
+        </file>
+        <file path="head.html">
+            <description locale="en_US">Helpdesk's &lt;head&gt; instructions</description>
+            <description locale="en_US">Блок &lt;head&gt; приложения Helpdesk</description>
+        </file>
+        <file path="header.html">
+            <description locale="en_US">App specific header content</description>
+            <description locale="ru_RU">Содержимое «шапки» приложения</description>
+    	</file>
+        <file path="nav.sidebar.html"></file>
+        <file path="navigation.html"></file>
+        <file path="pagelist.html"></file>
+        <file path="searchform.html"></file>
+        <file path="index.html" custom="0" parent="1"></file>
+        <file path="error.html" custom="0" parent="1"></file>
+    </files>
+</theme>

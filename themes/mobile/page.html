@@ -1,0 +1,16 @@
+<article class="page-content">
+    <h1>{$page.name}</h1>
+
+    {if isset($page)}
+        {$subpages = $wa->helpdesk->pages($page.id)}
+        {if $subpages}
+        {foreach $subpages as $p}
+            <div class="nav-item">
+                <a href="{$p.url}">{$p.name}</a>
+            </div>
+        {/foreach}
+        {/if}
+    {/if}
+
+    {$page.content}
+</article>

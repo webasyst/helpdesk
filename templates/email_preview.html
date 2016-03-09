@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+{*
+ * Notification email preview.
+ * See helpdeskBasicWorkflowAction->messagePreview()
+ *}
+<html>
+<head>
+    <title>[`Message preview`]</title>
+    <style>
+        table td { padding: 5px; }
+        table {
+            border-collapse: collapse;
+            border-spacing: 0;
+            font-size: 100%;
+            padding: 0;
+            margin: 0;
+            border: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <table>
+        <tr>
+            <td><strong>[`From:`]</strong></td>
+            <td>{$from|escape}</td>
+        </tr>
+        <tr>
+            <td><strong>[`To:`]</strong></td>
+            <td>
+                {foreach $to as $email => $name}
+                    {strip}
+                        {if !empty($name)}
+                            {$name|escape}&nbsp;&lt;{$email|escape}&gt;
+                        {else}
+                            {$email|escape}
+                        {/if}
+                        {if !$name@last},{/if}
+                    {/strip}
+                {/foreach}
+            </td>
+        </tr>
+        <tr>
+            <td><strong>[`Subject:`]</strong></td>
+            <td>
+                {$subject|escape}
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2" style="height:5px;"></td>
+        </tr>
+        <tr>
+            <td colspan="2" style="border-top: 1px solid #aaa;padding-top:15px;">
+                {$body}
+            </td>
+        </tr>
+        {if $attachments}
+            <tr>
+                <td><strong>[`Attachments:`]</strong></td>
+                <td>
+                    {foreach $attachments as $a}
+                        {$a.name|escape}{if !$a@last},{/if}
+                    {/foreach}
+                </td>
+            </tr>
+        {/if}
+    </table>
+
+</body>
+</html>

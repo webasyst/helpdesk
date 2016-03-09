@@ -1,0 +1,26 @@
+/*
+ * Helpdesk app CSS
+ * (requires linking base core.css file from the Site app)
+ * extends base Site app's core.css
+ *
+ */
+
+.page-content.with-sidebar {
+	margin-left: 0; margin-right: 220px; padding: 0 20px 0 0; border-left: none; border-right: 1px solid rgba(0, 0, 0, 0.15); border-radius: 0; box-shadow: 3px 0 8px -8px rgba(0, 0, 0, 0.7);
+}
+.nav-sidebar { float: right; width: 220px; }
+ul.menu-v li a { padding: 13px 10px; }
+ul.menu-v li .count { float: right; padding: 13px 10px; color: #888; }
+i.icon16 { margin: 0 5px; }
+.buttons input { color: #fff !important; }
+
+.page-nav ul.menu-v { margin-left: 0; }
+
+#main { margin: 10px 20px; }
+#search { width: 200px; margin: 0 0 4px 8px; }
+
+.request-changed-params { display: none; }
+.request-param-changed { color: red; }
+.log-text { padding: 10px 0; }
+
+#ticket .log-text div.show-quote { color: #500050; cursor: pointer; font-size: 9px; margin:0.5em 0.15em; }

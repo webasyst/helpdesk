@@ -1,0 +1,250 @@
+{if (empty($data.id) && !strlen($data.id)) || !empty($data.is_new)}
+    <h1>[`Create new state`]</h1>
+{else}
+    <h1>[`Edit state`]</h1>
+{/if}
+
+<form id="hd-{$uniqid}" action="?module=editor&action=state" method="post" autocomplete="off">
+    <div class="fields width100px">
+        <input type="hidden" name="wid" value="{$wf->getId()}">
+        <div class="field-group">
+            <div class="field">
+                <div class="name">[`Name `]</div>
+                <div class="value">
+                    <input type="text" name="name" value="{ifset($data.name)}">
+                    {if empty($data.is_new) && strlen($data.id)}
+                        <span class="hint" style="font-size:12px;">([`ID:`] {$data.id})</span>
+                    {/if}
+                </div>
+            </div>
+            {if (empty($data.id) && !strlen($data.id)) || !empty($data.is_new)}
+                <div class="field">
+                    <div class="name">[`ID `]</div>
+                    <div class="value">
+                        <input type="text" name="id" value="{ifset($data.id)}" autocomplete="off">
+                        <i class="icon16 loading hidden"></i>
+                    </div>
+                </div>
+                <input type="hidden" name="is_new" value="1">
+            {else}
+                <input type="hidden" name="id" value="{$data.id}">
+            {/if}
+            <div class="field">
+                <div class="name">[`Customer portal`]</div>
+
+                <style>.value.ibutton-fix ul.ibutton-wrapper { margin-left: -7px; }</style>
+                <div class="value ibutton-fix">
+                    <input type="checkbox" id="customer-portal-trigger"{if !empty($data.customer_portal_name)} checked{/if}>
+                    <br><span class="hint">[`If enabled, requests in this status are available for clients in their Customer Portal.`]</span>
+                </div>
+
+                <div class="hidden value" id="customer-portal-name">
+                    <span style="color:#888">[`Name of this state in the Customer Portal:`]</span> <input type="text" name="customer_portal_name" value="{ifempty($data.customer_portal_name)}">
+                </div>
+            </div>
+
+        </div>
+
+        <div class="top-padded field-group">
+            <div class="field">
+                <div class="name">[`Color`]</div>
+                <div class="value">
+                    {wa_action app="helpdesk" module="editor" action="palette" uniqid="hd-`$uniqid`-basic-colors" pre_selected=$pre_selected_color}
+                    <input type="hidden" name="style" value="{ifset($data.style)}">
+                    <div class="clear-both"></div>
+                    <div id="hd-{$uniqid}-sample">
+                        <span class="hint">[`Selected color will be used to display this state name.`]</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" name="available_actions" value="">
+
+        {if empty($data.is_new) && (!empty($data.id) || strlen($data.id))}
+            <div class="top-padded field-group">
+                <div class="field">
+                    <div class="name">[`Actions`]</div>
+                    <div class="value">
+                        {if !empty($available_actions)}
+                            <ul class="menu-v with-icons actions-order-list">
+                                {foreach $available_actions as $action}
+                                    <li data-action="{$action->getId()}" style="color:{$action->getOption('user_button_border_color')};cursor:move;"><i class="icon16 sort"></i>{$action->getName()}</li>
+                                {/foreach}
+                            </ul>
+                            <div class="clear-left"></div>
+                            <p class="hint">
+                                [`Action buttons will be shown in this order on request page.`]
+                                [`To change the order simply drag action names in the list.`]
+                            </p>
+                        {else}
+                            <p class="hint">[`No actions are specified for this state`]</p>
+                        {/if}
+                    </div>
+                </div>
+            </div>
+        {/if}
+    </div>
+</form>
+<script>(function() { "use strict";
+    var form = $('#hd-{$uniqid}');
+    var dialog = form.closest('.dialog');
+    var delay = 0;
+
+    // Dialog buttons
+    var dialog_buttons = dialog.find('.dialog-buttons-gradient').empty();
+    dialog_buttons.append(
+        $('<input type="submit" class="button green" value="'+"[`Save`]"+'">').click(function() {
+            form.submit();
+            return false;
+        })
+    );
+    dialog_buttons.append("<span> [`or`] </span>");
+    dialog_buttons.append($('<a href="javascript:void(0)">'+"[`cancel`]"+'</a>').click(function() {
+        $.wa.dialogHide();
+    }));
+
+    form.submit(function() {
+        dialog_buttons.append('<i class="icon16 loading"></i>');
+        $.post(form.attr('action'), form.serialize(), function(r) {
+            form.parent().html(r);
+        });
+        return false;
+    });
+
+    {if $errors}
+        {foreach $errors as $field_name => $e}
+            form.find('[name="{$field_name}"]').addClass('error').after($('<em class="errormsg"></em>').text("{$e}"));
+        {/foreach}
+        form.on('keyup', 'input.error:text,textarea.error', function() {
+            $(this).removeClass('error').siblings('.errormsg').remove();
+        });
+        form.on('change', '.error', function() {
+            $(this).removeClass('error').siblings('.errormsg').remove();
+        });
+    {/if}
+
+    {if (empty($data.id) && !strlen($data.id)) || !empty($data.is_new)}
+        // Transliterate state name into ID
+        (function() {
+            var ignore_name_change = false;
+            var id_field = form.find('[name="id"]');
+            var name_field = form.find('[name="name"]');
+
+            // When user changes ID by hand, do not replace it via transliteration (unless field is empty)
+            id_field.on('keyup', function() {
+                setTimeout(function() {
+                    ignore_name_change = !!id_field.val();
+                }, 0);
+            });
+
+            // Transliterate name into id when user changes it
+            var timeout = null;
+            name_field.on('keypress', function() {
+                if (ignore_name_change) {
+                    return;
+                }
+                if (timeout) {
+                    clearTimeout(timeout);
+                } else {
+                    id_field.siblings('.loading').removeClass('hidden');
+                }
+                timeout = setTimeout(function() {
+                    timeout = null;
+                    if (ignore_name_change) {
+                        id_field.siblings('.loading').addClass('hidden');
+                        return;
+                    }
+                    $.get('?action=translit', { str: name_field.val() }, function(r) {
+                        id_field.siblings('.loading').addClass('hidden');
+                        if (ignore_name_change) {
+                            return;
+                        }
+                        id_field.val(r.data);
+                    }, 'json');
+                }, 1000);
+            })
+        })();
+    {/if}
+
+    (function() {
+        var colorpicker_wrapper = $('#hd-{$uniqid}-basic-colors');
+        var style_input = form.find('[name="style"]');
+        var preview_div = $('#hd-{$uniqid}-sample');
+
+        var updatePreview = function() {
+            preview_div.attr('style', style_input.val());
+        };
+
+        colorpicker_wrapper.on('change', 'li', function() {
+            var color = $(this).children().data('color');
+            if (!color) {
+                return;
+            }
+
+            var style = style_input.val();
+            style = $.trim(style.replace(/(^|[^-])color:[^;]+;?/, ''));
+            style += (style ? ';' : '')+'color:'+color+';';
+            style = style.replace(';;', ';');
+            style_input.val(style);
+            updatePreview();
+        });
+
+        updatePreview();
+    })();
+
+    {if strlen($data.id) && empty($data.is_new)}
+        form.closest('.dialog').find('.dialog-buttons-gradient').prepend($('<div class="float-right" style="line-height:34px;"></div>').append(
+            $('<a href="javascript:void(0)" class="red"></a>').text("[`Delete this state`]").click(function() {
+                if ({$state_requests_num} > 0 && !confirm("{sprintf_wp('%s found in this state. These requests will NOT be deleted, but they will stay in unknown state.', _w('%d request', '%d requests', $state_requests_num))}")) {
+                    return false;
+                }
+                $(this).parent().prepend('<i class="icon16 loading"></i>');
+                $.post('?module=editor&action=remstateSave', { wid: "{$wf->getId()}", eid: "{$data.id}" }, function() {
+                    $.wa.helpdesk_controller.redispatch();
+                    $.wa.dialogHide();
+                });
+            })
+        ));
+    {else}
+        form.find('input:text:first').focus();
+    {/if}
+
+    {if !empty($available_actions) && count($available_actions) > 1}
+        // Drag-and-drop for actions
+        (function() {
+
+            var ul = form.find('ul.menu-v.actions-order-list');
+            var input_hidden = form.find('[name="available_actions"]');
+
+            var updateHiddenInput = function() {
+                input_hidden.val(ul.children().map(function() { return $(this).data('action'); }).get().join(','));
+            };
+            updateHiddenInput();
+
+            ul.sortable({
+                distance: 5,
+                items: 'li',
+                opacity: 0.75,
+                tolerance: 'pointer',
+                update: updateHiddenInput
+            });
+        })();
+    {/if}
+
+    $.wa.helpdesk_controller.iButton($('#customer-portal-trigger'), {
+        labelOff: "[`Off`]",
+        labelOn: "[`On`]"
+    }).change(function() {
+        var cb = $(this);
+        if (cb.is(':checked')) {
+            var name_input = $('#customer-portal-name').slideDown(delay).find('input');
+            if (!name_input.val()) {
+                name_input.val(form.find('[name="name"]').val());
+            }
+        } else {
+            $('#customer-portal-name').slideUp(delay).find('input').val('');
+        }
+    }).change();
+
+    delay = 200;
+})();</script>

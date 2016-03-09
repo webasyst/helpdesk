@@ -1,0 +1,906 @@
+<style>
+
+/* Dirty hack for redactorjs in Chrome. If div wrappers has "fields" classes, redactorjs doesn't work
+-------------------------------------------- */
+.h-fields { float: left /* to handle clear within the form */; margin-bottom: 10px; overflow: visible; } /* wrapper for .field */
+.field-group { margin: 5px 0 30px; }
+.field { clear: left; margin: 0; padding-top: 3px; }
+.field .name { float: left; width: 155px; padding-top: 0.05em; padding-bottom: 10px; color: #888; font-size: 0.95em; font-family: 'Helvetica Neue', Arial, sans-serif; }
+.field .name.large { font-size: 1.2em; font-weight:bold; color:#000; }
+.h-fields.form .field .name { padding-top: 0.45em; /* color: #000; */ /* class="fields form" is for forms with text inputs */ }
+.h-fields.form .field .value.no-shift { padding-top: 0.3em; /* use in class="fields form" forms for elements with no inputs within class="value" to exclude unwanted paddings */ }
+.h-fields .field .value.bottom-padded { padding-bottom: 10px; }
+.field .value { margin-left: 180px; margin-bottom: 5px; position: relative; }
+.field .value.submit { margin-left: 170px /* a little offset */; }
+.field .value .error-message { display: none; }
+.field .value input[type="text"], .field .value input[type="password"], .field .value textarea { width: 30%; min-width: 200px; margin: 0; }
+.field .value textarea { min-width: 400px; height: 70px; }
+.field .value input.semi { width: 10%; min-width: 80px; }
+.field .value input[type="text"].large, .field .value input[type="password"].large { width: 35%; }
+.field .value img.overhanging { position: absolute; left: -20px; }
+.field .value i.icon16.overhanging { position: absolute; left: -20px; margin: 0; top: 2px; }
+.field .value i.icon10.overhanging { position: absolute; margin-left: -17px; margin-right: 7px; }
+.field .value i.icon16 { vertical-align: middle; }
+.field .value.no-shift i.icon16.overhanging { top: 8px; }
+.field .value .address-subfield { padding:1px 0; }
+.field .value input, .field .value select { vertical-align:middle; }
+.h-fields.width100px .name { width: 105px; }
+.h-fields.width100px .value { margin-left: 120px; }
+.h-fields.width100px .value.submit { margin-left: 110px; }
+
+.modified .hide-when-modified { display: none !important; }
+.modified .show-when-modified { display: block; }
+.source-settings-form .h-section { width: 100%; font-weight: bold; font-size: 1.3em;}
+.source-settings-form .field .value { margin-left: 110px; }
+.hr-dashed { border-bottom: 1px dashed silver; clear: both; height: 20px; margin-bottom: 15px; }
+select { min-width: 80px; }
+.top-padded { margin-top: 20px; }
+
+</style>
+
+{$formwidth = $source.params.formwidth|default:400}
+
+<form class="source-settings-form">
+
+    <div class="h-fields">
+        <input type="hidden" name="id" value="{$source.id}">
+        <input type="hidden" name="st" value="{$source.type}">
+        <input type="hidden" name="workflow_id" value="{$wf->getId()}">
+        <input type="hidden" name="params[workflow]" value="{$wf->getId()}">
+        <input type="hidden" name="source[name]" value="{$source.name|escape}">
+
+        <div class="field">
+            <p>
+                [`This source enables you to receive new requests via a web form published in the frontend of any Webasyst app or anywhere on the Internet. Also this form can be used to add requests directly from your backend ("New request" button), or from your clients customer portals.`]
+            </p>
+            <p>
+                [`Set up the appearance of the web form as it should be displayed on your website.`]
+            </p>
+        </div>
+
+        {if !empty($submit_errors[''])}
+            <div class="field-group">
+                <div class="field">
+                    <em class="errormsg">{$submit_errors['']|escape}</em>
+                </div>
+            </div>
+        {/if}
+
+        <div class="field">
+            <div class="value">
+                <div class="fields">
+                    <div class="field">
+                        {$form_constructor_html|default:''}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="field"><hr></div>
+
+        <div class="field">
+            <div class="bold name h-section">[`Use this form on the site`]</div>
+            <div class="value">
+
+                <input type="checkbox" id="use_on_site" class="ibutton-checkbox"{if !empty($source.params.use_on_site)} checked{/if}>
+                <input type="hidden" name="params[use_on_site]" value="{if empty($source.params.use_on_site)}0{else}1{/if}">
+
+                <div class="large-hint top-padded">
+                    <span>[`Form can be published on any page of the site.`]</span>
+                    <span id="h-preview-and-edit-css-block"{if empty($source.params.use_on_site)} style="display:none;"{/if}>
+                        <a class="h-css-preview" target="_blank" href="?module=sources&action=formPreview&id={$source.id}">[`Preview`] <i class="icon10 new-window"></i></a>
+                        <a href="javascript:void(0);" class="h-edit-custom-css">[`Edit CSS`]</a>
+                        <textarea name="params[custom_css]" style="display:none;" data-custom={if !empty($source.params.custom_css)}1{/if}>{strip}
+                            {if !empty($source.params.custom_css)}{$source.params.custom_css}{/if}
+                        {/strip}</textarea>
+                        <textarea id="h-default-css-text" style="display:none;">{$default_css}</textarea>
+                    </span>
+                </div>
+
+                <div id="use_on_site_block"{if empty($source.params.use_on_site)} style="display:none;"{/if}>
+
+                    {if $source.id}
+                    <div class="field large-hint top-padded">
+                        [`To publish the form on your site use this code:`] <strong>{literal}{$wa->helpdesk->form({/literal}{$source.id}{literal})}{/literal}</strong>
+                    </div>
+                    <div class="field large-hint top-padded">
+                        [`To publish the form on external site use this code:`]
+                        <a href="javascript:void(0)" class="inline-link" onclick="$('#ta2').slideToggle(200);return false;"><b><i>[`iframe`]</i></b></a>
+                        <textarea id="ta2" style="width:96%;height:50px;font-size:80%;margin-bottom:10px;display:none;" readonly="readonly"><iframe frameborder="0" src="{$wa->getUrl('helpdesk/frontend/iframe', true)|escape}?id={$source.id}" id="wa-iframe" name="wa-iframe" marginheight="0" marginwidth="0" scrolling="no" style="width:100%; height:50px;"></iframe><script type="text/javascript" src="{$wa->helpdesk->getAppStaticUrl()|escape}js/iframeResizer.min.js"></script><script type="text/javascript">iFrameResize({ heightCalculationMethod:'max' });</script></textarea>
+                    </div>
+                    <div class="hr-dashed"></div>
+                    {/if}
+
+                    <div class="field after-submit">
+                        <h3 class="large-hint">[`After successful submission (if client is not authorized)`]</h3>
+                        <div class="hint" style="margin-bottom:20px;">[`This setting will redirect new clients (who are not yet authorized on your site) to any specified URL or display any text message after the form is submitted.`]</div>
+
+                        <div class="top-padded">
+                            <label>
+                                <input type="radio" name="params[after_submit]" value="redirect"{if !empty($source.params.after_submit) && $source.params.after_submit == 'redirect'}checked="checked"{/if}>
+                                [`Redirect to URL`]
+                            </label>
+                            <div style="margin-top:5px;"><input type="text" name="params[redirect_after_submit]" value="{$source.params->ifset('redirect_after_submit')|escape}" placeholder="http://" style="min-width:40em;margin:3px 0 5px 0;"></div>
+                        </div>
+
+                        <div class="top-padded">
+                            <label>
+                                <input type="radio" name="params[after_submit]" value="html"{if !isset($source.params.after_submit) || (!empty($source.params.html_after_submit) && $source.params.after_submit == 'html')}checked="checked"{/if}>
+                                [`Display text instead of the form`]
+                            </label>
+                            <div style="margin-top:5px;"><textarea name="params[html_after_submit]" style="min-width:40em;min-height:90px;" class="equal-width">{$source.params->ifset('html_after_submit')|escape}</textarea></div>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <div class="top-padded">
+                            [`Send a request for confirmation`]
+
+                            <input type="hidden" name="params[antispam]" value="0">
+                            <input type="checkbox" id="antispam-checkbox" name="params[antispam]" value="1" {if empty($source->params->fldc_email)}disabled="disabled"{/if} {if !empty($source->params->fldc_email) && !empty($source->params->antispam)} checked{/if}>
+
+                            <span class="small" style="color: red; {if !empty($source->params->fldc_email)}display:none;{/if}" id="h-antispam-checkbox-disabled-text">[`To enable this option, your form must contain Email field.`]</span>
+
+                        </div>
+                        <p class="hint">
+                            [`After successful submission of this form an automatic notification will be sent to the sender's email address. This notification contains a special link which must be clicked to confirm the sending of the request. You may also add extra instructions for your clients to the notification text.`]
+                        </p>
+
+                        <div class="collapsed-hidden">
+                            <div>
+                                <p style="background-color:#ffffcc; padding: 10px">[`NOTE: Request will be accepted and shows up in your request lists only after client clicks confirmation link in this message. It's probably a good idea to write about this in the text that appears on your web page after this form submission.`]</p>
+                            </div>
+                            <div class="h-fields width100px email-template-editor narrow-vars">
+                                {include
+                                    file="templates/actions/editor/email_template_editor.html"
+                                    input_name='params[antispam_mail_template]'
+                                    variables=$antispam_mail_template_vars
+                                    template=$antispam_mail_template}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="clear-both"></div>
+
+                    <h3 class="large-hint">[`After successful submission (if client is authorized)`]</h3>
+
+                    <div class="hint" style="margin-bottom:20px;">[`For registered clients authorized on your site at the moment of this form submission, you can customize a different behaviour.`]</div>
+
+                    <div class="top-padded">
+                        <label>
+                            <input type="radio" name="params[after_submit_auth]" value="redirect_my"{if !isset($source.params.after_submit_auth) || (!empty($source.params.after_submit_auth) && $source.params.after_submit_auth == 'redirect_my')} checked{/if}>
+                            [`Redirect to the request page in customer portal`]
+                        </label>
+                    </div>
+
+                    <div class="top-padded">
+                        <label>
+                            <input type="radio" name="params[after_submit_auth]" value="redirect"{if !empty($source.params.after_submit_auth) && $source.params.after_submit_auth == 'redirect'} checked{/if}>
+                            [`Redirect to URL`]
+                        </label>
+                        <div style="margin-top:5px;"><input type="text" name="params[redirect_after_submit_auth]" value="{$source.params->ifset('redirect_after_submit_auth')|escape}" placeholder="http://" style="min-width:40em;margin:3px 0 5px 0;"></div>
+                    </div>
+
+                    <div class="top-padded">
+                        <label>
+                            <input type="radio" name="params[after_submit_auth]" value="html"{if !empty($source.params.after_submit_auth) && $source.params.after_submit_auth == 'html'} checked{/if}>
+                            [`Display text instead of the form`]
+                        </label>
+                        <div style="margin-top:5px;"><textarea name="params[html_after_submit_auth]" style="min-width:40em;min-height:90px;" class="equal-width">{$source.params->ifset('html_after_submit_auth')|escape}</textarea></div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        <div class="field"><hr></div>
+
+        <div class="field">
+            <div class="bold name h-section">[`Use this form in backend`]</div>
+            <div class="value">
+                <input type="checkbox" id="backend" class="ibutton-checkbox"{if !empty($source.params.backend)} checked{/if}>
+                <input type="hidden" name="params[backend]" value="{if empty($source.params.backend)}0{else}1{/if}">
+                <p class="large-hint" style="margin-top:4px;">
+                    [`Allows you to manually create new requests via this form in Helpdesk backend using the “New request” button. This option may be useful when a client cannot send you a request personally; e.g., during a telephone call.`]
+                </p>
+            </div>
+        </div>
+
+        <div class="field"><hr></div>
+
+        <div class="field">
+            <div class="bold name h-section">[`Use this form in customer portal`]</div>
+            <div class="value">
+                <div class="fields">
+                    {foreach $domains as $d}
+                    <div class="field">
+                        <div class="name">{$d}</div>
+                        <div class="value" style="vertical-align:top; margin-left:155px;">
+                            <input type="checkbox" id="domain_{$d}" class="ibutton-checkbox"{if !empty($source.params["domain_`$d`"])} checked{/if}>
+                            <input type="hidden" name="params[domain_{$d}]" value="{if empty($source.params["domain_`$d`"])}0{else}1{/if}">
+                        </div>
+                    </div>
+                    {/foreach}
+                </div>
+            </div>
+            <div class="field large-hint">
+                <div class="value">
+                <p>{sprintf_wp('For further setup up of your Customer Portal use the <a href="%s">Site app</a>', $site_url)}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="field"><hr></div>
+
+        <div class="field">
+            <div class="name h-section">[`Messages`]</div>
+
+            <div class="value messages-wrapper" style="padding-top:1px;">
+
+                {if !empty($messages)}
+
+                    {foreach $messages as $i => $m}
+
+                        <div class="one-message email-template-editor"><div class="h-fields width100px">
+                            <div class="expandable expanded">
+                                <label class="expandable-legend">
+                                    <input type="checkbox" class="remove-message-checkbox" checked>
+                                    [`Send email message`]
+                                </label>
+                                <div class="editor-wrapper" data-i="{$i}">
+                                    {include file="templates/actions/editor/email_template_editor.html"
+                                        input_name="params[messages][{$i}][tmpl]"
+                                        variables=$receipt_template_vars
+                                        template=ifset($m.tmpl)
+                                        to_name="params[messages][{$i}][to]"
+                                        to_value=ifset($m.to)
+                                        sourcefrom_name="params[messages][{$i}][sourcefrom]"
+                                        sourcefrom_set=ifset($m.sourcefrom)
+                                        add_attachments_name="params[messages][{$i}][add_attachments]"
+                                        add_attachments_set=ifempty($m.add_attachments, 0)
+                                    }
+                                </div>
+                            </div>
+                        </div><div class="clear-left"></div></div>
+
+                    {/foreach}
+
+                {/if}
+
+                <div class="one-message hidden template email-template-editor">
+                    <div class="h-fields width100px">
+                        <div class="field-group expandable expanded">
+                            <label class="expandable-legend">
+                                <input type="checkbox" class="remove-message-checkbox" checked>
+                                [`Send email message`]
+                            </label>
+                            <div class="editor-wrapper" style="min-width:530px;">
+                                <div class="block"><i class="icon16 loading"></i></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clear-left"></div>
+                </div>
+
+                <div class="h-fields width100px">
+                    <div class="field">
+                        <label>
+                            <input type="checkbox" class="add-message-checkbox">
+                            <span class="when-no-messages">
+                                [`Send email message`]
+                            </span>
+                            <span class="when-messages">
+                                [`Send another email message`]
+                            </span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="field"><hr></div>
+
+        <div class="field">
+            <div class="name h-section">[`Forwarding request to workflow`]</div>
+            <div class="value">
+                <div class="fields width100px">
+                    <div class="field">
+                        <div class="name">[`State`]</div>
+                        <div class="value">
+                            <select name="params[new_request_state_id]" class="equal-width">
+                                <option value=""></option>
+                                {foreach $wf_states as $e}
+                                    <option value="{$e->getId()|escape}"{if $e->getId() == $source->params->ifset('new_request_state_id')} selected{/if}>{$e->getName()|escape}</option>
+                                {/foreach}
+                            </select>
+                            <p class="hint">
+                                [`The selected state will be automatically set for new requests received via this form.`]
+                                [`Your choice will be shown by an arrow in the workflow setup diagram.`]
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <div class="name">[`Action`]</div>
+                        <div class="value">
+                            <select name="params[new_request_action_id]" class="equal-width">
+                                <option value=""></option>
+                                {if !empty($wf_actions[$source->params->ifset('new_request_state_id')])}
+                                    {foreach $wf_actions[$source->params->ifset('new_request_state_id')] as $_id=>$_row}
+                                        <option value="{$_id|escape}"{if $_id == $source->params->ifset('new_request_action_id')} selected{/if}>{$_row.name|escape}</option>
+                                    {/foreach}
+                                {/if}
+                            </select>
+                            <p class="hint">
+                                [`The selected action will be automatically performed with requests received via this form.`]
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <div class="name">[`Assignment`]</div>
+                        <div class="value">
+                            <select name="params[new_request_assign_contact_id]" class="equal-width">
+                                <option value=""></option>
+                                {foreach $assignees as $contact_id => $name}
+                                    <option value="{$contact_id|escape}"{if $contact_id == $source->params->ifset('new_request_assign_contact_id')} selected{/if}>{$name|escape}</option>
+                                {/foreach}
+                            </select>
+                            <p class="hint">[`Select the user or user group who should be automatically assigned to requests received via this form.`] {helpdeskHelper::rightsToAppMessage()}</p>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <div class="name">[`Language`]</div>
+                        <div class="value">
+                            <select name="params[locale]" class="equal-width">
+                                {foreach waLocale::getAll('name_region') as $locale => $loc_name}
+                                    <option value="{$locale}"{if $locale == $source.params->ifset('locale')} selected{/if}>{$loc_name|escape}</option>
+                                {/foreach}
+                            </select>
+                            <p class="hint">
+                                [`For new clients who send their first request to your helpdesk service, a new contact record will be automatically created in your Contacts app.`]
+                                [`Select the default language for such new clients here.`]
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</form>
+
+{* dialog section *}
+<div class="dialog width800px height350px" id="h-custom-css-dialog" style="display:none;">
+    <form>
+        <div class="dialog-background"></div>
+        <div class="dialog-window">
+            <div class="dialog-content">
+                <div class="dialog-content-indent">
+                    <h1>[`Custom CSS`]</h1>
+                    <div id="h-custom-css-editor"></div>
+                    <textarea id="h-custom-css"></textarea>
+                </div>
+            </div>
+            <div class="dialog-buttons">
+                <div class="dialog-buttons-gradient">
+                    {$wa->csrf()}
+                    <input class="button green" type="submit" value="[`Save`]">
+                    [`or`]
+                    <a class="cancel" href="javascript:void(0);">[`cancel`]</a>
+
+                    <span class="float-right small" style="margin-top: 12px;">
+                        <span class="h-use-custom-css-text">
+                            [`You are using customized version of CSS.`]
+                            <a href="javascript:void(0);" class="h-revoke-to-default-css">[`Revoke to default CSS.`]</a>
+                        </span>
+                        <span class="h-use-default-css-text">
+                            [`You are using the original version of CSS.`]
+                        </span>
+                    </span>
+
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>(function() { "use strict";
+    var wrapper = $('.source-settings-form');
+
+    $('#c-core-content h1:first').hide().after('<input id="h-source-name-input" type="text" style="font-size: 1.8em; font-weight: bold; width: 80%;" value="{$source.name|escape}">');
+    var timer = null;
+    $('#h-source-name-input').keydown(function() {
+        if (timer) {
+            clearTimeout(timer);
+        }
+        var self = $(this);
+        timer = setTimeout(function() {
+            wrapper.find('input[name="source[name]"]').val(self.val());
+            $('#hd-source-editor-save').removeClass('green').addClass('yellow');
+            $("#hd-source-editor-form").addClass('modified');
+        }, 250);
+    });
+
+    if ($('#h-form-constructor').length) {
+        $('#h-form-constructor').bind('add_field', function(e, type, field_type) {
+            if (type === 'contact' && field_type === 'email') {
+                if (receipt_checkbox.attr('disabled'))  {
+                    receipt_checkbox.attr('disabled', false);
+                    var clone = receipt_checkbox.clone();
+                    receipt_checkbox.closest('.ibutton-wrapper').replaceWith(clone);
+                    receipt_checkbox = clone;
+                    initReceiptCheckbox(receipt_checkbox, delay);
+                }
+                if (antispam_receipt_checkbox.attr('disabled'))  {
+                    antispam_receipt_checkbox.attr('disabled', false);
+                    var clone = antispam_receipt_checkbox.clone();
+                    antispam_receipt_checkbox.closest('.ibutton-wrapper').replaceWith(clone);
+                    antispam_receipt_checkbox = clone;
+                    initReceiptCheckbox(antispam_receipt_checkbox, delay);
+                }
+                $('#h-antispam-checkbox-disabled-text').hide();
+            }
+        });
+        $('#h-form-constructor').bind('delete_field', function(e, type, field_type) {
+            if (type === 'contact' && field_type === 'email') {
+                if (!receipt_checkbox.attr('disabled') || receipt_checkbox.attr('checked')) {
+                    receipt_checkbox.attr('disabled', true);
+                    receipt_checkbox.attr('checked', false);
+                    var clone = receipt_checkbox.clone();
+                    receipt_checkbox.closest('.ibutton-wrapper').replaceWith(clone);
+                    receipt_checkbox = clone;
+                    initReceiptCheckbox(receipt_checkbox, delay);
+                }
+                if (!antispam_receipt_checkbox.attr('disabled') || antispam_receipt_checkbox.attr('checked')) {
+                    antispam_receipt_checkbox.attr('disabled', true);
+                    antispam_receipt_checkbox.attr('checked', false);
+                    var clone = antispam_receipt_checkbox.clone();
+                    antispam_receipt_checkbox.closest('.ibutton-wrapper').replaceWith(clone);
+                    antispam_receipt_checkbox = clone;
+                    initReceiptCheckbox(antispam_receipt_checkbox, delay);
+                }
+                $('#h-antispam-checkbox-disabled-text').show();
+            }
+        });
+    }
+
+    /*** Form constructor ***/
+
+    var editableForm = function($el, initial_position) {
+        var $preview                    = $el.find('[data-form-constructor="preview"]'),
+            $form_width                 = $el.find('[data-form-constructor="form-width"]'),
+            $available_fields           = $el.find('[data-form-constructor="available-fields"]').find('[data-fld-id]'),
+            $caption_place              = $el.find('[data-form-constructor="caption-place"]'),
+            $editable_inputs            = $el.find('[data-editable-element="true"]'),
+            delay                       = 100;
+
+        // Calculates label and inputs width in form constructor
+        var calcLabelWidth = function (type) {
+            var $captions = $preview.find('[data-form-constructor="caption"]'),
+                $labels = $captions.find('label'),
+                $placeholders =  $preview.find('[data-form-constructor="placeholder"]');
+
+            $labels.css({
+                'white-space': 'nowrap',
+                'width': 'auto'
+            });
+            $captions.removeClass('left above none hidden');
+            $placeholders.removeClass('left above');
+
+            var values = $labels.map(function(i, el) { return parseInt($(el).width()); }).get();
+            var max_wl_px = Math.max.apply(null, values),
+                max_wl_p = max_wl_px/(parseInt($preview.width())/100) + 1,
+                max_ml_p = (max_wl_p+2) > 50 ? 50 : (max_wl_p+2),
+                form_edit_place = 0;
+
+            if (type === 'above') {
+                max_wl_p = 100;
+                max_ml_p = 0;
+                $captions.addClass('above');
+                $placeholders.addClass('above');
+            } else if (type === 'none') {
+                max_wl_p = max_ml_p = 0;
+                $captions.addClass('none hidden');
+            } else {
+                if (max_wl_px <= 2) {
+                    max_wl_p = max_ml_p = 0;
+                    form_edit_place = 10;
+                    $captions.addClass('none');
+                }
+                $captions.addClass('left');
+                $placeholders.addClass('left');
+            }
+
+            $captions.width((max_wl_p+form_edit_place)+'%');
+            $preview.find('[data-form-constructor="captions-width"]').val(max_wl_p);
+            $placeholders.css('margin-left', (max_ml_p+form_edit_place)+'%');
+            $preview.find('[data-form-constructor="inputs-marginleft"]').val(max_ml_p);
+            $labels.css({
+                'white-space': 'normal',
+                'width': '100%'
+            });
+        };
+        // Calculates form width
+        var calcFormWidth = function (w) {
+            w = w < 200 ? 200 : w;
+            w = w > 600 ? 600 : w;
+            $(this).val(w);
+            $preview.animate({
+                        width: w
+                    },
+                    delay,
+                    function(){
+                        calcLabelWidth($caption_place.find(':checked').val());
+                    }
+            );
+        }
+        // Makes labels editable
+        var editableInput = function (el) {
+            var $el = $(el),
+                    $input = $el.next(),
+                    $icon = $el.prev();
+
+            var switchEls = function(){
+                $el.addClass('hidden');
+                $input.removeClass('hidden').focus();
+                $el.parents('.caption.left').width('48%')
+                        .siblings('.placeholder').css('margin-left', '50%');
+            };
+
+            $el.on('click', function(e){
+                switchEls();
+            });
+
+            $icon.on('click', function(){
+                switchEls();
+            });
+
+            $input.on('blur', function(){
+                $input.addClass('hidden');
+                if ($el.hasClass('editable_button')) {
+                    $el.val($input.val()).removeClass('hidden');
+                } else {
+                    $el.text($input.val()).removeClass('hidden');
+                }
+
+                calcLabelWidth($caption_place.find(':checked').val());
+            });
+
+            $input.on('keydown', function(e){
+                var code = e.keyCode || e.which;
+
+                switch (code) {
+                    case 13: //on enter, esc
+                    case 27:
+                        $(this).trigger('blur');
+                        return;
+                    default:
+                        break;
+                }
+            });
+        };
+
+        var fieldStatus = function (el) {
+            var $el = $(el),
+                type = $el.data('fld-id'),
+                checked = $el.prop('checked');
+            if (checked) {
+                $('[data-fld-wrapper="'+type+'"]').addClass('show-when-enabled')
+                        .find('input, textarea')
+                        .prop('disabled', false);
+            } else {
+                $('[data-fld-wrapper="'+type+'"]').removeClass('show-when-enabled')
+                        .find('input, textarea')
+                        .prop('disabled', true);
+            }
+        }
+
+        // Recalculate all on change form width input or focus lost
+        $form_width.on('keyup blur', 'input', function (e) {
+            var code = e.keyCode || e.which;
+
+            if (code == 13 || code == 0) {
+                calcFormWidth(parseInt($(this).val()));
+            }
+        });
+
+        // Switch fields in form constructor
+        $available_fields.on('change', function () {
+            fieldStatus(this);
+            calcLabelWidth($caption_place.find(':checked').val());
+        })
+        $caption_place.on('change', 'input', function(){
+            var val = $(this).val();
+            calcLabelWidth(val);
+        });
+
+        $.fn.toggleDisabled = function(){
+            return this.each(function(){
+                this.disabled = !this.disabled;
+            });
+        };
+
+        // On first page load
+        var init = function(caption_pos) {
+            $caption_place.find(':input').filter('[value="'+caption_pos+'"]').prop('checked', true);
+            calcLabelWidth(caption_pos);
+            $editable_inputs.each(function (i,el) {
+                new editableInput(el);
+            });
+            $available_fields.each(function (i, el) {
+                fieldStatus(el);
+            });
+            calcFormWidth( parseInt($form_width.find('input').val()) );
+            $preview.find('.wa-captcha-input').prop('disabled', true);
+        }
+
+        init(initial_position);
+    }
+    var caption_position = 'left';
+    {if (isset($source.params.captionplace))}
+    caption_position = '{$source.params.captionplace}';
+    {/if}
+    new editableForm($('.form-constructor'), caption_position);
+
+    /*** Form constructor ***/
+
+    var form = $('#antispam-checkbox').closest('form');
+
+    var initReceiptCheckbox = function(checkbox, delay) {
+        checkbox.change(function() {
+            var cb = $(this);
+            var fg = cb.closest('.field');
+            if (cb.is(':checked')) {
+                fg.find('.collapsed-hidden').slideDown(delay);
+                fg.find('.disable-when-collapsed').attr('disabled', false);
+            } else {
+                fg.find('.collapsed-hidden').slideUp(delay);
+                fg.find('.disable-when-collapsed').attr('disabled', true);
+            }
+        }).change();
+        $.wa.helpdesk_controller.iButton(checkbox, {
+            labelOn: "[`Enabled`]",
+            labelOff: "[`Disabled`]"
+        });
+    };
+    var receipt_checkbox = $('#receipt-checkbox');
+    var antispam_receipt_checkbox = $('#antispam-checkbox');
+    var delay = 0;
+    initReceiptCheckbox(receipt_checkbox, delay);
+    initReceiptCheckbox(antispam_receipt_checkbox, delay);
+
+    {* Validation errors *}
+    {foreach $submit_errors as $field_name => $e}
+        {if $field_name !== ''}
+            form.find('[name="{$field_name}"]').addClass('error').parent().append($('<em class="errormsg"></em>').text("{$e}"));
+        {/if}
+    {/foreach}
+
+    // Select everything in source code textarea when user clicks on it
+    $('textarea[readonly]').click(function() {
+        $(this).select();
+        return false;
+    });
+
+    // Controller for "what to do after submit" block
+    (function() {
+        var wrapper = form.find('.after-submit');
+        wrapper.on('focus', 'input, textarea', function() {
+            $(this).parent().siblings('label').find('input:radio').prop('checked', true);
+        });
+    })();
+    delay = 200;
+
+    $('.hd-source-editor-delete').text('[`Delete form`]');
+
+    $('.ibutton-checkbox').each(function() {
+        // Additional checkboxes
+        $.wa.helpdesk_controller.iButton($(this), {
+            labelOn: $(this).data('on') || "[`Enabled`]",
+            labelOff: $(this).data('off') || "[`Disabled`]"
+        });
+    });
+
+    $('.ibutton-checkbox').change(function() {
+        var id = $(this).attr('id'), is_checked = $(this).is(':checked') ? 1 : 0;
+        $('input[name="params[' + id + ']"]').val(is_checked);
+        if (id == 'use_on_site') {
+            $('#use_on_site_block').toggle('fast');
+            $('#h-preview-and-edit-css-block').toggle('fast');
+        } else {
+            $(this).closest('.field').find('.collapsed-hidden').toggle('fast');
+        }
+    });
+
+    $('.h-css-type input[type=radio]').click(function() {
+        $('.h-always-shown').removeClass('h-always-shown');
+        $(this).closest('.h-css-type').find('a').addClass('h-always-shown');
+    });
+
+    $('.h-edit-custom-css').click(function() {
+        var d = $('#h-custom-css-dialog');
+        var editor = null;
+        var session = null;
+        d.waDialog({
+            onLoad: function() {
+
+                var setContent = function(content) {
+                    $('#h-custom-css').hide().val(content);
+                    editor = ace.edit('h-custom-css-editor');
+                    ace.config.set("basePath", '{$wa_url}wa-content/js/ace/');
+                    editor.setTheme("ace/theme/eclipse");
+                    session = editor.getSession();
+                    session.setMode("ace/mode/css");
+                    session.setMode("ace/mode/smarty");
+                    editor.setFontSize(13);
+                    $('.ace_editor').css('fontFamily', '');
+                    session.setValue($('#h-custom-css').hide().val());
+
+                    var heightUpdateFunction = function(editor, editor_id) {
+
+                        // http://stackoverflow.com/questions/11584061/
+                        var newHeight = editor.getSession().getScreenLength() * editor.renderer.lineHeight + editor.renderer.scrollBar.getWidth();
+
+                        newHeight *= 1.02; //slightly extend editor height
+
+                        if (newHeight < 250) {
+                            newHeight = 250;
+                        }
+                        $('#' + editor_id).height(newHeight.toString() + "px");
+
+                        // This call is required for the editor to fix all of
+                        // its inner structure for adapting to a change in size
+                        editor.resize();
+                    };
+
+
+                    // Whenever a change happens inside the ACE editor, update
+                    // the size again
+                    session.on('change', function() {
+                        heightUpdateFunction(editor, 'h-custom-css-editor');
+                    });
+                    setTimeout(function() {
+                        heightUpdateFunction(editor, 'h-custom-css-editor');
+                    }, 50);
+
+                    $(window).resize(function() {
+                        if (editor) {
+                            editor.resize();
+                            heightUpdateFunction(editor, 'h-custom-css-editor');
+                        }
+                    });
+
+                    setTimeout(function() {
+                        $(window).resize();
+                    }, 200);
+                };
+
+                var updateText = function(is_custom) {
+                    if (is_custom) {
+                        $('.h-use-custom-css-text').show();
+                        $('.h-use-default-css-text').hide();
+                    } else {
+                        $('.h-use-custom-css-text').hide();
+                        $('.h-use-default-css-text').show();
+                    }
+                };
+
+                var el = $('[name="params[custom_css]"]');
+
+                var val = el.val();
+                var custom = el.data('custom');
+
+                setContent(custom ? val : $('#h-default-css-text').val());
+                updateText(custom);
+
+                $('.h-revoke-to-default-css', d).unbind('click').bind('click', function() {
+                    el.val('');
+                    el.data('custom', 0);
+                    setContent($('#h-default-css-text').val());
+                    updateText(el.data('custom'));
+                    return false;
+                });
+
+                $('.cancel', d).unbind('click').bind('click', function() {
+                    el.val(val);
+                    el.data('custom', custom);
+                    setContent(custom ? val : $('#h-default-css-text').val());
+                    updateText(el.data('custom'));
+                    d.trigger('close');
+                    return false;
+                });
+
+            },
+            onSubmit: function() {
+                var default_css = $('#h-default-css-text').val();
+                var session_val = session.getValue();
+                if (default_css != session_val) {
+                    $('[name="params[custom_css]"]').data('custom', 1).val(session_val);
+                } else {
+                    $('[name="params[custom_css]"]').data('custom', 0).val('');
+                }
+                $('#hd-source-editor-save').removeClass('green').addClass('yellow');
+                d.trigger('close');
+                return false;
+            }
+        });
+    });
+
+    $('.h-css-preview').click(function() {
+        var el = $('[name="params[custom_css]"]');
+        var custom = el.data('custom');
+        $('<form>').css({
+            display: 'none'
+        }).attr('action', '{$wa_app_url}?module=sources&action=formPreview&id={$source.id}&frontend_css_type=custom')
+            .attr('target', '_blank')
+            .attr('method', 'post')
+            .append(
+                $('<textarea name="css">').val(
+                    custom ? $('textarea[name="params[custom_css]"]').val() : $('#h-default-css-text').val()
+                )
+            ).insertAfter(this).submit().remove();
+        return false;
+    });
+
+    // Controller for email messages editor
+    (function() {
+        var add_message_checkbox = wrapper.find('.add-message-checkbox');
+        var messages_wrapper = add_message_checkbox.closest('.messages-wrapper');
+
+        // Add another email editor block when user clicks "Send another email message" checkbox
+        add_message_checkbox.change(function() {
+            var fields = messages_wrapper.children('.hidden.template').clone().insertBefore(add_message_checkbox.closest('.h-fields'));
+            fields.removeClass('template').removeClass('hidden');
+            add_message_checkbox.prop('disabled', true);
+
+            var last_i = messages_wrapper.find('.editor-wrapper[data-i]').last().data('i');
+            if (last_i) {
+                last_i = parseInt(last_i+'', 10);
+            } else if (last_i !== 0) {
+                last_i = -1;
+            }
+            var i = last_i + 1;
+            fields.find('.editor-wrapper').data('i', ''+i).attr('data-i', ''+i);
+
+            $.post('?module=editor&action=emailTemplate&tpl=source&source_id={$source.id}', {
+                input_name: 'params[messages]['+i+'][tmpl]',
+                variables: {json_encode($receipt_template_vars)},
+                to_name: 'params[messages]['+i+'][to]',
+                sourcefrom_name: 'params[messages]['+i+'][sourcefrom]',
+                add_attachments_name: 'params[messages]['+i+'][add_attachments]'
+            }, function(r) {
+                fields.find('.editor-wrapper').html(r);
+                add_message_checkbox.prop({ disabled: false, checked: false });
+            });
+
+            updateAddCheckbox();
+        });
+
+        // Hide email editor block when user unchecks "Send email message" checkbox
+        wrapper.on('change', '.remove-message-checkbox', function() {
+            $(this).closest('.h-fields').parent().slideUp(200, function() {
+                $(this).remove();
+                updateAddCheckbox();
+            });
+        });
+
+        updateAddCheckbox();
+
+        function updateAddCheckbox() {
+            var label = add_message_checkbox.parent();
+            if (messages_wrapper.find('.one-message:not(.template)').length > 0) {
+                label.find('.when-no-messages').hide();
+                label.find('.when-messages').show();
+            } else {
+                label.find('.when-no-messages').show();
+                label.find('.when-messages').hide();
+            }
+        }
+    })();
+
+    {include file="js/wf_actions.js"}
+
+})();</script>

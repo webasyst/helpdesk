@@ -1,0 +1,26 @@
+<!-- navigation menu -->
+<div class="app-navigation" role="navigation">
+
+    <!-- search -->
+    <div class="float-right">
+        <form method="get" action="{$wa->getUrl('/frontend/search')}">
+            <input type="text" id="search" name="query" value="{$wa->request('query')|escape}" placeholder="[`Find the answer`]">
+        </form>
+    </div>
+
+    <!-- info pages -->
+    {$_pages = $wa->helpdesk->pages()}
+    {if $_pages}
+        <div class="float-right">
+            <!-- info pages (root pages only) -->
+            <ul class="menu-h dropdown">
+                {foreach $_pages as $p}
+                   <li{if !empty($root_page_id) && $root_page_id == $p.id} class="selected"{/if}><a href="{$p.url}">{$p.name}</a></li>
+                {/foreach}
+            </ul>
+        </div>
+    {/if}
+
+    <div class="clear-both"></div>
+
+</div>

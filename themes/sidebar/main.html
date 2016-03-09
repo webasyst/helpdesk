@@ -1,0 +1,37 @@
+{* required when parenting Helpdesk design theme from some other design themes of the Site app; this file woun't be used when parented from the theme of the Site app (!) *}
+
+{if !empty($categories)}
+    <nav class="page-nav" role="navigation">
+        <div class="nav-sidebar">
+
+            <!-- search -->
+            <form method="get" action="{$wa->getUrl('/frontend/search')}">
+                <input type="text" id="search" name="query" value="{$wa->request('query')|escape}" placeholder="[`Find the answer`]">
+            </form>
+
+            <ul class="menu-v stack" id="h-faq-categories">
+
+                {foreach $categories as $_c}
+                    {$_url = "`$wa->getUrl('helpdesk/frontend/faq')``$_c.url`/"}
+                    <li data-category-id="{$_c.id}"{if $wa->currentUrl() == $_url} class="selected"{/if}>
+                        <a href="{$_url}">
+                            <span class="name">{$_c.name|escape}</span>
+                        </a>
+                    </li>
+                {/foreach}
+
+            </ul>
+
+        </div>
+    </nav>
+{/if}
+
+<article class="page-content container{if !empty($categories)} with-sidebar{/if}">
+
+    <div id="page-content">
+        {$content} {* see page.html *}
+    </div>
+
+    <div class="clear-both"></div>
+
+</article>

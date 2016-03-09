@@ -1,0 +1,20 @@
+<!-- navigation menu -->
+<div class="app-navigation" role="navigation">
+
+    <!-- search -->
+    <form method="get" action="{$wa->getUrl('/frontend/search')}" class="float-right">
+        <input type="text" id="search" name="query" value="{$wa->request('query')|escape}" placeholder="[`Find the answer`]">
+    </form>
+
+    <!-- info pages -->
+    {$_pages=$wa->helpdesk->pages()}
+    {if $_pages}
+        <div class="float-right">
+            {wa_print_tree tree=$_pages class="menu-h dropdown" attrs = 'id="page-list"' elem ='
+        <a href=":url" title=":title">:name</a>' collapsible_class='collapsible' selected=$wa->param('page_id')}
+        </div>
+    {/if}
+
+    <div class="clear-both"></div>
+
+</div>

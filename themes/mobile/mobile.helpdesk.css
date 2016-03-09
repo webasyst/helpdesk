@@ -1,0 +1,401 @@
+/*
+ * Webasyst Mobile 2.0 theme family
+ *
+ * Helpdesk app CSS
+ * (requires linking base default.css file from the Site app)
+ *
+ * @link http://www.webasyst.com/
+ * @author Webasyst LLC
+ * @copyright 2014 Webasyst LLC
+ * @package Webasyst
+ */
+.wa-helpdesk-wrapper {
+  padding: 0.5rem;
+}
+.wa-helpdesk-wrapper > h1 {
+  margin-left: 0.5rem;
+}
+.wa-helpdesk-wrapper .page-content {
+  margin: 0.5em 0 0;
+  padding: 0.5em;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.1);
+}
+.wa-helpdesk-wrapper .page-content.faq-category h3 {
+  border: solid rgba(123,123,123,0.4);
+  border-width: 0 0 0 2px;
+}
+.wa-helpdesk-wrapper .page-content.faq-category h3 a {
+  display: block;
+  padding: 0.5rem;
+  background: #f9f9f9;
+  text-decoration: none;
+}
+.wa-helpdesk-wrapper .wa-form {
+  margin: 1rem 0;
+  overflow: visible;
+  width: 100%;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field {
+  clear: left;
+  margin: 1rem 0 0;
+  padding-top: 0;
+  width: 100%;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field:first-child {
+  margin-top: 0;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field .wa-name {
+  float: none;
+  width: auto;
+  padding-top: 0;
+  padding-bottom: 0;
+  font-size: 0.95em;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field.wa-separator {
+  height: 10px;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field.fld_type_checkbox {
+  position: relative;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field.fld_type_checkbox .wa-name {
+  float: none;
+  margin-left: 0;
+  padding-left: 2rem;
+  width: 100%;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field.fld_type_checkbox .wa-value {
+  position: absolute;
+  top: 0;
+  left: 0;
+  float: none;
+  width: 2rem;
+  text-align: center;
+  margin-left: 0;
+  margin-top: 0;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field.fld_type_checkbox .errormsg {
+  margin-left: 0;
+  width: 100%;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field.above .wa-name {
+  float: none;
+  width: 100%;
+  max-width: 100%;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field.above .wa-value {
+  margin-left: 0;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field.above .wa-value input[type="text"],
+.wa-helpdesk-wrapper .wa-form .wa-field.above .wa-value input[type="email"],
+.wa-helpdesk-wrapper .wa-form .wa-field.above .wa-value input[type="password"] {
+  min-width: 100%;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field.above .wa-value textarea {
+  min-width: 100%;
+  width: 100%;
+  height: 5em;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field.above.subfields-placeholder .field input[type="text"],
+.wa-helpdesk-wrapper .wa-form .wa-field.above.subfields-placeholder .field input[type="email"],
+.wa-helpdesk-wrapper .wa-form .wa-field.above.subfields-placeholder .field input[type="password"] {
+  float: left;
+  min-width: 100%;
+  display: block;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field.above.subfields-placeholder .field select {
+  float: left;
+  width: 100%;
+  display: block;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field.above.subfields-placeholder .field textarea {
+  float: left;
+  min-width: 100%;
+  display: block;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field .wa-value {
+  margin-left: 0;
+  margin-bottom: 0;
+  position: relative;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field .wa-value.buttons {
+  margin-left: 0;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field .wa-value input.wa-error {
+  border: 2px solid #f00;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field .wa-value .wa-error-msg {
+  font-size: 0.9em;
+  color: #f00;
+  display: block;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field .wa-value input[type="text"],
+.wa-helpdesk-wrapper .wa-form .wa-field .wa-value input[type="email"],
+.wa-helpdesk-wrapper .wa-form .wa-field .wa-value input[type="password"] {
+  width: 100%;
+  min-width: 100%;
+  margin: 0;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field .wa-value textarea {
+  min-width: 100%;
+  width: 100%;
+  height: 5em;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field .wa-value.wa-submit {
+  margin-top: 0;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field .wa-value.subfields-left {
+  margin-top: 0;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field .wa-value.subfields-left p {
+  width: 100%;
+  max-width: 100%;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field .wa-value.subfields-left .field {
+  float: left;
+  width: 100%;
+  margin: 1rem 0 0;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field .wa-value.subfields-left .field > span {
+  float: left;
+  width: auto;
+  display: block;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field .wa-value.subfields-left input[type="text"],
+.wa-helpdesk-wrapper .wa-form .wa-field .wa-value.subfields-left input[type="email"],
+.wa-helpdesk-wrapper .wa-form .wa-field .wa-value.subfields-left input[type="password"] {
+  float: left;
+  min-width: 100%;
+  display: block;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field .wa-value.subfields-left select {
+  float: left;
+  width: 100%;
+  display: block;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field .wa-value.subfields-left textarea {
+  float: left;
+  min-width: 100%;
+  display: block;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field .wa-value.subfields-placeholder {
+  margin-top: 0;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field .wa-value.subfields-placeholder .field {
+  float: left;
+  width: 100%;
+  margin: 1rem 0 0;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field .wa-value.subfields-placeholder .field > span {
+  display: none;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field .wa-value.subfields-placeholder .field input[type="text"],
+.wa-helpdesk-wrapper .wa-form .wa-field .wa-value.subfields-placeholder .field input[type="email"],
+.wa-helpdesk-wrapper .wa-form .wa-field .wa-value.subfields-placeholder .field input[type="password"] {
+  float: left;
+  min-width: 100%;
+  display: block;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field .wa-value.subfields-placeholder .field select {
+  float: left;
+  width: 100%;
+  display: block;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field .wa-value.subfields-placeholder .field textarea {
+  float: left;
+  min-width: 100%;
+  display: block;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field.none .wa-name {
+  display: none;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field.none .wa-value {
+  margin-left: 0;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field.none .wa-value input[type="text"],
+.wa-helpdesk-wrapper .wa-form .wa-field.none .wa-value input[type="email"],
+.wa-helpdesk-wrapper .wa-form .wa-field.none .wa-value input[type="password"] {
+  min-width: 100%;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field.none .wa-value select {
+  min-width: 100%;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field.none .wa-value textarea {
+  min-width: 100%;
+  width: 100%;
+  height: 5em;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field.none.subfields-left input[type="text"],
+.wa-helpdesk-wrapper .wa-form .wa-field.none.subfields-left input[type="email"],
+.wa-helpdesk-wrapper .wa-form .wa-field.none.subfields-left input[type="password"] {
+  min-width: 100%;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field.none.subfields-left select {
+  min-width: 100%;
+}
+.wa-helpdesk-wrapper .wa-form .wa-field.none.subfields-left textarea {
+  min-width: 100%;
+  width: 100%;
+  height: 5em;
+}
+.wa-helpdesk-wrapper .wa-form .wa-captcha {
+  padding: 0;
+  float: left;
+}
+.wa-helpdesk-wrapper .wa-form .wa-captcha p {
+  margin: 0;
+}
+.wa-helpdesk-wrapper .wa-form .wa-captcha strong {
+  font-size: 1.2em;
+}
+.wa-helpdesk-wrapper .wa-form .wa-captcha img {
+  float: left !important;
+  margin-right: 0;
+  margin-top: 0;
+}
+.wa-helpdesk-wrapper .wa-form .wa-captcha input[type="text"] {
+  width: 4em !important;
+  min-width: 4em !important;
+}
+.wa-helpdesk-wrapper .wa-form .wa-captcha .wa-captcha-refresh {
+  display: inline-block;
+  clear: left;
+  font-size: 0.8em;
+  text-decoration: underline;
+  color: #aaa;
+}
+.wa-helpdesk-wrapper .wa-form .wa-captcha .errormsg {
+  display: inline;
+  margin-left: 0;
+}
+.wa-helpdesk-wrapper .wa-form input.error,
+.wa-helpdesk-wrapper .wa-form textarea.error {
+  border: 2px solid #f00;
+  color: #f00;
+}
+.wa-helpdesk-wrapper .wa-form .errormsg {
+  color: #f00;
+  display: block;
+  font-weight: normal;
+  font-size: 1em;
+  margin-left: 0;
+}
+.wa-helpdesk-wrapper iframe {
+  right: 200%;
+  bottom: 200%;
+  position: absolute;
+  visibility: hidden;
+}
+.wa-helpdesk-wrapper .request-page-wrapper {
+  margin: 0.5em 0 0;
+  padding: 0.5em;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.1);
+}
+.wa-helpdesk-wrapper .request-page-wrapper .request {
+  margin: 1rem 0 0;
+  width: 100%;
+}
+.wa-helpdesk-wrapper .request-page-wrapper .request:first-child {
+  margin-top: 0;
+}
+.wa-helpdesk-wrapper .request-page-wrapper .request .request-text {
+  padding: 0.5rem;
+  background: #fbfbfb;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+}
+.wa-helpdesk-wrapper .request-page-wrapper .log {
+  padding: 0.25em;
+  border-top: 1px solid #ddd;
+}
+.wa-helpdesk-wrapper .request-page-wrapper .log .details.text img {
+  max-width: 100%;
+}
+.wa-helpdesk-wrapper .request-page-wrapper .attachment {
+  margin-top: 1rem;
+  padding: 0.5em;
+  background: #eee;
+}
+.wa-helpdesk-wrapper .request-page-wrapper .show-quote {
+  color: #500050;
+  font-size: 0.6em;
+  margin: 0.5em 0.15em;
+}
+.wa-helpdesk-wrapper .request-page-wrapper .info-block-wrapper {
+  margin-bottom: 12px;
+  padding: 3px;
+}
+.wa-helpdesk-wrapper .request-page-wrapper .info-block-wrapper .info-block {
+  padding: 1rem;
+}
+.wa-helpdesk-wrapper .request-page-wrapper .info-block-wrapper .info-block p:last-child {
+  margin-bottom: 0;
+}
+.green.wa-helpdesk-wrapper .request-page-wrapper .info-block-wrapper {
+  background-color: #e7f1e9;
+}
+.green.wa-helpdesk-wrapper .request-page-wrapper .info-block-wrapper .info-block {
+  border: 2px dashed #34b634;
+}
+.wa-helpdesk-wrapper .request-page-wrapper .reques-status {
+  display: inline-block;
+  padding: 0 0.25em;
+  background: #f0f0f0;
+  font-size: 60%;
+  -webkit-border-radius: 5px;
+  -moz-border-radius: 5px;
+  border-radius: 5px;
+}
+.wa-helpdesk-wrapper .request-page-wrapper .request-created {
+  color: #999;
+}
+.wa-helpdesk-wrapper .request-page-wrapper .wa-form .wa-field .wa-name {
+  font-size: 0.8em;
+  text-transform: uppercase;
+  color: #369;
+}
+.wa-helpdesk-wrapper .request-page-wrapper .wa-form .wa-field .wa-value {
+  font-size: 1.2em;
+}
+.wa-helpdesk-wrapper .requests-list-wrapper .request-item {
+  margin: 0.5em 0 0;
+  padding: 0.5em;
+  background: #fff;
+  border: 1px solid rgba(0,0,0,0.1);
+}
+.wa-helpdesk-wrapper .requests-list-wrapper .request-item .left-column {
+  float: left;
+  width: 49.9%;
+}
+.wa-helpdesk-wrapper .requests-list-wrapper .request-item .right-column {
+  float: right;
+  width: 49.9%;
+  text-align: right;
+  color: #888;
+}
+.wa-helpdesk-wrapper .requests-list-wrapper .request-item .left-column,
+.wa-helpdesk-wrapper .requests-list-wrapper .request-item .right-column {
+  color: #999;
+}
+.wa-helpdesk-wrapper .requests-list-wrapper .request-item .left-column a,
+.wa-helpdesk-wrapper .requests-list-wrapper .request-item .right-column a {
+  color: #080808;
+}
+.wa-helpdesk-wrapper .requests-list-wrapper .request-item a {
+  text-decoration: none;
+}
+.wa-helpdesk-wrapper .requests-list-wrapper .request-item .request-text {
+  margin: 0.5rem 0 0;
+  font-size: 1.1rem;
+}
+.wa-helpdesk-wrapper .requests-list-wrapper .request-item .request-text .text {
+  padding: 0;
+}
+.wa-helpdesk-wrapper .requests-list-wrapper .request-item .request-text .state {
+  font-size: 0.9em;
+  opacity: 0.66;
+}
+
+#ticket .log-text div.show-quote { color: #500050; cursor: pointer; font-size: 9px; margin:0.5em 0.15em; }

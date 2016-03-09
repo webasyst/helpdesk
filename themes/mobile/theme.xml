@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE theme PUBLIC "wa-app-theme" "http://www.webasyst.com/wa-content/xml/wa-app-theme.dtd">
+<theme id="mobile" system="0" vendor="webasyst" author="Webasyst" app="helpdesk" parent_theme_id="site:mobile" version="1.0.0">
+    <name locale="en_US">Mobile</name>
+    <name locale="ru_RU">Mobile</name>
+    <files>
+        <file path="faq.category.html">
+        </file>
+        <file path="faq.category.question.html">
+        </file>
+        <file path="head.html">
+        </file>
+        <file path="home.html">
+        </file>
+        <file path="main.html">
+        </file>
+        <file path="home.html">
+            <description locale="en_US">Helpdesk home page</description>
+            <description locale="ru_RU">Начальная страница</description>
+        </file>
+        <file path="my.nav.html">
+            <description locale="en_US">Customer portal interface: сommon navigation elements</description>
+            <description locale="ru_RU">Личный кабинет клиента: общие элементы навигации</description>
+        </file>
+        <file path="my.newrequest.html">
+            <description locale="en_US">Customer portal interface: form to submit requests</description>
+            <description locale="ru_RU">Личный кабинет клиента: форма отправки запроса</description>
+        </file>
+        <file path="my.profile.html">
+            <description locale="en_US">Customer portal interface: contact info editing form</description>
+            <description locale="ru_RU">Личный кабинет клиента: редактирование контактной информации</description>
+        </file>
+        <file path="my.requestlist.html">
+            <description locale="en_US">Customer portal interface: list of requests</description>
+            <description locale="ru_RU">Личный кабинет клиента: список запросов</description>
+        </file>
+        <file path="my.requestpage.html">
+            <description locale="en_US">Customer portal interface: single request page</description>
+            <description locale="ru_RU">Личный кабинет клиента: страница одного запроса</description>
+        </file>
+        <file path="navigation.html">
+        </file>
+        <file path="page.html">
+        </file>
+        <file path="search.html">
+        </file>
+
+        <file path="mobile.helpdesk.css">
+        </file>
+        <file path="my.requestpage.js">
+            <description locale="en_US">JavaScript counterpart for my.newrequest.html</description>
+            <description locale="ru_RU">JavaScript для страницы my.newrequest.html</description>
+        </file>
+
+        <file path="error.html" parent="1">
+        </file>
+        <file path="forgotpassword.html" parent="1">
+        </file>
+        <file path="index.html" parent="1">
+        </file>
+        <file path="layout-head.html" parent="1">
+        </file>
+        <file path="layout-header.html" parent="1">
+        </file>
+        <file path="layout-menu.html" parent="1">
+        </file>
+        <file path="login.html" parent="1">
+        </file>
+        <file path="signup.html" parent="1">
+        </file>
+        <file path="my.profile.html" parent="1">
+        </file>
+        <file path="mobile.css" parent="1">
+        </file>
+        <file path="mobile.js" parent="1">
+        </file>
+
+    </files>
+</theme>

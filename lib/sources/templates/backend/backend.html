@@ -1,0 +1,344 @@
+<form id="{$uniqid}" action="{$action_url}" target="{$uniqid}-target" method="post" enctype="multipart/form-data" autocomplete="off">
+
+    <div class="h-contact-search-block h-form-top-wrapper">
+
+        <div class="sidebar right200px">
+            <a href="javascript:void(0)" class="inline-link new-contact-link"><b><i>[`New contact`]</i></b></a>
+        </div>
+
+        <div class="content right200px">
+            {* Autocompletion field to look for existing contacts *}
+            <input type="hidden" name="contact_id" value="">
+            <div class="contact-search">
+                <div class="field">
+                    <div class="name">[`From`]</div>
+                    <div class="value">
+                        <input type="text" class="autocomplete-contact" placeholder="[`find by name, email, of phone number`]">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="backend-new-request-form">
+
+        <div class="h-form-top-wrapper">
+            <div class="sidebar right200px">
+                <div class="hidden block">
+                    <a href="javascript:void(0)" class="inline-link another-contact-link"><b><i>[`Another contact`]</i></b></a>
+                </div>
+            </div>
+            <div class="content right200px">
+                <input type="hidden" name="source_id" value="{$source.id}">
+                {$wa->csrf()}
+
+                {* Wrapper for data of existing contact selected via autocomplete *}
+                <div class="hidden double-padded contact-existing contacts-data">{* Populated via XHR *}</div>
+
+                {* Form to create new contact *}
+                <div class="hidden field-group h-contact-new">
+                    {$form->html()}
+                </div>
+            </div>
+        </div>
+
+        <div>
+
+            <div class="fields request-form" style="width:100%;max-width:900px;">
+
+                {* Request fields *}
+                <div>
+                    <div class="field">
+                        <div class="name">[`Subject`]</div>
+                        <div class="value">
+                            <input type="text" name="subject" value="" autocomplete="off" class="large bold">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="name">[`Text`]</div>
+                        <div class="value">
+                            <textarea name="text" style="min-height: 250px;"></textarea>
+                        </div>
+                    </div>
+                    <div class="field" id="attachments">
+                        <div class="name">
+                            [`Attach`]
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <div class="name">[`Assign to`]</div>
+                        <div class="value">
+                            <select name="assigned_contact_id">
+                                <option value="0"></option>
+                                {foreach $assignees as $user_id => $user_name}
+                                    <option value="{$user_id}" {if !empty($source->params->new_request_assign_contact_id) && $source->params->new_request_assign_contact_id == $user_id}selected="selected"{/if}>{$user_name|escape}</option>
+                                {/foreach}
+                            <select>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <div class="name">[`Status`]</div>
+                        <div class="value">
+                            {$all_states_count = count($all_states)}
+                            <select name="new_request_state_id">
+                                <option value=""></option>
+                                {foreach $all_states as $workflow_info}
+                                    {foreach $workflow_info['states'] as $state_info}
+                                        {$full_state_id = $workflow_info.id|cat:'@':$state_info.id}
+                                        <option value="{$full_state_id}" data-customer-portal="{if $state_info.customer_portal_name|default:''}1{else}0{/if}"
+                                                             {if !empty($source->params->new_request_state_id) && $source->params->new_request_state_id == $full_state_id}selected="selected"{/if}
+                                                         >
+                                            {if $all_states_count > 1}{$workflow_info.name|escape}&mdash;{/if}{$state_info.name|escape}
+                                        </option>
+                                    {/foreach}
+                                {/foreach}
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="field">
+                    <div class="value">
+                        <input type="submit" class="button green" value="[`Save`]">
+                        <i class="icon16 loading" style="display:none"></i>
+                    </div>
+                    <div class="top-spaced value">
+                        <i class="icon16 exclamation"></i>
+                        <span class="h-message-see-action">[`Clients can see this action record and it's description (except assignments info) in their Customer Portal`]</span>
+                        <span class="h-message-do-no-see-action" style="display:none;">[`Clients do not see any information associated with this action in their Customer Portal`]</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>
+<iframe src="javascript:true" id="{$uniqid}-target" name="{$uniqid}-target" style="width:0;height:0;border:0px solid #fff;"></iframe>
+
+<script>(function() { "use strict";
+
+    var form = $('#{$uniqid}');
+    var search_field = $('.autocomplete-contact');
+    var contact_id_hidden = form.find('input[name="contact_id"]');
+
+    var block_contact_existing = form.find('.contact-existing');
+    var block_contact_new = form.find('.h-contact-new');
+    var block_contact_search = $('.h-contact-search-block');
+
+    var email_will_be_sent = form.find('.email-will-be-sent');
+
+    // Save
+    var rand;
+    form.submit(function() {
+
+        clearErrors();
+
+        // JS-validation
+        // Must select existing contact, or click "New contact" button
+        if (search_field.is(':visible')) {
+            var txt;
+            if (search_field.val()) {
+                txt = "[`Contact not found`]";
+            } else {
+                txt = "[s`This field is required.`]";
+            }
+            search_field.addClass('error').parent().append($('<em class="errormsg"></em>').text(txt));
+            return false;
+        }
+
+        form.find('.loading').show();
+        form.find(':submit').prop('disabled', true);
+
+        // catch iframe load event when uploading finishes
+        var r = rand = Math.random();
+        $('iframe[name="{$uniqid}-target"]').one('load', function() {
+            if (r != rand) {
+                return;
+            }
+
+            // Make sure we'll show something even when bad things happen and we don't have any JSON.
+            var timeout = setTimeout(function() {
+                form.find('.loading').hide();
+                form.find(':submit').prop('disabled', false).parent().append($('<em class="errormsg"></em>').html("[`An error occurred while processing your request. Please try again later.`]"));
+            }, 200);
+
+            var iframe = $(this);
+            setTimeout(function() {
+                if (r != rand) {
+                    return;
+                }
+                var json = iframe.contents().find("body").html();
+                if (json) {
+                    if (JSON && JSON.parse) {
+                        json = JSON.parse(json);
+                    } else {
+                        eval('json = ('+json+')');
+                    }
+                    if (json && json.errors) {
+                        form.find(':submit').prop('disabled', false);
+                        form.find('.loading').hide();
+                        for (var fld_name in json.errors) {
+                            if (json.errors.hasOwnProperty(fld_name)) {
+                                if (fld_name) {
+                                    var el = form.find('[name="'+fld_name+'"]');
+                                    if (el.length) {
+                                        el.addClass('error').parent().append($('<em class="errormsg"></em>').html(json.errors[fld_name]));
+                                        continue;
+                                    }
+                                }
+                                form.find(':submit').parent().append($('<em class="errormsg"></em>').html(json.errors[fld_name]));
+                            }
+                        }
+                    } else if (json && json.data) {
+                        var hash = '#/request/'+json.data;
+                        $.wa.helpdesk_controller.stopDispatch(0);
+                        $.wa.helpdesk_controller.lastView = null;
+                        if (hash == window.location.hash) {
+                            window.location.hash = hash;
+                            $.wa.helpdesk_controller.redispatch();
+                        } else {
+                            window.location.hash = hash;
+                        }
+                    }
+                    clearTimeout(timeout);
+                }
+            }, 100);
+        });
+
+        // allow form to submit via its target iframe
+        return true;
+    });
+
+    // Contact form controller
+    (function() {
+
+        var new_contact_link = $('.new-contact-link');
+        var another_contact_link = form.find('.another-contact-link');
+
+        // Show new contact form when user click the link
+        new_contact_link.click(function() {
+            contact_id_hidden.val('');
+            block_contact_existing.hide();
+            block_contact_search.slideUp(200);
+            block_contact_new.slideDown(200).find('input:text:first').focus();
+            another_contact_link.parent().show();
+            new_contact_link.parent().hide();
+            updateEWBSTfromNew();
+            clearErrors();
+        });
+
+        // Show search field again when user clicks "another contact" link
+        another_contact_link.click(function() {
+            contact_id_hidden.val('');
+            block_contact_new.slideUp(200);
+            block_contact_search.slideDown(200);
+            block_contact_existing.slideUp(200);
+            email_will_be_sent.hide();
+            another_contact_link.parent().hide();
+            new_contact_link.parent().show();
+            search_field.focus();
+            clearErrors();
+        });
+
+        // Show "email will be sent to" link when new client has an email
+        var name_fields = block_contact_new.find('[name="client[firstname]"],[name="client[middlename]"],[name="client[lastname]"]');
+        var email_field = block_contact_new.find('[name="client[email]"]');
+        block_contact_new.on('change keyup', '[name="client[email]"],[name="client[firstname]"],[name="client[middlename]"],[name="client[lastname]"]', updateEWBSTfromNew);
+        function updateEWBSTfromNew() {
+            var email = email_field.val();
+            if (email) {
+                var name = [];
+                name_fields.each(function() {
+                    name.push($(this).val());
+                });
+                name = name.join(' ');
+                email_will_be_sent.show().find('.recipient-name').text(name + ' <'+email+'>');
+            } else {
+                email_will_be_sent.hide();
+            }
+        }
+
+        // Autocomplete for contact search
+        search_field.autocomplete({
+            source: '?action=contactAutocomplete',
+            minLength: 3,
+            delay: 300,
+            focus: function() {
+                return false;
+            },
+            select: function(event, ui) {
+                search_field.val('');
+                contact_id_hidden.val(ui.item.id);
+                block_contact_new.hide();
+                block_contact_search.slideUp(200);
+                new_contact_link.parent().hide();
+                another_contact_link.parent().show();
+                block_contact_existing.slideDown(200).html('<i class="icon16 loading"></i>');
+                block_contact_new.next().find('input:text').focus();
+
+                $.post('?action=contactInfo', { id: ui.item.id }, function(r) {
+                    block_contact_existing.hide().html(r).slideDown(200);
+                    var email = block_contact_existing.find('.contact-email').first().text();
+                    if (email) {
+                        var name = block_contact_existing.find('.contact-name').text();
+                        email_will_be_sent.show().find('.recipient-name').text(name + ' <'+email+'>');
+                    } else {
+                        email_will_be_sent.hide();
+                    }
+                });
+                return false;
+            }
+        });
+    })();
+
+    // Adds new file input field for attachments
+    var addNewField = function() {
+        $('#attachments').append('<div class="value attach"><input type="file" name="attachment[]"></div>');
+    };
+    addNewField();
+
+    // when user selects an attachment, add another field
+    $('.value:last-child :file', $('#attachments')).die('change').live('change', function() {
+        $(this).parent().append('<a href="javascript:void(0)" class="small inline-link remove-attach"><i>'+"[`remove`]"+'</i></a>');
+        addNewField();
+    });
+
+    // attachment removal
+    $('a.remove-attach', $('#attachments')).die('click').live('click', function() {
+        $(this).parents('.value.attach').remove();
+        return false;
+    });
+
+    form.on('keyup change', '.error', function() {
+        $(this).removeClass('error').siblings('.errormsg').remove();
+    });
+
+    search_field.focus();
+
+    function clearErrors() {
+        form.find('.errormsg').remove();
+        form.find('.error').removeClass('error');
+    }
+
+    function triggerStateMessage()
+    {
+        var selected = form.find('select[name=new_request_state_id]').find(':selected');
+        if (selected.data('customerPortal')) {
+            $('.h-message-see-action').show();
+            $('.h-message-do-no-see-action').hide();
+        } else {
+            $('.h-message-see-action').hide();
+            $('.h-message-do-no-see-action').show();
+        }
+    }
+
+    triggerStateMessage();
+    form.find('select[name=new_request_state_id]').change(function() {
+        triggerStateMessage();
+    });
+
+})();</script>
+

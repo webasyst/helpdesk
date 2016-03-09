@@ -1,0 +1,106 @@
+<div id="{$uniqid}" style="position:relative;">
+    <ul class="hd-color-list thumbs">
+        {foreach $basic_colors as $c}
+            <li{if $c === $pre_selected} class="selected"{/if}>
+                <b style="background-color:{$c}" title="{$c}" data-color="{$c}"></b>
+            </li>
+        {/foreach}
+        {if $pre_selected && !in_array($pre_selected, $basic_colors)}
+            <li class="user-selected selected">
+                <b style="background-color:{$pre_selected}" title="{$pre_selected}" data-color="{$pre_selected}"></b>
+            </li>
+        {/if}
+        <li class="more-link-li"><a href="javascript:void(0)" class="inline-link more-link"><b><i>[`more...`]</i></b></a></li>
+    </ul>
+
+    <div class="hidden hd-palette">
+        {foreach $colors as $c}
+            <div class="color" style="background-color:{$c}" title="{$c}" data-color="{$c}"></div>
+        {/foreach}
+    </div>
+</div>
+
+<script>setTimeout(function() { "use strict";
+
+    var max_custom_colors = 2;
+    var wrapper = $('#{$uniqid}');
+    var palette = wrapper.find('.hd-palette');
+    var color_list = wrapper.find('.hd-color-list');
+    var more_link = wrapper.find('.more-link');
+
+    // Select color when user clicks on color-list
+    color_list.on('click', 'li', function() {
+        var li = $(this);
+        var b = li.children();
+        var color = b.data('color');
+        if (!color) {
+            return false;
+        }
+
+        li.addClass('selected').siblings('.selected').removeClass('selected');
+        li.trigger('change');
+        return false;
+    });
+
+    // Helper to add new user-selected color to the color list
+    var addUserSelectedColor = function(color) {
+        var li = color_list.find('li:first').clone().addClass('user-selected').insertBefore(more_link.closest('li'));
+        li.children().attr({
+            style: 'background-color:'+color,
+            title: color
+        }).data('color', color);
+        return li;
+    };
+
+    // Select color when user clicks on a full palette
+    palette.on('click', '.color', function() {
+        var color_div = $(this);
+        var color = color_div.data('color');
+        if (!color) {
+            return false;
+        }
+
+        var li = addUserSelectedColor(color);
+        li.addClass('selected').siblings('.selected').removeClass('selected');
+        var other_user_selected = li.siblings('.user-selected');
+        if (other_user_selected.length >= max_custom_colors) {
+            other_user_selected.slice(0, other_user_selected.length - max_custom_colors + 1).remove();
+        }
+        li.trigger('change');
+        palette.hide(200);
+    });
+
+    // Show full palette when user clicks 'more...' link
+    more_link.click(function() {
+        var li = more_link.parent();
+        var pos = li.position();
+        var pos2 = li.parent().position();
+        palette.css({
+            top: pos.top + pos2.top + li.outerHeight() + 16,
+            left: Math.max(0, pos.left + pos2.left - palette.outerWidth() + li.outerWidth() + 28)
+        });
+        palette.slideToggle(200);
+    });
+
+    // Remember last user-selected colors in localStorage
+    color_list.on('change', 'li', function() {
+        var colors = $(this).parent().find('.user-selected b').map(function() {
+            return $(this).data('color');
+        }).get().join(';');
+        $.storage.set('helpdesk/user_selected_colors', colors);
+    });
+
+    // Restore user-selected colors, if remembered
+    (function() {
+        var colors = $.storage.get('helpdesk/user_selected_colors');
+        if (colors) {
+            colors = colors.split(';');
+            for (var i = 0; i < colors.length && color_list.children('li.user-selected').length < max_custom_colors; i++) {
+                if (color_list.find('[data-color="'+colors[i]+'"]').length <= 0) {
+                    addUserSelectedColor(colors[i]);
+                }
+            }
+        }
+    })();
+
+}, 0);</script>

@@ -1,0 +1,426 @@
+<div class="block">
+
+    {if $backend_default_form}
+        <a href="#/request/new/" class="bold no-underline" style="margin-left: 3px;">
+            <i class="icon16 add"></i>[`New request`]
+        </a>
+    {else if $forms_new_request}
+        {$fid = key($forms_new_request)}
+        <a href="#/request/add/{$fid}/" class="bold no-underline" style="margin-left: 3px;">
+            <i class="icon16 add"></i>[`New request`]
+        </a>
+    {/if}
+
+    {if $forms_new_request}
+        <ul class="menu-h dropdown clickable h-new-request-forms" style="margin-left: 4px; display: none;">
+            <li style="display:inline-block; padding: 0;">
+                <a href="javascript:void(0)" class="inline-link">
+                    <b><i class="h-text">[`or`]</i></b>
+                </a>
+                <ul class="menu-v" style=" width: 160px; left: -16px;">
+                    {if $backend_default_form}
+                        <li class="h-new" style="display:none; border-bottom: 1px solid #ccc;">
+                            <a href="#/request/new/">[`default form`]</a>
+                        </li>
+                    {/if}
+                    {foreach $forms_new_request as $fid => $fname}
+                        <li data-id="{$fid}">
+                            <a href="#/request/add/{$fid}">{$fname}</a>
+                        </li>
+                    {/foreach}
+                </ul>
+            </li>
+        </ul>
+    {/if}
+
+    <ul class="menu-v">
+        <li>
+            <ul class="menu-v" id="hd-main-filters">
+                <li class="" {if $unread_count <= 0} style="display:none;"{/if}>
+                    <span class="{if $unread_count > 0}bold highlighted {/if}count no-autorestore" id="sb-unread-count">{$unread_count}</span>
+                    <a href="#/requests/unread"><b class="nowrap">
+                        <i class="icon16 new"></i>
+                        [`Unread `]
+                    <i class="fader"></i></b></a>
+                </li>
+
+                <li class="" {if $follow_count <= 0} style="display:none;"{/if}>
+                    <span class="{if $follow_count > 0}bold highlighted {/if}count no-autorestore" id="sb-follow-count">{$follow_count}</span>
+                    <a href="#/requests/follow"><b class="nowrap">
+                        <i class="icon16 binocular"></i>
+                        [`Follow`]
+                    <i class="fader"></i></b></a>
+                </li>
+
+                {if empty($all_requests_hide)}
+                    <li class="" rel="all">
+                        <span class="count"></span>
+                        <a href="#/requests/all/">
+                            <b class="nowrap"><i class="icon16 notebooks"></i> [`All requests`]<i class="fader"></i></b>
+                        </a>
+                    </li>
+                {/if}
+            </ul>
+        </li>
+
+        {*
+         * Search
+         *}
+        <li class="s-search top-spaced">
+            <form id="search-form" onsubmit="$.wa.helpdesk_controller.simpleSearch();return false">
+                <input id="search-text" type="search" class="search-input-only" value="" placeholder="[`search by request, name, or email`]">
+                <a href="javascript:void(0)" class="small no-underline float-right" id="hd-search-history-link" style="display:none;">[`History`]</a>
+                <a href="#/requests/search/" class="small no-underline">[`Advanced search`]</a>
+            </form>
+            <div class="hidden shadowed" style="display:none;width:100%;position:absolute;top:40px;margin:0;padding:4px 10px;z-index:30;box-sizing:border-box;">
+                <ul class="menu-v" id="hd-search-history">
+                    {* Updated via JS *}
+                </ul>
+            </div>
+        </li>
+    </ul>
+</div>
+
+{function by_tags f=[]}
+    <h5 class="heading collapse-handler" id="h-tags">[`Tags`]</h5>
+    <ul class="tags collapsible compact" style="list-style-type: none; margin: 0; padding: 0;" id="h-tag-cloud">
+        <li class="block align-center no-count">
+        {foreach $f.cloud as $tag}
+            <a href="#/requests/tag_id:{$tag.id}" style="font-size: {$tag.size}%; opacity: {$tag.opacity}" data-id="{$tag.id}" class="s-product-list">{$tag.name|escape}</a>
+        {/foreach}
+        </li>
+    </ul>
+{/function}
+
+{*
+ * Helper function to print items in common and personal filter lists.
+ *}
+{function filter_li f=null can_delete=true}
+    {if $f && $f.hash|default:'' === '@by_tags'}
+        <li class="h-system-filter" rel="{$f.id}">
+            {if $can_delete}
+                <a href="javascript:void(0);" class="float-right h-killer">
+                    <i class="icon10 no"></i>
+                </a>
+            {/if}
+            {by_tags f=$f}
+        </li>
+    {else if $f && !isset($f.children)}
+        <li{if !empty($f.id)} rel="{$f.id}"{/if} {if !empty($f.system)}class="h-system-filter"{/if}>
+            {if !empty($f.system) && $can_delete}
+                <a href="javascript:void(0);" class="float-right h-killer">
+                    <i class="icon10 no"></i>
+                </a>
+            {/if}
+            <a href="{ifset($f.href, "#/requests/filter/{ifset($f.id)}")}" {if !empty($f.css)} style="{$f.css};"{/if}>
+                <b class="nowrap">
+                    {if !empty($f.icon_url)}
+                        <i class="icon16 userpic20" style="background-image: url({$f.icon_url|escape})"></i>
+                    {else if !empty($f.icon_class)}
+                        <i class="icon16 {$f.icon_class|escape}"></i>
+                    {/if}
+                    {$f.name|escape}<i class="fader"></i>
+                </b>
+            </a>
+        </li>
+    {elseif $f}
+        <li{if !empty($f.id)} rel="{$f.id}"{/if} {if !empty($f.system)}class="h-system-filter"{/if}>
+            {if !empty($f.system) && $can_delete}
+                <a href="javascript:void(0);" class="float-right h-killer">
+                    <i class="icon10 no"></i>
+                </a>
+            {/if}
+            <a href="javascript:void(0)" class="small bold heading collapse-handler" data-collapsible-id="filter-{ifset($f.id, uniqid())}"><b class="bold"><i class="icon10 darr"></i> {$f.name|escape}</b></a>
+            {if $f.hash|default:'' === '@by_states' && empty($f.children)}
+                <div class="hint" style="margin-left: 15px;">[`No states available.`]</div>
+            {/if}
+            <ul class="menu-v collapsible compact">
+                {foreach $f.children as $fc}
+                    {filter_li f=$fc can_delete=$can_delete}
+                {/foreach}
+            </ul>
+        </li>
+    {/if}
+{/function}
+
+{*
+ * Common filters
+ *}
+<div class="block">
+    <ul class="menu-v" id="hd-common-filters">
+        {foreach $common_filters as $id => $f}
+            {if !empty($f.children)}
+                <li {if !empty($f.system)}class="h-system-filter"{/if} {if !empty($f.id)}rel="{$f.id}"{/if}>
+                    {if !empty($f.system) && $admin}
+                        <a href="javascript:void(0);" class="float-right h-killer">
+                            <i class="icon10 no"></i>
+                        </a>
+                    {/if}
+                    <h5 class="heading collapse-handler" data-collapsible-id="{$id}">
+                        <i class="icon16 darr"></i>{$f.name}
+                    </h5>
+                    <ul class="menu-v collapsible compact">
+                        {foreach $f.children as $c}
+                            {filter_li f=$c can_delete=$admin}
+                        {/foreach}
+                    </ul>
+                </li>
+            {else}
+                {filter_li f=$f can_delete=$admin}
+            {/if}
+        {/foreach}
+    </ul>
+</div>
+
+{*
+ * Plugin blocks
+ *}
+{foreach $plugin_blocks as $block}
+    {if is_string($block)}
+        {$block}
+    {elseif !empty($block.html)}
+        {$block.html}
+    {/if}
+{/foreach}
+
+{*
+ * Personal filters
+ *}
+{if !empty($personal_filters)}
+    <div class="block">
+        <h5 class="heading collapse-handler" id="hd-personal-filters-header">[`My filters`]</h5>
+        <ul class="menu-v collapsible compact" id="hd-personal-filters">
+            {foreach $personal_filters as $id => $f}
+                {filter_li f=$f}
+            {/foreach}
+        </ul>
+    </div>
+{/if}
+
+<div class="block">
+    <ul class="menu-h dropdown {if !empty($specials)}clickable{/if}" id="h-add-filter-menu">
+        <li style="display:block; padding: 0;">
+
+            {if !empty($specials)}
+                <a href="javascript:void(0)" class="inline-link small">
+                    <i class="icon10 add"></i> [`Add a filter`]<i class="icon10 darr-tiny"></i>
+                </a>
+                <ul class="menu-v" id="h-special-filters">
+                    {if !empty($all_requests_hide) && $admin}
+                        <li>
+                            <a href="javascript:void(0);" class="h-special" data-id="@all">[`All requests`]</a>
+                        </li>
+                    {/if}
+                    {foreach $specials as $fltr_hash => $fltr_name}
+                        <li>
+                            <a href="javascript:void(0);" class="h-special" data-id="{$fltr_hash}">{$fltr_name}</a>
+                        </li>
+                    {/foreach}
+                    <li class="hr"></li>
+                    <li><a href="#/requests/add_filter/" class="h-add-filter">[`New filter`]</a></li>
+                </ul>
+            {else}
+                <a href="#/requests/add_filter/" class="inline-link small h-add-filter">
+                    <i class="icon10 add"></i> [`Add a filter`]
+                </a>
+            {/if}
+
+        </li>
+    </ul>
+</div>
+
+{if $admin}
+
+    <div class="block">
+        <h5 class="heading collapse-handler" id="h-admin-tools"><i class="icon16 darr"></i>[`Admin`]</h5>
+        <div class="collapsible block">
+            <ul class="menu-v compact collapsible" id="h-admin-menu">
+                {*
+                <li class="sidebar-settings-link">
+                    <a href="#/settings/sidebar/">
+                        <i class="icon16 settings"></i>[`Settings`]
+                    </a>
+                </li>
+                <li class="sidebar-customer-portal-settings-link">
+                    <a href="#/settings/portal/">
+                        <i class="icon16 source-my"></i>[`Customer portal`]
+                    </a>
+                </li>
+                *}
+                {if $wa->user()->getRights($wa->app(), 'pages')}
+                <li class="sidebar-pages-link"><a href="#/pages/"><i class="icon16 notebook"></i>[s`Pages`]</a></li>
+                {/if}
+                {if $wa->user()->getRights($wa->app(), 'design')}
+                <li class="sidebar-design-link">
+                    <a href="#/design/">
+                        <i class="icon16 palette"></i>[`Design`]
+                    </a>
+                </li>
+                {/if}
+                <li class="sidebar-cron-link">
+                    <a href="#/settings/cron/">
+                        <i class="icon16 clock"></i>[`Cron Job`]
+                        {if !helpdeskHelper::isCronOk()}
+                            <span class="error indicator inline">!</span>
+                        {/if}
+                    </a>
+                </li>
+                <li>
+                    <a href="#/fconstructor/" class="no-underline"><i class="icon16 application-form"></i>[`Field constructor`]</a>
+                </li>
+                <li>
+                    <a href="#/faq/" class="no-underline"><i class="icon16 book-question"></i>[`FAQ`]</a>
+                </li>
+            </ul>
+            <div class="block">
+                {if $workflows}
+                    <h5 class="heading" id="h-workflows-header">[`Workflows`]</h5>
+                    <div class="block not-padded">
+                        <span class="hint">[`Sources, states and actions with requests are customized separately for every workflow.`]</span>
+                        <ul class="menu-v compact" id="h-sidebar-workflow-list">
+                            {foreach $workflows as $wid => $wname}
+                                <li data-workflow-id="{$wid}"><a href="#/settings/workflow/{$wid}">
+                                    {if !empty($workflow_source_errors[$wid])}
+                                        <span class="error indicator inline">!</span>
+                                    {/if}
+                                    <b class="nowrap"><i class="icon16 hierarchical"></i><span class="h-name">{$wname}</span><i class="fader"></i></b>
+                                </a></li>
+                            {/foreach}
+                        </ul>
+                    </div>
+                {/if}
+                <a href="#/settings/workflow/add/" class="no-underline small"><i class="icon10 add"></i> [`New workflow`]</a>
+            </div>
+        </div>
+    </div>
+
+{/if}
+
+
+<script>$(function() { "use strict";
+
+    {if !empty($history)}
+        $.wa.helpdesk_history.updateHistory({json_encode($history)});
+    {/if}
+
+    $('#hd-search-history').click(function() {
+        $(this).parent().hide();
+        $('#search-text').val('').change();
+    });
+    $('#hd-search-history-link').click(function() {
+        var wrapper = $('#hd-search-history').parent().toggle();
+        if (wrapper.is(':visible')) {
+            $(document).one('click', function() {
+                wrapper.hide();
+            });
+        }
+        return false;
+    });
+
+
+    $('#hd-personal-filters{if $admin}, #hd-common-filters{/if}').each(function() {
+        var block = $(this).closest('.block');
+        block.sortable({
+            distance: 5,
+            opacity: 0.75,
+            items: 'li',
+            axis: 'y',
+            containment: block.closest('.block'),
+            update: function(event, ui) {
+                var id = $(ui.item).attr('rel');
+                var before_id = $(ui.item).next().attr('rel');
+                $.post('?module=filters&action=move', { id: id, before_id: before_id }, function(r) {
+                    if (!r || r.status !== 'ok') {
+                        block.sortable('cancel');
+                    }
+                }, 'json');
+            }
+        });
+    });
+
+    $('#h-special-filters .h-special').click(function() {
+        var item = $(this);
+        {if !$admin}
+            $.post('?module=backend&action=sidebarSave', {
+                add_my: [item.data('id')]
+            }, function() {
+                $.wa.helpdesk_controller.reloadSidebar();
+            });
+        {else}
+            if (item.data('id') === '@all') {
+                $.post('?module=backend&action=sidebarSave', { add: '@all' }, function() {
+                    $.wa.helpdesk_controller.reloadSidebar();
+                });
+            } else {
+                $('#h-add-fiter-dialog').waDialog({
+                    onLoad: function() {
+                        var d = $(this);
+                        d.find('h1').html('[`Add a filter`] ' + '<span style="text-transform: uppercase">' + item.text() + '<span>');
+                        d.find('.h-default').attr('checked', true);
+                    },
+                    onSubmit: function(d) {
+                        var form = $(this);
+                        var data = { };
+                        if (form.find('input[name=shared]:checked').val()) {
+                            data.add_common = [item.data('id')];
+                        } else {
+                            data.add_my = [item.data('id')];
+                        }
+                        $.post('?module=backend&action=sidebarSave', data, function() {
+                            $.wa.helpdesk_controller.reloadSidebar();
+                            d.trigger('close');
+                        });
+                        return false;
+                    }
+                });
+            }
+        {/if}
+    });
+
+    $('.h-system-filter .h-killer').click(function() {
+        var item = $(this).closest('.h-system-filter');
+        $.post('?module=backend&action=sidebarSave', {
+            del: [item.attr('rel')]
+        }, function() {
+            $.wa.helpdesk_controller.reloadSidebar();
+        });
+        return false;
+    });
+
+    $.wa.helpdesk_controller.initClickableMenu($('.h-sidebar .h-new-request-forms'));
+    if ($('#h-special-filters').length) {
+        $.wa.helpdesk_controller.initClickableMenu($('#h-add-filter-menu'));
+    }
+
+    $('.h-sidebar').fixedBlock({
+        css: {
+            top: 0
+        },
+        dummyCss: {
+            float: 'left'
+        },
+        shift: -10
+    }).bind('first_fixed', function() {
+        $(this).css({
+            overflowY: 'auto',
+            overflowX: 'hidden',
+            height: $(window).height()
+        }).scrollTop(0);
+    }).bind('fixed', function() {
+        $(this).css({
+            height: $(window).height()
+        });
+    }).bind('unfixed', function() {
+        $(this).css({
+            overflowY: '',
+            overflowX: '',
+            height: ''
+        });
+    }).bind('win_resize', function(e, fixed) {
+        if (fixed) {
+            $(this).height($(window).height());
+        }
+    });
+
+
+});</script>

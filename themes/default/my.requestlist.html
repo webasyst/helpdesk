@@ -1,0 +1,45 @@
+{* List of requests in customer portal. *}
+
+<style>
+    table.table { margin-top: 25px; width: 100%; border-spacing:0; border-collapse:collapse; }
+    table.table th { padding-left: 0; padding-right: 15px; text-align: left; color: #aaa; }
+    table.table td { padding: 15px 15px 15px 0; border: none; border-bottom: 1px solid #ddd; }
+    table.table td.min-width { width: 1%; }
+    table.table td p { margin: 0; }
+    table.table td input.numerical { width: 50px; margin-right: 5px; text-align: right; }
+    table.table tr.no-border td { border: none; }
+    table.table tr.thin td { padding-top: 13px; padding-bottom: 0; }
+    table.table tr.service td { padding-top: 5px; padding-bottom: 5px; padding-left: 25px; font-size: 0.8em; color: #555; }
+    .no-records { margin-top: 10px; }
+</style>
+
+<h1>[`Requests`]</h1>
+
+{if $forms}
+    {foreach $forms as $form}
+    <input type="button" onClick="window.location.href='{$wa->getUrl('helpdesk/frontend/myNew', ['id' => $form->getId()])}';" value="{$form->name}" />
+    {/foreach}
+{/if}
+
+{if $requests}
+    <table class="table">
+    <tr>
+        <th class="min-width">[`ID`]</th>
+        <th>[`Sent`]</th>
+        <th>[`Subject`]</th>
+        <th>[`Status`]</th>
+    </tr>
+    {foreach $requests as $r}
+    <tr style="{$r.list_row_css}">
+        <td class="min-width"><a href="{$r.link}">{$r.id}</a></td>
+        <td><a href="{$r.link}">{$r.dt_formatted}</a></td>
+        <td><a href="{$r.link}">{$r.summary}</a></td>
+        <td><a href="{$r.link}">{$r.state}</a></td>
+    </tr>
+    {/foreach}
+    </table>
+{else}
+    <p class="no-records"><em>[`&lt;no support requests&gt;`]</em></p>
+{/if}
+
+{$wa->globals('isMyAccount', true)}

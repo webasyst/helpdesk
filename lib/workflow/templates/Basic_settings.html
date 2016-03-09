@@ -1,0 +1,703 @@
+<style>
+
+    /* Dirty hack for redactorjs in Chrome. If div wrappers has "fields" classes, redactorjs doesn't work
+    -------------------------------------------- */
+    .h-fields { float: left /* to handle clear within the form */; margin-bottom: 10px; overflow: visible; } /* wrapper for .field */
+    .field-group { margin: 5px 0 30px; }
+    .field { clear: left; margin: 0; padding-top: 3px; }
+    .field .name { float: left; width: 155px; padding-top: 0.05em; padding-bottom: 10px; color: #888; font-size: 0.95em; font-family: 'Helvetica Neue', Arial, sans-serif; }
+    .field .name.large { font-size: 1.2em; font-weight:bold; color:#000; }
+    .h-fields.form .field .name { padding-top: 0.45em; /* color: #000; */ /* class="fields form" is for forms with text inputs */ }
+    .h-fields.form .field .value.no-shift { padding-top: 0.3em; /* use in class="fields form" forms for elements with no inputs within class="value" to exclude unwanted paddings */ }
+    .h-fields .field .value.bottom-padded { padding-bottom: 10px; }
+    .field .value { margin-left: 180px; margin-bottom: 5px; position: relative; }
+    .field .value.submit { margin-left: 170px /* a little offset */; }
+    .field .value .error-message { display: none; }
+    .field .value input[type="text"], .field .value input[type="password"], .field .value textarea { width: 30%; min-width: 200px; margin: 0; }
+    .field .value textarea { min-width: 400px; height: 70px; }
+    .field .value input.semi { width: 10%; min-width: 80px; }
+    .field .value input[type="text"].large, .field .value input[type="password"].large { width: 35%; }
+    .field .value img.overhanging { position: absolute; left: -20px; }
+    .field .value i.icon16.overhanging { position: absolute; left: -20px; margin: 0; top: 2px; }
+    .field .value i.icon10.overhanging { position: absolute; margin-left: -17px; margin-right: 7px; }
+    .field .value i.icon16 { vertical-align: middle; }
+    .field .value.no-shift i.icon16.overhanging { top: 8px; }
+    .field .value .address-subfield { padding:1px 0; }
+    .field .value input, .field .value select { vertical-align:middle; }
+    .h-fields.width100px .name { width: 105px; }
+    .h-fields.width100px .value { margin-left: 120px; }
+    .h-fields.width100px .value.submit { margin-left: 110px; }
+
+    #{$uniqid} .h-section { width: 100%; font-size: 1.3em; }
+    #{$uniqid} .fields .field .value p i.icon16 { float: none; position: static; }
+    #{$uniqid} .textarea-with-variables { margin-left: 20px; }
+</style>
+
+<h1 class="h-action-settings-title">
+    {if $action->getId()}
+        [`Customizing action`]
+    {else}
+        [`New action`]
+    {/if}
+</h1>
+
+<div id="{$uniqid}">
+
+<div class="h-fields width100px" style="width:100%">
+
+    <div class="field">
+        <p>
+            [`Customize form that appears for users when they perform this action. Choose required fields and set up their properties and location in the form.`]
+        </p>
+    </div>
+
+    <div class="field h-action-name">
+        <div class="name">[`Name `]</div>
+        <div class="value">
+            <input type="text" name="options[name]" value="{ifset($options.name)|escape}">
+            {if strlen($action->getId())}
+                <span class="hint" style="font-size:12px;">[`ID:`] {$action->getId()}</span>
+            {/if}
+        </div>
+    </div>
+    {if !strlen($action->getId())}
+        <div class="field h-action-id">
+            <div class="name">[`ID:`]</div>
+            <div class="value">
+                <input type="text" name="action_new_id" value="{ifset($action_new_id)}">
+                <i class="icon16 loading hidden"></i>
+            </div>
+        </div>
+    {/if}
+
+
+
+    <div class="field h-action-settings-fields">
+        <div class="name"></div>
+        <div class="value">
+
+            {function show_field_checkboxes fields_order=[] checked=false}
+                {foreach $fields_order as $field_name}
+                    {if $field_name === 'show_textarea'}
+                        <div class="h-field">
+                            <p>
+                                <label>
+                                    <i class="icon16 sort"></i>
+                                    <input type="checkbox" name="options[show_textarea]" value="1"{if $checked} checked{/if}>
+                                    [`Text`]
+                                </label>
+                            </p>
+                            <div class="hidden textarea-with-variables">
+                                <div class="variables-link-wrapper border-box w100" style="max-width:530px;">
+                                    <textarea class="sized w100" placeholder="[`Enter a default text here`]" name="options[textarea_default_text]">{"\n"}{ifset($options.textarea_default_text)|escape}</textarea>
+                                    <a href="javascript:void(0)" class="variables-link inline-link" style="font-size: 0.8em;"><b><i>[`Variables`]</i></b></a>
+                                </div>
+                                <div class="variables-wrapper">
+                                    <div class="fields shadowed top-spaced">
+                                        {foreach $default_text_vars|default:[] as $category_id => $category}
+                                            {if !empty($category.vars)}
+                                                <div class="block">
+                                                    <h3>{$category.name|default:''|escape}</h3>
+                                                    {foreach $category.vars as $k => $v}
+                                                        <div class="field">
+                                                            <div class="name"><a href="javascript:void(0)" class="inline-link{if strlen($k) > 35} small{/if}"><b><i>{$k|escape}</i></b></a></div>
+                                                            {if $v}
+                                                                <div class="value hint">{$v|escape}</div>
+                                                            {/if}
+                                                        </div>
+                                                    {/foreach}
+                                                </div>
+                                            {/if}
+                                        {/foreach}
+                                        {*
+                                        {foreach ifempty($default_text_vars, array()) as $k => $v}
+                                            <div class="field">
+                                                <div class="name"><a href="javascript:void(0)" class="inline-link{if strlen($k) > 35} small{/if}"><b><i>{$k|escape}</i></b></a></div>
+                                                {if $v}
+                                                    <div class="value hint">{$v|escape}</div>
+                                                {/if}
+                                            </div>
+                                        {/foreach}*}
+                                    </div>
+                                </div>
+                                <div class="clear-left"></div>
+                            </div>
+                        </div>
+                    {elseif $field_name === 'allow_attachments'}
+                        <div class="h-field">
+                            <p><label>
+                                <i class="icon16 sort"></i>
+                                <input type="checkbox" name="options[allow_attachments]" value="1"{if $checked} checked{/if}>
+                                [`Attachments`]
+                            </label></p>
+                        </div>
+                    {else if $field_name === 'assignment'}
+                        <div class="h-field">
+                            <p>
+
+                                <label>
+                                    <i class="icon16 sort"></i>
+                                    <input type="checkbox" name="options[assignment]" value="1"{if $checked} checked{/if}>
+                                    [`Assignment`]
+                                </label>
+
+                                <div class="h-allow-attachments-settings hidden" style="margin-left: 40px;">
+
+                                    [`Default assignee:`]
+                                    <select name="options[default_assignee]">
+                                        <option value="0"{if ifset($options.default_assignee) === '0' || ifset($options.default_assignee) === 0} selected{/if}>[`clear previous assignment`]</option>
+                                        <option value=""{if !isset($options.default_assignee) || $options.default_assignee == ''} selected{/if}>[`keep previous assignment`]</option>
+                                        <option value="{helpdeskWorkflowBasicAction::DEFAULT_ASSIGNEE_USER_PERFORMING_ACTION}"{if ifset($options.default_assignee) == helpdeskWorkflowBasicAction::DEFAULT_ASSIGNEE_USER_PERFORMING_ACTION} selected{/if}>[`assign user performing this action`]</option>
+                                        <option disabled>---</option>
+                                        {foreach $assignees as $id => $name}
+                                            <option value="{$id}"{if ifset($options.default_assignee) == $id} selected{/if}>{$name|escape}</option>
+                                        {/foreach}
+                                    </select><br>
+
+                                    <label>
+                                        <input type="checkbox" id="{$uniqid}-assignee-options" name="options[allow_choose_assign]" value="1"{if !empty($options.allow_choose_assign)} checked{/if}>
+                                        [`Allow to select assignee`]
+                                        <br>
+                                        {helpdeskHelper::rightsToAppMessageParagraph('hint no-bold', 'margin-bottom: 0px')}
+                                    </label><br>
+                                    <label class="left-spaced">
+                                        <input type="checkbox" name="options[assignment_required]" value="1"{if !empty($options.assignment_required)} checked{/if}>
+                                        [`Assignment is required`]
+                                    </label>
+
+                                </div>
+
+                            </p>
+
+                        </div>
+                    {else}
+                        <div class="h-field">
+                            <p><label>
+                                <i class="icon16 sort"></i>
+                                <input type="checkbox" name="options[{$field_name}]" value="1" {if $checked}checked="checked"{/if}>
+                                {$request_fields[substr($field_name, 10)]->getName()|escape}
+                            </label></p>
+                        </div>
+                    {/if}
+                {/foreach}
+            {/function}
+
+            {show_field_checkboxes fields_order=$allowed_fields_order checked=true}
+            {show_field_checkboxes fields_order=$unallowed_fields_order checked=false}
+
+
+            <div id="{$uniqid}-color-selector">
+                <div style="float: left; margin-right: 40px;">
+                    <button class="preview button {ifset($options.user_button_css_class)|escape}" onclick="return false;">{$action->getName()|escape}</button>
+                </div>
+                <div class="float-left">
+                    <span class="small">
+                        <i class="icon16 hand-point-180"></i>[`This shows how this action's button will look like on request page in backend`]<br>
+                        <a href="javascript:void(0);" style="margin-left: 19px;" id="h-customize-color-button">[`Customize button color`]</a>
+                    </span>
+                    <div style="margin-top: 10px; display: none;" id="h-customize-color-button-block">
+                        <span class="small">
+                            <label class="visible-when-transition-selected">
+                                <input type="checkbox" name="options[use_state_border_color]" value="1" {if !empty($options.use_state_border_color) && !empty($transition)} checked{/if}>
+                                <span class="h-use-color-of-state" style="display:inline; color: #000;"></span>
+                            </label>
+                            <div class="color-selector">
+                                <input type="hidden" name="options[user_button_border_color]" value="{ifset($options.user_button_border_color, '#888')}">
+                                {wa_action app="helpdesk" module="editor" action="palette" uniqid="hd-`$uniqid`-basic-colors" pre_selected=ifset($options.user_button_border_color)}
+                            </div>
+                        </span>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="field">
+        <hr>
+    </div>
+
+    <div class="field">
+        <div class="bold name h-section">[`After this action is submitted`]</div>
+    </div>
+
+    <div class="field">
+        <div class="name"></div>
+        <div class="value">
+            <label>
+                <input type="radio" name="after_action_submit" value="" {if empty($transition)}checked="checked"{/if}>
+                [`Leave request in the same state`]
+                <input type="hidden" name="transition" value="" {if !empty($transition)}disabled="disabled"{/if}>
+            </label><br><br>
+            <label>
+                <input type="radio"  name="after_action_submit" value="1" {if !empty($transition)}checked="checked"{/if}> [`Forward request to state`]:
+            </label>
+            <select name="transition" {if empty($transition)}disabled="disabled"{/if}>
+                {foreach $states as $s}
+                    <option value="{$s->getId()}"{if $transition == $s->getId()} selected="selected"{/if}>{$s->getName()|escape}</option>
+                {/foreach}
+                {if count($workflows) > 1}
+                    <option disabled="disabled">&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;&mdash;</option>
+                    {foreach $workflows as $wfid => $wrk}
+                        {if $wfid != $workflow->getId()}
+                            {foreach $wrk->getAllStates() as $s}
+                                {$val = $wfid|cat:":":$s->getId()}
+                                <option value="{$val}" {if $transition == $val} selected="selected"{/if}>{$wrk->getName()|escape} &mdash; {$s->getName()|escape}</option>
+                            {/foreach}
+                        {/if}
+                    {/foreach}
+                {/if}
+            </select>
+            <span class="hint" style="display:block;">[`When a user performs this action the request state will be changed to the state you select here. Your choice will be shown by an arrow in the workflow setup diagram.`]</span>
+        </div>
+    </div>
+
+    <div class="field">
+        <hr>
+    </div>
+
+    <div class="field">
+        <div class="bold name h-section">[`Customer`]</div>
+    </div>
+
+    <div class="field">
+        <div class="name"></div>
+        <div class="value">
+            [`Choose if this action is available for customer (request's originator) in their customer portal.`]
+            {sprintf_wp('To setup Customer portal use the <a href="%s">Site app</a>.', "`$wa_backend_url`site/")}
+        </div>
+    </div>
+    <div class="field">
+        <div class="name"></div>
+        <div class="value">
+            <label class="radio">
+                <input type="radio" name="customer_portal" value=""{if empty($options.client_visible)} checked{/if}>
+                [`Not available`]
+                <br><span class="hint">[`Clients do not see any information associated with this action in their Customer Portal`]</span>
+            </label>
+            <label class="radio">
+                <input type="radio" name="customer_portal" value="visible_all"{if !empty($options.client_visible) && empty($options.client_triggerable)} checked{/if}>
+                [`Available for viewing only`]
+                <br><span class="hint">[`Clients can see this action record and it's description (except assignments info) in their Customer Portal`]</span>
+            </label>
+            <label class="radio">
+                <input type="radio" name="customer_portal" value="triggerable_visible_own"{if ifempty($options.client_visible) != 'all' && !empty($options.client_triggerable)} checked{/if}>
+                [`Available for execution only`]
+                <br><span class="hint">[`Customer can perform the action but can not see these actions performed by other users`]</span>
+            </label>
+            <label class="radio">
+                <input type="radio" name="customer_portal" value="triggerable_visible_all"{if ifempty($options.client_visible) == 'all' && !empty($options.client_triggerable)} checked{/if}>
+                [`Available for viewing and execution`]
+                <br><span class="hint">[`Clients can perform this action from their Customer Portal (except assignments if they are set up for the action)`]</span>
+            </label>
+        </div>
+    </div>
+
+    <div class="field">
+        <div class="name"></div>
+        <div class="value">
+            <a href="javascript:void(0);" onclick="$('#customer-advanced').toggle('fast')">[`Advanced settings`]</a>
+        </div>
+    </div>
+    <div class="field" id="customer-advanced" style="display:none;">
+        <div class="name"></div>
+        <div class="value">
+            <label>
+                <input type="checkbox" name="options[ban_user]"{if !empty($options.ban_user)} checked{/if}>
+                [`Revoke all access rights for customer`]
+                <br>
+                <span class="hint">
+                    [`If you turn on this option, then execution of this action will automatically cause a complete banning of the contact who sent you this request.`]
+                    [`The contact will not be able to log in to your site and customer portal anymore, and all further requests from this contact will be bounced.`]
+                    [`This option can be used for banning contacts for spam or other illegal actions.`]
+                </span>
+            </label>
+        </div>
+    </div>
+
+    <div class="field">
+        <hr>
+    </div>
+
+    <div class="field">
+        <div class="bold name h-section">[`Messages`]</div>
+    </div>
+
+    <div class="field-group" style="margin-top:20px;">
+        <div class="field">
+            <div class="name"></div>
+
+            <div class="value messages-wrapper" style="padding-top:1px;">
+                {if !empty($options.messages) && is_array($options.messages)}
+                    {foreach $options.messages as $i => $m}
+                        <div class="one-message email-template-editor"><div class="h-fields width100px">
+                            <div class="expandable expanded">
+                                <label class="expandable-legend">
+                                    <input type="checkbox" class="remove-message-checkbox" checked>
+                                    [`Send email message`]
+                                </label>
+
+                                <div class="editor-wrapper" data-i="{$i}">
+                                    {include file="templates/actions/editor/email_template_editor.html"
+                                        input_name="options[messages][{$i}][tmpl]"
+                                        variables=$message_vars
+                                        template=ifset($m.tmpl)
+                                        to_name="options[messages][{$i}][to]"
+                                        to_value=ifset($m.to)
+                                        sourcefrom_name="options[messages][{$i}][sourcefrom]"
+                                        sourcefrom_set=ifset($m.sourcefrom)
+                                        add_attachments_name="options[messages][{$i}][add_attachments]"
+                                        add_attachments_set=ifempty($m.add_attachments, 0)
+                                    }
+                                </div>
+                            </div>
+                        </div><div class="clear-left"></div></div>
+                    {/foreach}
+                {/if}
+
+                <div class="one-message hidden template email-template-editor"><div class="fields width100px">
+                    <div class="field-group expandable expanded">
+                        <label class="expandable-legend">
+                            <input type="checkbox" class="remove-message-checkbox" checked>
+                            [`Send email message`]
+                        </label>
+                        <div class="editor-wrapper" style="min-width:530px;">
+                            <div class="block"><i class="icon16 loading"></i></div>
+                        </div>
+                    </div>
+                </div><div class="clear-left"></div></div>
+
+                <div class="h-fields width100px">
+                    <div class="field">
+                        <label>
+                            <input type="checkbox" class="add-message-checkbox">
+                            <span class="when-no-messages">
+                                [`Send email message`]
+                            </span>
+                            <span class="when-messages">
+                                [`Send another email message`]
+                            </span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="clear-both"></div>
+
+<div class="other-errors block"></div>
+
+</div>
+
+<script>$(function() { "use strict";
+
+    var wrapper = $('#{$uniqid}');
+
+    //
+    // Show/hide parts of the form depending on checkbox status
+    //
+    (function() {
+        var f, controllers = [
+            ['[name="options[show_textarea]"]', wrapper.find('[name="options[textarea_default_text]"]').closest('.hidden')],
+            ['[name="options[send_email_to_client]"]', wrapper.find('[name="options[email_to_client_template]"]').closest('.h-fields')],
+            ['[name="options[send_email_to_assignee]"]', wrapper.find('[name="options[email_to_assignee_template]"]').closest('.h-fields')],
+            ['[name="options[assignment]"]', wrapper.find('.h-allow-attachments-settings')]
+        ];
+        var delay = 0;
+        for (var i = 0; i < controllers.length; i++) {
+            (function() {
+                var selector = controllers[i][0];
+                var element = controllers[i][1];
+                var no_animation = controllers[i][2];
+                wrapper.on('change', selector, f = function() {
+                    if ($(this).is(':checked')) {
+                        if (no_animation) {
+                            element.show();
+                        } else {
+                            element.slideDown(delay);
+                        }
+                    } else {
+                        if (no_animation) {
+                            element.hide();
+                        } else {
+                            element.slideUp(delay);
+                        }
+                    }
+                });
+                f.apply(wrapper.find(selector)[0]);
+            })();
+        }
+        delay = 200;
+
+        // Assignee controller
+        (function() {
+            var is_enabled_cb = $('#{$uniqid}-assignee-options');
+            var is_required_cb = is_enabled_cb.closest('.value').find('[name="options[assignment_required]"]');
+            is_enabled_cb.change(function() {
+                if (is_enabled_cb.is(':checked')) {
+                    is_required_cb.attr({ disabled: false }).closest('label').show();
+                } else {
+                    is_required_cb.attr({ checked: false, disabled: true }).closest('label').hide();
+                }
+            }).change();
+        })();
+
+    })();
+
+    // Color selector
+    (function() {
+        var color_selector_wrapper = $('#{$uniqid}-color-selector');
+        var preview_button = color_selector_wrapper.find('button.preview');
+        var border_color_input = color_selector_wrapper.find('[name="options[user_button_border_color]"]');
+        var name_input = wrapper.find('[name="options[name]"]');
+        var use_state_color_checkbox = color_selector_wrapper.find('.visible-when-transition-selected input:checkbox');
+        var transition_state_selector = wrapper.find('select[name="transition"]');
+
+        var state_css = {
+            {foreach $states as $s}
+                "{$s->getId()|escape}": "{$s->getOption('list_row_css')|escape}"{if !$s@last},{/if}
+            {/foreach}
+        };
+
+        var f;
+
+        // Update preview button when user changes action name
+        name_input.keyup(f = function() {
+            var color = border_color_input.val();
+            if (use_state_color_checkbox.is(':checked')) {
+                var state_id = wrapper.find('select[name="transition"]').val();
+                if (state_id && state_css[state_id]) {
+                    color = $('<div>').attr('style', state_css[state_id] || '')[0].style.color || "#000";
+                    border_color_input.val(color);
+                }
+            }
+            preview_button.text(name_input.val() || '???').attr('style', 'border-color:'+color);
+        });
+
+        var f2;
+
+        // Update button color when user changes transition state
+        transition_state_selector.change(f).change(f2 = function() {
+            var state_id = transition_state_selector.find(':selected').val();
+            var text = transition_state_selector.find(':selected').text();
+            var templ_mes = '[`Use color of the state %s where this button forwards request`]';
+            var color = $('<div>').attr('style', state_css[state_id] || '')[0].style.color || "#000";
+            $('.h-use-color-of-state').html(templ_mes.replace('%s', '<span style="color: ' + color + '; display: inline; font-size: 1.0em;">' + text + '</span>'));
+        });
+
+        f2();
+
+        // Hide color selector when user checks "use state color" checkbox
+        use_state_color_checkbox.change(f);
+
+        // Update preview and hidden input when user selects color in colorpicker
+        $('#hd-{$uniqid}-basic-colors').on('change', 'li', function() {
+            use_state_color_checkbox.prop('checked', false);
+            border_color_input.val($(this).children().data('color'));
+            f();
+        });
+
+        f(); // Initial state for preview button
+    })();
+
+
+    (function() {
+        {if $submit_errors}
+            // Validation errors
+            {foreach $submit_errors as $field_name => $e}(function() {
+                {if $field_name !== ''}
+                    {if preg_match("/options\[messages\]\[(\d+)\]\[to\]/", $field_name, $match)}
+                        var el = $('[data-field-name="options[messages][{$match[1]}][to]"]');
+                        if (el.length) {
+                            el.find('ul:first').show();
+                            el.find('ul li.hr.show-if-custom').before('<li class="errormsg"><em class="errormsg">{$e|escape}</em></li>');
+                            return;
+                        }
+                    {/if}
+                    var el = wrapper.find('[name="{$field_name|escape}"]').addClass('error').parent();
+                {else}
+                    var el = null;
+                {/if}
+                if (!el || !el.length) {
+                    el = wrapper.find('.other-errors');
+                }
+                el.append($('<em class="errormsg"></em>').html("{$e|escape}"));
+            })();{/foreach}
+
+            wrapper.on('keyup', 'input.error:text,textarea.error', function() {
+                $(this).removeClass('error').siblings('.errormsg').remove();
+            });
+            wrapper.on('change', '.error', function() {
+                $(this).removeClass('error').siblings('.errormsg').remove();
+            });
+        {/if}
+    })();
+
+    {if !strlen($action->getId())}
+        // Transliterate action name into ID
+        (function() {
+            var ignore_name_change = false;
+            var id_field = wrapper.find('[name="action_new_id"]');
+            var name_field = wrapper.find('[name="options[name]"]');
+
+            // When user changes ID by hand, do not replace it via transliteration (unless field is empty)
+            id_field.on('keyup', function() {
+                setTimeout(function() {
+                    ignore_name_change = !!id_field.val();
+                }, 0);
+            });
+
+            // Transliterate name into id when user changes it
+            var timeout = null;
+            name_field.on('keypress', function() {
+                if (ignore_name_change) {
+                    return;
+                }
+                if (timeout) {
+                    clearTimeout(timeout);
+                } else {
+                    id_field.siblings('.loading').removeClass('hidden');
+                }
+                timeout = setTimeout(function() {
+                    timeout = null;
+                    if (ignore_name_change) {
+                        id_field.siblings('.loading').addClass('hidden');
+                        return;
+                    }
+                    $.get('?action=translit', { str: name_field.val() }, function(r) {
+                        id_field.siblings('.loading').addClass('hidden');
+                        if (ignore_name_change) {
+                            return;
+                        }
+                        id_field.val(r.data);
+                    }, 'json');
+                }, 1000);
+            })
+        })();
+        wrapper.find('input:text:first').focus();
+    {/if}
+
+    // Controller for email messages editor
+    (function() {
+        var add_message_checkbox = wrapper.find('.add-message-checkbox');
+        var messages_wrapper = add_message_checkbox.closest('.messages-wrapper');
+
+        // Add another email editor block when user clicks "Send another email message" checkbox
+        add_message_checkbox.change(function() {
+            var fields = messages_wrapper.children('.hidden.template').clone().insertBefore(add_message_checkbox.closest('.h-fields'));
+            fields.removeClass('template').removeClass('hidden');
+            add_message_checkbox.prop('disabled', true);
+
+            var last_i = messages_wrapper.find('.editor-wrapper[data-i]').last().data('i');
+            if (last_i) {
+                last_i = parseInt(last_i+'', 10);
+            } else if (last_i !== 0) {
+                last_i = -1;
+            }
+            var i = last_i + 1;
+            fields.find('.editor-wrapper').data('i', ''+i).attr('data-i', ''+i);
+
+            $.post('?module=editor&action=emailTemplate&tpl=action', {
+                input_name: 'options[messages]['+i+'][tmpl]',
+                variables: {json_encode($message_vars)},
+                workflow_id: {$workflow_id},
+                to_name: 'options[messages]['+i+'][to]',
+                sourcefrom_name: 'options[messages]['+i+'][sourcefrom]',
+                add_attachments_name: 'options[messages]['+i+'][add_attachments]'
+            }, function(r) {
+                fields.find('.editor-wrapper').html(r);
+                add_message_checkbox.prop({ disabled: false, checked: false });
+            });
+
+            updateAddCheckbox();
+        });
+
+        // Hide email editor block when user unchecks "Send email message" checkbox
+        wrapper.on('change', '.remove-message-checkbox', function() {
+            $(this).closest('.h-fields').parent().slideUp(200, function() {
+                $(this).remove();
+                updateAddCheckbox();
+            });
+        });
+
+        updateAddCheckbox();
+
+        function updateAddCheckbox() {
+            var label = add_message_checkbox.parent();
+            if (messages_wrapper.find('.one-message:not(.template)').length > 0) {
+                label.find('.when-no-messages').hide();
+                label.find('.when-messages').show();
+            } else {
+                label.find('.when-no-messages').show();
+                label.find('.when-messages').hide();
+            }
+        }
+    })();
+
+    // Controller for textarea_default_text
+    (function() {
+        var wrapper = $('.textarea-with-variables');
+        var vars_link = wrapper.find('.variables-link');
+        var vars_wrapper = wrapper.find('.variables-wrapper');
+        var textarea = wrapper.find('textarea');
+
+        vars_link.click(function() {
+            vars_wrapper.toggle(200);
+        });
+        vars_wrapper.on('click', 'a', function() {
+            $.wa.helpdesk_controller.insertAtCursor(textarea[0], $(this).text());
+            return false;
+        });
+    })();
+
+    $('.h-action-settings-fields').sortable({
+        distance: 5,
+        helper: 'clone',
+        items: '.h-field',
+        opacity: 0.75,
+        handle: '.sort',
+        tolerance: 'pointer'
+    });
+
+    {if !strlen($action->getId())}
+        wrapper.attr('placeholder', '[`action name`]');
+    {/if}
+
+    var checkboxClickHanlder = function() {
+        if ($(this).is(':checked')) {
+            $(this).closest('label').css({
+                fontWeight: 'bold'
+            });
+        } else {
+            $(this).closest('label').css({
+                fontWeight: 'normal'
+            });
+        }
+    };
+    $('.h-action-settings-fields input:checkbox', wrapper).click(checkboxClickHanlder).each(function() {
+        checkboxClickHanlder.call(this);
+    });
+
+    $('#h-customize-color-button').click(function() {
+        $('#h-customize-color-button-block').show();
+        return false;
+    });
+
+    $('input[name="after_action_submit"]', wrapper).click(function() {
+        var el = $(this);
+        if (!el.val()) {
+            $('select[name="transition"]').attr('disabled', true);
+            $('input[name="transition"]').attr('disabled', false);
+            $('#{$uniqid}-color-selector .visible-when-transition-selected').hide().find('input:checkbox').prop('checked', false);
+        } else {
+            $('select[name="transition"]').attr('disabled', false);
+            $('input[name="transition"]').attr('disabled', true);
+            $('#{$uniqid}-color-selector .visible-when-transition-selected').show();
+        }
+    });
+
+});</script>

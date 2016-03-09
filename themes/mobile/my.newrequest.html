@@ -1,0 +1,9 @@
+{* Wrapper around form to create new requests in customer portal. *}
+
+<h1>{$source.name}</h1>
+
+{$form_html}
+
+{if empty($is_public_frontend)}
+    {$wa->globals('isMyAccount', true)}
+{/if}

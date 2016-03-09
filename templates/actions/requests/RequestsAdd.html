@@ -1,0 +1,113 @@
+<div class="topmost-grid-wrapper">
+    <div class="block h-header-block h-h1-inline">
+        {if $form_id === 'backend' && $helpdesk_backend_rights > 1}
+            <div class="float-right">
+                <a href="javascript:void(0);" class="h-source-settings-toggle hidden float-right" style="display: block"><i class="icon16 settings"></i></a>
+            </div>
+        {/if}
+        <h1>
+            <span class="h-header-text">{if $form_id === 'backend'}[`New request`]{else}{$source.name|escape}{/if}</span>
+        </h1>
+    </div>
+</div>
+<div class="support-content">
+    {if $form_id === 'backend' && $helpdesk_backend_rights > 1}
+    <div class="block h-source-settings" style="display:none; margin-top: 15px;">
+        <div class="h-source-settings-form-wrapper">
+            {$settings_html}
+        </div>
+        <div class="fields buttons" style="width: 100%;">
+            <input type="button" class="green button" value="[`Save`]"> [`or`]
+            <a href="javascript:void(0);" class="cancel">[`cancel`]</a>
+        </div>
+    </div>
+    {/if}
+    <div class="block h-form-content">
+        {$form_html}
+    </div>
+</div>
+
+<script>
+    $(function() { 'use strict';
+
+        var menu = $('.h-sidebar .h-new-request-forms').clone()
+            .find('.h-text').text('[`select another form`]')
+            .end()
+            .css({
+                width: '',
+                display: 'inline-block',
+                fontSize: '0.6em',
+                marginTop: '2px',
+                marginLeft: '50px'
+            }).appendTo('#c-core-content .h-header-block h1');
+        menu.css($.extend({
+            position: 'absolute'
+        }, menu.position()));
+        menu.find('.h-text').closest('b').after('<i class="icon16 darr" style="margin-top: 0"></i>');
+        menu.find('.darr').after('<i class="icon16 loading" style="margin-top: -3px; display:none;"></i>');
+        $.wa.helpdesk_controller.initClickableMenu(menu);
+
+        {if $form_id !== 'backend'}
+            menu.find('.menu-v')
+                .find('li[data-id="{$form_id}"]').hide()
+                .end()
+                .find('li.h-new').show()
+                .end()
+                .find('li.hr').show();
+        {/if}
+
+        var header_width = $('#c-core-content .h-header-block h1').width();
+        var header_text_width = $('#c-core-content .h-header-block h1 span').width();
+        var max_menu_width = Math.max(header_width - header_text_width, 200);
+        var max_menu_item_width = 0;
+        menu.find('ul').css({
+            width: max_menu_width,
+            maxWidth: max_menu_width
+        }).show().find('a').each(function() {
+            max_menu_item_width = Math.max(
+                $(this).css({
+                    display: 'inline',
+                    overflowX: 'hidden'
+                }).width(),
+                max_menu_item_width
+            );
+        }).end().hide();
+        var correction = 26;
+        if (max_menu_item_width + correction < max_menu_width) {
+            menu.find('ul').css({
+                width: max_menu_item_width + correction
+            });
+        }
+
+        {if $form_id === 'backend' && $helpdesk_backend_rights > 1}
+            var settings = $('.h-source-settings');
+            var toggle = $('.h-source-settings-toggle');
+            toggle.click(function() {
+                settings.show();
+                $(this).hide();
+                menu.hide();
+                $('.h-form-content').hide();
+            });
+            settings
+                .find('.cancel').click(function() {
+                    settings.hide();
+                    toggle.show();
+                    menu.show();
+                    $('.h-form-content').show();
+                })
+                .end()
+                .find('input[type=button]').click(function() {
+                    var form = settings.find('form');
+                    $.post('?module=requests&action=add&form_id={$form_id}', form.serialize(), function(html) {
+                        var tmp = $('<div>').html(html);
+                        $('.h-source-settings').html(tmp.find('.h-source-settings').html());
+                        tmp.remove();
+                        if (!$('.h-source-settings .errormsg').length) {
+                            $.wa.helpdesk_controller.redispatch();
+                        }
+                    });
+                });
+        {/if}
+
+    });
+</script>

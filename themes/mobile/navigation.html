@@ -1,0 +1,55 @@
+{$is_ask_page = ( $wa->currentUrl() == $wa->getUrl('/frontend/ask') )}
+
+{if !$is_ask_page && !empty($main_source.name)}
+    <div class="button-wrapper">
+        <a class="general-button" href="{$wa->getUrl('/frontend/ask')}">{$main_source.name}</a>
+    </div>
+{/if}
+
+<nav class="content-nav-wrapper" role="navigation">
+    <div class="nav-group">
+        <div class="nav-list" itemprop="breadcrumb">
+            {if (!$is_ask_page)}
+                {if isset($breadcrumbs) && !empty($breadcrumbs)}
+                    {if count($breadcrumbs) < 2}
+                    <div class="nav-item back-nav-item">
+                        <a href="{$wa->getUrl('/frontend')}">[`Back`]</a>
+                    </div>
+                    {else}
+                        {if $wa->globals('isMyAccount')}
+                            {$breadcrumbs[0] = null}
+                        {/if}
+                        {foreach $breadcrumbs as $breadcrumb}
+                            {if (!empty($breadcrumb))}
+                                <div class="nav-item back-nav-item">
+                                    <a href="{$breadcrumb.url}">{$breadcrumb.name|escape}</a>
+                                </div>
+                            {/if}
+                        {/foreach}
+                    {/if}
+                {else}
+                    {if !empty($categories)}
+                        {foreach $categories as $_c}
+                        {$_url = "`$wa->getUrl('helpdesk/frontend/faq')``$_c.url`/"}
+                            <div class="nav-item {if $wa->currentUrl() == $_url}current-nav-item{/if} " data-category-id="{$_c.id}">
+                                <a href="{$_url}">{$_c.name|escape}</a>
+                            </div>
+                        {/foreach}
+                    {/if}
+                {/if}
+                {$_pages = $wa->helpdesk->pages()}
+                {if count($_pages)}
+                    {foreach $_pages as $_p}
+                        <div class="nav-item">
+                            <a href="{$_p.url}">{$_p.name}</a>
+                        </div>
+                    {/foreach}
+                {/if}
+            {else}
+                <div class="nav-item back-nav-item">
+                    <a href="{$wa->getUrl('/frontend')}">[`Back`]</a>
+                </div>
+            {/if}
+        </div>
+    </div>
+</nav>

@@ -1,0 +1,18 @@
+<div class="page-content">
+
+    <h1>{$page.name}</h1>
+
+    {$subpages = $wa->helpdesk->pages($page.id)}
+    {if $subpages}
+        <ul class="sub-links">
+            {foreach $subpages as $p}
+                <li><a href="{$p.url}">{$p.name}</a></li>
+            {/foreach}
+        </ul>
+    {/if}
+
+    <div id="page" role="main">
+        {$page.content}
+    </div>
+
+</div>

@@ -1,0 +1,30 @@
+{* Helpdesk frontend category page. *}
+
+<div class="page-content faq-category">
+
+    <h1>{$query|escape}</h1>
+
+    {if $faq_list}
+
+        {foreach $faq_list as $q}
+            <h3>
+                <a href="{$wa->getUrl('helpdesk/frontend/faq')}{$q.category_url}/{$q.url}/" class="h-show-faq-question">{strip}
+                    <span class="h-question">{$q.question|escape}</span>
+                {/strip}</a>
+            </h3>
+            <div class="answer">
+                {if !empty($q.fragments)}
+                    {$q.fragments|implode:" "}
+                {else}
+                    {$q.answer|strip_tags|truncate:200:"..."}
+                {/if}
+            </div>
+        {/foreach}
+
+    {else}
+
+        &lt;[`no records`]&gt;
+
+    {/if}
+
+</div>

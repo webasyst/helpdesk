@@ -1,0 +1,12 @@
+{* Wrapper around form to create new requests in customer portal. *}
+
+<style>
+	.page-content.with-sidebar { margin-right: 0; border-right: none; box-shadow: none; }
+	.page-nav { display: none; }
+</style>
+
+<h1>[`New request`]</h1>
+
+{$form_html}
+
+{$wa->globals('isMyAccount', true)}

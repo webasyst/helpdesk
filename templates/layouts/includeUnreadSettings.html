@@ -1,0 +1,87 @@
+{literal}
+    <script id="h-template-unread-settings" type="text/html">
+        {% var settings = o.settings || {}; %}
+        <form method="post" style="margin-top: 10px;" class="h-unread-settings">
+            <p>[`These are your personal settings. They define rules that cause some requests to be marked as "unread" and display them in a dedicated list in the left side navigation panel.`]</p>
+            <div class="fields w100 width100px">
+                <div class="field">
+                    <div class="value" style="margin-left: 2px;">
+
+                        <p>
+                            <label>[`Mark as "unread"`]:</label>
+                            <ul class="menu-v" style="margin-left: 10px">
+                                <li>
+                                    <label>
+                                        <input type="checkbox" name="settings[count_all_new]" value="1" {% if (settings.count_all_new) { %}checked="checked"{% } %}>
+                                        [`All new requests`]
+                                    </label>
+                                </li>
+                                <li>
+                                    <label>
+                                        <input type="checkbox" name="settings[count_assigned]" value="1" {% if (settings.count_assigned) { %}checked="checked"{% } %}>
+                                        [`Requests assigned to me personally`]
+                                    </label>
+                                </li>
+                                <li>
+                                    <label class="small left-spaced">
+                                        <input type="checkbox" name="settings[count_assigned_logs]" data-parent="count_assigned" value="1" {% if (settings.count_assigned_logs) { %}checked="checked"{% } %}>
+                                        [`Any new action performed on these requests will cause them to be marked as "unread"`]
+                                    </label>
+                                </li>
+                                <li>
+                                    <label>
+                                        <input type="checkbox" name="settings[count_assigned_group]" value="1" {% if (settings.count_assigned_group) { %}checked="checked"{% } %}>
+                                        [`Requests assigned to my user group`]
+                                    </label>
+                                </li>
+                                <li>
+                                    <label class="small left-spaced">
+                                        <input type="checkbox" name="settings[count_assigned_group_logs]" data-parent="count_assigned_group" value="1" {% if (settings.count_assigned_group_logs) { %}checked="checked"{% } %}>
+                                        [`Any new action performed on these requests will cause them to be marked as "unread"`]
+                                    </label>
+                                </li>
+                            </div>
+                        </p>
+
+                        <hr>
+
+                        <p>
+                            <label>[`Mark request as "read"`]:</label>
+                            <ul class="menu-v" style="margin-left: 10px">
+                                <li>
+                                    <label>
+                                        <input type="radio" name="settings[mark_read_when_open]" value=1 {% if (settings.mark_read_when_open == 1) { %}checked="checked"{% } %}>
+                                        [`When I open the request`]
+                                    </label>
+                                </li>
+                                <li>
+                                    <label>
+                                        <input type="radio" name="settings[mark_read_when_open]" value="" {% if (!settings.mark_read_when_open) { %}checked="checked"{% } %}>
+                                        [`When I perform any action with the request`]
+                                    </label>
+                                </li>
+                            </ul>
+                        </p>
+
+                        <hr>
+
+                        <p>
+                            <label>
+                                <input type="checkbox" name="settings[display_oncount]" value="1" {% if (settings.display_oncount) { %}checked="checked"{% } %}>
+                                [`Display counter on the application icon`] <span class="error indicator">1</span>
+                            </label>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="buttons">
+                <input type="submit" class="button green" value="[`Save`]">
+                [`or`]
+                <a href="javascript:void(0)" class="cancel">[`cancel`]</a>
+                {% if (o.count) { %}
+                    <a href="javascript:void(0);" class="no-underline float-right h-delete small h-clear-all">[`Mark all as read`]</a>
+                {% } %}
+            </div>
+        </form>
+    </script>
+{/literal}

@@ -1,0 +1,29 @@
+{if !empty($categories)}
+    <nav class="page-nav" role="navigation">
+        <div class="nav-sidebar">
+            <ul class="menu-v stack" id="h-faq-categories">
+
+                {foreach $categories as $_c}
+                    {$_url = "`$wa->getUrl('helpdesk/frontend/faq')``$_c.url`/"}
+                    <li data-category-id="{$_c.id}"{if $wa->currentUrl() == $_url} class="selected"{/if}>
+                        <a href="{$_url}">
+                            <span class="name">{$_c.name|escape}</span>
+                        </a>
+                    </li>
+                {/foreach}
+
+            </ul>
+
+        </div>
+    </nav>
+{/if}
+
+<article class="page-content container{if !empty($categories)} with-sidebar{/if}">
+
+    <div id="page-content">
+        {$content} {* see page.html *}
+    </div>
+
+    <div class="clear-both"></div>
+
+</article>

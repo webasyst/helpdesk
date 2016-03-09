@@ -1,0 +1,45 @@
+{literal}
+    <script id="h-template-requests-menu" type="text/html">
+            <ul class="float-left menu-h dropdown menu-above-list">
+                <li>
+                    <input type="checkbox" class="h-select-all-checkbox" style="margin-left: 3px;">
+                </li>
+                <li style="min-width:220px; margin-left: -15px;">
+                    <a href="javascript:void(0);" class="inline-link h-action-with-selected-link"><b><i>[`Actions with selected`] (<span class="selected-count">0</span>)</i></b> <i class="icon10 darr-tiny"></i></a>
+                    <ul class="menu-v">
+                    
+                        {% if (o.filters_hash === 'unread') { %}
+                            <li><a href="javascript:void(0)" class="requests-operation mass-mark-as-read"><i class="icon16 checkbox"></i>[`Mark as read`]</a></li>
+                        {% } else { %}
+                            <li><a href="javascript:void(0)" class="requests-operation mass-mark-as-unread"><i class="icon16 mark-unread"></i>[`Mark as unread`]</a></li>
+                        {% } %}
+                    
+                        {% if (o.filters_hash === 'follow') { %}
+                            <li><a href="javascript:void(0)" class="requests-operation mass-unmark-as-follow"><i class="icon16 checkbox"></i>[`Unmark as Follow`]</a></li>
+                        {% } else { %}
+                            <li><a href="javascript:void(0)" class="requests-operation mass-mark-as-follow"><i class="icon16 checkbox"></i>[`Mark as Follow`]</a></li>
+                        {% } %}
+                    
+                        {% if (o.admin) { %}
+                            <li><a href="javascript:void(0)" class="requests-operation mass-change-status"><i class="icon16 export"></i>[`Change status`]</a></li>
+                            <li><a href="javascript:void(0)" class="requests-operation mass-change-assignment"><i class="icon16 user"></i>[`Change assignment`]</a></li>
+                            <li class="hr"></li>
+                            <li><a href="javascript:void(0)" class="requests-operation mass-delete-requests"><i class="icon16 delete"></i>[`Delete`]</a></li>
+                        {% } %}
+                    </ul>
+                </li>
+            </ul>
+
+            <ul class="float-left menu-h dropdown h-sorting-menu smart-dropdown" style="margin-top: 4px;">
+                [`Sorting:`]
+                <li style="min-width:220px">
+                    <a href="javascript:void(0);" class="inline-link h-choose-sorting"><b><i><span class="h-name">[`newest on top`]</span></i></b></a>
+                    <ul class="menu-v">
+                        <li><a href="javascript:void(0)" class="h-sort-link" data-order="!id">[`newest on top`]</a></li>
+                        <li><a href="javascript:void(0)" class="h-sort-link" data-order="id">[`oldest on top`]</a></li>
+                        <li><a href="javascript:void(0)" class="h-sort-link" data-order="!updated">[`recently updated on top`]</a></li>
+                    </ul>
+                </li>
+            </ul>    
+    </script>
+{/literal}

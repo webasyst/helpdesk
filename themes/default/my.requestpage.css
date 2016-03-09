@@ -1,0 +1,53 @@
+.request-page-wrapper .info-block-wrapper { margin: 0 0 1rem; padding: 1rem; -webkit-border-radius: 0.5rem; border-radius: 0.5rem; }
+.request-page-wrapper .info-block-wrapper.green { background: #e7f1e9; }
+.request-page-wrapper .info-block-wrapper .info-block p { font: normal 0.875rem/1.25 "Trebuchet MS", Arial; margin: 0.5rem 0 0; }
+.request-page-wrapper .info-block-wrapper .info-block p:first-child { margin-top: 0; }
+.request-page-wrapper .page-header-wrapper { display: table; width: 100%; padding: 1rem; box-sizing: border-box; background: #fafcfe; -webkit-box-shadow: inset 0 0 1rem rgba(33,66,99,0.05); box-shadow: inset 0 0 1rem rgba(33,66,99,0.05); -webkit-border-radius: 0.25rem; border-radius: 0.25rem; }
+.request-page-wrapper .page-header-wrapper > .left-column,
+.request-page-wrapper .page-header-wrapper > .right-column { display: table-cell; vertical-align: middle; }
+.request-page-wrapper .page-header-wrapper > .right-column { width: 25%; border-left: 1px solid rgba(0,0,0,0.1); padding: 0 0 0 1rem; box-sizing: border-box; }
+.request-page-wrapper .page-header-wrapper .page-header { margin: 0; padding: 0; }
+.request-page-wrapper .page-header-wrapper .request-detail-wrapper { margin: 0; width: 100%; border: 0; }
+.request-page-wrapper .page-header-wrapper .request-detail-wrapper td { padding: 0; border: 0; box-sizing: border-box; vertical-align: baseline; }
+.request-page-wrapper .page-header-wrapper .request-detail-wrapper td.column-name { font: bold 0.7rem/1.25 "Trebuchet MS", Arial, "sans-serif"; text-transform: uppercase; color: #999; }
+.request-page-wrapper .page-header-wrapper .request-detail-wrapper td.column-value { width: 100%; padding: 0 0 0 0.75rem; box-sizing: border-box; font-size: 1rem; font-style: italic; }
+.request-page-wrapper .page-header-wrapper .request-detail-wrapper .request-status { margin: 0; }
+.request-page-wrapper .request-content-wrapper { margin: 2rem 0 0; }
+.request-page-wrapper .request-content-wrapper .log-list-wrapper { margin: 2rem 0 0; }
+.request-page-wrapper .request-content-wrapper .request-wrapper { padding: 0; background: #fafcfe; -webkit-box-shadow: 0 0 0.5rem rgba(33,66,99,0.1); box-shadow: 0 0 0.5rem rgba(33,66,99,0.1); -webkit-border-radius: 0.25rem; border-radius: 0.25rem; }
+.request-page-wrapper .request-content-wrapper .request-wrapper .request-header-wrapper { display: table; width: 100%; table-layout: fixed; padding: 0.5rem 0; border-bottom: 2px solid #d3dde7; }
+.request-page-wrapper .request-content-wrapper .request-wrapper .request-header-wrapper > .left-column,
+.request-page-wrapper .request-content-wrapper .request-wrapper .request-header-wrapper > .right-column { display: table-cell; vertical-align: top; }
+.request-page-wrapper .request-content-wrapper .request-wrapper .request-header-wrapper > .left-column { width: 6rem; }
+.request-page-wrapper .request-content-wrapper .request-wrapper .request-header-wrapper > .right-column { vertical-align: middle; }
+.request-page-wrapper .request-content-wrapper .request-wrapper .request-header-wrapper .image-wrapper { font-size: 0; line-height: 0; width: 4rem; height: 4rem; padding: 0 1rem 0; }
+.request-page-wrapper .request-content-wrapper .request-wrapper .request-header-wrapper .image-wrapper img { width: 100%; -webkit-border-radius: 50%; border-radius: 50%; }
+.request-page-wrapper .request-content-wrapper .request-wrapper .request-header-wrapper .request-create-wrapper { margin: 0; white-space: nowrap; overflow: hidden; box-sizing: border-box; }
+.request-page-wrapper .request-content-wrapper .request-wrapper .request-header-wrapper .request-create-wrapper .request-author-wrapper { font: normal 1.2rem/1.25rem "Trebuchet MS", Arial; color: #121212; text-overflow: ellipsis; }
+.request-page-wrapper .request-content-wrapper .request-wrapper .request-header-wrapper .request-create-wrapper .request-date-wrapper { font: normal 0.915rem/1.25rem Arial; color: #888; text-overflow: ellipsis; }
+.request-page-wrapper .request-content-wrapper .request-wrapper .request-content-block { padding: 1rem 1rem 1.5rem 6rem; min-height: 2.25rem; }
+.request-page-wrapper .request-content-wrapper .request-wrapper .request-content-block .request-text-wrapper { margin: 1rem 0 0; }
+.request-page-wrapper .request-content-wrapper .request-wrapper .request-content-block .request-text-wrapper:first-child { margin-top: 0; }
+.request-page-wrapper .request-content-wrapper .request-wrapper .request-content-block .request-text-wrapper hr { display: none; }
+.request-page-wrapper .request-content-wrapper .request-wrapper .request-content-block .request-text-wrapper .same-tab { display: inline-block; margin: 0.5rem 0 0; border: 1px solid rgba(0,0,0,0.1); padding: 0.25rem; background: #fff; width: 150px; max-width: 100%; -webkit-border-radius: 0.25rem; border-radius: 0.25rem; font-size: 0; line-height: 0; box-sizing: border-box; }
+.request-page-wrapper .request-content-wrapper .request-wrapper .request-content-block .request-text-wrapper .same-tab img { max-width: 100%; -webkit-border-radius: 0.1rem; border-radius: 0.1rem; }
+.request-page-wrapper .request-content-wrapper .request-wrapper .request-content-block .request-attachments { display: inline-block; vertical-align: top; margin: 0; padding: 0.5rem 1rem; background: rgba(127,127,191,0.05); -webkit-border-radius: 0.5rem; border-radius: 0.5rem; }
+.request-page-wrapper .request-content-wrapper .request-wrapper .request-content-block .request-attachments .attachment { display: block; margin: 0.5rem 0 0; }
+.request-page-wrapper .request-content-wrapper .request-wrapper .request-content-block .request-attachments .attachment:first-child { margin-top: 0; }
+.request-page-wrapper .request-content-wrapper .request-wrapper .request-content-block .request-changed-params { margin: 1rem 0 0; }
+.request-page-wrapper .request-content-wrapper .request-wrapper .request-content-block .request-changed-params:first-child { margin-top: 0; }
+.request-page-wrapper .request-content-wrapper .request-wrapper .request-content-block .action-list-wrapper { display: table; margin: 1rem 0 0; padding: 0.5rem 1rem; background: rgba(127,127,191,0.05); -webkit-border-radius: 0.25rem; border-radius: 0.25rem; }
+.request-page-wrapper .request-content-wrapper .request-wrapper .request-content-block .action-list-wrapper:first-child { margin-top: 0; }
+.request-page-wrapper .request-content-wrapper .request-wrapper .request-content-block .action-list-wrapper .wa-field { display: table-row; }
+.request-page-wrapper .request-content-wrapper .request-wrapper .request-content-block .action-list-wrapper .wa-field:first-child .wa-name,
+.request-page-wrapper .request-content-wrapper .request-wrapper .request-content-block .action-list-wrapper .wa-field:first-child .wa-value { border-top: 0; }
+.request-page-wrapper .request-content-wrapper .request-wrapper .request-content-block .action-list-wrapper .wa-field .wa-name,
+.request-page-wrapper .request-content-wrapper .request-wrapper .request-content-block .action-list-wrapper .wa-field .wa-value { display: table-cell; vertical-align: top; padding: 0.5rem; border-top: 1px solid rgba(0,0,0,0.05); }
+.request-page-wrapper .request-content-wrapper .request-wrapper .request-content-block .action-list-wrapper .wa-field .wa-name { font: bold 0.875rem/1.25rem "Trebuchet MS", Arial; color: #999; }
+.request-page-wrapper .request-content-wrapper .request-wrapper .request-content-block .action-list-wrapper .wa-field .wa-value { padding-left: 2rem; }
+.request-page-wrapper .request-content-wrapper .request-wrapper.log-wrapper { margin: 2rem 0 0; background: #fefcfa; -webkit-box-shadow: inset 0 0 1rem rgba(99,66,33,0.05); box-shadow: inset 0 0 1rem rgba(99,66,33,0.05); }
+.request-page-wrapper .request-content-wrapper .request-wrapper.log-wrapper .request-header-wrapper { border-bottom-color: #f0e8e0; }
+.request-page-wrapper .request-content-wrapper .request-wrapper.log-wrapper .request-content-block .action-list-wrapper,
+.request-page-wrapper .request-content-wrapper .request-wrapper.log-wrapper .request-content-block .request-attachments { background: rgba(191,127,127,0.05); }
+.request-page-wrapper .buttons-wrapper { margin: 2rem 0 0; }
+.request-page-wrapper .request-text-wrapper div.show-quote { color: #500050; cursor: pointer; font-size: 9px; margin:0.5em 0.15em; }

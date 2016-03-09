@@ -1,0 +1,27 @@
+{* Profile editor in customer portal. *}
+
+<style>
+	.page-content.with-sidebar { margin-right: 0; border-right: none; box-shadow: none; }
+	.page-nav { display: none; }
+</style>
+
+<h1>[`My profile`]</h1>
+
+{if $saved}
+    <strong><i class="icon16 saved"></i><span style="color:green">[`Contact information successfully updated!`]</span></strong>
+{/if}
+
+<form action="" method="post">
+<div class="wa-form">
+
+    {$form->html()}
+
+    <div class="wa-field">
+        <div class="wa-value">
+            <input type="submit" value="[`Save`]">
+        </div>
+    </div>
+</div>
+</form>
+
+{$wa->globals('isMyAccount', true)}

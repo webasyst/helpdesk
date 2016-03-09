@@ -1,0 +1,15 @@
+<!-- App page list for Sidebar parent theme -->
+
+{$_pages = $wa->helpdesk->pages()}
+
+{if count($_pages)}
+    <div class="block">
+        <ul class="menu-v">
+
+            {foreach $_pages as $_p}
+                <li{if strlen($_p.url)>1 && $wa->currentUrl()|strstr:$_p.url} class="selected"{/if}><a href="{$_p.url}">{$_p.name}</a></li>
+            {/foreach}
+
+        </ul>
+    </div>
+{/if}

@@ -1,0 +1,548 @@
+<style>
+.source-settings-form .h-section { width: 100%; font-weight: bold; font-size: 1.3em;}
+.source-settings-form .field .value { margin-left: 110px; }
+.hr-dashed { border-bottom: 1px dashed silver; clear: both; height: 20px; margin-bottom: 15px; }
+.reply-to-reply select { font-weight: bold; }
+#rtr-template { display: none; }
+.reply-to-reply-state option { padding-left: 20px; }
+.reply-to-reply-state option.option-disabled { font-style: italic; font-weight: normal; padding-left: 0; }
+select { min-width: 80px; }
+</style>
+
+<form class="source-settings-form">
+    <div class="fields">
+
+        <input type="hidden" name="id" value="{$source.id}">
+        <input type="hidden" name="st" value="{$source.type}">
+        <input type="hidden" name="workflow_id" value="{$wf->getId()}">
+        <input type="hidden" name="params[workflow]" value="{$wf->getId()}">
+        <input type="hidden" name="params[check_interval]" value="57">
+
+        <div class="field">
+            <p class="large-hint">
+                [`Set up the email address from which you would like to receive support requests.`]
+                [`Please specify an existing email address; it may be hosted on any mail server; e.g., in a popular mail service such as Gmail, Yahoo!, etc., and must be accessible for connection via POP3 protocol.`]
+            </p>
+            <p class="large-hint">
+                [`<strong>IMPORTANT NOTE:</strong> It is recommended that you specify an email account which was specially created for use by the Helpdesk app.`]
+                [`After you configure and save this source, all messages from the specified email account will be downloaded into Helpdesk and will be <strong>deleted from your mail server!</strong>`]
+            </p>
+        </div>
+        <div class="field">
+            <div class="value">
+                <div class="fields width100px">
+                    <div class="field top-padded">
+                        <div class="name">[`Email`]</div>
+                        <div class="value">
+                            <input type="text" name="params[email]" value="{$source.params.email}" class="equal-width">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="name">[`Username`]</div>
+                        <div class="value">
+                            <input type="text" name="params[login]" value="{$source.params.login}" autocomplete="off" class="equal-width">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="name">
+                            [`Password`]
+                        </div>
+                        <div class="value">
+                            <input type="password" name="params[password]" value="" autocomplete="off" class="equal-width">
+                            {if $source.id}
+                                <p class="hint">[`Leave blank to keep current value unchanged.`]</p>
+                            {/if}
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="name">[`Incoming server`]</div>
+                        <div class="value">
+                            <input type="text" name="params[server]" value="{$source.params.server}" class="equal-width">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="name">[`POP3 Port`]</div>
+                        <div class="value">
+                            <input type="text" name="params[port]" value="{$source.params.port}" class="equal-width">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="name"><br/></div>
+                        <div class="value">
+                            <input type="hidden" name="params[tls]" value="">
+                            <input type="hidden" name="params[ssl]" value="">
+                            <label>
+                                <input type="checkbox" name="params[tls]" value="1"{if !empty($source.params.tls)} checked="checked"{/if}>
+                                [`Use Secure STARTTLS Settings`]
+                            </label>
+                            <label>
+                                <input type="checkbox" name="params[ssl]" value="1"{if !empty($source.params.ssl) && empty($source.params.tls)} checked="checked"{/if}>
+                                [`Use Secure SSL/TLS Settings`]
+                            </label>
+                            <p class="hint">
+                                [`If your mail server supports this option, we recommend using POP3 over STARTTLS or SSL/TLS since it provides increased security for your interactions with the remote mail server.`]
+                            </p>
+                        </div>
+                    </div>
+                    {if !empty($submit_errors[''])}
+                        <div class="field">
+                            <div class="value">
+                                <em class="errormsg">{$submit_errors['']|escape}</em>
+                            </div>
+                        </div>
+                    {/if}
+                </div>
+            </div>
+        </div>
+
+        <div class="field"><hr></div>
+
+        <div class="field">
+            <div class="name h-section">[`Spam control`]</div>
+            <div class="value">
+                <input type="hidden" name="params[antispam]" value="0">
+                <input type="checkbox" name="params[antispam]" id="antispam-checkbox" value="1"{if !empty($source->params->antispam)} checked{/if}>
+
+                <p class="large-hint" style="margin-top:4px;">
+                    [`Every time you receive a message from an unknown email address which is not yet stored in your Contacts database, an automatic notification will be sent to the sender's address.`]
+                    [`This notification contains a special link which must be clicked to confirm the sending of the first request. You may also add extra instructions for your clients to the notification text.`]
+                </p>
+            </div>
+            <div class="collapsed-hidden value">
+                <div class="fields width100px email-template-editor narrow-vars">
+                    {include
+                        file="templates/actions/editor/email_template_editor.html"
+                        input_name='params[antispam_mail_template]'
+                        variables=$antispam_mail_template_vars
+                        template=$antispam_mail_template}
+                </div>
+            </div>
+        </div>
+
+        <div class="field"><hr></div>
+
+        <div class="field">
+            <div class="name h-section">[`Messages`]</div>
+
+            <div class="value messages-wrapper" style="padding-top:1px;">
+
+                {if !empty($messages)}
+
+                    {foreach $messages as $i => $m}
+
+                        <div class="one-message email-template-editor"><div class="fields width100px">
+                            <div class="expandable expanded">
+                                <label class="expandable-legend">
+                                    <input type="checkbox" class="remove-message-checkbox" checked>
+                                    [`Send email message`]
+                                </label>
+                                <div class="editor-wrapper" data-i="{$i}">
+                                    {include file="templates/actions/editor/email_template_editor.html"
+                                        input_name="params[messages][{$i}][tmpl]"
+                                        variables=$receipt_template_vars
+                                        template=ifset($m.tmpl)
+                                        to_name="params[messages][{$i}][to]"
+                                        to_value=ifset($m.to)
+                                        sourcefrom_name="params[messages][{$i}][sourcefrom]"
+                                        sourcefrom_set=ifset($m.sourcefrom)
+                                        add_attachments_name="params[messages][{$i}][add_attachments]"
+                                        add_attachments_set=ifempty($m.add_attachments, 0)
+                                    }
+                                </div>
+                            </div>
+                        </div><div class="clear-left"></div></div>
+
+                    {/foreach}
+
+                {/if}
+
+                <div class="one-message hidden template email-template-editor"><div class="fields width100px">
+                    <div class="field-group expandable expanded">
+                        <label class="expandable-legend">
+                            <input type="checkbox" class="remove-message-checkbox" checked>
+                            [`Send email message`]
+                        </label>
+                        <div class="editor-wrapper" style="min-width:530px;">
+                            <div class="block"><i class="icon16 loading"></i></div>
+                        </div>
+                    </div>
+                </div><div class="clear-left"></div></div>
+
+                <div class="fields width100px">
+                    <div class="field">
+                        <label>
+                            <input type="checkbox" class="add-message-checkbox">
+                            <span class="when-no-messages">
+                                [`Send email message`]
+                            </span>
+                            <span class="when-messages">
+                                [`Send another email message`]
+                            </span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="field"><hr></div>
+
+        <div class="field">
+            <div class="name h-section">[`Forwarding request to workflow`]</div>
+            <div class="value">
+                <div class="fields width100px">
+                    <div class="field">
+                        <p class="large-hint">
+                            [`Please specify how requests received via this email address should be handled.`]
+                        </p>
+                    </div>
+
+                    <div class="field top-padded">
+                        <div class="name">[`State`]</div>
+                        <div class="value">
+                            <select name="params[new_request_state_id]" class="equal-width">
+                                <option value=""></option>
+                                {foreach $wf_states as $e}
+                                    <option value="{$e->getId()|escape}"{if $e->getId() == $source->params->ifset('new_request_state_id')} selected{/if}>{$e->getName()|escape}</option>
+                                {/foreach}
+                            </select>
+                            <p class="hint">
+                                [`This state will be automatically set for new requests received via this email address.`]
+                                [`Your choice will be shown by an arrow in the workflow setup diagram.`]
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <div class="name">[`Action`]</div>
+                        <div class="value">
+                            <select name="params[new_request_action_id]" class="equal-width">
+                                <option value=""></option>
+                                {if !empty($wf_actions[$source->params->ifset('new_request_state_id')])}
+                                    {foreach $wf_actions[$source->params->ifset('new_request_state_id')] as $_id=>$_row}
+                                        <option value="{$_id|escape}"{if $_id == $source->params->ifset('new_request_action_id')} selected{/if}>{$_row.name|escape}</option>
+                                    {/foreach}
+                                {/if}
+                            </select>
+                            <p class="hint">
+                                [`This action will be automatically performed with requests received via this email address.`]
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <div class="name">[`Assignment`]</div>
+                        <div class="value">
+                            <select name="params[new_request_assign_contact_id]" class="equal-width">
+                                <option value=""></option>
+                                {foreach $assignees as $contact_id => $name}
+                                    <option value="{$contact_id|escape}"{if $contact_id == $source->params->ifset('new_request_assign_contact_id')} selected{/if}>{$name|escape}</option>
+                                {/foreach}
+                            </select>
+                            <p class="hint">[`Select a user or a user group who should be automatically assigned to requests received via this email address.`] {helpdeskHelper::rightsToAppMessage()}</p>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <div class="name">[`Language`]</div>
+                        <div class="value">
+                            <select name="params[locale]" class="equal-width">
+                                {foreach waLocale::getAll('name_region') as $locale => $loc_name}
+                                    <option value="{$locale}"{if $locale == $source.params->ifset('locale')} selected{/if}>{$loc_name|escape}</option>
+                                {/foreach}
+                            </select>
+                            <p class="hint">
+                                [`For new clients who send their first request to your helpdesk service, a new contact record will be automatically created in your Contacts app.`]
+                                [`Select the default language for such new clients here.`]
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="field"><hr></div>
+
+        <div class="field reply-to-reply">
+            <div class="name h-section">[`Reply to reply handling`]</div>
+            <div class="value bottom-spaced">
+                <p class="large-hint">
+                    [`In case a message incoming to this email address contains a request ID in their subject (e.g., [ID:12345-XXXXX]; 12345 is request ID in this sample), then we bind incoming message with this request. However, you can customize special processing for this kind of messages.`]
+                </p>
+            </div>
+            <div class="value">
+                <input type="hidden" name="params[reply_to_reply]" value="default">
+                <input type="checkbox" name="params[reply_to_reply]" id="reply_to_reply" value="custom"
+                    {if (empty($source->params->reply_to_reply) || $source->params->reply_to_reply == 'custom') && !empty($source->params->actions_with_existing_request)} checked{/if}>
+            </div>
+            <div class="collapsed-hidden value"{if empty($source->params->actions_with_existing_request)} style="display:none;"{/if}>
+
+                {$_actors = ['any'=>'[`anyone`]', 'client'=>'[`Request author`]', 'assigned'=>'[`Assigned user `]', 'user'=>'[`Another user`]', 'other'=>'[`Another contact`]']}
+                {$_states = array()}
+                {$_state_actions = array()}
+                {$_actions = array()}
+                {foreach $actions_with_existing_request as $_wf_id => $_acts}
+                    {foreach $_acts as $_sid => $_state}
+                        {if $_state.available_actions}
+                            {$_states[$_wf_id][$_sid] = ['name'=>$_state.state_name, 'color'=>$_state.list_row_css, 'workflow_id' => $_state.workflow_id]}
+                            {assign var=_wfs_id value="`$_state.workflow_id`@`$_sid`"}
+                            {if empty($_state_actions[$_wfs_id])}{$_state_actions[$_wfs_id] = array()}{/if}
+
+                            {foreach $_state.available_actions as $_aa_id => $_aa}
+                                {$_state_actions[$_wfs_id][$_aa_id] = ['name'=>$_aa->getName(), 'color'=>$_aa->getOption('user_button_border_color')]}
+                            {/foreach}
+
+                            {foreach $_actors as $_t=>$_name}
+                                {if isset($_state.actions[$_t])}
+                                    {if isset($_state.available_actions[$_state.actions[$_t]])}
+                                        {$_a = $_state.available_actions[$_state.actions[$_t]]}
+                                        {$_actions[] = [
+                                            'author_name'=>$_actors[$_t],
+                                            'author_id'=>$_t,
+                                            'state_name'=>$_state.state_name,
+                                            'workflow_id'=>$_state.workflow_id,
+                                            'state_id'=>$_sid,
+                                            'action_name'=>$_a->getName(),
+                                            'action_id'=>$_a->getId(),
+                                            'action_color'=>$_a->getOption('user_button_border_color', 'black'),
+                                            'state_color'=>$_state.list_row_css
+                                        ]}
+                                    {/if}
+                                {/if}
+                            {/foreach}
+                        {/if}
+                    {/foreach}
+                {/foreach}
+
+                <div id="rtr-template">
+                    {include file = 'lib/sources/templates/email/email_settings_rtr.html' __actions = null __a = null}
+                </div>
+
+                {foreach $_actions as $_a}
+
+                    {assign var=_wfs_id value="`$_a.workflow_id`@`$_a.state_id`"}
+                    {include file = 'lib/sources/templates/email/email_settings_rtr.html' __actions = $_state_actions[$_wfs_id] __a = $_a}
+
+                {/foreach}
+
+                <a href="#" id="rtr-add-link"><i class="icon16 add"></i> [`Add new rule`]</a>
+
+            </div>
+        </div>
+
+    </div>
+</form>
+
+<script>
+(function() { "use strict";
+    var wrapper = $('.source-settings-form');
+    var form = $('#antispam-checkbox').closest('form');
+    var receipt_checkbox = $('#receipt-checkbox');
+    var antispam_receipt_checkbox = $('#antispam-checkbox');
+    var reply_to_reply = $('#reply_to_reply');
+    var delay = 0;
+    var state_actions = {json_encode($_state_actions)};
+
+    receipt_checkbox.add(antispam_receipt_checkbox).add(reply_to_reply).change(function() {
+        var cb = $(this);
+        var fg = cb.closest('.field');
+        if (cb.is(':checked')) {
+            fg.find('.collapsed-hidden').slideDown(delay);
+            fg.find('.disable-when-collapsed').attr('disabled', false);
+        } else {
+            fg.find('.collapsed-hidden').slideUp(delay);
+            fg.find('.disable-when-collapsed').attr('disabled', true);
+        }
+    }).change();
+    delay = 200;
+
+    $.wa.helpdesk_controller.iButton(receipt_checkbox, {
+        labelOn: "[`Enabled`]",
+        labelOff: "[`Disabled`]"
+    });
+    $.wa.helpdesk_controller.iButton(antispam_receipt_checkbox, {
+        labelOn: "[`Enabled`]",
+        labelOff: "[`Disabled`]"
+    });
+    $.wa.helpdesk_controller.iButton(reply_to_reply, {
+        labelOn: "[`Custom handling`]",
+        labelOff: "[`Default handling`]"
+    });
+
+    var isEmptyRtrBlock = function(block) {
+        if (block.find('.reply-to-reply-actor').val() === 'any' &&
+                !block.find('.reply-to-reply-state').val() &&
+                !block.find('.reply-to-reply-action').val())
+        {
+            return true;
+        }
+        return false;
+    };
+
+    reply_to_reply.change(function() {
+        if ($(this).is(":checked")) {
+            $('.rtr-block').each(function() {
+                var el = $(this);
+                if (!el.parent().is('#rtr-template') && isEmptyRtrBlock(el)) {
+                    el.remove();
+                }
+            });
+            $('#rtr-add-link').click();
+        }
+    });
+
+    {if $submit_errors}
+        /* Validation errors */
+        {foreach $submit_errors as $field_name => $e}
+            {if $field_name !== ''}
+                form.find('[name="{$field_name}"]').addClass('error').parent().append($('<em class="errormsg"></em>').text("{$e}"));
+            {/if}
+        {/foreach}
+
+        form.on('keyup', 'input.error:text,textarea.error', function() {
+            $(this).removeClass('error').siblings('.errormsg').remove();
+        });
+        form.on('change', '.error', function() {
+            $(this).removeClass('error').siblings('.errormsg').remove();
+        });
+    {/if}
+
+    // Controller for table editor for actions with existing requests
+    (function() {
+        $('#rtr-add-link').click(function() {
+            var obj = $('#rtr-template .rtr-block').clone();
+            obj.find('.reply-to-reply-action').prop('disabled', false);
+            $(this).before(obj);
+            initRtr();
+            return false;
+        });
+        var buildRtrActionName = function(obj) {
+            obj.removeClass('error');
+            obj.parent().find('.reply-to-reply-action')
+                .attr('name', 'params[actions_with_existing_request][' + obj.parent().find('.reply-to-reply-state').val() + '][' + obj.parent().find('.reply-to-reply-actor').val() + ']');
+        }
+        var initRtr = function() {
+            $('.reply-to-reply-state').unbind('change').change(function() {
+                var html = '<option value="">[`&lt;select&gt;`]</option>';
+                var state_id = $(this).val() || '';
+/*
+                if (state_id.indexOf('@') !== -1) {
+                    state_id = state_id.slice(state_id.indexOf('@') + 1);
+                }
+*/
+                $.each(state_actions[state_id], function(act_id, row) {
+                    html += '<option value="' + act_id + '" style="color:' + row.color + ';">' + row.name + '</option>';
+                });
+                $(this).parent().find('.reply-to-reply-action').html(html);
+                buildRtrActionName($(this));
+            });
+            $('.reply-to-reply-actor').unbind('change').change(function() {
+                buildRtrActionName($(this));
+            });
+            $('.reply-to-reply-action').unbind('change').change(function() {
+                $(this).removeClass('error');
+            });
+            $('.rtr-delete').unbind('click').click(function() {
+                $(this).parent().find('.reply-to-reply-action').val('');
+                $(this).parent().hide();
+                $('#hd-source-editor-save').removeClass('green').addClass('yellow');
+                $("#hd-source-editor-form").removeClass('modified').addClass('modified');
+                return false;
+            });
+        };
+        initRtr();
+    })();
+
+    // Controller for email messages editor
+    (function() {
+        var add_message_checkbox = wrapper.find('.add-message-checkbox');
+        var messages_wrapper = add_message_checkbox.closest('.messages-wrapper');
+
+        // Add another email editor block when user clicks "Send another email message" checkbox
+        add_message_checkbox.change(function() {
+            var fields = messages_wrapper.children('.hidden.template').clone().insertBefore(add_message_checkbox.closest('.fields'));
+            fields.removeClass('template').removeClass('hidden');
+            add_message_checkbox.prop('disabled', true);
+
+            var last_i = messages_wrapper.find('.editor-wrapper[data-i]').last().data('i');
+            if (last_i) {
+                last_i = parseInt(last_i+'', 10);
+            } else if (last_i !== 0) {
+                last_i = -1;
+            }
+            var i = last_i + 1;
+            fields.find('.editor-wrapper').data('i', ''+i).attr('data-i', ''+i);
+
+            $.post('?module=editor&action=emailTemplate&tpl=source&source_id={$source.id}', {
+                input_name: 'params[messages]['+i+'][tmpl]',
+                variables: {json_encode($receipt_template_vars)},
+                to_name: 'params[messages]['+i+'][to]',
+                sourcefrom_name: 'params[messages]['+i+'][sourcefrom]',
+                add_attachments_name: 'params[messages]['+i+'][add_attachments]'
+            }, function(r) {
+                fields.find('.editor-wrapper').html(r);
+                add_message_checkbox.prop({ disabled: false, checked: false });
+            });
+
+            updateAddCheckbox();
+        });
+
+        // Hide email editor block when user unchecks "Send email message" checkbox
+        wrapper.on('change', '.remove-message-checkbox', function() {
+            $(this).closest('.fields').parent().slideUp(200, function() {
+                $(this).remove();
+                updateAddCheckbox();
+            });
+        });
+
+        updateAddCheckbox();
+
+        function updateAddCheckbox() {
+            var label = add_message_checkbox.parent();
+            if (messages_wrapper.find('.one-message:not(.template)').length > 0) {
+                label.find('.when-no-messages').hide();
+                label.find('.when-messages').show();
+            } else {
+                label.find('.when-no-messages').show();
+                label.find('.when-messages').hide();
+            }
+        }
+    })();
+    $('input[name="params[ssl]"]').click(function() {
+        if ($(this).is(':checked')) {
+            $('input[name="params[tls]"]').prop('checked', false);
+        }
+    });
+    $('input[name="params[tls]"]').click(function() {
+        if ($(this).is(':checked')) {
+            $('input[name="params[ssl]"]').prop('checked', false);
+        }
+    });
+    {include file="js/wf_actions.js"}
+})();
+
+function checkForm() {
+    $('#hd-source-editor-save').parent().find('span.error').remove();
+    var states = $('.reply-to-reply-state'), actions = $('.reply-to-reply-action'), ret = true;
+    states.each(function(i) {
+        if (i > 0 && $(this).parent().is(':visible')) {
+            if ($(this).val() == '') {
+                $(this).addClass('error');
+                ret = false;
+            }
+        }
+    });
+    actions.each(function(i) {
+        if (i > 0 && $(this).parent().is(':visible')) {
+            if ($(this).val() == '') {
+                $(this).addClass('error')
+                ret = false;
+            }
+        }
+    });
+    if (!ret) {
+        $('#hd-source-editor-save').after(' <span class="error">[`Please specify required data`]</span>')
+    }
+    return ret;
+}
+
+</script>

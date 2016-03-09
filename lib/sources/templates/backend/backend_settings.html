@@ -1,0 +1,179 @@
+<form class="source-settings-form">
+    <p>[`Specify default values for new request.`]</p>
+    <div class="fields" style="width:100%;">
+        <input type="hidden" name="id" value="{$source.id}">
+        <input type="hidden" name="st" value="{$source.type}">
+        <input type="hidden" name="workflow_id" value="{if $wf}{$wf->getId()}{/if}">
+        <input type="hidden" name="params[workflow]" value="{if $wf}{$wf->getId()}{/if}">
+
+        {if !empty($submit_errors[''])}
+            <div class="field-group">
+                <div class="field">
+                    <div class="value">
+                        <em class="errormsg">{$submit_errors['']|escape}</em>
+                    </div>
+                </div>
+            </div>
+        {/if}
+
+        <div class="field">
+            <div class="name">[`Assign to`]</div>
+            <div class="value">
+                <select name="params[new_request_assign_contact_id]" class="equal-width">
+                    <option value="0"></option>
+                    {foreach $assignees as $contact_id => $name}
+                        <option value="{$contact_id|escape}"{if $contact_id == $source->params->ifset('new_request_assign_contact_id')} selected{/if}>{$name|escape}</option>
+                    {/foreach}
+                </select>
+            </div>
+        </div>
+        <div class="field">
+            <div class="name">[`Status`]</div>
+            <div class="value">
+                {$all_states_count = count($all_states)}
+                <select name="params[new_request_state_id]">
+                    <option value=""></option>
+                    {foreach $all_states as $workflow_info}
+                        {foreach $workflow_info['states'] as $state_info}
+                            {$full_state_id = $workflow_info.id|cat:'@':$state_info.id}
+                            <option value="{$full_state_id}" data-customer-portal="{if $state_info.customer_portal_name|default:''}1{else}0{/if}"
+                                                 {if !empty($source->params->new_request_state_id) && $source->params->new_request_state_id == $full_state_id}selected="selected"{/if}
+                                             >
+                                {if $all_states_count > 1}{$workflow_info.name|escape}&mdash;{/if}{$state_info.name|escape}
+                            </option>
+                        {/foreach}
+                    {/foreach}
+                </select>
+            </div>
+        </div>
+
+        <div class="field">
+            <div class="name h-section">[`Messages`]</div>
+
+            <div class="value messages-wrapper" style="margin-top: 10px">
+
+                {if !empty($messages)}
+
+                    {foreach $messages as $i => $m}
+
+                        <div class="one-message email-template-editor"><div class="fields width100px">
+                            <div class="expandable expanded">
+                                <label class="expandable-legend">
+                                    <input type="checkbox" class="remove-message-checkbox" checked>
+                                    [`Send email message`]
+                                </label>
+                                <div class="editor-wrapper" data-i="{$i}">
+                                    {include file="templates/actions/editor/email_template_editor.html"
+                                        input_name="params[messages][{$i}][tmpl]"
+                                        variables=$receipt_template_vars
+                                        template=ifset($m.tmpl)
+                                        to_name="params[messages][{$i}][to]"
+                                        to_value=ifset($m.to)
+                                        sourcefrom_name="params[messages][{$i}][sourcefrom]"
+                                        sourcefrom_set=ifset($m.sourcefrom)}
+                                </div>
+                            </div>
+                        </div><div class="clear-left"></div></div>
+
+                    {/foreach}
+
+                {/if}
+
+                <div class="one-message hidden template email-template-editor"><div class="fields width100px">
+                    <div class="field-group expandable expanded">
+                        <label class="expandable-legend">
+                            <input type="checkbox" class="remove-message-checkbox" checked>
+                            [`Send email message`]
+                        </label>
+                        <div class="editor-wrapper" style="min-width:530px;">
+                            <div class="block"><i class="icon16 loading"></i></div>
+                        </div>
+                    </div>
+                </div><div class="clear-left"></div></div>
+
+                <div class="fields width100px">
+                    <div class="field" style="margin-top: -5px; margin-left: -3px;">
+                        <label>
+                            <input type="checkbox" class="add-message-checkbox">
+                            <span class="when-no-messages">
+                                [`Send email message`]
+                            </span>
+                            <span class="when-messages">
+                                [`Send another email message`]
+                            </span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</form>
+
+<script>(function() { "use strict";
+
+    var form = $('.source-settings-form');
+    {* Validation errors *}
+    {foreach $submit_errors as $field_name => $e}
+        {if $field_name !== ''}
+            form.find('[name="{$field_name}"]').addClass('error').parent().append($('<em class="errormsg"></em>').text("{$e}"));
+        {/if}
+    {/foreach}
+
+    // Controller for email messages editor
+    (function() {
+        var add_message_checkbox = form.find('.add-message-checkbox');
+        var messages_wrapper = add_message_checkbox.closest('.messages-wrapper');
+
+        // Add another email editor block when user clicks "Send another email message" checkbox
+        add_message_checkbox.change(function() {
+            var fields = messages_wrapper.children('.hidden.template').clone().insertBefore(add_message_checkbox.closest('.fields'));
+            fields.removeClass('template').removeClass('hidden');
+            add_message_checkbox.prop('disabled', true);
+
+            var last_i = messages_wrapper.find('.editor-wrapper[data-i]').last().data('i');
+            if (last_i) {
+                last_i = parseInt(last_i+'', 10);
+            } else if (last_i !== 0) {
+                last_i = -1;
+            }
+            var i = last_i + 1;
+            fields.find('.editor-wrapper').data('i', ''+i).attr('data-i', ''+i);
+
+            $.post('?module=editor&action=emailTemplate&tpl=source&source_id={$source.id}', {
+                input_name: 'params[messages]['+i+'][tmpl]',
+                variables: {json_encode($receipt_template_vars)},
+                to_name: 'params[messages]['+i+'][to]',
+                sourcefrom_name: 'params[messages]['+i+'][sourcefrom]'
+            }, function(r) {
+                fields.find('.editor-wrapper').html(r);
+                add_message_checkbox.prop({ disabled: false, checked: false });
+            });
+
+            updateAddCheckbox();
+        });
+
+        // Hide email editor block when user unchecks "Send email message" checkbox
+        form.on('change', '.remove-message-checkbox', function() {
+            $(this).closest('.fields').parent().slideUp(200, function() {
+                $(this).remove();
+                updateAddCheckbox();
+            });
+        });
+
+        updateAddCheckbox();
+
+        function updateAddCheckbox() {
+            var label = add_message_checkbox.parent();
+            if (messages_wrapper.find('.one-message:not(.template)').length > 0) {
+                label.find('.when-no-messages').hide();
+                label.find('.when-messages').show();
+            } else {
+                label.find('.when-no-messages').show();
+                label.find('.when-messages').hide();
+            }
+        }
+    })();
+
+})();</script>
+

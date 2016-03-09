@@ -1,0 +1,33 @@
+{include file="`$wa_active_theme_path`/navigation.html"}
+
+<!-- navigation breadcrumbs -->
+<div class="breadcrumbs">
+    {if !empty($breadcrumbs)}
+        {foreach $breadcrumbs as $breadcrumb}
+            <a href="{$breadcrumb.url}">{$breadcrumb.name|escape}</a> »
+        {/foreach}
+    {/if}
+</div>
+
+{if !empty($categories)}
+    <nav class="page-nav" role="navigation">
+        <div class="nav-sidebar">
+
+            <ul class="menu-v stack" id="h-faq-categories">
+
+                {foreach $categories as $_c}
+                    {$_url = "`$wa->getUrl('helpdesk/frontend/faq')``$_c.url`/"}
+                    <li data-category-id="{$_c.id}"{if $wa->currentUrl() == $_url} class="selected"{/if}>
+                        <a href="{$_url}">
+                            <span class="name">{$_c.name|escape}</span>
+                        </a>
+                    </li>
+                {/foreach}
+
+            </ul>
+
+        </div>
+    </nav>
+{/if}
+
+{$content}

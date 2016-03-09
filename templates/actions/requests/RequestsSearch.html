@@ -1,0 +1,665 @@
+<style>
+    .dialog-content .menu-v i { color: #777; padding-left: 20px; }
+</style>
+
+<div class="block h-header">
+    <h1>[`Advanced search`]</h1>
+</div>
+
+<div class="support-content">
+
+<form class="advanced-search-form">
+<div class="content right300px">
+    <div class="block double-padded">
+        <div class="fields" id="h-adv-search-fields" style="position:relative;">
+
+            <div class="h-add-filter-text" style="display:none;">
+                <p>[`New filter is easy to create using search function. To do so, use <strong>Save as filter</strong> option on the search results page.`]</p>
+            </div>
+            <div class="field">
+                <div class="name">[`Request ID`]</div>
+                <div class="value">
+                    <input type="text" name="range_id_start" class="bold h-range-input"
+                                    value="{strip}
+                            {if isset($filters.range_id)}
+                                {if $filters.range_id.op === ':' || $filters.range_id.op === '>='}
+                                    {$filters.range_id.val[0]}
+                                {/if}
+                            {else if isset($filters.c_name_id.val) && isset($filters.c_name_id.val) && is_numeric($filters.c_name_id.val)}
+                                {$filters.c_name_id.val}
+                            {/if}{/strip}"> &mdash;
+                    <input type="text" name="range_id_end" class="bold h-range-input"
+                                    value="{strip}
+                            {if isset($filters.range_id)}
+                                {if $filters.range_id.op === ':'}
+                                    {$filters.range_id.val[1]}
+                                {else if $filters.range_id.op === '<='}
+                                    {$filters.range_id.val[0]}
+                                {/if}
+                            {else if isset($filters.c_name_id) && isset($filters.c_name_id.val) && is_numeric($filters.c_name_id.val)}
+                                {$filters.c_name_id.val}
+                            {/if}{/strip}">
+
+                </div>
+            </div>
+
+            <div class="field h-choose-period">
+                <div class="name">[`Create date`]</div>
+                <div class="value">
+                    <input type="text" name="created_start" class="bold h-datepicker" value="{if isset($filters.created)}{if $filters.created.op === ':' || $filters.created.op === '>='}{$filters.created.val[0]}{/if}{/if}"> &mdash;
+                    <input type="text" name="created_end" class="bold h-datepicker" value="{if isset($filters.created)}{if $filters.created.op === ':'}{$filters.created.val[1]}{else if $filters.created.op === '<='}{$filters.created.val[0]}{/if}{/if}">
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="name">[`Client name`]</div>
+                <div class="value">
+                    <input type="search" name="client_name" value="{if isset($filters.c_name_id) && !is_numeric($filters.c_name_id.val)}{$filters.c_name_id.val|default:""}{/if}">
+                </div>
+            </div>
+            <div class="field">
+                <div class="name">[`Client email`]</div>
+                <div class="value">
+                    <input type="search" name="client_email" value="{if isset($filters.c_email)}{$filters.c_email.val|default:""}{/if}">
+                </div>
+            </div>
+            <div class="field">
+                <div class="name">[`Source`]</div>
+                <div class="value">
+                    <div class="h-dialogable">
+                        <ul class="menu-h checklist no-click-close" data-name="[`Source`]">
+                            <li style="min-width: 400px;">
+                                <a href="javascript:void(0)" class="h-clean-checklist" style="display: none;"><i class="icon10 no"></i></a>
+                                <a href="javascript:void(0)" class="h-open-dialog selected-items small gray">[`select`]</a>
+                                <ul class="menu-v hidden">
+                                    {foreach $sources as $_wf_name=>$_src}
+                                        <li><i>{$_wf_name|escape}</i></li>
+                                        {foreach $_src as $_s}
+                                            <li><label>
+                                                <input type="checkbox" name="source_id" value="{$_s.id}" {if !empty($filters.source.val) && in_array($_s.id, $filters.source.val)}checked="checked"{/if}>
+                                                {$_s.name|escape}
+                                            </label></li>
+                                        {/foreach}
+                                    {/foreach}
+                                </ul>
+                            </li>
+                        </ul>
+                        <div class="hint hidden">[`Search requests that were added via selected sources`]</div>
+                    </div>
+                </div>
+            </div>
+            {if !empty($workflows)}
+                <div class="field">
+                    <div class="name">[`State`]</div>
+                    <div class="value">
+                        {if count($workflows) > 1}
+                            <div class="h-dialogable">
+                                <ul class="menu-h checklist no-click-close" data-name="[`State`]">
+                                    <li style="min-width:400px;">
+                                        <a href="javascript:void(0)" class="h-clean-checklist" style="display: none;"><i class="icon10 no"></i></a>
+                                        <a href="javascript:void(0)" class="h-open-dialog selected-items small gray">[`select`]</a>
+                                        <ul class="menu-v hidden">
+                                            {foreach $states as $wf_id => $sts}
+                                                <li><i>{$workflows[$wf_id]|escape}</i></li>
+                                                {foreach $sts as $state_id => $state_name}
+                                                    {$val = $wf_id|cat:'@':$state_id}
+                                                    <li><label>
+                                                        <input type="checkbox" name="state_id" value="{$val}" {if !empty($filters.state.val) && in_array($val, $filters.state.val)}checked="checked"{/if}>
+                                                        {$state_name|escape}
+                                                    </label></li>
+                                                {/foreach}
+                                            {/foreach}
+
+                                            {foreach $all_states as $s}
+                                                {if $s.deleted}
+                                                    <li><label>
+                                                        <input type="checkbox" name="state_id" value="{$s.id}">
+                                                        {$s.name|escape}
+                                                    </label></li>
+                                                {/if}
+                                            {/foreach}
+                                        </ul>
+                                    </li>
+                                </ul>
+                                <div class="hint hidden">[`Search requests that are currently in selected states`]</div>
+                            </div>
+                        {else}
+                            <div class="h-dialogable">
+                                <ul class="menu-h checklist no-click-close" data-name="[`State`]">
+                                    <li style="min-width:400px;">
+                                        <a href="javascript:void(0)" class="h-clean-checklist" style="display: none;"><i class="icon10 no"></i></a>
+                                        <a href="javascript:void(0)" class="h-open-dialog selected-items small gray">[`select`]</a>
+                                        <ul class="menu-v hidden">
+                                            {foreach $states as $wf_id => $sts}
+                                                <li><i>{$workflows[$wf_id]|escape}</i></li>
+                                                {foreach $sts as $state_id => $state_name}
+                                                    {$val = $wf_id|cat:'@':$state_id}
+                                                    <li><label>
+                                                        <input type="checkbox" name="state_id" value="{$val}" {if !empty($filters.state.val) && in_array($val, $filters.state.val)}checked="checked"{/if}>
+                                                        {$state_name|escape}
+                                                    </label></li>
+                                                {/foreach}
+                                            {/foreach}
+
+                                            {foreach $all_states as $s}
+                                                <li><label>
+                                                    <input type="checkbox" name="state_id" value="{$s.id}" {if !empty($filters.state.val) && in_array($s.id, $filters.state.val)}checked="checked"{/if}>
+                                                    {$s.name|escape}
+                                                </label></li>
+                                            {/foreach}
+                                        </ul>
+                                    </li>
+                                </ul>
+                                <div class="hint hidden">[`Search requests that are currently in selected states`]</div>
+                            </div>
+                        {/if}
+                    </div>
+                </div>
+            {/if}
+            <div class="field">
+                <div class="name">[`Assigned to`]</div>
+                <div class="value">
+                    <div class="h-dialogable">
+                        <ul class="menu-h checklist no-click-close" data-name="[`Assigned to`]">
+                            <li style="min-width: 400px;">
+                                <a href="javascript:void(0)" class="h-clean-checklist" style="display: none;"><i class="icon10 no"></i></a>
+                                <a href="javascript:void(0)" class="h-open-dialog selected-items small gray">[`select`]</a>
+                                <ul class="menu-v hidden">
+                                    {foreach $assigned_to as $cid => $cname}
+                                        <li><label>
+                                            <input type="checkbox" name="assigned_contact_id" value="{$cid}" {if !empty($filters.assigned.val) && in_array($cid, $filters.assigned.val)}checked="checked"{/if}>
+                                            {$cname|escape}
+                                        </label></li>
+                                    {/foreach}
+                                    <li><label>
+                                        <input type="checkbox" name="assigned_contact_id" value="0" {if !empty($filters.assigned.val) && in_array('0', $filters.assigned.val)}checked="checked"{/if}>
+                                    </label></li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <div class="hint hidden">[`Search by users who have open assignments now`]</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="name">[`Actor`]</div>
+                <div class="value">
+                    <div class="h-dialogable">
+                        <ul class="menu-h checklist no-click-close" data-name="[`Actor`]">
+                            <li style="min-width: 400px;">
+                                <a href="javascript:void(0)" class="h-clean-checklist" style="display: none;"><i class="icon10 no"></i></a>
+                                <a href="javascript:void(0)" class="h-open-dialog selected-items small gray">[`select`]</a>
+                                <ul class="menu-v hidden">
+                                    {foreach $actors as $cid => $cname}
+                                        <li><label>
+                                            <input type="checkbox" name="actor_id" value="{$cid}" {if !empty($filters.actor_id.val) && in_array($cid, $filters.actor_id.val)}checked="checked"{/if}>
+                                            {$cname|escape}
+                                        </label></li>
+                                    {/foreach}
+                                </ul>
+                            </li>
+                        </ul>
+                        <div class="hint hidden">[`Search by users who performed actions with requests`]</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="name">[`Actions`]</div>
+                <div class="value">
+                    <div class="h-dialogable">
+                        <ul class="menu-h checklist no-click-close" data-name="[`Actions`]">
+                            <li style="min-width: 400px;">
+                                <a href="javascript:void(0)" class="h-clean-checklist" style="display: none;"><i class="icon10 no"></i></a>
+                                <a href="javascript:void(0)" class="h-open-dialog selected-items small gray">[`select`]</a>
+                                <ul class="menu-v hidden">
+                                    {foreach $all_actions as $_wf_name => $_actions}
+                                        <li><i>{$_wf_name|escape}</i></li>
+                                        {foreach $_actions as $a}
+                                            <li><label>
+                                                <input type="checkbox" name="action_id" value="{$a.id|escape}" {if !empty($filters.action_id.val) && in_array($a.id, $filters.action_id.val)}checked="checked"{/if}>
+                                                {if $a.deleted}
+                                                    <span style="color:#888;">
+                                                        {$a.name|escape}
+                                                    </span>
+                                                {else}
+                                                    {$a.name|escape}
+                                                {/if}
+                                            </label></li>
+                                        {/foreach}
+                                    {/foreach}
+                                </ul>
+                            </li>
+                        </ul>
+                        <div class="hint hidden">[`Search requests that were ever subjected to selected actions`]</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="name">[`Tags`]</div>
+                <div class="value">
+                    <div class="h-dialogable">
+                        <ul class="menu-h checklist no-click-close" data-name="[`Tags`]">
+                            <li style="min-width: 400px;">
+                                <a href="javascript:void(0)" class="h-clean-checklist" style="display: none;"><i class="icon10 no"></i></a>
+                                <a href="javascript:void(0)" class="h-open-dialog selected-items small gray">[`select`]</a>
+                                <ul class="menu-v hidden">
+                                    {foreach $tags as $t}
+                                        <li><label>
+                                            <input type="checkbox" name="tag_id" value="{$t.id}" {if !empty($filters.tag_id.val) && in_array($t.id, $filters.tag_id.val)}checked="checked"{/if}>
+                                            {$t.name|escape}
+                                        </label></li>
+                                    {/foreach}
+                                </ul>
+                            </li>
+                        </ul>
+                        <div class="hint hidden">[`Search requests that have selected tags assigned`]</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="name">[`Words`]</div>
+                <div class="value">
+
+                    <input type="search" name="words" value="{$filters.search.val[0]|default:""|escape}">
+
+                    <p class="compact"><label>
+                        <input type="radio" name="words_search_where" value="summary" {if $filters.search.val[1]|default:'' === 'summary'}checked="checked"{/if}> [`Search in request subject`]
+                    </label></p>
+                    <p class="compact"><label>
+                        <input type="radio" name="words_search_where" value="text,summary" {if $filters.search.val[1]|default:'' === 'text,summary' || empty($filters.search.val[1])}checked="checked"{/if}> [`Search in request subject and text`]
+                    </label></p>
+                    <p class="last compact"><label>
+                        <input type="radio" name="words_search_where" value="log_text" {if $filters.search.val[1]|default:'' === 'log_text'}checked="checked"{/if}> [`Search in discussion, comments and response to client`]
+                    </label></p>
+                </div>
+            </div>
+
+            {foreach $fields as $f_id => $field}
+                <div class="field">
+                    <div class="name">{$field->getName()|escape}</div>
+                    <div class="value">
+                        {if $field->getType() === 'Select'}
+                            <div class="h-dialogable">
+                                <ul class="menu-h checklist no-click-close" data-name="{$field->getName()}">
+                                    <li style="min-width: 400px;">
+                                        <a href="javascript:void(0)" class="h-clean-checklist" style="display: none;"><i class="icon10 no"></i></a>
+                                        <a href="javascript:void(0)" class="h-open-dialog selected-items small gray">[`select`]</a>
+                                        <ul class="menu-v hidden">
+                                            {foreach $select_fields_options[$f_id]|default:[] as $opt_value => $opt_name}
+                                                <li><label>
+                                                    <input type="checkbox" class="h-request-field" data-field-id="{$f_id}" name="field[{$f_id}]" value="{$opt_value}" {if !empty($filters['field_'|cat:$f_id].val) && in_array($opt_value, $filters['field_'|cat:$f_id].val)}checked="checked"{/if}>
+                                                    {$opt_name|escape}
+                                                </label></li>
+                                            {/foreach}
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </div>
+                        {else if ($field->getType() === 'Checkbox')}
+                            <select name="field[{$f_id}]" style="width: 50px;" class="h-request-field" data-field-id="{$f_id}">
+                                <option {if !isset($filters['field_'|cat:$f_id].val)}selected="selected"{/if}></option>
+                                <option value="1" {if isset($filters['field_'|cat:$f_id].val) && $filters['field_'|cat:$f_id].val}selected="selected"{/if}>[`Yes`]</option>
+                                <option value="0" {if isset($filters['field_'|cat:$f_id].val) && !$filters['field_'|cat:$f_id].val}selected="selected"{/if}>[`No`]</option>
+                            </select>
+                        {else}
+                            <input type="search" class="h-field-autocomplete h-request-field" data-field-id="{$f_id}" name="field[{$f_id}]" {if !empty($filters['field_'|cat:$f_id].val)}value="{$filters['field_'|cat:$f_id].val}"{/if}>
+                        {/if}
+                    </div>
+                </div>
+            {/foreach}
+
+            {*
+             * Container for additional params generated by workflows and actions
+             *}
+            <div id="hd-adv-search-additional-params"></div>
+
+            <div class="field">
+                <div class="value">
+                    <input type="submit" class="button green" value="[`Search`]">
+                    <i class="icon16 loading" style="display:none"></i>
+                    <a class="h-clear" style="display: none; margin-left: 10px;" href="javascript:void(0);">[`Clear`]</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</form>
+
+
+
+</div>
+<script>(function() { "use strict";
+    var wrapper = $('#h-adv-search-fields');
+    var form = wrapper.closest('form');
+
+    // States by workflow
+    var states = {json_encode($states)};
+
+    {if $wa->setting('search_additional_fields')}
+
+        // Load additional fields
+        $('#hd-adv-search-additional-params').html('<div class="field"><div class="value"><i class="icon16 loading"></i></div></div>');
+        $.post('?module=backend&action=additionalFields', {}, function(result) {
+            $('#hd-adv-search-additional-params').html(result).find('input:text[name]').each(function() {
+                var input = $(this);
+                input.autocomplete({
+                    source: '?action=searchAutocomplete&n='+input.attr('name')
+                });
+            });
+        });
+
+    {/if}
+
+    // autocomplete for some fields
+    $.each(['id', 'client_email', 'client_name'], function(i, name) {
+        wrapper.find('input[type="search"][name="'+name+'"]').autocomplete({
+            source: '?action=searchAutocomplete&n=!'+name
+        });
+    });
+
+    // fields autocomplete
+    $('.h-field-autocomplete').each(function() {
+        $(this).autocomplete({
+            source: '?action=searchAutocomplete&n=' + $(this).data('fieldId')
+        });
+    });
+
+    // search form submit
+    form.submit(function() {
+        form.find('.errormsg').remove();
+        form.find('.error').removeClass('error');
+        var errors = [];
+
+        // pack filters into hash string
+        var filters = [], header_parts = [];
+
+        // ID
+        $.each({
+            client_email: 'c_email',
+            client_name: 'c_name_id',
+            source_id: 'source',
+            state_id: 'state',
+            assigned_contact_id: 'assigned',
+            actor_id: 'actor_id',
+            action_id: 'action_id',
+            tag_id: 'tag_id'
+        }, function(html_id, filter_id) {
+            var f = wrapper.find('[name="'+html_id+'"]');
+            var val;
+            if (f.length > 1) {
+                val = [];
+                f.each(function() {
+                    var self = $(this);
+                    if (self.is(':checked')) {
+                        val.push($.trim(self.val()));
+                    }
+                });
+                val = val.join(',');
+            } else {
+                val = '';
+                if (!{ checkbox:1, radio:1 }[f.attr('type')] || f.is(':checked')) {
+                    val = $.trim(f.val());
+                }
+            }
+
+            if (val) {
+                filters.push({
+                    name: filter_id,
+                    param: [val]
+                });
+
+                if (f.is('select')) {
+                    val = f.children(':selected').text();
+                } else {
+                    var cl = f.first().closest('.checklist');
+                    if (cl && cl.length) {
+                        val = cl.find('.selected-items').text();
+                    }
+                }
+
+{*                var name = f.first().data('fieldName');
+                if (!name) {
+                    name = f.closest('.field').find('.name').text() || filter_id;
+                }
+                header_parts.push(name+': '+val);*}
+            }
+        });
+
+        // range fields
+        $.each(['created', 'range_id'], function(i, name) {
+            var start = wrapper.find('input[name="' + name + '_start"]');
+            var end = wrapper.find('input[name="' + name + '_end"]');
+            var start_val = $.trim(start.val());
+            var end_val = $.trim(end.val());
+            if (!start_val && !end_val) {
+                return;
+            }
+            if (start_val && !end_val) {
+                filters.push({
+                    name: name,
+                    op: '>=',
+                    param: [start_val]
+                });
+            } else if (!start_val && end_val) {
+                filters.push({
+                    name: name,
+                    op: '<=',
+                    param: [end_val]
+                });
+            } else {
+                filters.push({
+                    name: name,
+                    op: ':',
+                    param: [start_val + '--' + end_val]
+                });
+            }
+        });
+
+
+        // Word search (fulltext)
+        (function(i, input_name) {
+            var f = wrapper.find('input[name="words"]');
+            var val = $.trim(f.val());
+            if (val) {
+                var search_place = wrapper.find('input[name="words_search_where"]:checked').val();
+                if (!search_place) {
+                     return;
+                }
+
+                if (val.indexOf('"') >= 0 || val.indexOf('(') >= 0) {
+                    filters.push({
+                        name: 'search',
+                        param: [val, search_place]
+                    });
+                } else {
+                    var orig_words = $.trim(val).split(/\s+/g);
+                    if (orig_words.length > 0 && orig_words[0]) {
+                        var words = [];
+                        $.each(orig_words, function(i, word) {
+                            if (!word) {
+                                return;
+                            }
+                            if (['+', '-', '~', '>', '<'].indexOf(word[0]) < 0 && word[word.length-1] != '*') {
+                                if (search_place == 'log_text' && word.length < 4) {
+                                    errors.push({
+                                        field_name: 'words',
+                                        errormsg: "[`Words to search must be %d or more characters each`]".replace('%d', 4)
+                                    });
+                                    return false;
+                                } else if (word.length < 2) {
+                                    errors.push({
+                                        field_name: 'words',
+                                        errormsg: "[`Words to search must be %d or more characters each`]".replace('%d', 2)
+                                    });
+                                    return false;
+                                }
+                                word = '+'+word;
+                            }
+                            words.push(word);
+                        });
+
+                        filters.push({
+                            name: 'search',
+                            param: [words.join(' '), search_place]
+                        });
+                    }
+                }
+
+                //header_parts.push((f.closest('.field').find('.name').text() || "words")+': '+val);
+            }
+        })();
+
+        {if $wa->setting('search_additional_fields')}
+            // Additional fields
+            $('#hd-adv-search-additional-params input').each(function(i, fld) {
+                fld = $(fld);
+                var val = $.trim(fld.val());
+                if (val) {
+                    filters.push({
+                        name: 'param',
+                        param: [fld.attr('name'), val]
+                    });
+                    //header_parts.push((fld.closest('.field').find('.name').text() || "words")+': '+val);
+                }
+            });
+        {/if}
+
+        var request_field_values = { };
+
+        $('.h-request-field').each(function() {
+            var item = $(this);
+            var val = $.trim(item.val());
+            var id = item.data('fieldId');
+            if (item.is(':checkbox')) {
+                if (item.is(':checked')) {
+                    if (!request_field_values[id]) {
+                        request_field_values[id] = [val];
+                    } else {
+                        request_field_values[id].push(val);
+                    }
+                }
+            } else if (val) {
+                request_field_values[id] = [val];
+            }
+        });
+
+
+        $.each(request_field_values, function(key, val) {
+            filters.push({
+                'name': 'field',
+                'param': [key, request_field_values[key].join(',')]
+            });
+        });
+
+
+
+        // Plugin fields processed by events (callbacks)
+        var e = new $.Event('search_submitted');
+        e.filters = filters;
+        //e.header_parts = header_parts;
+        e.errors = errors;
+        $("#h-adv-search-fields").trigger(e);
+
+        if (errors.length) {
+            $.each(errors, function(i, e) {
+                var f = form.find('[name="'+e.field_name+'"]');
+                if (f.length <= 0) {
+                    f = form.find(':submit');
+                }
+                if (f.length > 0) {
+                    f.last().parent().append($('<em class="errormsg"></em>').text(e.errormsg));
+                }
+            });
+            return false;
+        }
+
+        var header_hash = '';
+        if (!e.header_string && e.header_parts && e.header_parts.length) {
+            //e.header_string = e.header_parts.join(', ');
+        }
+{*        if (e.header_string) {
+            header_hash = 'header/'+encodeURIComponent(e.header_string)+'/';
+        }*}
+
+        $.wa.setHash('#/requests/search/'+(new $.wa.Grid()).compileFilters(filters)+'/');
+        return false;
+    });
+
+    var getChecklistTitle = function(ul) {
+        var text = ul.find('input:checked').map(function() {
+            return $(this).closest('label').text().trim();
+        }).toArray().join(', ');
+        return text || '[`select`]';
+    };
+    var isChecklistEmpty = function(ul) {
+        return !ul.find('input:checked').length;
+    };
+
+    $('.h-clean-checklist').click(function() {
+        var item = $(this);
+        var ul = item.closest('ul').find('ul');
+        ul.find(':checked').attr('checked', false);
+        item.closest('.field').find('.h-open-dialog').addClass('small gray').text('[`select`]');
+        item.hide();
+    });
+
+    $('.h-open-dialog').click(function() {
+        var item = $(this);
+        var ul = item.closest('ul').find('ul');
+        var name = item.closest('ul').data('name');
+        var d = $.wa.dialogCreate('h-checklist-dialog', {
+            content: '<h1>' + name + '</h1><div class="h-render-content-here"></div>',
+            buttons: '<input type="submit" class="button green" value="[`Save`]"> [`or`] <a class="cancel" href="javascript:void(0)">[`cancel`]</a>',
+        })
+        .find('.h-render-content-here')
+            .append(ul.find('li').length ? item.closest('.h-dialogable').find('.hint').clone().show() : '')
+            .append(ul.find('li').length ? ul.clone().show() : '<p class="align-center" style="margin-top: 100px;">[`No options available`]</p>')
+        .end()
+        .find('.cancel').click(function() {
+            $.wa.dialogHide();
+            d.remove();
+        })
+        .end()
+        .find('.button').attr('disabled', ul.find('li').length ? false : true)
+            .click(function() {
+                $.wa.dialogHide();
+                item.text(getChecklistTitle(d.find('ul')));
+                ul.replaceWith(d.find('ul').hide());
+                ul = item.closest('ul').find('ul');
+                if (isChecklistEmpty(ul)) {
+                    item.closest('.field').find('.h-clean-checklist').hide();
+                    item.addClass('small gray');
+                } else {
+                    item.closest('.field').find('.h-clean-checklist').show();
+                    item.removeClass('small gray');
+                }
+                d.remove();
+            })
+        .end();
+
+        return false;
+    });
+
+    $('.checklist').each(function() {
+        $(this).find('.selected-items').text(getChecklistTitle($(this).find('ul')));
+        if (!isChecklistEmpty($(this).find('ul'))) {
+            $(this).closest('.field').find('.h-clean-checklist').show();
+            $(this).find('.selected-items').removeClass('small gray');
+        }
+    });
+
+
+    $('.h-choose-period').each(function() {
+        var start_input = $('.h-datepicker:first', this);
+        var end_input = $('.h-datepicker:last', this);
+        $('.h-datepicker', this).datepicker({
+            dateFormat: 'yy-mm-dd'
+        }).change();
+    });
+
+})();
+</script>

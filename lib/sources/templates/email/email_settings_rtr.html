@@ -1,0 +1,38 @@
+<div class="rtr-block">
+
+    [`If the sender of the message is`]
+
+    <select class="reply-to-reply-actor">
+        {foreach $_actors as $_id=>$_name}
+            <option value="{$_id}"{if $__a && $__a.author_id == $_id} selected{/if}>{$_name}</option>
+        {/foreach}
+    </select>
+
+    [`and request state is`]
+
+    <select class="reply-to-reply-state">
+        <option value="">[`&lt;select&gt;`]</option>
+        {if $_states}
+        {foreach $_states as $_wf_id=>$_st}
+            <option disabled class="option-disabled">{ifempty($workflows.$_wf_id, $_wf_id)|escape}</option>
+            {foreach $_st as $_id=>$_row}
+                <option value="{if $_row.workflow_id}{$_row.workflow_id}@{$_id}{else}{$_id}{/if}"{if $__a && $__a.state_id == $_id && $_row.workflow_id && $_row.workflow_id==$__a.workflow_id} selected{/if} style="{$_row.color}">&nbsp;&nbsp;{$_row.name}</option>
+            {/foreach}
+        {/foreach}
+        {/if}
+    </select>
+
+    [`, then perform action`]
+
+    <select name="params[actions_with_existing_request][{ifset($__a.workflow_id)}@{ifset($__a.state_id)}][{ifset($__a.author_id)}]" class="reply-to-reply-action"{if !$__actions} disabled{/if}>
+        <option value="">[`&lt;select&gt;`]</option>
+        {if $__actions}
+        {foreach $__actions as $_id=>$_row}
+            <option value="{$_id}"{if isset($__a.action_id) && $__a.action_id == $_id} selected{/if} style="color:{$_row.color};">{$_row.name}</option>
+        {/foreach}
+        {/if}
+    </select>
+
+    <a href="javascript:void(0)"  class="rtr-delete" style="margin-left: 2px;"><i class="icon16 delete"></i></a>
+
+</div>

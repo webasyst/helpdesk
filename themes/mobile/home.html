@@ -1,0 +1,25 @@
+{* Helpdesk frontend main page. *}
+
+{if !empty($categories)}
+
+    <h1>[`Categories`]</h1>
+
+    <ul class="menu-v with-icons collapsible stack" id="h-faq-categories">
+        {foreach $categories as $c}
+            <li data-category-id="{$c.id}">
+                <span class="count">{$c.count}</span>
+                <a href="{$wa->getUrl('helpdesk/frontend/faqCategory')}{$c.url}/">
+                    <i class="icon16 {$c.icon}"></i><span class="name">{$c.name|escape}</span>
+                </a>
+            </li>
+        {/foreach}
+    </ul>
+
+{else}
+
+    <div class="welcome">
+        <h1>[`Welcome to new helpdesk section on your site!`]</h1>
+        <p>{sprintf_wp('Start by <a href="%s">filling database of frequently asked questions</a> in your helpdesk backend.', $wa_backend_url|cat:'helpdesk/#/faq/new/')}</p>
+    </div>
+
+{/if}

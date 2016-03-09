@@ -1,0 +1,14 @@
+<div class="page-content faq-category">
+    <h1>{$category.name|escape}</h1>
+    {foreach $faq_list as $f}
+
+        <h3><a href="{$f.url}/">{$f.question}</a></h3>
+
+        {if !empty($category.view_type) && $category.view_type == helpdeskFaqCategoryModel::VIEW_TYPE_COLLECTIVE}
+            <div class="answer">{$f.answer}</div>
+        {/if}
+
+    {foreachelse}
+        &lt;[`no records`]&gt;
+    {/foreach}
+</div>

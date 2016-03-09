@@ -1,0 +1,234 @@
+<div class="block">
+
+    <div class="block">
+        <h1>[`Customer portal`]</h1>
+    </div>
+
+    <div class="block">
+    <form action="?module=settings&action=portal" method="post" id="customer-portal-settings-form" class="source-settings-form">
+
+        <p>[`Customer Portal is a personal page available for clients sending requests to your Helpdesk. On this page customers can see all their requests, check status of any request, add a new request, and etc. Clients must log in to your website to access their customer portal.`]</p>
+
+        <p>
+            [`Customer Portal address:`]
+            <a href="{$wa->getUrl('helpdesk/frontend/myRequests', true)|escape}" target="_blank">{$wa->getUrl('helpdesk/frontend/myRequests', true)|escape}<i class="icon16 new-window"></i></a>
+        </p>
+
+        <div class="fields">
+            {if !empty($wf_states)}
+                <input type="hidden" name="source_id" value="{$source_id}">
+                <input type="hidden" name="workflow_id" value="{$wf_id}">
+
+                <div class="field">
+                    <div class="name">[`Workflow`]</div>
+                    <div class="value">
+                        <div class="fields limited-width">
+                            <div class="field">
+                                <div class="name">[`State`]</div>
+                                <div class="value">
+                                    <select name="new_requests_state" class="equal-width">
+                                        {html_options
+                                            options=$wf_states
+                                            selected=$new_requests_state
+                                        }
+                                    </select>
+                                    <p class="hint">
+                                        [`The selected state will be automatically set for new requests received via customer portal.`]
+                                        [`Your choice will be shown by an arrow in the workflow setup diagram.`]
+                                    </p>
+                                </div>
+                            </div>
+
+
+                            {if !empty($assignees)}
+                                <div class="field">
+                                    <div class="name">[`Assignment`]</div>
+                                    <div class="value">
+                                        <select name="default_assignee" class="equal-width">
+                                            <option value="">[`no assignment`]</option>
+                                            {html_options
+                                                options=$assignees
+                                                selected=$default_assignee
+                                            }
+                                        </select>
+                                        <p class="hint">[`Select the user or user group who should be automatically assigned to requests received via customer portal.`]</p>
+                                    </div>
+                                </div>
+                            {/if}
+                        </div>
+                    </div>
+                </div>
+            {/if}
+
+
+            <div class="field">
+                <div class="name">[`States`]</div>
+                <div class="value">
+                    <div class="fields">
+                        <div class="field top-aligned large-hint bottom-spaced">
+                            [`Specify which statuses (states) are available to the customer. The status names as they appear to the customer may be changed here. For example, if you are discussing a request with your support team, you may choose to display “Processing” at the status seen by the customer in his/her Customer Portal.`]
+                        </div>
+                        <div class="field">
+                            <table id="states-config" class="light" style="margin-left:0">
+                                <tbody>
+                                    {foreach $workflows as $wf}
+                                        {if count($workflows) > 1}
+                                            <tr>
+                                                <td colspan="2">{$wf->getName()|escape}</td>
+                                            </tr>
+                                        {/if}
+                                        {foreach $wf->getAllStates() as $s}
+                                            <tr>
+                                                <td><label style="{$s->getOption('list_row_css')}">
+                                                    <input type="checkbox" name="states[{$wf->getId()}][{$s->getId()|escape}][enabled]" value="1"{if $s->getOption('customer_portal_name')} checked{/if}>
+                                                    {$s->getName()|escape}
+                                                </label></td>
+                                                {$name = $s->getOption('customer_portal_name')}
+                                                {if empty($name)}{$name = $s->getName()}{/if}
+                                                <td>
+                                                    <div class="hide-when-disabled"><input type="text" name="states[{$wf->getId()}][{$s->getId()|escape}][name]" value="{$name|escape}"></div>
+                                                    <div class="hide-when-enabled">[`Not available`]</div>
+                                                </td>
+                                            </tr>
+                                        {/foreach}
+                                    {/foreach}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="field">
+                <div class="name">[`Actions`]</div>
+                <div class="value">
+                    <div class="fields">
+                        <div class="field top-aligned large-hint bottom-spaced">
+                            [`Specify which actions customized in your workflow are available to the customer. You may hide some internal actions performed by your support team (e.g. adding comments, or forwarding request to experts for discussion). Other actions may be set up as read-only for customers, and you may make certain actions available for the customer to perform.`]
+                        </div>
+                        <div class="field">
+                            <table class="light" style="max-width:400px;margin-left:0;float:left;" id="actions-config">
+                                <tbody>
+                                    {foreach $workflows as $wf}
+                                        {if count($workflows) > 1}
+                                            <tr>
+                                                <td colspan="2">{$wf->getName()|escape}</td>
+                                            </tr>
+                                        {/if}
+                                        {foreach $wf->getAllActions() as $a}
+                                            <tr>
+                                                <td>{$a->getName()|escape}</td>
+                                                <td>
+                                                    <select name="actions[{$wf->getId()}][{$a->getId()|escape}]">
+                                                        {html_options
+                                                            options=[
+                                                                '' => "[`Not available`]",
+                                                                'triggerable_visible_own' => "[`Only personal`]",
+                                                                'visible_all' => "[`All available for read only`]",
+                                                                'triggerable_visible_all' => "[`All available for read and action`]"
+                                                            ]
+                                                            selected="{if $a->getOption('client_triggerable')}{if $a->getOption('client_visible') == 'all'}triggerable_visible_all{else}triggerable_visible_own{/if}{else if $a->getOption('client_visible')}visible_all{/if}"
+                                                        }
+                                                    </select>
+                                                </td>
+                                            </tr>
+                                        {/foreach}
+                                    {/foreach}
+                                </tbody>
+                            </table>
+                            <div style="margin: 17px 0 0 420px;min-width:250px;background:white;">
+                                <p class="hint" style="margin-bottom:1em !important;"><strong>[`Not available`]</strong> — [`Clients do not see any information associated with this action in their Customer Portal`]</p>
+                                <p class="hint" style="margin-bottom:1em !important;"><strong>[`Only personal`]</strong> — [`Customer can perform the action but can not see these actions performed by other users`]</p>
+                                <p class="hint" style="margin-bottom:1em !important;"><strong>[`All available for read only`]</strong> — [`Clients can see this action record and it's description (except assignments info) in their Customer Portal`]</p>
+                                <p class="hint" style="margin-bottom:1em !important;"><strong>[`All available for read and action`]</strong> — [`Clients can perform this action from their Customer Portal (except assignments if they are set up for the action)`]</p>
+                            </div>
+                            <div class="clear-both"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="field">
+                <div class="value">
+                    <p>[`Specify what should be displayed as an action executor in Customer Portal:`]</p>
+
+                    <p>
+                        <label class="radio">
+                            <input type="radio" name="portal_actor_display" value="contact_name"{if ifset($settings.portal_actor_display) == 'contact_name'} checked{/if}>
+                            [`Assigned person name`]
+                        </label>
+                        <label class="radio" for="custom-radio">
+                            <input type="radio" id="custom-radio" name="portal_actor_display" value="custom"{if ifset($settings.portal_actor_display) != 'contact_name'} checked{/if}>
+                            [`Company name:`]
+
+                            {if in_array(ifset($settings.portal_actor_display), ['company_name', 'contact_name'])}
+                                {$settings.portal_actor_display = "{$wa->accountName()}"}
+                            {/if}
+                            <input type="text" name="portal_actor_display_custom" value="{$settings.portal_actor_display|escape}" style="min-width:300px;display:inline-block;">
+                        </label>
+                    </p>
+
+                    <p id="sticky-bottom-buttons" style="padding:10px 0;"><input type="submit" class="green button" value="[`Save`]"></p>
+                </div>
+            </div>
+        </div>
+
+    </form>
+    </div>
+
+</div>
+
+<script>(function() { "use strict";
+
+    var form = $('#customer-portal-settings-form');
+
+    form.on('submit', function() {
+        form.find(':submit').after('<i class="icon16 loading"></i>');
+        $.post(form.attr('action'), form.serialize(), function(r) {
+            form.parent().html(r);
+        });
+        return false;
+    });
+
+    // Custom assignment: focus text field when user clicks the radio
+    $('#custom-radio').on('focus', function() {
+        setTimeout(function() {
+            $('#custom-radio').siblings('input:text').focus();
+        }, 0);
+    });
+
+    // Checkbox logic for states
+    $('#states-config input:checkbox').change(function() {
+        var cb = $(this);
+        var tr = cb.closest('tr');
+        if (cb.is(':checked')) {
+            tr.find('input:text').prop('disabled', false);
+            tr.removeClass('disabled');
+        } else {
+            tr.find('input:text').prop('disabled', true);
+            tr.addClass('disabled');
+        }
+    }).change();
+
+    // Color of action labels depending on whether they are turned on
+    $('#actions-config').on('change', 'select', function() {
+        var select = $(this);
+        if (select.val()) {
+            select.closest('tr').removeClass('disabled');
+        } else {
+            select.closest('tr').addClass('disabled');
+        }
+    }).find('select').change();
+
+    // Submit button behaviour
+    $('#sticky-bottom-buttons').sticky({
+        fixed_css: { bottom: 0, background: '#fff', width: '100%', margin: '0' },
+        fixed_class: 'sticky-bottom-shadow'
+    });
+    form.one('change', function() {
+        form.find(':submit').removeClass('green').addClass('yellow');
+    });
+
+})();</script>
+
