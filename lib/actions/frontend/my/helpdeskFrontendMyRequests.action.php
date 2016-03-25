@@ -14,6 +14,7 @@ class helpdeskFrontendMyRequestsAction extends helpdeskFrontendViewAction
                 'params' => array(wa()->getUser()->getId()),
             ),
         ));
+        $c->orderBy('created', 'DESC');
         $requests = helpdeskRequest::prepareRequests($c->limit(0)->getRequests());
         $link_tpl = wa()->getRouteUrl('helpdesk/frontend/myRequest', array('id' => '%id%'));
         foreach($requests as $id => &$r) {

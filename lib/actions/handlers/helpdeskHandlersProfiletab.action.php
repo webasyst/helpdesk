@@ -29,6 +29,7 @@ class helpdeskHandlersProfiletabAction extends helpdeskViewAction
                 'params' => array($this->contact_id),
             ),
         ));
+        $c->orderBy('created', 'DESC');
         $this->requests = helpdeskRequest::prepareRequests($c->limit(0)->getRequests());
         $link_tpl = wa()->getAppUrl('helpdesk').'#/request/%id%/';
         $this->view->assign('requests', $this->requests);

@@ -479,6 +479,9 @@
 
         if ($.wa.helpdesk_controller.lastView) {
             var hblock = $('.hd-last-view').closest('.block');
+            if (!hblock.length) {
+                return;
+            }
             hblock.fixedBlock()
                 .bind('fixed', function() {
                     var self = $(this);
@@ -525,6 +528,10 @@
                 });
         } else {
 
+            var block = $('#h-request-top-block .request-header');
+            if (!block.length) {
+                return;
+            }
             $('#h-request-top-block .request-header').fixedBlock( { css: { top: 0 } } )
                     .bind('fixed', function () {
                         fixRequestHeader();
@@ -538,9 +545,10 @@
     var unmakeFixableRequestHeader = function() {
         if ($.wa.helpdesk_controller.lastView) {
             var hblock = $('.hd-last-view').closest('.block');
-            hblock.fixedBlock('destroy');
+            hblock.length && hblock.fixedBlock('destroy');
         } else {
-            $('#h-request-top-block .request-header').fixedBlock('destroy');
+            var block = $('#h-request-top-block .request-header');
+            block && block.fixedBlock('destroy');
         }
     };
 

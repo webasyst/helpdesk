@@ -373,7 +373,7 @@ $(function() { "use strict";
             for(var i = 0; i < state_data.actions.length; i++) {
                 var action_data = actions_data[state_data.actions[i]];
                 if (action_data && action_data.auto) {
-                    width_expand = 55;  // take into account timeout
+                    width_expand = 65;
                     break;
                 }
             }
@@ -634,7 +634,12 @@ $(function() { "use strict";
     };
 
     Raphael.fn.timeout = function(timeout, x, y) {
-        var txt = timeout.day + '[`d`] ' + timeout.hour + '[`h`]';
+        var txt = timeout.day + '[`d`] ';
+        var shift = 7;
+        if (timeout.hour > 0) {
+            txt += timeout.hour + '[`h`]';
+            shift = 2;
+        }
         var attrs = {
             stroke: 'none',
             'stroke-width': 0,
@@ -647,7 +652,7 @@ $(function() { "use strict";
         var text = r.text(x, y, txt).attr(attrs);
         var bbox = jQuery.extend({ }, text.getBBox());
         text.remove();
-        text = r.text(x - bbox.width - 2, y, txt).attr(attrs);
+        text = r.text(x - bbox.width - shift, y, txt).attr(attrs);
         text.attr('cursor', 'pointer');
         return text;
     };

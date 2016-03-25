@@ -9,6 +9,6 @@ if (!$asm->get('helpdesk', 'auto_actions_feature_release')) {
 // change type of id in request log model
 $rlm = new helpdeskRequestLogModel();
 $meta = $rlm->getMetadata();
-if (ifset($meta['actor_contact_id']['unsigned'], 1)) {
+if (!empty($meta['actor_contact_id']['unsigned'])) {
     $rlm->exec("ALTER TABLE `helpdesk_request_log` CHANGE COLUMN actor_contact_id actor_contact_id BIGINT (20) NOT NULL");
 }

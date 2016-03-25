@@ -794,18 +794,14 @@ msgstr "Искать в ответах и комментариях"
 msgid "Cron Job"
 msgstr "Cron Job"
 
-msgid "No <tt>cron</tt> job, required for automated mail gathering, have been set up for your account."
-msgstr "У вас не настроены задания <tt>cron</tt>, которые необходимы для автоматического сбора почты."
+msgid "No <tt>cron</tt> job required for automated email capture and execution of auto actions in your workflow is set up for your account."
+msgstr "У вас не настроены задания <tt>cron</tt>, которые необходимы для автоматического сбора почты и работы автоматических действий, выполняемых без участия пользователя."
 
-msgid "Without <tt>cron</tt> job set up, new mail is gathered, and requests are created, only as long as you keep your browser running."
-msgstr "Без настройки <tt>cron</tt> почта забирается из ящиков только пока приложение открыто в браузере."
+msgid "Without a <tt>cron</tt> job set up, new mail is captured and new requests are received only as long as you keep Helpdesk open in your browser. Auto actions in your workflow are not triggered in this case."
+msgstr "Без настройки <tt>cron</tt> почта забирается из ящиков, только пока приложение «Поддержка» открыто в браузере. Автоматические действия в этом случае не выполняются."
 
-msgid ""
-"To ensure that mail is gathered even when no backend users are online, please set up a <tt>cron</tt> job (<a href=\"%s\" target=\"_blank\">view instructions</a>), with the command "
-"specified below, in your web-hosting control panel:"
-msgstr ""
-"Для того чтобы почта автоматически забиралась без вашего участия, необходимо настроить задание <tt>cron</tt> (<a href=\"%s\" target=\"_blank\">инструкция по настройке</a>) с указанной "
-"ниже командой в контрольной панели вашего хостинга:"
+msgid "Please set up a <tt>cron</tt> job (<a href=\"%s\" target=\"_blank\">view instructions</a>) using the command specified below in your web-hosting control panel:"
+msgstr "Настройте задание <tt>cron</tt> (<a href=\"%s\" target=\"_blank\">инструкция по настройке</a>) с указанной ниже командой в контрольной панели вашего хостинга:"
 
 msgid "http://www.webasyst.com/framework/docs/server/cron/"
 msgstr "http://www.webasyst.ru/developers/docs/tips/cron/"
@@ -2415,7 +2411,7 @@ msgid "Customize button color"
 msgstr "Настроить цвет кнопки"
 
 #: /wa-apps/helpdesk/lib/workflow/templates/Basic_settings.html:176
-msgid "After this action is submitted"
+msgid "After this action is executed"
 msgstr "После выполнения этого действия"
 
 #: /wa-apps/helpdesk/lib/workflow/templates/Basic_settings.html:184

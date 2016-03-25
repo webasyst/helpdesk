@@ -381,6 +381,8 @@ class helpdeskSendMessages
             if (!$actor_contact->exists()) {
                 $actor_contact = null;
                 $actor_name = _w('Unknown contact');
+            } else {
+                $actor_name = $actor_contact->getName();
             }
         } else {
             $actor_contact = wa()->getUser();
@@ -430,14 +432,8 @@ class helpdeskSendMessages
             '{REQUEST_LOG_FIELDS}' => implode("<br />", $log_fields),
         );
 
-        $vars += helpdeskRequestFields::getSubstituteVars($request);
-
-        preg_match_all('~\{[A-Z0-9_]+\}~', ifset($m['tmpl'], ''), $matches);
-        foreach($matches[0] as $v) {
-            if (!isset($vars[$v])) {
-                $vars[$v] = '';
-            }
-        }
+        $vars += self::getRequestFieldsVars($request, $m['tmpl']);
+        
         unset($vars['{SEPARATOR}']);
 
         return $vars;
@@ -477,6 +473,18 @@ class helpdeskSendMessages
         try {
             $vars = self::getContactVars('CUSTOMER_', $request->getClient());
         } catch (Exception $e) { }
+        return $vars;
+    }
+
+    public static function getRequestFieldsVars($request, $tmpl = '')
+    {
+        $vars = helpdeskRequestFields::getSubstituteVars($request);
+        preg_match_all('~\{[A-Z0-9_]+\}~', ifset($tmpl, ''), $matches);
+        foreach($matches[0] as $v) {
+            if (!isset($vars[$v])) {
+                $vars[$v] = '';
+            }
+        }
         return $vars;
     }
 

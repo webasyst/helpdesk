@@ -418,7 +418,7 @@ abstract class helpdeskCommonST extends helpdeskSourceType
                         $contact = $this->getContactByEmail($email);
                         $this->setLocaleByContact($contact, $original_locale);
                     }
-                    $email_vars[$email] = $this->getReceiptVars($message) + $vars;
+                    $email_vars[$email] = $this->getReceiptVars($message, $m) + $vars;
                 }
 
                 foreach ($to as $email => $name) {
@@ -482,7 +482,7 @@ abstract class helpdeskCommonST extends helpdeskSourceType
     /**
      * Helper for sendReceipt()
      */
-    protected function getReceiptVars($message)
+    private function getReceiptVars($message, $m)
     {
         $r = $message['request'];
         $request_id = $r->getId();
@@ -523,6 +523,9 @@ abstract class helpdeskCommonST extends helpdeskSourceType
         $vars += helpdeskSendMessages::getCustomerVars($r);
         $vars += helpdeskSendMessages::getAssigneeVars($r->assigned_contact_id);
         $vars += helpdeskSendMessages::getLocaleStringVars();
+        $vars += helpdeskSendMessages::getRequestFieldsVars($r, $m['tmpl']);
+
+        unset($vars['{SEPARATOR}']);
 
         return $vars;
     }
