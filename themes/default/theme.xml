@@ -37,11 +37,6 @@
             <description locale="ru_RU">Личный кабинет клиента: общие элементы навигации</description>
         </file>
 
-       	<file path="main.html">
-            <description locale="en_US">Main layout for Site app content</description>
-            <description locale="ru_RU">Основной вывод приложения «Сайт»</description>
-        </file>
-
         <file path="page.html">
             <description locale="en_US">Static page content</description>
             <description locale="ru_RU">Содержимое информационной страницы</description>
@@ -69,12 +64,12 @@
         <file path="header.html">
             <description locale="en_US">App specific header content</description>
             <description locale="ru_RU">Содержимое «шапки» приложения</description>
-    	</file>
+        </file>
         <file path="nav.sidebar.html"></file>
         <file path="navigation.html"></file>
         <file path="pagelist.html"></file>
         <file path="searchform.html"></file>
-        <file path="index.html" custom="0" parent="1"></file>
-        <file path="error.html" custom="0" parent="1"></file>
+        <file path="index.html" parent="1"></file>
+        <file path="error.html" parent="1"></file>
     </files>
 </theme>

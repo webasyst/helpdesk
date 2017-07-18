@@ -53,7 +53,7 @@ class helpdeskRightConfig extends waRightConfig
         }
     }
 
-    public function setDefaultRights($contact_id)
+    public function getDefaultRights($contact_id)
     {
         $rights = array();
         $workflows = helpdeskWorkflow::getWorkflows();

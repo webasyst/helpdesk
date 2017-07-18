@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2015-03-31 18:56+0300\n"
+"PO-Revision-Date: 2017-07-18 11:28+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -12,7 +12,7 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: ru\n"
-"X-Generator: Poedit 1.7.5\n"
+"X-Generator: Poedit 2.0.2\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -368,12 +368,8 @@ msgstr "Использовать SSL"
 msgid "Enable spam control"
 msgstr "Включить cпам-контроль"
 
-msgid ""
-"Every time you receive a request from an unknown email address that  does not exist in your Contacts database, an automatic confirmation message will be sent to this email address. "
-"This message contains a special link for the sender to confirm his/her original request, and may contain additional instructions you wish to provide."
-msgstr ""
-"На любое сообщение поступившее с неизвестного адреса, которого нет в вашей базе данных Контактов, будет автоматически отправлен ответный запрос на подтверждение. Этот запрос содержит "
-"специальную ссылку, по которой отправитель должен перейти для подтверждения, а также дополнительные инструкции, которые вы, возможно, захотите добавить в текст запроса."
+msgid "Every time you receive a request from an unknown email address that  does not exist in your Contacts database, an automatic confirmation message will be sent to this email address. This message contains a special link for the sender to confirm his/her original request, and may contain additional instructions you wish to provide."
+msgstr "На любое сообщение поступившее с неизвестного адреса, которого нет в вашей базе данных Контактов, будет автоматически отправлен ответный запрос на подтверждение. Этот запрос содержит специальную ссылку, по которой отправитель должен перейти для подтверждения, а также дополнительные инструкции, которые вы, возможно, захотите добавить в текст запроса."
 
 msgid "Confirmation request text:"
 msgstr "Текст запроса на подтверждение:"
@@ -1192,12 +1188,8 @@ msgstr "Включите эту настройку для отправки кл�
 msgid "This option may be useful for providing estimated response time to your clients."
 msgstr "Это может быть полезным для информирования клиентов о приблизительных сроках обработки запросов."
 
-msgid ""
-"It is recommended to specify an existing email address which you do not check for new mail as the sender's address for such notifications; e.g., noreply@yourdomain.com. This will help "
-"minimize the number of redundant requests."
-msgstr ""
-"В качестве адреса отправителя рекомендуется указать адрес реально существующего, но не проверяемого вами почтового ящика (например, noreply@yourdomain.ru), чтобы ответ клиента на это "
-"сообщение не приводил к появлению новых ненужных запросов."
+msgid "It is recommended to specify an existing email address which you do not check for new mail as the sender's address for such notifications; e.g., noreply@yourdomain.com. This will help minimize the number of redundant requests."
+msgstr "В качестве адреса отправителя рекомендуется указать адрес реально существующего, но не проверяемого вами почтового ящика (например, noreply@yourdomain.ru), чтобы ответ клиента на это сообщение не приводил к появлению новых ненужных запросов."
 
 msgid "Form setup"
 msgstr "Настройка формы"
@@ -1250,12 +1242,8 @@ msgstr "Защита от спама"
 msgid "Every time you receive a message from an unknown email address which is not yet stored in your Contacts database, an automatic notification will be sent to the sender's address."
 msgstr "На любое сообщение, поступившее с неизвестного адреса, которого нет в вашей базе данных «Контактов», будет автоматически отправлено ответное уведомление."
 
-msgid ""
-"This notification contains a special link which must be clicked to confirm the sending of the first request. You may also add extra instructions for your clients to the notification "
-"text."
-msgstr ""
-"Такое уведомление содержит специальную ссылку, по которой необходимо перейти для подтверждения отправки первого запроса. В текст такого уведомления вы можете добавить дополнительные "
-"инструкции для клиентов."
+msgid "This notification contains a special link which must be clicked to confirm the sending of the first request. You may also add extra instructions for your clients to the notification text."
+msgstr "Такое уведомление содержит специальную ссылку, по которой необходимо перейти для подтверждения отправки первого запроса. В текст такого уведомления вы можете добавить дополнительные инструкции для клиентов."
 
 msgid "Confirmation receipt"
 msgstr "Квитанция о регистрации запроса"
@@ -1269,18 +1257,13 @@ msgstr "Этот источник позволяет получать запро
 msgid "Set up the email address from which you would like to receive support requests."
 msgstr "Настройте электронный адрес, через который вы хотите получать запросы."
 
-msgid ""
-"Please specify an existing email address; it may be hosted on any mail server; e.g., in a popular mail service such as Gmail, Yahoo!, etc., and must be accessible for connection via "
-"POP3 protocol."
-msgstr ""
-"Укажите адрес реально существующего почтового ящика; он может размещаться на любом почтовом сервере (включая популярные сервисы Mail.ru, Gmail и др.) и быть доступным по протоколу "
-"POP3."
+msgid "Please specify an existing email address; it may be hosted on any mail server; e.g., in a popular mail service such as Gmail, Yahoo!, etc., and must be accessible for connection via POP3 protocol."
+msgstr "Укажите адрес реально существующего почтового ящика; он может размещаться на любом почтовом сервере (включая популярные сервисы Mail.ru, Gmail и др.) и быть доступным по протоколу POP3."
 
 msgid "<strong>IMPORTANT NOTE:</strong> It is recommended that you specify an email account which was specially created for use by the Helpdesk app."
 msgstr "<strong>ВНИМАНИЕ!</strong> Рекомендуется использовать электронный адрес, специально созданный только для работы с приложением «Поддержка»."
 
-msgid ""
-"After you configure and save this source, all messages from the specified email account will be downloaded into Helpdesk and will be <strong>deleted from your mail server!</strong>"
+msgid "After you configure and save this source, all messages from the specified email account will be downloaded into Helpdesk and will be <strong>deleted from your mail server!</strong>"
 msgstr "После того как вы настроите и сохраните этот источник, все сообщения из указанного почтового ящика будут загружены в «Поддержку» и <strong>удалены с почтового сервера!</strong>"
 
 msgid "Username"
@@ -1326,9 +1309,7 @@ msgid "Email Reply templates in the Helpdesk by default contain the request ID i
 msgstr "Шаблоны email-ответов в «Поддержке» по умолчанию настроены так, что в их теме содержится номер запроса (например: [ID:12345])."
 
 msgid "Following replies to these emails sent by your clients and received in Helpdesk can be associated with the corresponding requests."
-msgstr ""
-"Ответы ваших клиентов на такие сообщения, будучи доставленными обратно в «Поддержку», могут прикрепляться к соответствующему запросу и автоматически вызывать выполнение какого-либо "
-"действия."
+msgstr "Ответы ваших клиентов на такие сообщения, будучи доставленными обратно в «Поддержку», могут прикрепляться к соответствующему запросу и автоматически вызывать выполнение какого-либо действия."
 
 msgid "Select an action in the table below that should be performed with such requests; the choice of such an action depends on the current request state and the sender of the reply."
 msgstr "Выбор такого автоматического действия зависит от текущего состояния запроса и отправителя вновь полученного сообщения в соответствии с настройками в приведённой ниже таблице."
@@ -1363,12 +1344,8 @@ msgstr "Любой другой контакт, зарегистрированн
 msgid "Reply to reply handling"
 msgstr "Обработка ответов на ответы"
 
-msgid ""
-"Customer Portal is a personal page available for clients sending requests to your Helpdesk. On this page customers can see all their requests, check status of any request, add a new "
-"request, and etc. Clients must log in to your website to access their customer portal."
-msgstr ""
-"Личный кабинет приложения «Поддержка» — это персональная страница, доступная каждому клиенту, который отправляет запросы в вашу Поддержку. На этой странице клиент может посмотреть "
-"полный список запросов, проверить статус открытых запросов, написать новый запрос и т.д. Для доступа в личный кабинет клиентам потребуется авторизация с помощью Email и пароля."
+msgid "Customer Portal is a personal page available for clients sending requests to your Helpdesk. On this page customers can see all their requests, check status of any request, add a new request, and etc. Clients must log in to your website to access their customer portal."
+msgstr "Личный кабинет приложения «Поддержка» — это персональная страница, доступная каждому клиенту, который отправляет запросы в вашу Поддержку. На этой странице клиент может посмотреть полный список запросов, проверить статус открытых запросов, написать новый запрос и т.д. Для доступа в личный кабинет клиентам потребуется авторизация с помощью Email и пароля."
 
 msgid "The selected state will be automatically set for new requests received via customer portal."
 msgstr "Это состояние будет автоматически установлено для новых запросов, добавленных через личный кабинет."
@@ -1379,20 +1356,11 @@ msgstr "Укажите пользователя или группу пользо
 msgid "States"
 msgstr "Состояния"
 
-msgid ""
-"Specify which statuses (states) are available to the customer. The status names as they appear to the customer may be changed here. For example, if you are discussing a request with "
-"your support team, you may choose to display “Processing” at the status seen by the customer in his/her Customer Portal."
-msgstr ""
-"Укажите состояния (статусы) запросов, доступные клиентам в их личных кабинетах. Названия статусов, видимые клиентами, могут быть изменены. Например, если вы обсуждаете запрос со своей "
-"командой поддержки, вы можете показывать такой запрос в личном кабинете клиента в статусе «В обработке»."
+msgid "Specify which statuses (states) are available to the customer. The status names as they appear to the customer may be changed here. For example, if you are discussing a request with your support team, you may choose to display “Processing” at the status seen by the customer in his/her Customer Portal."
+msgstr "Укажите состояния (статусы) запросов, доступные клиентам в их личных кабинетах. Названия статусов, видимые клиентами, могут быть изменены. Например, если вы обсуждаете запрос со своей командой поддержки, вы можете показывать такой запрос в личном кабинете клиента в статусе «В обработке»."
 
-msgid ""
-"Specify which actions customized in your workflow are available to the customer. You may hide some internal actions performed by your support team (e.g. adding comments, or forwarding "
-"request to experts for discussion). Other actions may be set up as read-only for customers, and you may make certain actions available for the customer to perform."
-msgstr ""
-"Укажите, какие из действий, настроенные в вашем потоке, доступные клиентам в их личных кабинетах. Вы можете скрыть некоторые внутренние действия, выполняемые вашей командой поддержки "
-"(например, добавление комментариев или пересылка запроса специалистам на обсуждение). Другие действия можно настроить как доступные только для просмотра, либо доступные для выполнения "
-"самим клиентом."
+msgid "Specify which actions customized in your workflow are available to the customer. You may hide some internal actions performed by your support team (e.g. adding comments, or forwarding request to experts for discussion). Other actions may be set up as read-only for customers, and you may make certain actions available for the customer to perform."
+msgstr "Укажите, какие из действий, настроенные в вашем потоке, доступные клиентам в их личных кабинетах. Вы можете скрыть некоторые внутренние действия, выполняемые вашей командой поддержки (например, добавление комментариев или пересылка запроса специалистам на обсуждение). Другие действия можно настроить как доступные только для просмотра, либо доступные для выполнения самим клиентом."
 
 msgid "no actions customized for this state"
 msgstr "для данного состояния не настроено ни одного действия"
@@ -1511,8 +1479,7 @@ msgstr "Редактировать поток"
 msgid "New workflow"
 msgstr "Новый поток"
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:4 /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:594
-#: /wa-apps/helpdesk/templates/actions/backend/BackendSidebar.html:213
+#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:4 /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:594 /wa-apps/helpdesk/templates/actions/backend/BackendSidebar.html:213
 msgid "Request field constructor"
 msgstr "Конструктор полей запроса"
 
@@ -1572,8 +1539,7 @@ msgstr "отключено"
 msgid "New field"
 msgstr "Новое поле"
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:233 /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:670
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:229
+#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:233 /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:670 /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:229
 msgid "Delete field"
 msgstr "Удалить поле"
 
@@ -1689,8 +1655,7 @@ msgstr "Добавить поля"
 msgid "Allows your subscriber to create a password for further authorization on your site and log in to their customer portal. Requires Email field in the form."
 msgstr "Позволяет подписчику придумать пароль для дальнейшей авторизации на вашем сайте и входа в личный кабинет. Необходимо наличие поля для ввода email в этой форме."
 
-#: /wa-apps/helpdesk/templates/actions/sources/includeFormConstructor.html:76 /wa-apps/helpdesk/templates/actions/sources/includeFormConstructor.html:77
-#: /wa-apps/helpdesk/lib/sources/templates/include_form_constructor.html:76 /wa-apps/helpdesk/lib/sources/templates/include_form_constructor.html:77
+#: /wa-apps/helpdesk/templates/actions/sources/includeFormConstructor.html:76 /wa-apps/helpdesk/templates/actions/sources/includeFormConstructor.html:77 /wa-apps/helpdesk/lib/sources/templates/include_form_constructor.html:76 /wa-apps/helpdesk/lib/sources/templates/include_form_constructor.html:77
 msgid "Sign up"
 msgstr "Зарегистрироваться"
 
@@ -1763,12 +1728,8 @@ msgid "Main fields"
 msgstr "Главные поля"
 
 #: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:8
-msgid ""
-"Main request fields can not be modified or disabled. Email requests usually contain subject and text with optional attachments. Requests sent via public or customer portal form may "
-"not have data in these fields. In this case they will be filled with default values."
-msgstr ""
-"Главные поля запроса нельзя изменить или выключить. Email-запросы обычно содержат тему, тект и (иногда) прекрепленные файлы. Запросы, отправленные через форму на сайте или из личного "
-"кабинета могут не содержать указанные данные. В таком случае эти поля будут заполнены значениями по умолчанию."
+msgid "Main request fields can not be modified or disabled. Email requests usually contain subject and text with optional attachments. Requests sent via public or customer portal form may not have data in these fields. In this case they will be filled with default values."
+msgstr "Главные поля запроса нельзя изменить или выключить. Email-запросы обычно содержат тему, тект и (иногда) прекрепленные файлы. Запросы, отправленные через форму на сайте или из личного кабинета могут не содержать указанные данные. В таком случае эти поля будут заполнены значениями по умолчанию."
 
 #: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:25
 msgid "Additional fields"
@@ -1826,9 +1787,7 @@ msgstr "Размещение подписей компонентов адрес�
 msgid "As a placeholder inside of field input"
 msgstr "В виде подсказки внутри поля"
 
-#: /wa-apps/helpdesk/templates/actions/requests/RequestsSearch.html:41 /wa-apps/helpdesk/templates/actions/requests/RequestsSearch.html:62
-#: /wa-apps/helpdesk/templates/actions/requests/RequestsSearch.html:90 /wa-apps/helpdesk/templates/actions/requests/RequestsSearch.html:111
-#: /wa-apps/helpdesk/templates/actions/requests/RequestsSearch.html:137 /wa-apps/helpdesk/templates/actions/requests/RequestsSearch.html:161
+#: /wa-apps/helpdesk/templates/actions/requests/RequestsSearch.html:41 /wa-apps/helpdesk/templates/actions/requests/RequestsSearch.html:62 /wa-apps/helpdesk/templates/actions/requests/RequestsSearch.html:90 /wa-apps/helpdesk/templates/actions/requests/RequestsSearch.html:111 /wa-apps/helpdesk/templates/actions/requests/RequestsSearch.html:137 /wa-apps/helpdesk/templates/actions/requests/RequestsSearch.html:161
 #: /wa-apps/helpdesk/templates/actions/requests/RequestsSearch.html:443
 msgid "select"
 msgstr "выбрать"
@@ -1851,15 +1810,11 @@ msgstr "Подтверждение запроса клиентом"
 
 #: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:90
 msgid "To enable this option, your form must contain Email field."
-msgstr "Для включения этой функции, ваша форма должна содержать поле Email."
+msgstr "Для включения этой функции ваша форма должна содержать поле Email."
 
 #: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:93
-msgid ""
-"After successful submission of this form an automatic notification will be sent to the sender's email address. This notification contains a special link which must be clicked to "
-"confirm the sending of the request. You may also add extra instructions for your clients to the notification text."
-msgstr ""
-"После отправки формы клиенту будет автоматически отправлено ответное уведомление по электронной почте. Такое уведомление содержит специальную ссылку, по которой необходимо перейти для "
-"подтверждения отправки запроса. В текст такого уведомления вы можете добавить дополнительные инструкции для клиентов."
+msgid "After successful submission of this form an automatic notification will be sent to the sender's email address. This notification contains a special link which must be clicked to confirm the sending of the request. You may also add extra instructions for your clients to the notification text."
+msgstr "После отправки формы клиенту будет автоматически отправлено ответное уведомление по электронной почте. Такое уведомление содержит специальную ссылку, по которой необходимо перейти для подтверждения отправки запроса. В текст такого уведомления вы можете добавить дополнительные инструкции для клиентов."
 
 #: /wa-apps/helpdesk/lib/actions/backend/helpdeskBackendSidebar.action.php:147
 msgid "no status"
@@ -1925,8 +1880,7 @@ msgstr "Этот список является результатом поиск
 msgid "Created by"
 msgstr "Создан пользователем"
 
-#: /wa-apps/helpdesk/templates/actions/backend/BackendSidebar.html:172 /wa-apps/helpdesk/templates/actions/backend/BackendSidebar.html:311
-#: /wa-apps/helpdesk/templates/actions/backend/BackendSidebar.html:373
+#: /wa-apps/helpdesk/templates/actions/backend/BackendSidebar.html:172 /wa-apps/helpdesk/templates/actions/backend/BackendSidebar.html:311 /wa-apps/helpdesk/templates/actions/backend/BackendSidebar.html:373
 msgid "Add a filter"
 msgstr "Добавить фильтр"
 
@@ -1935,12 +1889,8 @@ msgid "Select access level:"
 msgstr "Выберите уровень доступа:"
 
 #: /wa-apps/helpdesk/templates/actions/requests/RequestsInfo.html:542
-msgid ""
-"After you set \"Follow\" mark, next time someone performs an action with this request it will appear as \"Unread\" for you and you will receive email notification about this action. "
-"So you will be able to follow all further activity related to this request."
-msgstr ""
-"Если установить этот флажок, то каждый раз когда с данным запросом будут выполняться какие-либо действия, он будем становиться для вас «непрочитанным» и вы будете получать Email-"
-"уведомление об этом. Таким образом, вы сможете следить за дальнейшими действиями с данным запросом."
+msgid "After you set \"Follow\" mark, next time someone performs an action with this request it will appear as \"Unread\" for you and you will receive email notification about this action. So you will be able to follow all further activity related to this request."
+msgstr "Если установить этот флажок, то каждый раз когда с данным запросом будут выполняться какие-либо действия, он будем становиться для вас «непрочитанным» и вы будете получать Email-уведомление об этом. Таким образом, вы сможете следить за дальнейшими действиями с данным запросом."
 
 #: /wa-apps/helpdesk/templates/actions/requests/RequestsInfo.html:543
 msgid "Don't show this message anymore"
@@ -1956,14 +1906,11 @@ msgstr "Флажок «Следить»"
 
 #: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:26
 msgid ""
-"Additional fields allow you to add a number of multiple parameters to requests content. These parameters essentially depend on a type of product and services you deliver to your "
-"customers. For example, if you accept requests to repair household appliances, you may wish to know some manufacturing details, e.g. model name, and etc. Additional fields can be "
-"added to the request form to be submitted by your client, or be available on the request page for your Helpdesk app users manipulations."
+"Additional fields allow you to add a number of multiple parameters to requests content. These parameters essentially depend on a type of product and services you deliver to your customers. For example, if you accept requests to repair household appliances, you may wish to know some manufacturing details, e.g. model name, and etc. Additional fields can be added to the request form to be submitted by your client, or be "
+"available on the request page for your Helpdesk app users manipulations."
 msgstr ""
-"Дополнительные поля позволяют наполнить запрос произвольным набором уточняющих параметров. Этот набор полей существенно зависит от того, какого рода продукты и услуги вы "
-"предоставляете своим клиентам. Например, если вы принимаете запросы на ремонт бытовой техники, то возможно вам понадобятся поля, позволяющие указать модель устройства, год выпуска, "
-"характер неисправности и т.д. Дополнительные поля можно разместить в форме, через которую клиент отправляет вам запрос, а также на странице выполнения действий с запросом, если эти "
-"поля предназначены для заполнения пользователями приложения «Поддержка»."
+"Дополнительные поля позволяют наполнить запрос произвольным набором уточняющих параметров. Этот набор полей существенно зависит от того, какого рода продукты и услуги вы предоставляете своим клиентам. Например, если вы принимаете запросы на ремонт бытовой техники, то возможно вам понадобятся поля, позволяющие указать модель устройства, год выпуска, характер неисправности и т.д. Дополнительные поля можно разместить в "
+"форме, через которую клиент отправляет вам запрос, а также на странице выполнения действий с запросом, если эти поля предназначены для заполнения пользователями приложения «Поддержка»."
 
 #: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:206
 msgid "Using this form"
@@ -1974,12 +1921,8 @@ msgid "Available in the Helpdesk backend"
 msgstr "Доступна в бекенде приложения «Поддержка»"
 
 #: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:213
-msgid ""
-"Allows you to manually create new requests via this form in Helpdesk backend using the “New request” button. This option may be useful when a client cannot send you a request "
-"personally; e.g., during a telephone call."
-msgstr ""
-"Позволяет добавлять запросы через эту форму в бекенде приложения «Поддержка» с помощью кнопки «Новый запрос», когда клиент не имеет возможности сделать это самостоятельно — например, "
-"во время телефонного разговора."
+msgid "Allows you to manually create new requests via this form in Helpdesk backend using the “New request” button. This option may be useful when a client cannot send you a request personally; e.g., during a telephone call."
+msgstr "Позволяет добавлять запросы через эту форму в бекенде приложения «Поддержка» с помощью кнопки «Новый запрос», когда клиент не имеет возможности сделать это самостоятельно — например, во время телефонного разговора."
 
 #: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:217
 msgid "Available for your clients in their Customer portal for these websites:"
@@ -1988,12 +1931,8 @@ msgstr "Доступна вашим клиентам в их личных каб
 msgid "For further setup up of your Customer Portal use the <a href=\"%s\">Site app</a>"
 msgstr "Для дальнейшей настройки личного кабинета используйте приложение <a href=\"%s\">Сайт</a>"
 
-msgid ""
-"This source enables you to receive new requests via a web form published in the frontend of any Webasyst app or anywhere on the Internet. Also this form can be used to add requests "
-"directly from your backend (“New request” button), or from your clients customer portals."
-msgstr ""
-"Этот источник позволяет получать новые запросы через веб-форму, опубликованную на любой странице в приложениях Webasyst или где угодно в интернете. Форму можно также использовать для "
-"добавления запросов непосредственно из бекенда (кнопка «Новый запрос»), либо из личных кабинетов ваших клиентов."
+msgid "This source enables you to receive new requests via a web form published in the frontend of any Webasyst app or anywhere on the Internet. Also this form can be used to add requests directly from your backend (“New request” button), or from your clients customer portals."
+msgstr "Этот источник позволяет получать новые запросы через веб-форму, опубликованную на любой странице в приложениях Webasyst или где угодно в интернете. Форму можно также использовать для добавления запросов непосредственно из бекенда (кнопка «Новый запрос»), либо из личных кабинетов ваших клиентов."
 
 #: /wa-apps/helpdesk/templates/actions/constructor/ConstructorDeleteConfirm.html:12
 msgid "Deleting this field will not cause a loss of any data."
@@ -2008,12 +1947,8 @@ msgid "Form settings"
 msgstr "Настройка формы"
 
 #: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:18
-msgid ""
-"This source enables you to receive new requests via a web form published in the frontend of any Webasyst app or anywhere on the Internet. Also this form can be used to add requests "
-"directly from your backend (\"New request\" button), or from your clients customer portals."
-msgstr ""
-"Этот источник позволяет получать запросы через веб-форму, опубликованную на вашем сайте или где-либо в интернете. С помощью этой формы можно также создавать запросы в бекенде "
-"«Поддержки» при нажатии на кнопку «Новый запрос» или клиентами в личном кабинете."
+msgid "This source enables you to receive new requests via a web form published in the frontend of any Webasyst app or anywhere on the Internet. Also this form can be used to add requests directly from your backend (\"New request\" button), or from your clients customer portals."
+msgstr "Этот источник позволяет получать запросы через веб-форму, опубликованную на вашем сайте или где-либо в интернете. С помощью этой формы можно также создавать запросы в бекенде «Поддержки» при нажатии на кнопку «Новый запрос» или клиентами в личном кабинете."
 
 #: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:204
 msgid "Available in the Helpdesk backend:"
@@ -2129,8 +2064,7 @@ msgstr "Использовать форму на сайте"
 msgid "Authorized user redirected to the request page in customer portal"
 msgstr "Авторизованный пользователь перенаправляется на страницу запроса в личном кабинете"
 
-#: /wa-apps/helpdesk/templates/actions/requests/RequestsSearch.html:25 /wa-apps/helpdesk/lib/classes/helpdeskRequestsCollection.class.php:441
-#: /wa-apps/helpdesk/lib/classes/helpdeskRequestsCollection.class.php:444 /wa-apps/helpdesk/lib/classes/helpdeskRequestsCollection.class.php:450
+#: /wa-apps/helpdesk/templates/actions/requests/RequestsSearch.html:25 /wa-apps/helpdesk/lib/classes/helpdeskRequestsCollection.class.php:441 /wa-apps/helpdesk/lib/classes/helpdeskRequestsCollection.class.php:444 /wa-apps/helpdesk/lib/classes/helpdeskRequestsCollection.class.php:450
 msgid "Create date"
 msgstr "Дата создания"
 
@@ -2235,12 +2169,8 @@ msgid "no categories"
 msgstr "нет разделов"
 
 #: /wa-apps/helpdesk/templates/layouts/includeFilterSettings.html:78
-msgid ""
-"This filter displays all requests independent on their status. If you don't need this whole list for a permanent access, simply hide it. Once you need it again, you can turn it on "
-"anytime using Add filter option in the left-hand sidebar."
-msgstr ""
-"Этот фильтр показывает все запросы, независимо от их статуса. Если вам не нужен список всех запросов для постоянного доступа, просто скройте его. При необходимости, вы всегда сможете "
-"включить его вновь с помощью действия «Добавить фильтр» в левой панели."
+msgid "This filter displays all requests independent on their status. If you don't need this whole list for a permanent access, simply hide it. Once you need it again, you can turn it on anytime using Add filter option in the left-hand sidebar."
+msgstr "Этот фильтр показывает все запросы, независимо от их статуса. Если вам не нужен список всех запросов для постоянного доступа, просто скройте его. При необходимости, вы всегда сможете включить его вновь с помощью действия «Добавить фильтр» в левой панели."
 
 #: /wa-apps/helpdesk/templates/layouts/includeFilterSettings.html:109
 msgid "Hide All requests filter"
@@ -2314,9 +2244,7 @@ msgstr "После отправки формы (если клиент не ав�
 
 #: /wa-apps/helpdesk/lib/sources/templates/form_settings.html:74
 msgid "This setting will redirect new clients (who are not yet authorized on your site) to any specified URL or display any text message after the form is submitted."
-msgstr ""
-"Эта настройка позволяет после отправки запроса перенаправлять новых клиентов, которые не авторизованы на вашем сайте, на любую указанную страницу, либо показывать на месте формы какое-"
-"либо сообщение."
+msgstr "Эта настройка позволяет после отправки запроса перенаправлять новых клиентов, которые не авторизованы на вашем сайте, на любую указанную страницу, либо показывать на месте формы какое-либо сообщение."
 
 #: /wa-apps/helpdesk/lib/sources/templates/form_settings.html:120
 msgid "After successful submission (if client is authorized)"
@@ -2375,12 +2303,8 @@ msgid "Reply by email"
 msgstr "Ответить по email"
 
 #: /wa-apps/helpdesk/lib/sources/templates/email_settings.html:94
-msgid ""
-"In case a message incoming to this email address contains a request ID in their subject (e.g., [ID:12345-XXXXX]; 12345 is request ID in this sample), then we bind incoming message "
-"with this request. However, you can customize special processing for this kind of messages."
-msgstr ""
-"В том случае, если на данный адрес поступит письмо, содержащее в своей теме номер запроса (например: [ID:12345-XXXXX], здесь 12345 это номер запроса в данном примере), то мы свяжем "
-"поступившее письмо с этим запросом. Однако вы можете настроить особую обработку для таких писем."
+msgid "In case a message incoming to this email address contains a request ID in their subject (e.g., [ID:12345-XXXXX]; 12345 is request ID in this sample), then we bind incoming message with this request. However, you can customize special processing for this kind of messages."
+msgstr "В том случае, если на данный адрес поступит письмо, содержащее в своей теме номер запроса (например: [ID:12345-XXXXX], здесь 12345 это номер запроса в данном примере), то мы свяжем поступившее письмо с этим запросом. Однако вы можете настроить особую обработку для таких писем."
 
 #: /wa-apps/helpdesk/lib/sources/templates/email_settings.html:386
 msgid "Custom handling"
@@ -2510,12 +2434,8 @@ msgstr "Визуальный редактор"
 msgid "checkbox"
 msgstr "чекбокс"
 
-msgid ""
-"NOTE: Request will be accepted and shows up in your request lists only after client clicks confirmation link in this message. It's probably a good idea to write about this in the text "
-"that appears on your web page after this form submission."
-msgstr ""
-"ВНИМАНИЕ: Запрос будет принят и появится в списке запросов только после того, как клиент получит данное сообщение и щелкнет в нем ссылку подтверждения. Возможно, вам следует написать "
-"об этом в тексте, который открывается после отправки формы."
+msgid "NOTE: Request will be accepted and shows up in your request lists only after client clicks confirmation link in this message. It's probably a good idea to write about this in the text that appears on your web page after this form submission."
+msgstr "ВНИМАНИЕ: Запрос будет принят и появится в списке запросов только после того, как клиент получит данное сообщение и щелкнет в нем ссылку подтверждения. Возможно, вам следует написать об этом в тексте, который открывается после отправки формы."
 
 #: /wa-apps/helpdesk/lib/workflow/templates/Basic.html:193
 msgid "This message template is customized by administrator in workflow settings."
@@ -2523,9 +2443,7 @@ msgstr "Шаблон этого сообщения настраивается а
 
 #: /wa-apps/helpdesk/lib/classes/helpdeskHelper.class.php:703
 msgid "Users must have access to Helpdesk app. To add users or user groups, or manage their access rights use <a href=\"%s\">Contacts/Users</a> section."
-msgstr ""
-"Пользователи должны иметь доступ к приложению Поддержка. Чтобы добавить пользователей или группы пользователей, а также для настройки прав доступа, перейдите в секцию <a href=\"%s"
-"\">Контакты/Пользователи</a>."
+msgstr "Пользователи должны иметь доступ к приложению Поддержка. Чтобы добавить пользователей или группы пользователей, а также для настройки прав доступа, перейдите в секцию <a href=\"%s\">Контакты/Пользователи</a>."
 
 #: /wa-apps/helpdesk/themes/default/my.requestpage.html:85
 msgid "Request created"
@@ -2541,8 +2459,7 @@ msgstr "Использовать цвет состояния \"%s\", в кото
 
 #: /wa-apps/helpdesk/templates/layouts/includeUnreadSettings.html:5
 msgid "These are your personal settings. They define rules that cause some requests to be marked as \"unread\" and display them in a dedicated list in the left side navigation panel."
-msgstr ""
-"Это ваши персональные настройки. Они позволяют установить правила, по которым запросы будут отмечаться как \"непрочитанные\" и появляться в данном списке в левой навигационной панели."
+msgstr "Это ваши персональные настройки. Они позволяют установить правила, по которым запросы будут отмечаться как \"непрочитанные\" и появляться в данном списке в левой навигационной панели."
 
 #: /wa-apps/helpdesk/templates/layouts/includeUnreadSettings.html:28 /wa-apps/helpdesk/templates/layouts/includeUnreadSettings.html:40
 msgid "Any new action performed on these requests will cause them to be marked as \"unread\""
@@ -2585,11 +2502,8 @@ msgid "Subject of the request"
 msgstr "Тема запроса"
 
 #: /wa-apps/helpdesk/lib/classes/helpdeskHelper.class.php:713
-msgid ""
-"Request subject followed by the request ID (e.g. Request subject [ID: 1001-XXXXX]). The request ID and hash will associate any reply you receive from the customer with the original "
-"request."
-msgstr ""
-"Тема запроса с последующим ID запроса (напр., тема [ID:1234-XXXXX]). Такой формат ID с хеш-функцией позволяет идентифицировать оригинальный запрос при последующих ответах по email."
+msgid "Request subject followed by the request ID (e.g. Request subject [ID: 1001-XXXXX]). The request ID and hash will associate any reply you receive from the customer with the original request."
+msgstr "Тема запроса с последующим ID запроса (напр., тема [ID:1234-XXXXX]). Такой формат ID с хеш-функцией позволяет идентифицировать оригинальный запрос при последующих ответах по email."
 
 #: /wa-apps/helpdesk/lib/classes/helpdeskHelper.class.php:714
 msgid "Text of the original request"
@@ -2971,8 +2885,7 @@ msgstr "Нет формы запроса"
 msgid "Main request form"
 msgstr "Главная форма запроса"
 
-#: /wa-apps/helpdesk/lib/actions/requests/helpdeskRequestsSearch.action.php:59
-#: /wa-apps/helpdesk/lib/actions/requests/helpdeskRequestsSearch.action.php:218
+#: /wa-apps/helpdesk/lib/actions/requests/helpdeskRequestsSearch.action.php:59 /wa-apps/helpdesk/lib/actions/requests/helpdeskRequestsSearch.action.php:218
 msgid "Others"
 msgstr "Другие"
 
@@ -2980,8 +2893,7 @@ msgstr "Другие"
 msgid "This action is not available"
 msgstr "Это действие недоступно"
 
-#: /wa-apps/helpdesk/templates/actions/editor/email_template_editor.html:127
-#: /wa-apps/helpdesk/templates/actions/editor/email_template_editor.html:188
+#: /wa-apps/helpdesk/templates/actions/editor/email_template_editor.html:127 /wa-apps/helpdesk/templates/actions/editor/email_template_editor.html:188
 msgid "1-Click Feedback"
 msgstr "Отклик в 1 клик"
 
@@ -3021,8 +2933,7 @@ msgstr "Пользователь будет вручную выполнять э
 msgid "Action performed automatically"
 msgstr "Действие выполняется автоматически"
 
-#: /wa-apps/helpdesk/lib/workflow/templates/choose_action_type.include.html:17
-#: /wa-apps/helpdesk/lib/workflow/templates/Basic_settings.html:76
+#: /wa-apps/helpdesk/lib/workflow/templates/choose_action_type.include.html:17 /wa-apps/helpdesk/lib/workflow/templates/Basic_settings.html:76
 msgid "This action will be triggered automatically (by time-out) if no other actions are performed with request during a certain period of time."
 msgstr "Данное действие будет выполнено автоматически, если в течение определенного времени (тайм-аут) с запросом не выполняется никаких других действий."
 
@@ -3034,13 +2945,11 @@ msgstr "Добавить новое действие, выполняемое п�
 msgid "Create a new action to be performed automatically"
 msgstr "Добавить новое действие, выполняемое автоматически"
 
-#: /wa-apps/helpdesk/templates/actions/settings/SettingsWorkflow.html:626
-#: /wa-apps/helpdesk/lib/workflow/templates/timer_settings.include.html:19
+#: /wa-apps/helpdesk/templates/actions/settings/SettingsWorkflow.html:626 /wa-apps/helpdesk/lib/workflow/templates/timer_settings.include.html:19
 msgid "d"
 msgstr "д"
 
-#: /wa-apps/helpdesk/templates/actions/settings/SettingsWorkflow.html:626
-#: /wa-apps/helpdesk/lib/workflow/templates/timer_settings.include.html:26
+#: /wa-apps/helpdesk/templates/actions/settings/SettingsWorkflow.html:626 /wa-apps/helpdesk/lib/workflow/templates/timer_settings.include.html:26
 msgid "h"
 msgstr "ч"
 
@@ -3068,7 +2977,18 @@ msgstr "Приложение «Поддержка» не поселено ни �
 msgid "Shown above are only sites where Helpdesk app is settled. Use %s app to manage settlements."
 msgstr "Показаны только те сайты, на которых поселено приложение «Поддержка». Используйте приложение %s для настройки поселений."
 
-#: /wa-apps/helpdesk/lib/actions/faq/helpdeskFaqCategorySave.controller.php:19
-#: /wa-apps/helpdesk/lib/actions/faq/helpdeskFaqSave.controller.php:20
+#: /wa-apps/helpdesk/lib/actions/faq/helpdeskFaqCategorySave.controller.php:19 /wa-apps/helpdesk/lib/actions/faq/helpdeskFaqSave.controller.php:20
 msgid "Category URL may contain only letters, digits, and hyphens"
 msgstr "URL категории может содержать только латинские буквы, цифры и дефисы"
+
+msgid "I agree to <a>personal data protection policy</a>"
+msgstr "Я согласен с <a>политикой обработки персональных данных</a>"
+
+msgid "Consent to terms"
+msgstr "Согласие с условиями"
+
+msgid "Terms description"
+msgstr "Описание условий"
+
+msgid "Checked by default"
+msgstr "Отмечено по умолчанию"

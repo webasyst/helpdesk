@@ -637,6 +637,7 @@ class helpdeskRequest extends helpdeskRequestRecord
             // Attachments
             if ($this->info['attachments']) {
                 $attachments = array();
+                $attachments_html = array();
                 foreach($this->info['attachments'] as $data) {
                     $link = self::getAttachmentUrl($this->id, basename($data['file']));
                     if (isset($data['datetime'])) {
@@ -644,15 +645,14 @@ class helpdeskRequest extends helpdeskRequestRecord
                     }
                     $data['name'] = ifset($data['name'], basename($data['file']));
 
-                    $img_link = '<a class="same-tab" href="'.$link.'">'.
-                            '<img src="'.$link.'" class="h-request-attachment-image" data-request-id="'.$this->id.'" data-attach-id="'.basename($data['file']).'">'.
-                    '</a>';
-
                     if (isset($data['cid'])) {
                         $this->info['text'] = str_replace('cid:'.$data['cid'], $link, $this->info['text']);
                     } else if (preg_match('~\.(jpg|jpeg|gif|png)$~i', $data['name'])) {
                         // Show image at the bottom of the request text
-                        $this->info['text'] .= "\n".'<p><hr>' . $img_link . '</p>';
+                        $img_link = '<a class="same-tab" href="'.$link.'">'.
+                                '<img src="'.$link.'" class="h-request-attachment-image" data-request-id="'.$this->id.'" data-attach-id="'.basename($data['file']).'">'.
+                        '</a>';
+                        $attachments_html[] = '<div class="h-request-image"><hr><p>' . $img_link . '</p></div>';
                     }
                     $attachments[] = array(
                         'orig_name' => $data['name'],
@@ -661,6 +661,11 @@ class helpdeskRequest extends helpdeskRequestRecord
                     );
                 }
                 $this->info['attachments'] = $attachments;
+                if ($attachments_html) {
+                    $this->info['text'] .= "\n".'<div class="h-request-images">'."\n";
+                    $this->info['text'] .= join("\n", $attachments_html);
+                    $this->info['text'] .= '</div>';
+                }
             }
 
             // Status
@@ -871,6 +876,7 @@ class helpdeskRequest extends helpdeskRequestRecord
                 // Attachments
                 if (isset($l['params']['attachments']) && $l['params']['attachments'] && ( $l['params']['attachments'] = unserialize($l['params']['attachments']))) {
                     $l['attachment'] = array();
+                    $attachments_html = array();
                     foreach ($l['params']['attachments'] as $data) {
                         $attach_id = $data['file'];
                         $data['name'] = ifset($data['name'], $attach_id);
@@ -879,18 +885,17 @@ class helpdeskRequest extends helpdeskRequestRecord
                             $link .= '&datetime='.$data['datetime'];
                         }
 
-                        $img_link = '<a class="same-tab" href="'.$link.'">'.
-                                        '<img src="'.$link.'"
-                                class="h-request-attachment-image"
-                                data-request-id="'.$this->id.'"
-                                data-log-id="'.$l['id'].'"
-                                data-attach-id="'.$attach_id.'"></a>';
-
                         if (isset($data['cid'])) {
                             $l['text'] = str_replace('cid:'.$data['cid'], $link, $l['text']);
                         } else if (preg_match('~\.(jpg|jpeg|gif|png)$~i', $data['name'])) {
                             // Show image at the bottom of the request text
-                            $l['text'] .= "\n".'<p><hr>'.$img_link.'</p>';
+                            $img_link = '<a class="same-tab" href="'.$link.'">'.
+                                            '<img src="'.$link.'"
+                                    class="h-request-attachment-image"
+                                    data-request-id="'.$this->id.'"
+                                    data-log-id="'.$l['id'].'"
+                                    data-attach-id="'.$attach_id.'"></a>';
+                            $attachments_html[] = "\n".'<div class="h-request-image"><hr><p>' . $img_link . '</p></div>';
                         }
                         $l['attachment'][] = array(
                             'orig_name' => $data['name'],
@@ -899,6 +904,11 @@ class helpdeskRequest extends helpdeskRequestRecord
                         );
                     }
                     unset($l['params']['attachments']);
+                    if ($attachments_html) {
+                        $l['text'] .= "\n".'<div class="h-request-images">'."\n";
+                        $l['text'] .= join("\n", $attachments_html);
+                        $l['text'] .= '</div>';
+                    }
                 } else {
                     $l['attachment'] = array();
                 }

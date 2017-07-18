@@ -45,7 +45,7 @@
         {/foreach}
 
         {foreach $fields as $f_id => $field}
-            {if empty($field.excl)}
+            {if empty($field.excl) || $field.type|default:'' === '!agreement_checkbox'}
                 {if !empty($source.params[helpdeskRequestLogParamsModel::PREFIX_REQUEST|cat:$f_id])}
                     {$fld = $source.params[helpdeskRequestLogParamsModel::PREFIX_REQUEST|cat:$f_id]}
                     {if !empty($field.type) && $field.type === 'Checkbox'}{$_for = 1}{else}{$_for = 0}{/if}
@@ -180,7 +180,9 @@
                 form.find(':submit').attr('disabled', false);
 
                 try {
-                    var json = iframe.contents().find("body").html();
+                    var agreement_checkbox_prefix = 'fld_data[!agreement_checkbox_',
+                        agreement_checkbox_prefix_len = agreement_checkbox_prefix.length,
+                        json = iframe.contents().find("body").html();
                     if (json) {
                         json = $.parseJSON(json);
                         if (json.status != 'ok') {
@@ -196,7 +198,12 @@
                                             if (el.length > 1) {
                                                 el = el.last();        // for example radio buttons
                                             }
-                                            el.addClass('error').parent().append($('<em class="errormsg"></em>').text(json.errors[fld_name]));
+                                            if (fld_name.slice(0, agreement_checkbox_prefix_len) === agreement_checkbox_prefix) {
+                                                el.closest('.h-agreement-checkbox-wrapper').addClass('error');
+                                            } else {
+                                                el.addClass('error');
+                                            }
+                                            el.parent().append($('<em class="errormsg"></em>').text(json.errors[fld_name]));
                                             continue;
                                         }
                                     }

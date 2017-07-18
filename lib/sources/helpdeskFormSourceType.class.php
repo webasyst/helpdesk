@@ -274,6 +274,7 @@ class helpdeskFormSourceType extends helpdeskCommonST implements helpdeskFormSTI
             }
         }
 
+
         if ($email && !wao(new waEmailValidator())->isValid($email)) {
             $errors['fldc_data[email]'] = _ws('Invalid Email');
         }
@@ -291,15 +292,26 @@ class helpdeskFormSourceType extends helpdeskCommonST implements helpdeskFormSTI
             }
         }
 
+        $agreement_checkbox_prefix = helpdeskFormConstructor::FIELD_AGREEMENT_CHECKBOX_ID_PREFIX;
+        $agreement_checkbox_prefix_len = strlen($agreement_checkbox_prefix);
+
         foreach ($this->getFormConstructor()->getFields($source, $form_env) as $f_id => $f) {
-            if ($f_id !== 'attachments') {
-                if (!empty($f['choosen']) && !empty($f['required']) && empty($fld_data[$f_id])) {
-                    $errors["fld_data[{$f_id}]"] = _ws('This field is required.');
-                }
-            } else {
+            if ($f_id === 'attachments') {
                 if (!empty($f['choosen']) && !empty($f['required']) && !$attachments) {
                     $errors["fld_data[{$f_id}]"] = _ws('This field is required.');
                 }
+            } else {
+
+                if (substr($f_id, 0, $agreement_checkbox_prefix_len) === $agreement_checkbox_prefix &&
+                    $f_id !== $agreement_checkbox_prefix &&
+                    empty($fld_data[$f_id])) {
+                        $errors["fld_data[{$f_id}]"] = '';
+                }
+
+                if (!empty($f['choosen']) && !empty($f['required']) && empty($fld_data[$f_id])) {
+                    $errors["fld_data[{$f_id}]"] = _ws('This field is required.');
+                }
+
             }
         }
 

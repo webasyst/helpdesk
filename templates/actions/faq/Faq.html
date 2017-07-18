@@ -68,7 +68,9 @@
                             <div class="value">
                                 <div>
                                     <span class="h-frontend-root-url">{$wa->getUrl('/', true)}faq/{$category.url}/</span><input style="min-width: 140px" type="text" name="faq_url" value="{$faq.url|default:''}">/
-                                    {if $faq.id > 0}<a class="small h-faq-url-link" target="_blank" href="{$wa->getUrl('/', true)}faq/{$category.url}/{$faq.url|default:''}/">[`Preview`] <i class="icon10 new-window" style="margin-top: 7px;"></i></a>{/if}
+                                    {if $faq.id > 0}
+                                        <a class="small h-faq-url-link" target="_blank" href="{$wa->getUrl('/', true)}faq/{$category.url}/{$faq.url|default:''}/">[`Preview`] <i class="icon10 new-window" style="margin-top: 7px;"></i></a>
+                                    {/if}
                                 </div>
                             </div>
                         </div>
@@ -180,6 +182,7 @@
                     });
                     $('.h-delete-faq-question').show();
                     $('.h-faq-question-settings').find('[name="id"]').val(r.data.faq.id);
+                    $('.h-faq-question-settings .h-faq-url-link').removeClass('h-disabled');
                     $.helpdesk_faq.updateCounters(r.data.counters);
                     $('.h-faq-url-link').attr('href', "{$wa->getUrl('/', true)}faq/{$category.url}/" + r.data.faq.url + "/");
                     {if !$faq.id}
@@ -194,6 +197,10 @@
                 form.find('.h-save-loading').hide();
             }, 'json');
             return false;
+        });
+
+        $('.h-faq-question-settings').on('click', '.h-faq-url-link', function (e) {
+            $(this).hasClass('h-disabled') && e.preventDefault();
         });
 
         $('.h-delete-faq-question').off('click').click(function() {
@@ -212,6 +219,9 @@
         $('input[type="checkbox"][name="is_public"]').change(function() {
             if ($(this).is(':checked')) {
                 $('.h-frontend-url').slideDown();
+                if (!$('input[name="faq_url"]').val()) {
+                    $('.h-frontend-url').addClass('h-disabled');
+                }
             } else {
                 $('.h-frontend-url').slideUp();
             }
@@ -253,6 +263,8 @@
         $.helpdesk_faq.onChangeInput($('input[name="faq_url"]'), function() {
             $.helpdesk_faq.changeButton(button);
             $(this).data('edited', true);
+            $('.h-faq-question-settings .h-faq-url-link').addClass('h-disabled');
+
         });
         $.helpdesk_faq.onChangeInput($('input[name="question"]'), function() {
             $.helpdesk_faq.changeButton(button);
@@ -268,7 +280,10 @@
 
         $.helpdesk_faq.translitInput(
                 $('input[name="faq_url"]'),
-                $('input[name="question"]')
+                $('input[name="question"]'),
+                function () {
+                    $('.h-faq-question-settings .h-faq-url-link').addClass('h-disabled');
+                }
         );
         $.helpdesk_faq.sticky($('#h-sticky-bottoms'), $('.h-faq-question-settings'));
 

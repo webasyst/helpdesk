@@ -1,4 +1,4 @@
-<div id="h-form-constructor">
+<div id="h-form-constructor" class="h-form-constructor-wrapper">
 
     <div data-fc="preview">
 
@@ -25,38 +25,33 @@
         </div>
 
         <div class="fr-field-templates hidden">
-            <div data-fr-field-wrapper="!hrule" data-fr-field="edit" class="fr-field sortable" data-special="1">
-                <div class="col field-content">
-                    <div class="col-content">
-                        <hr style="margin-top: 12px;">
-                        <input type="hidden" class="fc-field-params" name="params[#prefix#!hrule_?]" value='' disabled="disabled">
-                        <div class="field-edit">
-                            <span data-fr-field="delete" class="h-delete-fr-field"><i class="icon16 delete"></i></span>
+            {$special_fields = ['!hrule', '!paragraph', '!agreement_checkbox']}
+            {foreach $special_fields as $field_id}
+                <div data-fr-field-wrapper="{$field_id}" data-fr-field="edit" class="fr-field sortable" data-special="1">
+                    <div class="col field-content">
+                        <div class="col-content">
+                            {$field_params_str = ''}
+                            {if $field_id === '!hrule'}
+                                <hr style="margin-top: 12px;">
+                            {elseif $field_id === '!paragraph'}
+                                <p class="h-text"></p>
+                            {elseif $field_id === '!agreement_checkbox'}
+                                <div class="fr-value" data-fc="input">{$fields[$field_id].html|default:''}</div>
+                                {$field_params_str = json_encode($fields[$field_id])}
+                            {/if}
+                            <input type="hidden" class="fc-field-params" name="params[#prefix#{$field_id}_?]" value='{$field_params_str|escape}' disabled="disabled">
+                            <div class="field-edit">
+                                <span data-fr-field="delete" class="h-delete-fr-field"><i class="icon16 delete"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col sorting">
+                        <div class="col-content">
+                            <i class="icon16 sort" data-fr-field="sort"></i>
                         </div>
                     </div>
                 </div>
-                <div class="col sorting">
-                    <div class="col-content">
-                        <i class="icon16 sort" data-fr-field="sort"></i>
-                    </div>
-                </div>
-            </div>
-            <div data-fr-field-wrapper="!paragraph" data-fr-field="edit" class="fr-field sortable" data-special="1">
-                <div class="col field-content">
-                    <div class="col-content">
-                        <p class="h-text"></p>
-                        <input type="hidden" class="fc-field-params" name="params[#prefix#!paragraph_?]" value='' disabled="disabled">
-                        <div class="field-edit">
-                            <span data-fr-field="delete" class="h-delete-fr-field"><i class="icon16 delete"></i></span>
-                        </div>
-                    </div>
-                </div>
-                <div class="col sorting">
-                    <div class="col-content">
-                        <i class="icon16 sort" data-fr-field="sort"></i>
-                    </div>
-                </div>
-            </div>
+            {/foreach}
         </div>
 
         <div class="constructor-width" data-fc="form-width"  style="{if !empty($source->params['formwidth'])}width: {max(200, min($source->params['formwidth'], 600))}px{else}width: 400px{/if}">
@@ -68,146 +63,23 @@
     </div>
 
     {* dialog section *}
-    <div class="dialog width650px height350px h-edit-paragraph-dialog" style="display:none;">
-        <div class="dialog-background"></div>
-        <div class="dialog-window">
-            <div class="dialog-content">
-                <div class="dialog-content-indent">
-                    <h1>[`Text paragraph`]</h1>
-                    <textarea></textarea>
-                </div>
-            </div>
-            <div class="dialog-buttons">
-                <div class="dialog-buttons-gradient">
-                    {$wa->csrf()}
-                    <input class="button green" type="button" value="[`Apply`]">
-                    <i class="icon16 loading" style="display:none;"></i> [`or`] <a class="cancel" href="javascript:void(0);">[`cancel`]</a>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="dialog width650px height400px h-edit-field-dialog" style="display:none;">
-        <div class="dialog-background"></div>
-        <div class="dialog-window">
-            <div class="dialog-content">
-                <div class="dialog-content-indent">
-                    <h1>[`Field settings`]</h1>
-                    <div class="block fields">
-                        <div class="field h-field-id">
-                            <div class="name">[`Field`]</div>
-                            <div class="value"></div>
-                        </div>
-                        <div class="field h-field-caption">
-                            <div class="name">[`Label`]</div>
-                            <div class="value">
-                                <input type="text" name="params[caption]" value="">
-                            </div>
-                        </div>
-                        <div class="field h-field-captionplace">
-                            <div class="name">[`Label placement`]</div>
-                            <div class="value">
-                                <label><input type="radio" name="params[captionplace]" value="left" checked=""> [`Left aligned`]</label><br>
-                                <label><input type="radio" name="params[captionplace]" value="above"> [`Top aligned`]</label><br>
-                                <label><input type="radio" name="params[captionplace]" value="none"> [`Do not show`]</label><br>
-                            </div>
-                        </div>
-                        <div class="field h-field-redactor" style="display:none;">
-                            <div class="name">[`View`]</div>
-                            <div class="value">
-                                <table style="width: 302px;">
-                                    <tr>
-                                        <td>
-                                            <label>
-                                                <input type="radio" name="params[redactor]" value="" checked="checked" disabled="disabled"> [`Plain text`]
-                                                <img src="{$wa_app_static_url}img/plain-text-icon.png" class="h-radio-img">
-                                            </label><br>
-                                        </td>
-                                        <td>
-                                            <label>
-                                                <input type="radio" name="params[redactor]" value="1" disabled="disabled"> [`Redactor`]
-                                                <img src="{$wa_app_static_url}img/redaktor-icon.png" class="h-radio-img">
-                                            </label>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="field h-field-view" style="display:none;">
-                            <div class="name">[`View`]</div>
-                            <div class="value">
-                                <table style="width: 302px;">
-                                    <tr>
-                                        <td>
-                                            <label>
-                                                <input type="radio" name="params[view]" value="" checked="checked" disabled="disabled"> [`Drop down`]
-                                                <img src="{$wa_app_static_url}img/drop-down-icon.png" class="h-radio-img">
-                                            </label>
-                                        </td>
-                                        <td>
-                                            <label>
-                                                <input type="radio" name="params[view]" value="radio" disabled="disabled"> [`Radio buttons`]
-                                                <img src="{$wa_app_static_url}img/radio-buttons-icon.png" class="h-radio-img">
-                                            </label><br>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </div>
-                        <div class="field h-field-subfields_captionplace" style="display:none;">
-                            <div class="name">[`Address labels placement`]</div>
-                            <div class="value">
-                                <label><input type="radio" name="params[subfields_captionplace]" value="left" checked=""> [`Left aligned`]</label><br>
-                                <label><input type="radio" name="params[subfields_captionplace]" value="above"> [`Top aligned`]</label><br>
-                                <label><input type="radio" name="params[subfields_captionplace]" value="placeholder"> [`As a placeholder inside of field input`]</label><br>
-                            </div>
-                        </div>
-                        <div class="field h-field-placeholder">
-                            <div class="name">[`Placeholder`]</div>
-                            <div class="value">
-                                <input type="text" name="params[placeholder]" value="">
-                            </div>
-                        </div>
-                        <div class="field h-field-required">
-                            <div class="name">
-                                <label for="fc-field-param-required">[`Required`]</label>
-                            </div>
-                            <div class="value">
-                                <label><input type="checkbox" id="fc-field-param-required" name="params[required]"> </label>
-                            </div>
-                        </div>
-                        <div class="field h-field-identification" style="display:none;">
-                            <div class="name">
-                                <label for="fc-field-param-required">[`Identification`]</label>
-                            </div>
-                            <div class="value">
-                                <label><input type="checkbox" id="fc-field-param-required" name="params[identification]"></label><br>
-                                <span class="small">[`If enabled we shall search for an existing contact with the same phone number and associate request sent via this form with the contact found.`]</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="dialog-buttons">
-                <div class="dialog-buttons-gradient">
-                    {$wa->csrf()}
-                    <input class="button green" type="button" value="[`Apply`]">
-                    <i class="icon16 loading" style="display:none;"></i> [`or`] <a class="cancel" href="javascript:void(0);">[`cancel`]</a>
-                </div>
-            </div>
-        </div>
-    </div>
+    {include file="./include_edit_paragraph_field_dialog.html" inline}
+    {include file="./include_edit_field_dialog.html" inline}
+    {include file="./include_edit_agreement_checkbox_field_dialog.html" inline}
 
 </div>
 
 <script>
     $(function() {
 
-        $.each(['h-edit-paragraph-dialog', 'h-edit-field-dialog'], function(i, val) {
-            if ($('#' + val).length) {
-                $('#' + val).remove();
+        $.each(['h-edit-paragraph-dialog', 'h-edit-field-dialog', 'h-edit-agreement-checkbox-field-dialog'],
+            function(i, val) {
+                if ($('#' + val).length) {
+                    $('#' + val).remove();
+                }
+                $('#h-form-constructor').find('.' + val).attr('id', val).appendTo($('body'));
             }
-            $('#h-form-constructor').find('.' + val).attr('id', val).appendTo($('body'));
-        });
+        );
 
         var button = $('#hd-source-editor-save');
 
@@ -244,20 +116,20 @@
                 }
             });
 
-            var hrule_counter = 0;
-            container.find('[data-fr-field-wrapper="!hrule"]').each(function() {
-                var params_input = $(this).find('.fc-field-params');
-                var name = params_input.attr('name').replace('_?', '_' + hrule_counter);
-                params_input.attr('name', name);
-                hrule_counter += 1;
-            });
+            var multi_counters = {
+                '!hrule': 0,
+                '!paragraph': 0,
+                '!agreement_checkbox': 0
+            };
 
-            var paragraph_counter = 0;
-            container.find('[data-fr-field-wrapper="!paragraph"]').each(function() {
-                var params_input = $(this).find('.fc-field-params');
-                var name = params_input.attr('name').replace('_?', '_' + paragraph_counter);
-                params_input.attr('name', name);
-                paragraph_counter += 1;
+            $.each(multi_counters, function (field_type, counter) {
+                container.find('[data-fr-field-wrapper="' + field_type + '"]').each(function() {
+                    var $params_input = $(this).find('.fc-field-params');
+                    var name = $params_input.attr('name').replace('_?', '_' + counter);
+                    $params_input.attr('name', name);
+                    counter += 1;
+                });
+                multi_counters[field_type] = counter;
             });
 
             // Choose field (add field)
@@ -265,50 +137,56 @@
 
                 var item = $(this).closest('li');
                 var multi = $(this).data('multi');
-                if (!multi) {
-                    item.hide();
-                }
 
                 var field_type = ($(this).data('fr-field-add-id') || '') + '';
                 var available_fields = item.closest('.fr-field-new').find('.available-fields');
-                var excl = field_type.slice(0, 1) === '!';
-                if (!excl) {
-                    $('[data-fr-field-wrapper="'+field_type+'"]').show()
-                            .find('.fc-field-params').attr('disabled', false);
+
+                var addMultiField = function () {
+                    if (!multi) {
+                        item.hide();
+                    }
+                    var $templ = $('.fr-field-templates').find('[data-fr-field-wrapper="' + field_type + '"]').clone(),
+                        $params_input = $templ.find('.fc-field-params').attr('disabled', false),
+                        name = $params_input.attr('name').replace('_?', '_' + multi_counters[field_type]).replace('#prefix#', prefix);
+
+                    $params_input.attr('name', name);
+
+                    var field_params = { };
+                    try {
+                        field_params = JSON.parse($.trim($params_input.val()));
+                    } catch (e) {
+                    }
+                    field_params = field_params || { };
+                    field_params.type = field_type;
+
+                    $params_input.val(JSON.stringify(field_params));
+                    multi_counters[field_type] += 1;
+                    var insert_context = $('.fr-fields .fr-field:not(:hidden):last', container);
+                    if (!insert_context.length) {
+                        insert_context = $('.fr-fields .fr-field:hidden:first', container);
+                    }
+                    insert_context.after($templ);
+                    if (field_type === '!paragraph' || field_type === '!agreement_checkbox') {
+                        editField($params_input);
+                    }
+                };
+
+                var addField = function () {
+                    $('[data-fr-field-wrapper="'+field_type+'"]').show().find('.fc-field-params').attr('disabled', false);
                     if (button.hasClass('green')) {
                         button.removeClass('green').addClass('yellow');
                     }
                     if (!available_fields.find('[data-fr-field="add"]:visible').length) {
                         container.find('.new-field').hide();
                     }
+                };
+
+                if (multi) {
+                    addMultiField();
                 } else {
-                    if (field_type === '!hrule') {
-                        var templ = $('.fr-field-templates').find('[data-fr-field-wrapper="!hrule"]').clone();
-                        templ.find(':input').attr('disabled', false);
-                        var name = templ.find(':input').attr('name').replace('_?', '_' + hrule_counter).replace('#prefix#', prefix);
-                        templ.find(':input').attr('name', name);
-                        templ.find(':input').val(JSON.stringify({ type: '!hrule' }));
-                        hrule_counter += 1;
-                        var insert_context = $('.fr-fields .fr-field:not(:hidden):last', container);
-                        if (!insert_context.length) {
-                            insert_context = $('.fr-fields .fr-field:hidden:first', container);;
-                        }
-                        insert_context.after(templ);
-                    } else if (field_type === '!paragraph') {
-                        var templ = $('.fr-field-templates').find('[data-fr-field-wrapper="!paragraph"]').clone();
-                        templ.find(':input').attr('disabled', false);
-                        var name = templ.find(':input').attr('name').replace('_?', '_' + paragraph_counter).replace('#prefix#', prefix);
-                        templ.find(':input').attr('name', name);
-                        templ.find(':input').val(JSON.stringify({ type: '!paragraph' }));
-                        paragraph_counter += 1;
-                        var insert_context = $('.fr-fields .fr-field:not(:hidden):last', container);
-                        if (!insert_context.length) {
-                            insert_context = $('.fr-fields .fr-field:hidden:first', container);;
-                        }
-                        insert_context.after(templ);
-                        editField(templ.find(':input'));
-                    }
+                    addField();
                 }
+
                 $('#h-form-constructor').trigger('add_field', [type, field_type]);
 
                 $(this).parent().parent().find('li.middle:visible:last').addClass('bordered');
@@ -342,13 +220,7 @@
                 var available_fields = container.find('.available-fields');
                 available_fields.find('[data-fr-field-add-id="' + field_type + '"]').closest('li').show()
                 container.find('.new-field').show();
-                if (field_type === '!hrule') {
-                    hrule_counter = Math.max(0, hrule_counter - 1);
-                }
-                if (field_type === '!paragraph') {
-                    paragraph_counter = Math.max(0, paragraph_counter - 1);
-                }
-
+                multi_counters[field_type] = Math.max(0, multi_counters[field_type] - 1);
                 $('#h-form-constructor').trigger('delete_field', [type, field_type]);
 
             });
@@ -439,267 +311,330 @@
             };
 
             var editField = function(params_input) {
-                var params = { };
+                if (params_input.attr('disabled')) {
+                    return;
+                }
 
-                if (!params_input.attr('disabled')) {
-                    var f_name = params_input.attr('name').replace('params[', '').replace(']', '');
-                    if (type === 'contact') {
-                        f_name = f_name.replace('fldc_', '');
-                    } else {
-                        f_name = f_name.replace('{helpdeskRequestLogParamsModel::PREFIX_REQUEST}', '');
-                    }
-                    params = $.parseJSON(params_input.val()) || { };
+                var params = $.parseJSON(params_input.val()) || { };
+                if (params['type'] === '!hrule') {
+                    return;
+                } else if (params['type'] === '!paragraph') {
+                    return editParagraphField(params_input);
+                } else if (params['type'] === '!agreement_checkbox') {
+                    return editAgreementCheckboxField(params_input);
+                }
 
-                    if (params['type'] === '!hrule') {
-                        return;
-                    }
-                    if (params['type'] === '!paragraph') {
-                        $('#h-edit-paragraph-dialog').waDialog({
-                            onLoad: function() {
-                                var d = $(this);
-                                $.wa.helpdesk_controller.initWYSIWYG(d.find('textarea'), {
-                                    focus: true,
-                                    plugins: ['fontcolor', 'fontsize', 'fontfamily'],
-                                    uploadImage: false
-                                });
-                                d.find('textarea').val(params['text'] || '');
-                                d.find('textarea').redactor('code.set', params['text'] || '');
-                                var beforeClose = function() {
-                                    $('.redactor-dropdown').remove();
-                                };
-                                d.find('input[type=button]').unbind('click').bind('click', function() {
-                                    params['text'] = d.find('textarea').val() || '';
-                                    params_input.val(JSON.stringify(params));
-                                    if (button.hasClass('green')) {
-                                        button.removeClass('green').addClass('yellow');
-                                    }
-                                    var fr_field = params_input.closest('.fr-field');
-                                    fr_field.find('.h-text').html(params['text']);
-                                    beforeClose();
-                                    d.trigger('close');
-                                });
-                                d.find('.cancel').click(function() {
-                                    beforeClose();
-                                    d.trigger('close');
-                                });
+                var f_name = params_input.attr('name').replace('params[', '').replace(']', '');
+                if (type === 'contact') {
+                    f_name = f_name.replace('fldc_', '');
+                } else {
+                    f_name = f_name.replace('{helpdeskRequestLogParamsModel::PREFIX_REQUEST}', '');
+                }
+
+
+                params['captionplace'] = params['captionplace'] || 'left';
+                if (type === 'contact' && f_name === 'address') {
+                    params['subfields_captionplace'] = params['subfields_captionplace'] || 'above';
+                }
+                params['caption'] = params['caption'] || params['name'];
+                if (f_name === 'text') {
+                    params['redactor'] = params['redactor'] || '';
+                } else {
+                    delete params['redactor'];
+                }
+                if (type === 'request' && params['type'] === 'Select') {
+                    params['view'] = params['view'] || '';
+                } else {
+                    delete params['view'];
+                }
+                params['required'] = params['required'] || '';
+                params['placeholder'] = params['placeholder'] || '';
+                if (type === 'contact' && f_name === 'phone') {
+                    params['identification'] = params['identification'] || '';
+                }
+
+                $('#h-edit-field-dialog').waDialog({
+                    onLoad: function() {
+                        var d = $(this);
+                        $.each(params, function(key, val) {
+                            if (key === 'id') {
+                                $('.h-field-id', d).find('.value').text(params.name + ' (ID=' + val + ')');
+                            } else if (key !== 'name') {
+                                var name = '.h-field-' + key;
+                                var input = $(name, d).find('.value').find(':input');
+                                if (input.is(':checkbox')) {
+                                    input.attr('checked', !!val);
+                                } else if (input.is(':radio')) {
+                                    input.filter('[value="' + val + '"]').attr('checked', true);
+                                } else {
+                                    input.val(val);
+                                }
                             }
                         });
-                        return;
-                    }
 
-                    params['captionplace'] = params['captionplace'] || 'left';
-                    if (type === 'contact' && f_name === 'address') {
-                        params['subfields_captionplace'] = params['subfields_captionplace'] || 'above';
-                    }
-                    params['caption'] = params['caption'] || params['name'];
-                    if (f_name === 'text') {
-                        params['redactor'] = params['redactor'] || '';
-                    } else {
-                        delete params['redactor'];
-                    }
-                    if (type === 'request' && params['type'] === 'Select') {
-                        params['view'] = params['view'] || '';
-                    } else {
-                        delete params['view'];
-                    }
-                    params['required'] = params['required'] || '';
-                    params['placeholder'] = params['placeholder'] || '';
-                    if (type === 'contact' && f_name === 'phone') {
-                        params['identification'] = params['identification'] || '';
-                    }
-
-                    $('#h-edit-field-dialog').waDialog({
-                            onLoad: function() {
-                                var d = $(this);
-                                $.each(params, function(key, val) {
-                                    if (key === 'id') {
-                                        $('.h-field-id', d).find('.value').text(params.name + ' (ID=' + val + ')');
-                                    } else if (key !== 'name') {
-                                        var name = '.h-field-' + key;
-                                        var input = $(name, d).find('.value').find(':input');
-                                        if (input.is(':checkbox')) {
-                                            input.attr('checked', !!val);
-                                        } else if (input.is(':radio')) {
-                                            input.filter('[value="' + val + '"]').attr('checked', true);
-                                        } else {
-                                            input.val(val);
-                                        }
-                                    }
-                                });
-
-                                var disableField = function(field) {
-                                    $('.h-field-' + field).hide().find(':input').attr('disabled', true);
-                                };
-                                var enableField = function(field) {
-                                    $('.h-field-' + field).show().find(':input').attr('disabled', false);
-                                };
+                        var disableField = function(field) {
+                            $('.h-field-' + field).hide().find(':input').attr('disabled', true);
+                        };
+                        var enableField = function(field) {
+                            $('.h-field-' + field).show().find(':input').attr('disabled', false);
+                        };
 
 
-                                // captionplace
-                                if (params['type'] !== 'Checkbox') {
-                                    enableField('captionplace');
-                                } else {
-                                    disableField('captionplace');
+                        // captionplace
+                        if (params['type'] !== 'Checkbox') {
+                            enableField('captionplace');
+                        } else {
+                            disableField('captionplace');
+                        }
+
+                        // placeholder: enable/disable?
+                        if (params['placeholder_need']) {
+                            enableField('placeholder');
+                        } else {
+                            disableField('placeholder');
+                        }
+
+                        // subfields_captionplace: enable/disable?
+                        if (type === 'contact' && f_name === 'address') {
+                            enableField('subfields_captionplace');
+                        } else {
+                            disableField('subfields_captionplace');
+                        }
+
+                        // identification: enable/disable?
+                        if (type === 'contact' && f_name === 'phone') {
+                            enableField('identification');
+                        } else {
+                            disableField('identification');
+                        }
+
+                        // required: enable/disable?
+                        if (f_name === 'captcha') {
+                            disableField('required');
+                        } else {
+                            enableField('required');
+                        }
+
+                        // view: enable/disable?
+                        if (f_name === 'text') {
+                            enableField('redactor');
+                            $('.h-field-placeholder input').css({
+                                width: 319
+                            });
+                        } else {
+                            disableField('redactor');
+                            $('.h-field-placeholder input').css({
+                                width: ''
+                            });
+                        }
+
+                        // view: enable/disable?
+                        if (type === 'request' && params['type'] === 'Select') {
+                            enableField('view');
+                        } else {
+                            disableField('view');
+                        }
+
+                        var captionplace_radio = d.find('.h-field-captionplace input[type=radio]').unbind('click');
+                        var subfields_radio = d.find('.h-field-subfields_captionplace input[type=radio]');
+
+                        if (type === 'contact' && f_name === 'address') {
+                            var disableSubfieldLeftRadio = function() {
+                                subfields_radio.filter('[value=left]').attr('disabled', true);
+                                if (subfields_radio.filter('[value=left]').is(':checked')) {
+                                    subfields_radio.filter('[value=above]').attr('checked', true);
                                 }
-
-                                // placeholder: enable/disable?
-                                if (params['placeholder_need']) {
-                                    enableField('placeholder');
-                                } else {
-                                    disableField('placeholder');
-                                }
-
-                                // subfields_captionplace: enable/disable?
-                                if (type === 'contact' && f_name === 'address') {
-                                    enableField('subfields_captionplace');
-                                } else {
-                                    disableField('subfields_captionplace');
-                                }
-
-                                // identification: enable/disable?
-                                if (type === 'contact' && f_name === 'phone') {
-                                    enableField('identification');
-                                } else {
-                                    disableField('identification');
-                                }
-
-                                // required: enable/disable?
-                                if (f_name === 'captcha') {
-                                    disableField('required');
-                                } else {
-                                    enableField('required');
-                                }
-
-                                // view: enable/disable?
-                                if (f_name === 'text') {
-                                    enableField('redactor');
-                                    $('.h-field-placeholder input').css({
-                                        width: 319
-                                    });
-                                } else {
-                                    disableField('redactor');
-                                    $('.h-field-placeholder input').css({
-                                        width: ''
-                                    });
-                                }
-
-                                // view: enable/disable?
-                                if (type === 'request' && params['type'] === 'Select') {
-                                    enableField('view');
-                                } else {
-                                    disableField('view');
-                                }
-
-                                var captionplace_radio = d.find('.h-field-captionplace input[type=radio]').unbind('click');
-                                var subfields_radio = d.find('.h-field-subfields_captionplace input[type=radio]');
-
-                                if (type === 'contact' && f_name === 'address') {
-                                    var disableSubfieldLeftRadio = function() {
-                                        subfields_radio.filter('[value=left]').attr('disabled', true);
-                                        if (subfields_radio.filter('[value=left]').is(':checked')) {
-                                            subfields_radio.filter('[value=above]').attr('checked', true);
-                                        }
-                                    };
-                                    var enableSubfieldLeftRadio = function() {
-                                        subfields_radio.filter('[value=left]').attr('disabled', false);
-                                    };
-                                    captionplace_radio.bind('click', function() {
-                                        var el = $(this);
-                                        if (el.is(':checked')) {
-                                            if (el.val() === 'left') {
-                                                disableSubfieldLeftRadio();
-                                            } else {
-                                                enableSubfieldLeftRadio();
-                                            }
-                                        }
-                                    });
-                                    if (captionplace_radio.filter(':checked').val() === 'left') {
+                            };
+                            var enableSubfieldLeftRadio = function() {
+                                subfields_radio.filter('[value=left]').attr('disabled', false);
+                            };
+                            captionplace_radio.bind('click', function() {
+                                var el = $(this);
+                                if (el.is(':checked')) {
+                                    if (el.val() === 'left') {
                                         disableSubfieldLeftRadio();
+                                    } else {
+                                        enableSubfieldLeftRadio();
                                     }
-                                } else {
-                                    subfields_radio.filter('[value=left]').attr('disabled', false);
                                 }
-
-                                if (params.type === 'Checkbox') {
-                                    d.find('.dialog-window').css({
-                                        height: 300,
-                                        minHeight: 300
-                                    });
-                                } else {
-                                    d.find('.dialog-window').css({
-                                        height: '',
-                                        minHeight: ''
-                                    });
-                                }
-
-
-                                d.find('input[type=button]').unbind('click').bind('click', function() {
-                                    d.find(':input[name*=params]:not(:disabled)').each(function() {
-                                        var item = $(this);
-                                        var name = item.attr('name').replace('params[', '').replace(']', '');
-                                        var value = item.val();
-                                        if (item.is(':checkbox')) {
-                                            params[name] = item.attr('checked') ? true : false;
-                                        } else if (item.is(':radio')) {
-                                            if (item.is(':checked')) {
-                                                params[name] = value;
-                                            }
-                                        } else {
-                                            params[name] = value;
-                                        }
-                                    });
-                                    params_input.val(JSON.stringify(params));
-                                    if (button.hasClass('green')) {
-                                        button.removeClass('green').addClass('yellow');
-                                    }
-                                    var fr_field = params_input.closest('.fr-field');
-                                    fr_field.find('.fr-name').html(
-                                        '<label>' +
-                                            $.wa.encodeHTML(params['caption'] || params['name'])
-                                                + (params['required'] || f_name === 'captcha' ? ' *' : '') +
-                                        '</label>'
-                                    );
-                                    fr_field.removeClass('left above none').addClass(params['captionplace']);
-
-                                    if (f_name !== 'captcha') {
-                                        fr_field.find('.fr-value :input').not('[type=hidden]').attr('placeholder', params['placeholder'] || '');
-                                    }
-
-                                    if (type === 'contact' && f_name === 'address') {
-                                        fr_field.find('.fr-value').removeClass('subfields-left subfields-above subfields-placeholder').addClass('subfields-' + params['subfields_captionplace']);
-                                        if (params['subfields_captionplace'] === 'placeholder') {
-                                            fillSubfieldsPlaceholders();
-                                        }
-                                    }
-
-                                    if (type === 'request' && f_name === 'text') {
-                                        if (params['redactor']) {
-                                            fr_field.find('textarea').hide();
-                                            initRedactor($('.h-text-editor').show(), params.placeholder || '');
-                                            fr_field.find('.col.right .col-content').css({
-                                                height: ''
-                                            });
-                                        } else {
-                                            fr_field.find('textarea').show();
-                                            destroyRedactor($('.h-text-editor').hide());
-                                            fr_field.find('.col.right .col-content').css({
-                                                height: 100
-                                            });
-                                        }
-                                    }
-
-                                    d.trigger('close');
-                                });
-                                d.find('.cancel').click(function() {
-                                    d.trigger('close');
-                                });
+                            });
+                            if (captionplace_radio.filter(':checked').val() === 'left') {
+                                disableSubfieldLeftRadio();
                             }
-                    });
-                }
+                        } else {
+                            subfields_radio.filter('[value=left]').attr('disabled', false);
+                        }
+
+                        if (params.type === 'Checkbox') {
+                            d.find('.dialog-window').css({
+                                height: 300,
+                                minHeight: 300
+                            });
+                        } else {
+                            d.find('.dialog-window').css({
+                                height: '',
+                                minHeight: ''
+                            });
+                        }
+
+
+                        d.find('input[type=button]').unbind('click').bind('click', function() {
+                            d.find(':input[name*=params]:not(:disabled)').each(function() {
+                                var item = $(this);
+                                var name = item.attr('name').replace('params[', '').replace(']', '');
+                                var value = item.val();
+                                if (item.is(':checkbox')) {
+                                    params[name] = item.attr('checked') ? true : false;
+                                } else if (item.is(':radio')) {
+                                    if (item.is(':checked')) {
+                                        params[name] = value;
+                                    }
+                                } else {
+                                    params[name] = value;
+                                }
+                            });
+                            params_input.val(JSON.stringify(params));
+                            if (button.hasClass('green')) {
+                                button.removeClass('green').addClass('yellow');
+                            }
+                            var fr_field = params_input.closest('.fr-field');
+                            fr_field.find('.fr-name').html(
+                                '<label>' +
+                                $.wa.encodeHTML(params['caption'] || params['name'])
+                                + (params['required'] || f_name === 'captcha' ? ' *' : '') +
+                                '</label>'
+                            );
+                            fr_field.removeClass('left above none').addClass(params['captionplace']);
+
+                            if (f_name !== 'captcha') {
+                                fr_field.find('.fr-value :input').not('[type=hidden]').attr('placeholder', params['placeholder'] || '');
+                            }
+
+                            if (type === 'contact' && f_name === 'address') {
+                                fr_field.find('.fr-value').removeClass('subfields-left subfields-above subfields-placeholder').addClass('subfields-' + params['subfields_captionplace']);
+                                if (params['subfields_captionplace'] === 'placeholder') {
+                                    fillSubfieldsPlaceholders();
+                                }
+                            }
+
+                            if (type === 'request' && f_name === 'text') {
+                                if (params['redactor']) {
+                                    fr_field.find('textarea').hide();
+                                    initRedactor($('.h-text-editor').show(), params.placeholder || '');
+                                    fr_field.find('.col.right .col-content').css({
+                                        height: ''
+                                    });
+                                } else {
+                                    fr_field.find('textarea').show();
+                                    destroyRedactor($('.h-text-editor').hide());
+                                    fr_field.find('.col.right .col-content').css({
+                                        height: 100
+                                    });
+                                }
+                            }
+
+                            d.trigger('close');
+                        });
+                        d.find('.cancel').click(function() {
+                            d.trigger('close');
+                        });
+                    }
+                });
+            };
+
+            var editParagraphField = function ($params_input) {
+                var params = $.parseJSON($params_input.val()) || { };
+
+                $('#h-edit-paragraph-dialog').waDialog({
+                    onLoad: function() {
+                        var $dialog = $(this);
+                        $.wa.helpdesk_controller.initWYSIWYG($dialog.find('textarea'), {
+                            focus: true,
+                            plugins: ['fontcolor', 'fontsize', 'fontfamily'],
+                            uploadImage: false
+                        });
+                        $dialog.find('textarea').val(params['text'] || '');
+                        $dialog.find('textarea').redactor('code.set', params['text'] || '');
+                        var beforeClose = function() {
+                            $('.redactor-dropdown').remove();
+                        };
+                        $dialog.find('input[type=button]').unbind('click').bind('click', function() {
+                            params['text'] = $dialog.find('textarea').val() || '';
+                            $params_input.val(JSON.stringify(params));
+                            if (button.hasClass('green')) {
+                                button.removeClass('green').addClass('yellow');
+                            }
+                            var fr_field = $params_input.closest('.fr-field');
+                            fr_field.find('.h-text').html(params['text']);
+                            beforeClose();
+                            $dialog.trigger('close');
+                        });
+                        $dialog.find('.cancel').click(function() {
+                            beforeClose();
+                            $dialog.trigger('close');
+                        });
+                    }
+                });
+            };
+
+            var editAgreementCheckboxField = function ($params_input) {
+                var params = $.parseJSON($params_input.val()) || { };
+
+                $('#h-edit-agreement-checkbox-field-dialog').waDialog({
+                    onLoad: function() {
+                        var $dialog = $(this);
+
+                        $dialog.find('.h-field-id .value').text(params.name + ' (ID=' + params.id + ')');
+                        $dialog.find('.h-field-html-label [name="params[html_label]"]').val(params.html_label);
+                        $dialog.find('.h-field-checked-by-default [name="params[default_checked]"]').attr('checked', !!params.default_checked);
+
+                        $dialog.find('input[type=button]').unbind('click').bind('click', function() {
+
+                            var param_html_label = $.trim($dialog.find('.h-field-html-label [name="params[html_label]"]').val()),
+                                param_default_checked = $dialog.find('.h-field-checked-by-default [name="params[default_checked]"]').is(':checked') ? 1 : 0,
+                                changed = false;
+
+                            if (param_html_label !== params.html_label) {
+                                params.html_label = param_html_label;
+                                changed = true;
+                            }
+                            if (param_default_checked !== params.default_checked) {
+                                params.default_checked = param_default_checked;
+                                changed = true;
+                            }
+
+                            if (!changed) {
+                                $dialog.trigger('close');
+                                return;
+                            }
+
+                            $params_input.val(JSON.stringify(params));
+
+                            if (button.hasClass('green')) {
+                                button.removeClass('green').addClass('yellow');
+                            }
+
+                            var $fr_field = $params_input.closest('.fr-field'),
+                                html_label = params.html_label;
+
+                            html_label = html_label.replace(params.html_label_default_href_placeholder, 'javascript:void(0);');
+                            $fr_field.find('.h-agreement-checkbox-html-label').html(html_label);
+                            $fr_field.find(':checkbox').attr('checked', !!params.default_checked);
+
+                            $dialog.trigger('close');
+                        });
+
+                        $dialog.find('.cancel').click(function() {
+                            $dialog.trigger('close');
+                        });
+                    }
+                });
             };
 
             container.off('click', '.fr-field[data-fr-field-wrapper]').on('click', '.fr-field[data-fr-field-wrapper]', function() {
-                editField($(this).find('.fc-field-params'));
+                var $el = $(this),
+                    $params_input = $el.find('.fc-field-params');
+                editField($params_input);
             });
 
             container.find('[data-editable-element]').each(function() {

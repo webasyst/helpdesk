@@ -4,6 +4,8 @@
  */
 class helpdeskFormConstructor
 {
+    const FIELD_AGREEMENT_CHECKBOX_ID_PREFIX = '!agreement_checkbox';
+
     public function getHtml(helpdeskSource $source)
     {
         $view = wa()->getView();
@@ -73,6 +75,8 @@ class helpdeskFormConstructor
             'text',
             'subfields_captionplace',
             'identification',
+            'html_label',
+            'default_checked'
         );
 
         if ($source_params && is_array($source_params)) {
@@ -261,6 +265,7 @@ class helpdeskFormConstructor
                 'placeholder_need' => true,
             );
         }
+
         $all_fields = helpdeskRequestFields::getFields() + $fields;
 
         $form_fields = array();
@@ -273,6 +278,7 @@ class helpdeskFormConstructor
             if (is_array($field)) {
                 $info = $field;
             }
+
             if (!empty($source['params'][$prefix . $field_id])) {
                 $info['choosen'] = true;
                 if ($source['params'][$prefix . $field_id] instanceof waArrayObject) {
@@ -282,34 +288,32 @@ class helpdeskFormConstructor
                 }
             }
 
-            if (is_object($field)) {
-                if ($field instanceof helpdeskRequestField) {
+            if ($field instanceof helpdeskRequestField) {
 
-                    $info['id'] = $field->getId();
-                    $info['name'] = $field->getName();
-                    $info['type'] = $field->getType();
+                $info['id'] = $field->getId();
+                $info['name'] = $field->getName();
+                $info['type'] = $field->getType();
 
-                    $params = array();
-                    if (!empty($info['view'])) {
-                        $params['view'] = $info['view'];
-                    }
-                    $params['namespace'] = 'fld_data';
-                    $params['value'] = ifset($info['value'], '');
-
-                    $attrs = '';
-                    if (!$form_env) {
-                        $attrs .= 'disabled="disabled"';
-                    }
-
-                    $attrs .= 'placeholder="' . ifset($info['placeholder'], '') . '"';
-
-                    $info['html'] = $field->getHTML($params, $attrs);
-                    if ($info['type'] === 'Select') {
-                        $info['options'] = $field->getOptions();
-                    }
-
-                    $info['placeholder_need'] = !($field instanceof helpdeskRequestSelectField || $field instanceof helpdeskRequestCheckboxField);
+                $params = array();
+                if (!empty($info['view'])) {
+                    $params['view'] = $info['view'];
                 }
+                $params['namespace'] = 'fld_data';
+                $params['value'] = ifset($info['value'], '');
+
+                $attrs = '';
+                if (!$form_env) {
+                    $attrs .= 'disabled="disabled"';
+                }
+
+                $attrs .= 'placeholder="' . ifset($info['placeholder'], '') . '"';
+
+                $info['html'] = $field->getHTML($params, $attrs);
+                if ($info['type'] === 'Select') {
+                    $info['options'] = $field->getOptions();
+                }
+
+                $info['placeholder_need'] = !($field instanceof helpdeskRequestSelectField || $field instanceof helpdeskRequestCheckboxField);
             }
 
             $field = $info;
@@ -318,35 +322,46 @@ class helpdeskFormConstructor
         unset($field);
 
         // insert special pseudo fields: !hrule, !paragraph
+        $prefix = helpdeskRequestLogParamsModel::PREFIX_REQUEST;
         foreach ($source['params'] as $name => $params) {
-            if (substr($name, 0, 5) === 'fld_!') {
-                $id = substr($name, 4);
-                $params['id'] = $id;
-                $params['choosen'] = true;
-                $params['multi'] = false;
-                $parts = explode('_', $id);
-                if (count($parts) > 1) {
-                    $last = array_pop($parts);
-                    if (is_numeric($last)) {
-                        $params['multi'] = true;
-                    } else {
-                        $parts[] = $last;
-                    }
-                }
-                $params['excl'] = true;
-                $params['type'] = implode('_', $parts);
-                if ($params['type'] === '!paragraph') {
-                    if (strpos($params['text'], '<p>') === false) {
-                        $params['text'] = '<p>' . $params['text'] . '</p>';
-                    }
-                }
-                $all_fields[$id] = $params->toArray();
+
+            if (substr($name, 0, 5) !== $prefix . '!') {
+                continue;
             }
+
+            $id = substr($name, 4);
+
+            if ($id === self::FIELD_AGREEMENT_CHECKBOX_ID_PREFIX) {
+                continue;
+            }
+
+            $params['id'] = $id;
+            $params['special'] = true;
+            $params['choosen'] = true;
+            $params['multi'] = false;
+            $parts = explode('_', $id);
+            if (count($parts) > 1) {
+                $last = array_pop($parts);
+                if (is_numeric($last)) {
+                    $params['multi'] = true;
+                } else {
+                    $parts[] = $last;
+                }
+            }
+            $params['excl'] = true;
+            $params['type'] = implode('_', $parts);
+            if ($params['type'] === '!paragraph') {
+                if (strpos($params['text'], '<p>') === false) {
+                    $params['text'] = '<p>' . $params['text'] . '</p>';
+                }
+            }
+            $all_fields[$id] = $params->toArray();
         }
+
+        $all_fields = $this->addAgreementCheckboxes($source, $all_fields);
 
         $sort = 0;
         foreach ($all_fields as $field_id => $field) {
-//            $field['id'] = $field_id;
             if (!empty($field['choosen'])) {
                 $sort = ifset($field['sort'], $sort);
                 $field['sort'] = $sort;
@@ -363,11 +378,15 @@ class helpdeskFormConstructor
         }
         ksort($form_fields);
 
-        // sort fields
-        $top_fields_order = array(
-            'subject', 'text', 'attachments', 'captcha'
-        );
         $top_fields = array();
+
+        $top_fields_order = array(
+            'subject',
+            'text',
+            'attachments',
+            'captcha',
+            '!agreement_checkbox'
+        );
         foreach ($top_fields_order as $field_id) {
             if (isset($other_fields[$field_id])) {
                 $top_fields[$field_id] = $other_fields[$field_id];
@@ -377,7 +396,6 @@ class helpdeskFormConstructor
         }
 
         $other_fields = $top_fields + $other_fields;
-
 
         $all_fields = array();
         foreach ($form_fields as $field) {
@@ -452,5 +470,90 @@ class helpdeskFormConstructor
             $text = preg_replace("/".$t."/i", $r, $text);
         }
         return $text;
+    }
+
+    protected function getAgreementCheckbox(helpdeskSource $source, $index = null)
+    {
+        $field_id = self::FIELD_AGREEMENT_CHECKBOX_ID_PREFIX . ($index !== null ? "_{$index}" : '');
+        $field = new helpdeskAgreementCheckboxField($field_id, _w('Consent to terms'));
+
+        $prefix = helpdeskRequestLogParamsModel::PREFIX_REQUEST;
+        $is_frontend = wa()->getEnv() === 'frontend';
+
+        $params = $source['params']->toArray();
+        $params = (array) ifset($params[$prefix . $field->getId()]);
+
+        $attrs = array();
+        if (!$is_frontend) {
+            $attrs[] = 'disabled="disabled"';
+        }
+
+        $default_checked = ifset($params['default_checked']) ? 1 : 0;
+        if ($default_checked) {
+            $attrs[] = 'checked="checked"';
+        }
+
+        $attrs = join(' ', $attrs);
+
+        $html_label = ifset($params['html_label']);
+        $html_params = array(
+            'html_label' => $html_label,
+        );
+        if ($is_frontend) {
+            $html_params['namespace'] = "{$prefix}data";
+        }
+
+        $html = $field->getHTML($html_params, $attrs);
+        if ($html_label === null) {
+            $html_label = $field->getDefaultHtmlLabel(true);
+        }
+
+        return array(
+            'id' => $field->getId(),
+            'name'  => $field->getName(),
+            'html' => $html,
+            'multi' => true,
+            'type' => self::FIELD_AGREEMENT_CHECKBOX_ID_PREFIX,
+            'html_label' => $html_label,
+            'default_checked' => $default_checked ? 1 : 0,
+            'excl' => true,
+            'captionplace' => 'none',
+            'html_label_default_href_placeholder' => $field->getDefaultLinkHrefPlaceholder()
+        );
+    }
+
+    protected function addAgreementCheckboxes(helpdeskSource $source, $fields)
+    {
+        $prefix = helpdeskRequestLogParamsModel::PREFIX_REQUEST;
+        $prefix_len = strlen($prefix);
+        $checkbox = $this->getAgreementCheckbox($source);
+        $checkbox_id = $checkbox['id'];
+        $checkbox_id_len = strlen($checkbox_id);
+
+        $checkboxes = array();
+
+        foreach ($source['params'] as $name => $params) {
+            if (substr($name, 0, $prefix_len) !== $prefix) {
+                continue;
+            }
+            if (substr($name, $prefix_len, $checkbox_id_len) !== $checkbox_id) {
+                continue;
+            }
+            $index = (int) substr($name, $prefix_len + $checkbox_id_len + 1);
+            $field = $this->getAgreementCheckbox($source, $index);
+            $checkboxes[$index] = $field;
+            $checkboxes[$index]['choosen'] = true;
+            $checkboxes[$index]['special'] = true;
+        }
+
+        ksort($checkboxes);
+
+        $fields[$checkbox_id] = $checkbox;
+        $fields[$checkbox_id]['choosen'] = false;
+
+        foreach ($checkboxes as $chbx) {
+            $fields[$chbx['id']] = $chbx;
+        }
+        return $fields;
     }
 }
