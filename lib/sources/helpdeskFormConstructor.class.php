@@ -469,6 +469,12 @@ class helpdeskFormConstructor
         foreach ($map as $t => $r)  {
             $text = preg_replace("/".$t."/i", $r, $text);
         }
+
+        // Remove harmful attributes that survived escaping
+        $text = preg_replace('~<([^>]*)(onAbort|onBlur|onChange|onClick|onDblClick|onDragDrop|onError|onFocus|onKeyDown|onKeyPress|onKeyUp|onLoad|onMouseDown|onMouseMove|onMouseOut|onMouseOver|onMouseUp|onMove|onReset|onResize|onSelect|onSubmit|onUnload)[^>]*>~is', '<$1>', $text);
+        $text = preg_replace('~expression\s*\(~is', '_expression_ (', $text);
+        $text = preg_replace('~javascript:~is', '_javascript_ : ', $text);
+
         return $text;
     }
 

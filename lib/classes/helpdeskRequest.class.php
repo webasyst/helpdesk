@@ -376,8 +376,8 @@ class helpdeskRequest extends helpdeskRequestRecord
         }
 
         // html cleanup
-        if (preg_match('~<(title|style|script|frameset|object|embed|iframe|meta|!DOCTYPE|html|body|head|base)~usi', $text)) {
-            $text = self::stripTags($text, array('title', 'style', 'script', 'frameset', 'object', 'embed', 'iframe'));
+        if (preg_match('~<(title|style|script|frameset|object|embed|applet|iframe|meta|!DOCTYPE|html|body|head|base)~usi', $text)) {
+            $text = self::stripTags($text, array('title', 'style', 'script', 'frameset', 'object', 'embed', 'iframe', 'applet'));
             $text = self::stripTags($text, array('meta'), true, false);
             $text = preg_replace('@(<!DOCTYPE[^>]*>[\r\n\s\t]*)?<html[^>]*>(.*?)</html>@usi', '$2', $text);
             $text = preg_replace('@(<!DOCTYPE[^>]*>[\r\n\s\t]*)?<html[^>]*>(.*?)<body@usi', '<div', $text);
@@ -385,6 +385,11 @@ class helpdeskRequest extends helpdeskRequestRecord
             $text = preg_replace('!<body([^>]*)>(.*?)</body>!usi', '<div$1>$2</div>', $text);
             $text = preg_replace('!<base[^>]*>!is', '', $text);
         }
+
+        // JS cleanup
+        $text = preg_replace('~\\\\0~', '\\ 0', $text);
+        $text = preg_replace('~(onAbort|onBlur|onChange|onClick|onDblClick|onDragDrop|onError|onFocus|onKeyDown|onKeyPress|onKeyUp|onLoad|onMouseDown|onMouseMove|onMouseOut|onMouseOver|onMouseUp|onMove|onReset|onResize|onSelect|onSubmit|onUnload|javascript:|expression\s*\()~is', '__hack_$1__', $text);
+
         // Fix blockquotes
         while (preg_match("!(\r?\n\s?(&gt;|>)[^\r\n]*)!uis", $text)) {
             $text = preg_replace_callback("!(\r?\n\s?(&gt;|>)[^\r\n]*)!uis", array(__CLASS__, 'blockquote'), $text);

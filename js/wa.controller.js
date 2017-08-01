@@ -1694,6 +1694,9 @@ $.wa.helpdesk_controller = {
         el.waEditor($.extend({}, options || {}, {
             plugins: ['fontcolor', 'fontsize', 'fontfamily', 'codeblock'],
             imageUpload: '?module=files&action=uploadimage&filelink=1',
+            uploadImageFields: {
+                '_csrf': options._csrf || ''
+            },
             //keydownCallback: function(event) { }, // without this waEditor intercents Ctrl+S event in Redaktor
             changeCallback: function() {
                 el.closest('form').find(':submit').removeClass('green').addClass('yellow');

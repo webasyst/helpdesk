@@ -274,7 +274,8 @@
             $('.h-faq-question-settings').find('.h-answer'), {
                 lang: "{substr($wa->locale(), 0, 2)}",
                 saveButton: $('#hd-source-editor-save'),
-                placeholder: '[`Write an answer here`]'
+                placeholder: '[`Write an answer here`]',
+                _csrf: {waRequest::cookie('_csrf', '')|json_encode}
             }
         );
 
