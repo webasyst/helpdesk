@@ -23,9 +23,9 @@ class helpdeskFaqSnippetsAction extends waViewAction
 
         $this->view->assign(array(
             'categories' => $fcm->getAll(),
-            'category' => $category,
-            'faq_list' => $faq_list,
-            'query' => $query
+            'category'   => $category,
+            'faq_list'   => $faq_list,
+            'query'      => $query
         ));
     }
 

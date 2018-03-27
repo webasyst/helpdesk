@@ -457,7 +457,7 @@
 
 <script>
 
-    (function() { "use strict";
+(function() { "use strict";
 
 
 
@@ -940,128 +940,134 @@
     } catch (e) { }
     $('#request-and-log .details .text a:not(.same-tab)').attr('target', '_blank');
 
-    // Contact info block controller
-    (function() {
-        var $contact_container = $('#h-contact-info'),
-            $image = $('.request-header .image'),
-            $loading = $('<i class="icon16 loading" style="margin: 0 5px;"></i>'),
-            $details_contact_name = $('.request-header .profile .details a[data-contact-id]'),
-            $contact_tabs = $('.request-header .profile .contact-tabs'),
-            $details = $('.request-header .profile .details');
+    {if $can_load_contact_info}
+        // Contact info block controller
+        (function() {
+            var $contact_container = $('#h-contact-info'),
+                $image = $('.request-header .image'),
+                $loading = $('<i class="icon16 loading" style="margin: 0 5px;"></i>'),
+                $details_contact_name = $('.request-header .profile .details a[data-contact-id]'),
+                $contact_tabs = $('.request-header .profile .contact-tabs'),
+                $details = $('.request-header .profile .details');
 
-        // Hide contact info block when user clicks on a 'close' link
-        $contact_container.on('click', '.killer', function() {
-            hideContactInfo();
-        });
-
-        // Show/hide contact info block when user clicks on contact name or tab
-        $('.request-header').on('click', '[data-contact-id]', function (e) {
-            e.preventDefault();
-
-            var $this = $(this),
-                tab_id = $this.data('tab-id'),
-                contact_id = $this.data('contact-id');
-
-            if ($contact_container.is(':not(:hidden)')) {
-                hideContactInfo(contact_id);
-                return;
-            }
-
-            $this.after($loading);
-            $.get('{$wa_backend_url}contacts/?module=contacts&action=info', {
-                    id: contact_id,
-                    no_backlink: 1,
-                    no_switchtab: 1,
-                    standalone: 1,
-                    no_update_title: 1,
-                    no_delete: 1,
-                    tab: tab_id || ''
-                },
-                function(html) {
-                    $contact_container.html(
-                            '<a class="killer" href="javascript:void(0);">' +
-                            '<i class="icon16 close"></i>' +
-                            '</a>'
-                    );
-                    $contact_container.off('click', '.killer').on('click', '.killer', function() {
-                        hideContactInfo(contact_id);
-                    });
-                    $contact_container.append(html);
-
-                    showContactInfo(contact_id);
-                }
-            );
-
-            return false;
-        });
-
-        function showContactInfo(contact_id) {
-            var delay = 500;
-            $image.fadeOut(delay);
-            $details_contact_name.fadeOut(delay);
-            $contact_tabs.fadeOut(delay);
-
-            $contact_container.find('#contact-fullname .name').css({ display: 'inline'}).wrap(
-                '<a href="{$wa_backend_url}contacts/#/contact/' + contact_id  + '/"></a>'
-            );
-
-            $contact_container.css({
-                position: 'relative',
-                left: 0,
-                right: 0
-            }).slideDown(delay, function() {
-                $loading.remove();
-
-                // there some bugs without set-timeout.
-                // It is javascript indeed, so relax
-                setTimeout(function () {
-                    unmakeFixableRequestHeader();
-                    setTimeout(function() {
-                        makeFixableContactInfo();
-                    }, 100);
-                }, 0);
-
-                $(window).bind('keydown.helpdesk-contact-info', function(e) {
-                    if (e.keyCode == 27) {    // Ecs
-                        hideContactInfo();
-                    }
-                });
+            // Hide contact info block when user clicks on a 'close' link
+            $contact_container.on('click', '.killer', function() {
+                hideContactInfo();
             });
-        }
 
-        function hideContactInfo(contact_id) {
-            var delay = 300;
-            $image.fadeIn(delay);
-            $details_contact_name.fadeIn(delay);
-            $contact_tabs.fadeIn(delay);
+            // Show/hide contact info block when user clicks on contact name or tab
+            $('.request-header').on('click', '[data-contact-id]', function (e) {
+                e.preventDefault();
 
-            if (contact_id) {
-                $('.contact-tabs').load('?action=contactTabs&id=' + contact_id);
-            }
+                var $this = $(this),
+                    tab_id = $this.data('tab-id'),
+                    contact_id = $this.data('contact-id');
 
-            $(window).unbind('keydown.helpdesk-contact-info');
+                if ($contact_container.is(':not(:hidden)')) {
+                    hideContactInfo(contact_id);
+                    return;
+                }
 
-            $contact_container.css({
-                    width: '',
-                    margin: ''
-                })
-                .slideUp(delay, function(e){
-                    $contact_container.empty();
-                    $details.css({
-                        marginLeft: ''
-                    });
+                $this.after($loading);
+                $.get('{$wa_backend_url}contacts/?module=contacts&action=info', {
+                        id: contact_id,
+                        no_backlink: 1,
+                        no_switchtab: 1,
+                        standalone: 1,
+                        no_update_title: 1,
+                        no_delete: 1,
+                        tab: tab_id || ''
+                    },
+                    function(html) {
+                        $contact_container.html(
+                                '<a class="killer" href="javascript:void(0);">' +
+                                '<i class="icon16 close"></i>' +
+                                '</a>'
+                        );
+                        $contact_container.off('click', '.killer').on('click', '.killer', function() {
+                            hideContactInfo(contact_id);
+                        });
+                        try {
+                            $contact_container.append(html);
+                        } catch (e) {
+                            
+                        }
+
+                        showContactInfo(contact_id);
+                    }
+                );
+
+                return false;
+            });
+
+            function showContactInfo(contact_id) {
+                var delay = 500;
+                $image.fadeOut(delay);
+                $details_contact_name.fadeOut(delay);
+                $contact_tabs.fadeOut(delay);
+
+                $contact_container.find('#contact-fullname .name').css({ display: 'inline'}).wrap(
+                    '<a href="{$wa_backend_url}contacts/#/contact/' + contact_id  + '/"></a>'
+                );
+
+                $contact_container.css({
+                    position: 'relative',
+                    left: 0,
+                    right: 0
+                }).slideDown(delay, function() {
+                    $loading.remove();
 
                     // there some bugs without set-timeout.
                     // It is javascript indeed, so relax
                     setTimeout(function () {
-                        unmakeFixableContactInfo();
-                        setTimeout(function () {
-                            makeFixableRequestHeader();
-                        }, 100)
+                        unmakeFixableRequestHeader();
+                        setTimeout(function() {
+                            makeFixableContactInfo();
+                        }, 100);
                     }, 0);
+
+                    $(window).bind('keydown.helpdesk-contact-info', function(e) {
+                        if (e.keyCode == 27) {    // Ecs
+                            hideContactInfo();
+                        }
+                    });
                 });
-        }
-    })();
+            }
+
+            function hideContactInfo(contact_id) {
+                var delay = 300;
+                $image.fadeIn(delay);
+                $details_contact_name.fadeIn(delay);
+                $contact_tabs.fadeIn(delay);
+
+                if (contact_id) {
+                    $('.contact-tabs').load('?action=contactTabs&id=' + contact_id);
+                }
+
+                $(window).unbind('keydown.helpdesk-contact-info');
+
+                $contact_container.css({
+                        width: '',
+                        margin: ''
+                    })
+                    .slideUp(delay, function(e){
+                        $contact_container.empty();
+                        $details.css({
+                            marginLeft: ''
+                        });
+
+                        // there some bugs without set-timeout.
+                        // It is javascript indeed, so relax
+                        setTimeout(function () {
+                            unmakeFixableContactInfo();
+                            setTimeout(function () {
+                                makeFixableRequestHeader();
+                            }, 100)
+                        }, 0);
+                    });
+            }
+        })();
+    {/if}
 
     var edit_list = function(el){
         var $form = $(el),

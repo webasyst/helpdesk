@@ -74,7 +74,7 @@
                                     {if isset($fld.caption)}{$fld.caption|escape}{else}[`Text`]{/if}
                                     {if !empty($fld.required)} *{/if}
                                 {else}
-                                    {if isset($fld.caption)}{$fld.caption|escape}{else}[`Please enter symbols shown on the image:`]{/if} *
+                                    {if isset($fld.caption)}{$fld.caption|escape}{/if}
                                 {/if}
                             </div>
                             <div class="value">
@@ -120,11 +120,20 @@
 <iframe src="javascript:true" name="{$uniqid}-target" id="{$uniqid}-target" style="width:0;height:0;border:0px solid #fff;"></iframe>
 
 {if !empty($source.params.fld_text.redactor)}
-    <link type="text/css" rel="stylesheet" href="{$wa_url}wa-content/js/redactor/redactor.css?v{time()}">
-    <script src="{$wa_url}wa-content/js/redactor/redactor.min.js"></script>
+    <link type="text/css" rel="stylesheet" href="{$wa_url}wa-content/js/redactor/2/redactor.css?v{time()}">
+    <script src="{$wa_url}wa-content/js/redactor/2/redactor.min.js"></script>
     {if $wa->locale() !== 'en_US'}
-    <script src="{$wa_url}wa-content/js/redactor/{substr($wa->locale(), 0, 2)}.js"></script>
+        <script src="{$wa_url}wa-content/js/redactor/2/{substr($wa->locale(), 0, 2)}.js"></script>
     {/if}
+
+    <style>
+        .redactor-layer, .redactor-editor { background: transparent;border-width: 1px 0 0 0; height: 200px; }
+        .redactor-toolbar { z-index: auto; }
+        .redactor-toolbar li a { padding: 8px; width: auto; height: auto; }
+        .redactor-toolbar li a.re-button-icon { padding: 8px; }
+        .redactor-toolbar:after { display: none; }
+        .redactor-in { border: 1px solid #e9e9e9; border-top: 0; min-height: 200px; padding: 10px; }
+    </style>
 {/if}
 
 <script>
@@ -151,16 +160,14 @@
     var redactor = $('#h-text-redactor');
     {if !empty($source.params.fld_text.redactor)}
         redactor.redactor({
-            buttons: ['bold', 'italic', 'underline', 'unorderedlist', 'orderedlist', 'image', 'link', 'fontcolor', 'fontsize', 'fontfamily'],
-            plugins: ['fontcolor'],
-            imageUpload: '{$upload_image_url}?filelink=1',
-            uploadImageFields: {
-                '_csrf': "{waRequest::cookie('_csrf', '')}"
-            },
-            focus: false,
-            minHeight: 250
+            minHeight: 250,
+            maxHeight: 250,
+            lang: '{substr($wa->locale(), 0, 2)}',
+            buttons: ['bold', 'italic', 'underline', 'unorderedlist', 'orderedlist', 'link', 'fontcolor', 'fontsize', 'fontfamily'],
+            plugins: ['fontcolor', 'alignment', 'fontsize'],
+            focus: false
             {if !empty($source.params.fld_text.placeholder)}
-                ,placeholder: '{$source.params.fld_text.placeholder}'
+            ,placeholder: '{$source.params.fld_text.placeholder}'
             {/if}
         });
     {/if}

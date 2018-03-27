@@ -4,8 +4,8 @@ RedactorPlugins.faq = function() {
     return {
         init: function() {
             var button = this.button.add('faq', $_('Questions & Answers'));
+            this.button.setIcon(button, '<i class="fa fa-question-circle"></i>');
             this.button.addCallback(button, this.faq.show);
-            this.button.setAwesome('faq', 'fa-question-circle');
         },
         show: function() {
             var self = this;
@@ -71,16 +71,19 @@ RedactorPlugins.faq = function() {
             this.modal.show();
         },
         getTemplate: function() {
-            var str = '<div id="h-faq-modal" style="height: 500px; overflow-y: auto;">' +
-                    '<section class="h-section"><i class="icon16 loading"></i></section>' +
-                '</div>';
+            var str = '<div id="h-faq-modal" style="height: 420px; overflow-y: auto;">' +
+                      '<section class="h-section"><i class="icon16 loading"></i></section>' +
+                      '</div>' +
+                      '<footer style="margin-top: 12px;">' +
+                      '<button id="redactor-modal-button-cancel">' + $_('Close') + '</button>' +
+                      '<footer>';
             return str;
         },
         insertSnippet: function(title, body) {
             this.modal.close();
             this.selection.restore();
             $('.h-faq-question-settings').find('.h-name').val(title);
-            this.insert.html($.trim(body).replace(/<span class=['"]h-faq-highlighted['"]>([\s\S]+?)<\/span>/m, '$1'));
+            this.insert.html($.trim(body).replace(/<span class=['"]h-faq-highlighted['"]>([\s\S]+?)<\/span>/mg, '$1'));
         }
     };
 };

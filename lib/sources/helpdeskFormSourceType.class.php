@@ -79,11 +79,11 @@ class helpdeskFormSourceType extends helpdeskCommonST implements helpdeskFormSTI
         $this->getView()->assign('contact_fields', $form_constructor->getContactFields($source, $env));
 
         $action_url = $env === 'frontend' ?
-                wa()->getRouteUrl('helpdesk/frontend/form', array(), true) :
+                wa()->getRouteUrl('helpdesk/frontend/form', array()) :
                 '?module=requests&action=save';
 
         $background_action_url = $env === 'frontend' ?
-                wa()->getRouteUrl('helpdesk/frontend/formBackground', array(), true) :
+                wa()->getRouteUrl('helpdesk/frontend/formBackground', array()) :
                 '';
 
         $this->getView()->assign('source', $source);
@@ -93,7 +93,7 @@ class helpdeskFormSourceType extends helpdeskCommonST implements helpdeskFormSTI
         $this->getView()->assign('background_action_url', $background_action_url);
         $this->view->assign('captcha_url', wa()->getRootUrl(true).'captcha.php');
         $this->getView()->assign('form_constructor_html', $form_constructor_html);
-        $this->getView()->assign('upload_image_url', wa()->getRouteUrl('helpdesk/frontend/uploadImage', true));
+        $this->getView()->assign('upload_image_url', wa()->getRouteUrl('helpdesk/frontend/uploadImage'));
         $this->getView()->assign('env', $env);
 
 
@@ -276,7 +276,7 @@ class helpdeskFormSourceType extends helpdeskCommonST implements helpdeskFormSTI
 
 
         if ($email && !wao(new waEmailValidator())->isValid($email)) {
-            $errors['fldc_data[email]'] = _ws('Invalid Email');
+            $errors['fldc_data[email]'] = _ws('Invalid email');
         }
 
         $subject = trim($subject);

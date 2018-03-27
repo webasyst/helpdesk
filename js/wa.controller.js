@@ -1660,54 +1660,51 @@ $.wa.helpdesk_controller = {
     },
 
     /** Initialize a WYSIWYG editor on top of given textarea. */
-    initWYSIWYG: function(el, options, csrf) {
+    initWYSIWYG: function(textarea, options, csrf) {
         options = $.extend({
-            focus: true,
-            plugins: ['fontcolor', 'fontsize', 'fontfamily', 'faq', 'codeblock'],
+            focusEnd: true,
+            plugins: ['fontcolor', 'fontsize', 'fontfamily', 'alignment', 'codeblock', 'faq'],
             minHeight: 200,
             source: false,
             uploadImage: true,
-            convertVideoLinks: false
+            linkify: false
         }, options || {});
 
-        el = $(el);
-        if (!el.data('redactor')) {
+        var $textarea = $(textarea);
+        if (!$textarea.data('redactor')) {
             if (options.uploadImage) {
                 options = $.extend(options, {
-                    imageUpload: '?module=files&action=uploadimage&filelink=1',
-                    uploadImageFields: {
+                    imageUpload: '?module=files&action=uploadimage&r=2',
+                    imageUploadFields: {
                         '_csrf': csrf
                     }
                 });
             }
-
-            el.redactor(options);
+            $textarea.redactor(options);
         }
 
-        options.focus && el.data('redactor').focus.setStart();
-
-        return el;
+        return $textarea;
     },
 
-    initEditor: function(el, options) {
-        el = $(el);
-        el.waEditor($.extend({}, options || {}, {
+    initEditor: function(textarea, options) {
+        var $textarea = $(textarea);
+        $textarea.waEditor($.extend({}, options || {}, {
             plugins: ['fontcolor', 'fontsize', 'fontfamily', 'codeblock'],
-            imageUpload: '?module=files&action=uploadimage&filelink=1',
-            uploadImageFields: {
+            imageUpload: '?module=files&action=uploadimage&r=2',
+            imageUploadFields: {
                 '_csrf': options._csrf || ''
             },
             //keydownCallback: function(event) { }, // without this waEditor intercents Ctrl+S event in Redaktor
             changeCallback: function() {
-                el.closest('form').find(':submit').removeClass('green').addClass('yellow');
+                $textarea.closest('form').find(':submit').removeClass('green').addClass('yellow');
             }
         }));
 
         // Make sure sticky bottom buttons behave correctly when user switches between editors
-        el.closest('.h-editor').find('.html,.wysiwyg').click(function() {
+        $textarea.closest('.h-editor').find('.html,.wysiwyg').click(function() {
             $(window).resize();
         });
-        return el;
+        return $textarea;
     },
 
     renderActionSettings: function(html, options, serialize_data) {

@@ -154,9 +154,11 @@ class helpdeskRightsModel extends waModel
         $user_ids = array_map('intval', (array) $user_id);
 
         $rights = array();
+        $right_model = new waContactRightsModel();
         foreach ($user_ids as $u_id) {
-            $user = new waUser($u_id);
-            if ($user->getRights('helpdesk', 'backend') > 1) {
+            $data = $right_model->get($u_id, 'helpdesk');
+            $is_admin = ifset($data['backend'], 0) > 1;
+            if ($is_admin) {
                 $rights[$u_id] = array_fill_keys(array_keys(helpdeskWorkflow::getWorkflows()), true);
             } else {
                 $sql = "SELECT workflow_id, 1

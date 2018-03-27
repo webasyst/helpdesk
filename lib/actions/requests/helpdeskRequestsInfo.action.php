@@ -175,6 +175,8 @@ class helpdeskRequestsInfoAction extends helpdeskViewAction
         $this->view->assign('right_fields', $request_page_constructor->getRightFields());
         $create_tag_rights = $rm->getWorkflowsCreateTagRights();
         $this->view->assign('can_create_tag', !empty($create_tag_rights[$this->request->workflow_id]));
+
+        $this->view->assign('can_load_contact_info', wa()->appExists('contacts'));
     }
 
     public function getFields(helpdeskRequest $request, $status)

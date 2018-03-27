@@ -73,7 +73,7 @@ class helpdeskWorkflowBasicAction extends helpdeskWorkflowAction
                     }
                     foreach($m['to'] as $addr => $true) {
                         if (!wa_is_int($addr) && !$ev->isValid($addr) && !in_array($addr, array('client', 'assignee', 'assigned_group'))) {
-                            $errors['options[messages]['.$i.'][to]'] = _ws('Invalid Email').': '.$addr;
+                            $errors['options[messages]['.$i.'][to]'] = _ws('Invalid email').': '.$addr;
                             break;
                         }
                     }
@@ -129,7 +129,7 @@ class helpdeskWorkflowBasicAction extends helpdeskWorkflowAction
      */
     public function setOption($opt, $value)
     {
-        if (array_key_exists($this->options, $opt) && $this->options[$opt] === $value) {
+        if (array_key_exists($opt, $this->options) && $this->options[$opt] === $value) {
             // option isn't changed
             return $this;
         }

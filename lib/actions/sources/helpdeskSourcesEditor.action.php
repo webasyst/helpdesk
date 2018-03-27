@@ -83,7 +83,7 @@ class helpdeskSourcesEditorAction extends helpdeskViewAction
 
         // Data for common error indocators in sidebar and above layout
         list($workflows_errors, $sources_errors) = helpdeskHelper::getWorkflowsErrors();
-
+        
         $this->view->assign('wf', $wf);
         $this->view->assign('st', $st);
         $this->view->assign('source', $source);

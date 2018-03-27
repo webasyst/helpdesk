@@ -86,13 +86,15 @@ $routes_with_public_frontend = array(
     'data_regions' => array(
         'url' => 'data/regions/',
         'module' => 'frontend',
-        'action' => 'regions'
+        'action' => 'regions',
+        'secure' => false,
     ),
 
     'upload_image' => array(
         'url' => 'upload/image',
         'module' => 'frontend',
-        'action' => 'uploadImage'
+        'action' => 'uploadImage',
+        'secure' => false,
     ),
 
     'iframe' => array(

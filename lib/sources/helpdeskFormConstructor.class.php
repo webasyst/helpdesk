@@ -28,6 +28,7 @@ class helpdeskFormConstructor
         ));
 
         $dir = dirname(waAutoload::getInstance()->get(get_class($this))).'/templates/form/';
+
         $html = $view->fetch($dir . 'form_constructor.html');
 
         $view->assign($vars);
@@ -87,16 +88,24 @@ class helpdeskFormConstructor
                     if (substr($k, 0, $len_prefix) === $prefix) {
                         $excl = substr($k, $len_prefix, 1) === '!';
                         $val = json_decode($val, true);
+
                         if (!$excl && !is_array($val)) {
                             $val = array(
                                 'caption' => $this->fields[substr($k, $len_prefix)]['name']
                             );
                         }
-                        if (empty($val['caption'])) {
-                            $val['caption'] = ifset($val['name'], '');
+
+                        if (!isset($val['caption'])) {
+                            if ($k !== 'fld_captcha') {
+                                $val['caption'] = isset($val['name']) ? $val['name'] : '';
+                            } else {
+                                $val['caption'] = '';
+                            }
                         }
+
                         foreach (array_keys($val) as $param_k) {
-                            if (!in_array($param_k, $param_keys) || empty($val[$param_k])) {
+                            if (!in_array($param_k, $param_keys) ||
+                                    ($param_k !== 'caption' && empty($val[$param_k]))) {
                                 unset($val[$param_k]);
                             }
                         }
@@ -167,7 +176,7 @@ class helpdeskFormConstructor
 
             if (wa()->getEnv() == 'frontend') {
                 if ($field_id === 'address') {
-                    $field_params['xhr_url'] = wa()->getRouteUrl('/frontend/regions', array(), true);
+                    $field_params['xhr_url'] = wa()->getRouteUrl('helpdesk/frontend/regions', array());
                     $field_params['xhr_cross_domain'] = true;
                 }
                 if (wa()->getUser()->isAuth() && !empty($field_params['value'])) {
@@ -182,7 +191,7 @@ class helpdeskFormConstructor
                     $attrs .= 'disabled="disabled"';
                 }
             }
-            $field['html'] = $fld->getHTML($field_params, $attrs);
+            $field['html'] = $this->renderContactField($fld, $field_params, $attrs, $form_env);
             $all_fields[$field_id] = $field;
         }
 
@@ -191,6 +200,7 @@ class helpdeskFormConstructor
             if (substr($name, 0, 6) === 'fldc_!') {
                 $id = substr($name, 5);
                 $params['id'] = $id;
+                $params['special'] = true;
                 $params['choosen'] = true;
                 $params['multi'] = false;
                 $parts = explode('_', $id);
@@ -239,6 +249,55 @@ class helpdeskFormConstructor
         return $all_fields;
     }
 
+    /**
+     * @param waContactField $field
+     * @param $field_params
+     * @param $attrs
+     * @param $form_env
+     * @return string
+     */
+    protected function renderContactField($field, $field_params, $attrs, $form_env)
+    {
+        if (!($field instanceof waContactBranchField) || wa()->getEnv() == 'frontend' || $form_env) {
+            return $field->getHTML($field_params, $attrs);
+        }
+        $hide_param = $field->getParameter('hide');
+        if (empty($hide_param) || !is_array($hide_param)) {
+            return $field->getHTML($field_params, $attrs);
+        }
+        $field->setParameter('hide', array());
+        $html = $field->getHTML($field_params, $attrs);
+        $field->setParameter('hide', $hide_param);
+        return $html;
+    }
+
+    protected function renderCaptcha($form_env = null)
+    {
+        if (wa()->getEnv() == 'frontend' || $form_env) {
+            return wa('helpdesk')->getCaptcha()->getHtml();
+        }
+        $img_url = 'img/waCaptchaImg.png';
+        $isReCaptcha = waCaptcha::getCaptchaType('helpdesk') == 'waReCaptcha';
+        if ($isReCaptcha) {
+            $img_url = 'img/reCaptchaEN.png';
+            if (wa()->getLocale() === 'ru_RU') {
+                $img_url = 'img/reCaptchaRU.png';
+            }
+        }
+
+        $view = wa()->getView();
+        $old_vars = $view->getVars();
+        $view->clearAllAssign();
+        $view->assign(array(
+            'img_url' => $img_url,
+            'isReCaptcha' => $isReCaptcha
+        ));
+        $html = $view->fetch(wa()->getAppPath('lib/sources/templates/form/form_constructor_captcha.html', 'helpdesk'));
+        $view->assign($old_vars);
+        return $html;
+
+    }
+
     public function getFields(helpdeskSource $source, $form_env = null)
     {
         $fields = array(
@@ -264,6 +323,7 @@ class helpdeskFormConstructor
                 'name'  => _w('Captcha'),
                 'placeholder_need' => true,
             );
+            $fields['captcha']['html'] = $this->renderCaptcha($form_env);
         }
 
         $all_fields = helpdeskRequestFields::getFields() + $fields;
@@ -360,24 +420,18 @@ class helpdeskFormConstructor
 
         $all_fields = $this->addAgreementCheckboxes($source, $all_fields);
 
-        $sort = 0;
         foreach ($all_fields as $field_id => $field) {
             if (!empty($field['choosen'])) {
-                $sort = ifset($field['sort'], $sort);
-                $field['sort'] = $sort;
-                if (!isset($form_fields[$sort])) {
-                    $form_fields[$sort] = $field;
-                } else {
-                    $sort += 1;
-                    $form_fields[$sort] = $field;
-                }
-                $sort += 1;
+                $field['sort'] = isset($field['sort']) ? (int)$field['sort'] : 0;
+                $form_fields[] = $field;
             } else {
                 $other_fields[$field['id']] = $field;
             }
         }
-        ksort($form_fields);
 
+        usort($form_fields, wa_lambda('$a, $b', 'return $a["sort"] - $b["sort"];'));
+        $form_fields = array_values($form_fields);
+        
         $top_fields = array();
 
         $top_fields_order = array(
@@ -547,12 +601,11 @@ class helpdeskFormConstructor
             }
             $index = (int) substr($name, $prefix_len + $checkbox_id_len + 1);
             $field = $this->getAgreementCheckbox($source, $index);
-            $checkboxes[$index] = $field;
-            $checkboxes[$index]['choosen'] = true;
-            $checkboxes[$index]['special'] = true;
+            $field = array_merge($field, $params->toArray());
+            $field['choosen'] = true;
+            $field['special'] = true;
+            $checkboxes[] = $field;
         }
-
-        ksort($checkboxes);
 
         $fields[$checkbox_id] = $checkbox;
         $fields[$checkbox_id]['choosen'] = false;

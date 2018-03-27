@@ -1,6 +1,6 @@
 <?php
 
-class helpdeskBackendLayout extends waLayout
+class helpdeskMobileLayout extends waLayout
 {
     public $admin;
     public $global_admin;

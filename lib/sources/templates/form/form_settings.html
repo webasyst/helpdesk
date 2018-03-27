@@ -832,11 +832,15 @@ select { min-width: 80px; }
     $('.h-css-preview').click(function() {
         var el = $('[name="params[custom_css]"]');
         var custom = el.data('custom');
+        var matches = document.cookie.match(new RegExp("(?:^|; )_csrf=([^;]*)"));
+        var csrf = matches ? decodeURIComponent(matches[1]) : '';
+
         $('<form>').css({
             display: 'none'
         }).attr('action', '{$wa_app_url}?module=sources&action=formPreview&id={$source.id}&frontend_css_type=custom')
             .attr('target', '_blank')
             .attr('method', 'post')
+            .append('<input type="hidden" name="_csrf" value="' + csrf + '"/>')
             .append(
                 $('<textarea name="css">').val(
                     custom ? $('textarea[name="params[custom_css]"]').val() : $('#h-default-css-text').val()

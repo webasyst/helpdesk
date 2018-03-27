@@ -229,8 +229,8 @@
                 var initRedactor = function(el, placeholder) {
                     if (!el.data('redactor')) {
                         $.wa.helpdesk_controller.initWYSIWYG($('.h-text-editor'), {
-                            buttons: ['bold', 'italic', 'underline', 'unorderedlist', 'orderedlist', 'image', 'link'],
-                            plugins: ['fontcolor'],
+                            buttons: ['bold', 'italic', 'underline', 'unorderedlist', 'orderedlist', 'link', 'fontcolor', 'fontsize', 'fontfamily'],
+                            plugins: ['fontcolor', 'alignment', 'fontsize'],
                             width: $('#form-request-constructor-preview').width(),
                             uploadImage: false,
                             focus: false,
@@ -336,7 +336,10 @@
                 if (type === 'contact' && f_name === 'address') {
                     params['subfields_captionplace'] = params['subfields_captionplace'] || 'above';
                 }
-                params['caption'] = params['caption'] || params['name'];
+
+                var default_caption = f_name != 'captcha' ? params['name'] : '';
+                params['caption'] = params['caption'] !== undefined ? params['caption'] : default_caption;
+
                 if (f_name === 'text') {
                     params['redactor'] = params['redactor'] || '';
                 } else {
@@ -497,11 +500,12 @@
                             if (button.hasClass('green')) {
                                 button.removeClass('green').addClass('yellow');
                             }
+
                             var fr_field = params_input.closest('.fr-field');
                             fr_field.find('.fr-name').html(
                                 '<label>' +
-                                $.wa.encodeHTML(params['caption'] || params['name'])
-                                + (params['required'] || f_name === 'captcha' ? ' *' : '') +
+                                $.wa.encodeHTML(params['caption'] || '')
+                                + (params['required'] && f_name !== 'captcha' ? ' *' : '') +
                                 '</label>'
                             );
                             fr_field.removeClass('left above none').addClass(params['captionplace']);

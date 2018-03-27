@@ -1421,10 +1421,6 @@ msgstr ""
 msgid "Captcha"
 msgstr ""
 
-#: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:102
-msgid "Please enter symbols shown on the image:"
-msgstr ""
-
 #: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:113
 #: /wa-apps/helpdesk/lib/workflow/templates/Basic_settings.html:201
 msgid "Button"
@@ -3657,4 +3653,37 @@ msgstr ""
 #: /wa-apps/helpdesk/lib/actions/faq/helpdeskFaqCategorySave.controller.php:19
 #: /wa-apps/helpdesk/lib/actions/faq/helpdeskFaqSave.controller.php:20
 msgid "Category URL may contain only letters, digits, and hyphens"
+msgstr ""
+
+#: /wa-apps/helpdesk/templates/layouts/Mobile.html:65
+msgid "Sidebar"
+msgstr ""
+
+#: /wa-apps/helpdesk/lib/classes/helpdeskAgreementCheckboxField.class.php:71
+msgid "I agree to <a>{$this->default_link_text}</a>"
+msgstr ""
+
+#: /wa-apps/helpdesk/lib/classes/helpdeskAgreementCheckboxField.class.php:6
+msgid "personal data protection policy"
+msgstr ""
+
+#: /wa-apps/helpdesk/lib/classes/helpdeskAgreementCheckboxField.class.php:7
+msgid "---INSERT A LINK HERE!---"
+msgstr ""
+
+#: /wa-apps/helpdesk/lib/sources/helpdeskFormConstructor.class.php:530
+msgid "Consent to terms"
+msgstr ""
+
+#: /wa-apps/helpdesk/lib/sources/templates/form/form_constructor_captcha.html:12
+#: /wa-apps/helpdesk/lib/sources/templates/form/form_constructor_captcha.html:17
+msgid "Refresh CAPTCHA"
+msgstr ""
+
+#: /wa-apps/helpdesk/lib/sources/templates/form/include_edit_agreement_checkbox_field_dialog.html:13
+msgid "Terms description"
+msgstr ""
+
+#: /wa-apps/helpdesk/lib/sources/templates/form/include_edit_agreement_checkbox_field_dialog.html:21
+msgid "Checked by default"
 msgstr ""

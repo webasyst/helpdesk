@@ -10,6 +10,7 @@ class helpdeskFilesUploadimageController extends waUploadJsonController
     protected function process()
     {
         $f = waRequest::file('file');
+        $f->transliterateFilename();
         $this->name = $f->name;
         if ($this->processFile($f)) {
             $this->response = wa()->getDataUrl('files/'.$this->name, true, 'helpdesk', true);
@@ -23,6 +24,8 @@ class helpdeskFilesUploadimageController extends waUploadJsonController
         if (!$this->errors) {
             if (waRequest::get('filelink')) {
                 echo json_encode(array('filelink' => $this->response));
+            } elseif (waRequest::get('r') === '2') { // redactor 2
+                echo json_encode(array('url' => $this->response));
             } else {
                 $data = array('status' => 'ok', 'data' => $this->response);
                 echo json_encode($data);

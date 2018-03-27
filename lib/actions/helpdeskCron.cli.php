@@ -37,6 +37,13 @@ class helpdeskCronCli extends waCliController
 
         $this->config->sendMessagesFromQueue();
 
+        $last_cron_temp_clean_date = $asm->get('helpdesk', 'last_cron_temp_clean_time');
+        if ((time() - $last_cron_temp_clean_date) >= 86400) { // one day
+            $tm = new helpdeskTempModel();
+            $tm->cleanOldTemp();
+            $asm->set('helpdesk', 'last_cron_temp_clean_time', time());
+        }
+
         /**
          * @event cron
          * @param int $params['last_cron_time'] timestamp of previous run, or null
