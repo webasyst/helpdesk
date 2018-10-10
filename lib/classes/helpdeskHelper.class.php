@@ -851,11 +851,11 @@ class helpdeskHelper
 
     public static function rightsToAppMessage()
     {
-        if (wa()->appExists('contacts')) {
-            $contacts_app_url = wa()->getAppUrl('contacts') . '#/users/all/';
-            return sprintf(_w('Users must have access to Helpdesk app. To add users or user groups, or manage their access rights use <a href="%s">Contacts/Users</a> section.'), $contacts_app_url);
+        if (wa()->appExists('team')) {
+            return sprintf(_w('Select a user or a user group who have access to Helpdesk app. Manage users and user groups, and their access rights in <a href="%s">Team</a> app.'), wa()->getAppUrl('team'));
+        } else {
+            return '';
         }
-        return '';
     }
 
     public static function rightsToAppMessageParagraph($class = '', $style='')

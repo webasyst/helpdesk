@@ -226,17 +226,18 @@
     var variables_wrapper = wrapper.find('.variables-wrapper');
 
     var delay = 0; // we want controls to show and hide with animation, but only after initialization is finished
-
+        
     var initEditor = function(el) {
         el = $(el);
         el.waEditor({
-            editorOnLoadFocus: false,
-            buttons: ['formatting', 'bold', 'italic', 'link'],
-            plugins: ['fontcolor', 'fontsize', 'fontfamily'],
+            focus: false,
+            buttons: ['format', 'bold', 'italic', 'underline', 'unorderedlist', 'orderedlist', 'link', 'image', 'horizontalrule'],
             keydownCallback: function(event) { }, // without this waEditor intercents Ctrl+S event in Redaktor
-            changeCallback: function() {
-                el.waEditor('sync');
-                onChangeHandler();
+            callbacks: {
+                change: function () {
+                    el.waEditor('sync');
+                    onChangeHandler();
+                }
             },
             lang: "{substr($wa->locale(), 0, 2)}"
         });

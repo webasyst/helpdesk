@@ -95,8 +95,8 @@
 
         <div class="wa-field">
             <div class="wa-value buttons">
-                <input type="submit" value="{if isset($source.params.button_caption)}{$source.params.button_caption|escape}{else}[`Send`]{/if}">
-                <i class="icon16 loading" style="display:none"></i>
+                <input class="button" type="submit" value="{if isset($source.params.button_caption)}{$source.params.button_caption|escape}{else}[`Send`]{/if}">
+                <i class="icon16 loading" style="margin: 9px; 0 0 10px; display:none"></i>
             </div>
         </div>
 
@@ -111,10 +111,10 @@
     {if $wa->locale() !== 'en_US'}
         <script src="{$wa_url}wa-content/js/redactor/2/{substr($wa->locale(), 0, 2)}.js"></script>
     {/if}
-
     <style>
         .redactor-layer, .redactor-editor { background: transparent;border-width: 1px 0 0 0; height: 200px; }
         .redactor-toolbar { z-index: auto; }
+        .redactor-toolbar-box { margin-left: 1px; }
         .redactor-toolbar li a { padding: 8px; width: auto; height: auto; }
         .redactor-toolbar li a.re-button-icon { padding: 8px; }
         .redactor-toolbar:after { display: none; }
@@ -145,12 +145,13 @@
     var redactor = $('.h-text-redactor', form);
     {if !empty($source.params.fld_text.redactor)}
         redactor.redactor({
-            minHeight: 250,
-            maxHeight: 250,
             lang: '{substr($wa->locale(), 0, 2)}',
-            buttons: ['bold', 'italic', 'underline', 'unorderedlist', 'orderedlist', 'link', 'fontcolor', 'fontsize', 'fontfamily'],
-            plugins: ['fontcolor', 'alignment', 'fontsize'],
-            focus: false
+            buttons: ['format', 'bold', 'italic', 'underline', 'unorderedlist', 'orderedlist', 'link', 'image', 'horizontalrule'],
+            focus: false,
+            imageUpload: '{$upload_image_url}?r=2',
+            imageUploadFields: {
+                '_csrf': '{waRequest::cookie('_csrf', '')}'
+            }
             {if !empty($source.params.fld_text.placeholder)}
                 ,placeholder: '{$source.params.fld_text.placeholder}'
             {/if}
@@ -247,7 +248,7 @@
                 {else}
                     {if !empty($source.params.after_submit_auth) && $source.params.after_submit_auth == 'redirect'}
                         top.location = '{$source.params->ifset("redirect_after_submit_auth")|escape:javascript}';
-                    {else if !empty($source.params.after_submit_auth) && $source.params.after_submit_auth == 'html'}
+                    {elseif !empty($source.params.after_submit_auth) && $source.params.after_submit_auth == 'html'}
                         form.find('.wa-form:first').html('{$source.params->ifset("html_after_submit_auth", "[`Thank you!`]")|escape:javascript}');
                     {else}
                         top.location = '{$wa->getUrl('helpdesk/form')}my/request/' + json.data.request_id + '/';

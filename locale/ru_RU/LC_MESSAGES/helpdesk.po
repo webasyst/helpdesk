@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2017-12-20 16:38+0300\n"
+"PO-Revision-Date: 2018-09-13 09:09+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -1746,7 +1746,7 @@ msgstr "Добавить поля запроса"
 
 #: /wa-apps/helpdesk/lib/sources/templates/include_form_constructor.html:35 /wa-apps/helpdesk/lib/sources/templates/include_form_constructor_preview.html:151
 msgid "Text paragraph"
-msgstr "Параграф текста"
+msgstr "Текст"
 
 #: /wa-apps/helpdesk/lib/sources/templates/include_form_constructor.html:66
 msgid "View"
@@ -2439,8 +2439,8 @@ msgid "This message template is customized by administrator in workflow settings
 msgstr "Шаблон этого сообщения настраивается администратором в настройках потока."
 
 #: /wa-apps/helpdesk/lib/classes/helpdeskHelper.class.php:703
-msgid "Users must have access to Helpdesk app. To add users or user groups, or manage their access rights use <a href=\"%s\">Contacts/Users</a> section."
-msgstr "Пользователи должны иметь доступ к приложению Поддержка. Чтобы добавить пользователей или группы пользователей, а также для настройки прав доступа, перейдите в секцию <a href=\"%s\">Контакты/Пользователи</a>."
+msgid "Select a user or a user group who have access to Helpdesk app. Manage users and user groups, and their access rights in <a href=\"%s\">Team</a> app."
+msgstr "Выберите пользователя или группу пользователей, у которых есть доступ к приложению «Поддержка». Редактируйте пользователей, группы пользователей и их права доступа в приложении «<a href=\"%s\">Команда</a>»."
 
 #: /wa-apps/helpdesk/themes/default/my.requestpage.html:85
 msgid "Request created"
@@ -3006,7 +3006,6 @@ msgstr ""
 msgid "---INSERT A LINK HERE!---"
 msgstr ""
 
-#: /wa-apps/helpdesk/lib/sources/templates/form/form_constructor_captcha.html:12
-#: /wa-apps/helpdesk/lib/sources/templates/form/form_constructor_captcha.html:17
+#: /wa-apps/helpdesk/lib/sources/templates/form/form_constructor_captcha.html:12 /wa-apps/helpdesk/lib/sources/templates/form/form_constructor_captcha.html:17
 msgid "Refresh CAPTCHA"
 msgstr ""

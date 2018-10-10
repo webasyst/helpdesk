@@ -8,9 +8,11 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: en_US\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Language: en_US\n"
+"X-Generator: Poedit 1.8.7.1\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
@@ -152,7 +154,9 @@ msgid "Add an action"
 msgstr "Add action"
 
 #: /wa-apps/helpdesk/templates/actions/editor/EditorNewaction.html:8
-msgid "Add existing actions from other states, which are not used in the current state:"
+msgid ""
+"Add existing actions from other states, which are not used in the current "
+"state:"
 msgstr "Choose an existing action:"
 
 #: /wa-apps/helpdesk/templates/actions/editor/EditorNewaction.html:21
@@ -182,7 +186,9 @@ msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/editor/EditorNewaction.html:66
 #: /wa-apps/helpdesk/templates/actions/settings/SettingsWorkflow.html:561
-msgid "The action will be eliminated only for the state &ldquo;%s&rdquo;. For other states this action will stay available."
+msgid ""
+"The action will be eliminated only for the state &ldquo;%s&rdquo;. For other "
+"states this action will stay available."
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/editor/EditorPalette.html:13
@@ -214,7 +220,9 @@ msgid "ID "
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/editor/EditorState.html:38
-msgid "If enabled, requests in this status are available for clients in their Customer Portal."
+msgid ""
+"If enabled, requests in this status are available for clients in their "
+"Customer Portal."
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/editor/EditorState.html:42
@@ -315,16 +323,23 @@ msgid "Personal"
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/filters/FiltersDialog.html:19
-msgid "Will appear in the sidebar in MY FILTERS section and will be available for me only"
-msgstr "Will appear in the sidebar in MY FILTERS section and will be available to me only"
+msgid ""
+"Will appear in the sidebar in MY FILTERS section and will be available for "
+"me only"
+msgstr ""
+"Will appear in the sidebar in MY FILTERS section and will be available to me "
+"only"
 
 #: /wa-apps/helpdesk/templates/actions/filters/FiltersDialog.html:23
 msgid "Public"
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/filters/FiltersDialog.html:24
-msgid "Will appear in the main section in sidebar and will be available for all users"
-msgstr "Will appear in the main section in sidebar and will be available to all users"
+msgid ""
+"Will appear in the main section in sidebar and will be available for all "
+"users"
+msgstr ""
+"Will appear in the main section in sidebar and will be available to all users"
 
 #: /wa-apps/helpdesk/templates/actions/handlers/HandlersProfiletab.html:8
 #: /wa-apps/helpdesk/js/compiled/helpdesk.js:44
@@ -508,14 +523,22 @@ msgid "Search"
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/settings/SettingsCron.html:12
-msgid "No <tt>cron</tt> job required for automated email capture and execution of auto actions in your workflow is set up for your account."
+msgid ""
+"No <tt>cron</tt> job required for automated email capture and execution of "
+"auto actions in your workflow is set up for your account."
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/settings/SettingsCron.html:16
-msgid "Without a <tt>cron</tt> job set up, new mail is captured and new requests are received only as long as you keep Helpdesk open in your browser. Auto actions in your workflow are not triggered in this case."
+msgid ""
+"Without a <tt>cron</tt> job set up, new mail is captured and new requests "
+"are received only as long as you keep Helpdesk open in your browser. Auto "
+"actions in your workflow are not triggered in this case."
 msgstr ""
 
-msgid "Please set up a <tt>cron</tt> job (<a href=\"%s\" target=\"_blank\">view instructions</a>) using the command specified below in your web-hosting control panel:"
+msgid ""
+"Please set up a <tt>cron</tt> job (<a href=\"%s\" target=\"_blank\">view "
+"instructions</a>) using the command specified below in your web-hosting "
+"control panel:"
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/settings/SettingsCron.html:27
@@ -533,7 +556,10 @@ msgid "http://www.webasyst.com/framework/docs/server/cron/"
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/settings/SettingsPortal.html:11
-msgid "Customer Portal is a personal page available for clients sending requests to your Helpdesk. On this page customers can see all their requests, check status of any request, add a new request, and etc."
+msgid ""
+"Customer Portal is a personal page available for clients sending requests to "
+"your Helpdesk. On this page customers can see all their requests, check "
+"status of any request, add a new request, and etc."
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/settings/SettingsPortal.html:14
@@ -541,7 +567,10 @@ msgid "Customer Portal address:"
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/settings/SettingsPortal.html:18
-msgid "To access Customer Portal authorization by email and password is required. On the first login customer will be offered to enter a password. “Forgot password” option is also available on the authorization page."
+msgid ""
+"To access Customer Portal authorization by email and password is required. "
+"On the first login customer will be offered to enter a password. “Forgot "
+"password” option is also available on the authorization page."
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/settings/SettingsPortal.html:22
@@ -549,7 +578,9 @@ msgid "New requests added from Customer Portal acquire status:"
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/settings/SettingsPortal.html:34
-msgid "Specify which statuses are available for client (status names as they appear for client can be changed):"
+msgid ""
+"Specify which statuses are available for client (status names as they appear "
+"for client can be changed):"
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/settings/SettingsPortal.html:55
@@ -578,7 +609,8 @@ msgid "All available for read and action"
 msgstr "Available for viewing and execution by clients"
 
 #: /wa-apps/helpdesk/templates/actions/settings/SettingsPortal.html:98
-msgid "Specify what should be displayed as an action executor in Customer Portal:"
+msgid ""
+"Specify what should be displayed as an action executor in Customer Portal:"
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/settings/SettingsPortal.html:103
@@ -736,14 +768,18 @@ msgid "Cancel"
 msgstr ""
 
 #: /wa-apps/helpdesk/js/compiled/helpdesk.js:10
-msgid "All requests\")})},requestsFilterAction:function(a){for(var a=a||[],c=[\"requests"
+msgid ""
+"All requests\")})},requestsFilterAction:function(a){for(var a=a||[],"
+"c=[\"requests"
 msgid_plural "filter\"],d=\""
 msgstr[0] ""
 msgstr[1] ""
 
 #: /wa-apps/helpdesk/js/compiled/helpdesk.js:28
 msgid "Error delivering messages from:\")+\" \"+d.join("
-msgid_plural ")))):e.remove()}},loadHTML:function(a,c,d,e){this.showLoading();var f=\"#c-core-content"
+msgid_plural ""
+")))):e.remove()}},loadHTML:function(a,c,d,e){this.showLoading();var f=\"#c-"
+"core-content"
 msgstr[0] ""
 msgstr[1] ""
 
@@ -1018,7 +1054,9 @@ msgid "Available actions"
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/config/helpdeskRightConfig.class.php:109
-msgid "Users with limited access are not allowed to change application settings, e.g. sources, workflows, and etc."
+msgid ""
+"Users with limited access are not allowed to change application settings, e."
+"g. sources, workflows, and etc."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/config/install.php:56
@@ -1085,7 +1123,9 @@ msgid "Request subject"
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/helpdeskCommonST.class.php:506
-msgid "URL address for not registered clients to confirm their original email. Click on this link opens the request in the client's Customer Portal."
+msgid ""
+"URL address for not registered clients to confirm their original email. "
+"Click on this link opens the request in the client's Customer Portal."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/helpdeskCommonST.class.php:508
@@ -1099,8 +1139,12 @@ msgstr "Customer name"
 #: /wa-apps/helpdesk/lib/sources/helpdeskCommonST.class.php:527
 #: /wa-apps/helpdesk/lib/workflow/helpdeskWorkflowBasicAction.class.php:288
 #: /wa-apps/helpdesk/lib/workflow/helpdeskWorkflowBasicAction.class.php:306
-msgid "Company name specified in your Installer settings. Also displayed in the left top corner in your backend."
-msgstr "Company name specified in your Installer settings, also displayed in the top-left corner in your backend."
+msgid ""
+"Company name specified in your Installer settings. Also displayed in the "
+"left top corner in your backend."
+msgstr ""
+"Company name specified in your Installer settings, also displayed in the top-"
+"left corner in your backend."
 
 #: /wa-apps/helpdesk/lib/sources/helpdeskCommonST.class.php:516
 #: /wa-apps/helpdesk/lib/workflow/helpdeskWorkflowBasicAction.class.php:274
@@ -1111,8 +1155,12 @@ msgstr ""
 #: /wa-apps/helpdesk/lib/sources/helpdeskCommonST.class.php:517
 #: /wa-apps/helpdesk/lib/workflow/helpdeskWorkflowBasicAction.class.php:276
 #: /wa-apps/helpdesk/lib/workflow/helpdeskWorkflowBasicAction.class.php:300
-msgid "Request subject with ID (e.g. [ID:1234]) to identify original request in email replies"
-msgstr "Request subject with ID (e.g., [ID:1234]) to identify an original request related to this email"
+msgid ""
+"Request subject with ID (e.g. [ID:1234]) to identify original request in "
+"email replies"
+msgstr ""
+"Request subject with ID (e.g., [ID:1234]) to identify an original request "
+"related to this email"
 
 #: /wa-apps/helpdesk/lib/sources/helpdeskCommonST.class.php:520
 #: /wa-apps/helpdesk/lib/workflow/helpdeskWorkflowBasicAction.class.php:278
@@ -1126,12 +1174,16 @@ msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/helpdeskCommonST.class.php:521
 #: /wa-apps/helpdesk/lib/workflow/helpdeskWorkflowBasicAction.class.php:280
-msgid "Full request actions history, including the original text. Similar to request page in backend."
+msgid ""
+"Full request actions history, including the original text. Similar to "
+"request page in backend."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/helpdeskCommonST.class.php:522
 #: /wa-apps/helpdesk/lib/workflow/helpdeskWorkflowBasicAction.class.php:281
-msgid "Request actions history available to customer. Similar to request page in the Customer Portal."
+msgid ""
+"Request actions history available to customer. Similar to request page in "
+"the Customer Portal."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/helpdeskCommonST.class.php:523
@@ -1230,7 +1282,8 @@ msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/backend.html:150
 #: /wa-apps/helpdesk/lib/sources/templates/customerportal.html:67
-msgid "An error occurred while processing your request. Please try again later."
+msgid ""
+"An error occurred while processing your request. Please try again later."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/backend.html:298
@@ -1245,7 +1298,9 @@ msgid "Close"
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/backend_settings.html:2
-msgid "This source allows to add requests from the application backend using “New request” button."
+msgid ""
+"This source allows to add requests from the application backend using “New "
+"request” button."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/backend_settings.html:3
@@ -1261,13 +1316,19 @@ msgstr ""
 #: /wa-apps/helpdesk/lib/sources/templates/backend_settings.html:30
 #: /wa-apps/helpdesk/lib/sources/templates/email_settings.html:90
 #: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:172
-msgid "A receipt message will be sent to the customer to confirm his/her request receiving. It's recommended to specify an estimated response time in this receipt."
+msgid ""
+"A receipt message will be sent to the customer to confirm his/her request "
+"receiving. It's recommended to specify an estimated response time in this "
+"receipt."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/backend_settings.html:32
 #: /wa-apps/helpdesk/lib/sources/templates/email_settings.html:92
 #: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:174
-msgid "As a return address for receipt messages, it is better to specify an unmonitored email box (e.g. noreply@your_company.com); this will minimize redundant requests."
+msgid ""
+"As a return address for receipt messages, it is better to specify an "
+"unmonitored email box (e.g. noreply@your_company.com); this will minimize "
+"redundant requests."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/backend_settings.html:34
@@ -1311,7 +1372,12 @@ msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/email_settings.html:71
 #: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:153
-msgid "Every time you receive a message from an unknown email address which does not exist in your Contacts database, an automatic confirmation request will be sent to this email address. This request contains a special link for sender to confirm his/her original message as well as additional confirmation instructions you may wish to provide."
+msgid ""
+"Every time you receive a message from an unknown email address which does "
+"not exist in your Contacts database, an automatic confirmation request will "
+"be sent to this email address. This request contains a special link for "
+"sender to confirm his/her original message as well as additional "
+"confirmation instructions you may wish to provide."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/email_settings.html:73
@@ -1320,7 +1386,10 @@ msgid "Confirmation request text:"
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/email_settings.html:106
-msgid "If message does not contain an existing request ID in email subject (e.g. [ID:12345]), this messages will be treated as a new request. For this request:"
+msgid ""
+"If message does not contain an existing request ID in email subject (e.g. "
+"[ID:12345]), this messages will be treated as a new request. For this "
+"request:"
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/email_settings.html:117
@@ -1330,7 +1399,9 @@ msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/email_settings.html:126
 #: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:206
-msgid "If client (sender of this message) is new, then set for him/her this language:"
+msgid ""
+"If client (sender of this message) is new, then set for him/her this "
+"language:"
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/email_settings.html:139
@@ -1487,12 +1558,22 @@ msgid "Allow to add a text message"
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/workflow/templates/Basic_settings.html:39
-msgid "A text area will open when user performs this action to enter a message (e.g.: comment or reply to client)."
-msgstr "A text area will open for a user to enter a message (e.g., to leave a comment or to send a reply)."
+msgid ""
+"A text area will open when user performs this action to enter a message (e."
+"g.: comment or reply to client)."
+msgstr ""
+"A text area will open for a user to enter a message (e.g., to leave a "
+"comment or to send a reply)."
 
 #: /wa-apps/helpdesk/lib/workflow/templates/Basic_settings.html:40
-msgid "After action is performed this text will be saved in the request history and included in notifications associated with this action (if it's included in email templates)."
-msgstr "Upon completion of this action, the entered text will be saved in the request processing history so that you can include it in email notifications associated with this action."
+msgid ""
+"After action is performed this text will be saved in the request history and "
+"included in notifications associated with this action (if it's included in "
+"email templates)."
+msgstr ""
+"Upon completion of this action, the entered text will be saved in the "
+"request processing history so that you can include it in email notifications "
+"associated with this action."
 
 #: /wa-apps/helpdesk/lib/workflow/templates/Basic_settings.html:44
 msgid "Enter a default text here"
@@ -1519,20 +1600,36 @@ msgid "Allow to select assignee"
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/workflow/templates/Basic_settings.html:102
-msgid "Clients do not see any information associated with this action in their Customer Portal"
-msgstr "Clients cannot see any information associated with this action in their Customer Portal."
+msgid ""
+"Clients do not see any information associated with this action in their "
+"Customer Portal"
+msgstr ""
+"Clients cannot see any information associated with this action in their "
+"Customer Portal."
 
 #: /wa-apps/helpdesk/lib/workflow/templates/Basic_settings.html:107
-msgid "Customer can perform the action but can not see these actions performed by other users"
-msgstr "A client can perform this action but cannot see actions of this type performed by other clients."
+msgid ""
+"Customer can perform the action but can not see these actions performed by "
+"other users"
+msgstr ""
+"A client can perform this action but cannot see actions of this type "
+"performed by other clients."
 
 #: /wa-apps/helpdesk/lib/workflow/templates/Basic_settings.html:112
-msgid "Clients can see this action record and it's description (except assignments info) in their Customer Portal"
-msgstr "Clients can see information about this action in their Customer Portal, except for names of assigned users."
+msgid ""
+"Clients can see this action record and it's description (except assignments "
+"info) in their Customer Portal"
+msgstr ""
+"Clients can see information about this action in their Customer Portal, "
+"except for names of assigned users."
 
 #: /wa-apps/helpdesk/lib/workflow/templates/Basic_settings.html:117
-msgid "Clients can perform this action from their Customer Portal (except assignments if they are set up for the action)"
-msgstr "Clients can perform this action in their Customer Portal but cannot assign users even if it is permitted by action setup."
+msgid ""
+"Clients can perform this action from their Customer Portal (except "
+"assignments if they are set up for the action)"
+msgstr ""
+"Clients can perform this action in their Customer Portal but cannot assign "
+"users even if it is permitted by action setup."
 
 #: /wa-apps/helpdesk/lib/workflow/templates/Basic_settings.html:124
 msgid "Messages"
@@ -1557,7 +1654,8 @@ msgid "Transfer request to another state"
 msgstr "Change the request state"
 
 #: /wa-apps/helpdesk/lib/workflow/templates/Basic_settings.html:206
-msgid "This shows how this action's button will look like on request page in backend"
+msgid ""
+"This shows how this action's button will look like on request page in backend"
 msgstr ""
 
 #: /wa-apps/helpdesk/themes/default/footer.html:6
@@ -1610,8 +1708,7 @@ msgid "Customer contact ID."
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/requests/RequestsInfo.html:50
-#: /wa-apps/helpdesk/js/wa.grid.js:549
-#: /wa-apps/helpdesk/js/wa.grid.js:570
+#: /wa-apps/helpdesk/js/wa.grid.js:549 /wa-apps/helpdesk/js/wa.grid.js:570
 #: /wa-apps/helpdesk/js/compiled/helpdesk.js:58
 #: /wa-apps/helpdesk/js/compiled/helpdesk.js:59
 msgid "ago"
@@ -1657,15 +1754,25 @@ msgid "To"
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/editor/email_template_editor.html:97
-msgid "It is recommended to specify an existing email address which you do not check for new mail as the sender's address for such notifications; e.g., noreply@yourdomain.com. This will help minimize the number of redundant requests."
+msgid ""
+"It is recommended to specify an existing email address which you do not "
+"check for new mail as the sender's address for such notifications; e.g., "
+"noreply@yourdomain.com. This will help minimize the number of redundant "
+"requests."
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/settings/SettingsPortal.html:10
-msgid "Customer Portal is a personal page available for clients sending requests to your Helpdesk. On this page customers can see all their requests, check status of any request, add a new request, and etc. Clients must log in to your website to access their customer portal."
+msgid ""
+"Customer Portal is a personal page available for clients sending requests to "
+"your Helpdesk. On this page customers can see all their requests, check "
+"status of any request, add a new request, and etc. Clients must log in to "
+"your website to access their customer portal."
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/settings/SettingsPortal.html:36
-msgid "The selected state will be automatically set for new requests received via customer portal."
+msgid ""
+"The selected state will be automatically set for new requests received via "
+"customer portal."
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/settings/SettingsPortal.html:37
@@ -1676,7 +1783,9 @@ msgid "Your choice will be shown by an arrow in the workflow setup diagram."
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/settings/SettingsPortal.html:54
-msgid "Select the user or user group who should be automatically assigned to requests received via customer portal."
+msgid ""
+"Select the user or user group who should be automatically assigned to "
+"requests received via customer portal."
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/settings/SettingsPortal.html:65
@@ -1684,19 +1793,28 @@ msgid "States"
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/settings/SettingsPortal.html:69
-msgid "Specify which statuses (states) are available to the customer. The status names as they appear to the customer may be changed here. For example, if you are discussing a request with your support team, you may choose to display “Processing” at the status seen by the customer in his/her Customer Portal."
+msgid ""
+"Specify which statuses (states) are available to the customer. The status "
+"names as they appear to the customer may be changed here. For example, if "
+"you are discussing a request with your support team, you may choose to "
+"display “Processing” at the status seen by the customer in his/her Customer "
+"Portal."
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/settings/SettingsPortal.html:107
-msgid "Specify which actions customized in your workflow are available to the customer. You may hide some internal actions performed by your support team (e.g. adding comments, or forwarding request to experts for discussion). Other actions may be set up as read-only for customers, and you may make certain actions available for the customer to perform."
+msgid ""
+"Specify which actions customized in your workflow are available to the "
+"customer. You may hide some internal actions performed by your support team "
+"(e.g. adding comments, or forwarding request to experts for discussion). "
+"Other actions may be set up as read-only for customers, and you may make "
+"certain actions available for the customer to perform."
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/backend/BackendSidebar.html:38
 msgid "search by request, name, or email"
 msgstr "request ID, name, or email"
 
-#: /wa-apps/helpdesk/js/wa.grid.js:182
-#: /wa-apps/helpdesk/js/wa.grid.js:196
+#: /wa-apps/helpdesk/js/wa.grid.js:182 /wa-apps/helpdesk/js/wa.grid.js:196
 #: /wa-apps/helpdesk/js/compiled/helpdesk.js:47
 msgid "Sort by:"
 msgstr ""
@@ -1729,7 +1847,9 @@ msgid "Send copy"
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/workflow/helpdeskWorkflowBasicAction.class.php:347
-msgid "Sorry, the request status has been changed. To continue working with this request you have to refresh the page."
+msgid ""
+"Sorry, the request status has been changed. To continue working with this "
+"request you have to refresh the page."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/workflow/helpdeskWorkflowBasicAction.class.php:469
@@ -1741,7 +1861,9 @@ msgid "All members of assigned group"
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:23
-msgid "This source enables you to receive new requests via a web form published in the frontend of any Webasyst app or anywhere on the Internet."
+msgid ""
+"This source enables you to receive new requests via a web form published in "
+"the frontend of any Webasyst app or anywhere on the Internet."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:42
@@ -1749,7 +1871,9 @@ msgid "This title is displayed only in your workflow setup diagram."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:56
-msgid "The selected state will be automatically set for new requests received via this form."
+msgid ""
+"The selected state will be automatically set for new requests received via "
+"this form."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:63
@@ -1769,7 +1893,9 @@ msgid "no action"
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:73
-msgid "The selected action will be automatically performed with requests received via this form."
+msgid ""
+"The selected action will be automatically performed with requests received "
+"via this form."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:82
@@ -1778,7 +1904,9 @@ msgid "Select user or group assigned to requests"
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:88
-msgid "Select the user or user group who should be automatically assigned to requests received via this form."
+msgid ""
+"Select the user or user group who should be automatically assigned to "
+"requests received via this form."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:93
@@ -1793,7 +1921,9 @@ msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:102
 #: /wa-apps/helpdesk/lib/sources/templates/email_settings.html:147
-msgid "For new clients who send their first request to your helpdesk service, a new contact record will be automatically created in your Contacts app."
+msgid ""
+"For new clients who send their first request to your helpdesk service, a new "
+"contact record will be automatically created in your Contacts app."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:103
@@ -1806,7 +1936,9 @@ msgid "Form setup"
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:118
-msgid "Set up the appearance of the web form as it should be displayed on your website."
+msgid ""
+"Set up the appearance of the web form as it should be displayed on your "
+"website."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:181
@@ -1822,7 +1954,9 @@ msgid "After form submission"
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:227
-msgid "This setting will redirect clients to any specified URL or display any text message after the form is submitted."
+msgid ""
+"This setting will redirect clients to any specified URL or display any text "
+"message after the form is submitted."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:233
@@ -1847,13 +1981,17 @@ msgstr ""
 #: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:284
 #: /wa-apps/helpdesk/lib/sources/templates/backend_settings.html:54
 #: /wa-apps/helpdesk/lib/sources/templates/email_settings.html:271
-msgid "Enable this setting to send your clients automatic request receipt notifications."
+msgid ""
+"Enable this setting to send your clients automatic request receipt "
+"notifications."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:285
 #: /wa-apps/helpdesk/lib/sources/templates/backend_settings.html:55
 #: /wa-apps/helpdesk/lib/sources/templates/email_settings.html:272
-msgid "This option may be useful for providing estimated response time to your clients."
+msgid ""
+"This option may be useful for providing estimated response time to your "
+"clients."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:504
@@ -1885,19 +2023,34 @@ msgid "Configure email"
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/email_settings.html:17
-msgid "Set up the email address from which you would like to receive support requests."
-msgstr "Set up an email address through which you would like to receive support requests."
+msgid ""
+"Set up the email address from which you would like to receive support "
+"requests."
+msgstr ""
+"Set up an email address through which you would like to receive support "
+"requests."
 
 #: /wa-apps/helpdesk/lib/sources/templates/email_settings.html:18
-msgid "Please specify an existing email address; it may be hosted on any mail server; e.g., in a popular mail service such as Gmail, Yahoo!, etc., and must be accessible for connection via POP3 protocol."
-msgstr "Please specify an existing email address; it may be hosted on any mail server; e.g., in a popular mail service such as Gmail or Yahoo!, and must be accessible for connection via POP3 protocol."
+msgid ""
+"Please specify an existing email address; it may be hosted on any mail "
+"server; e.g., in a popular mail service such as Gmail, Yahoo!, etc., and "
+"must be accessible for connection via POP3 protocol."
+msgstr ""
+"Please specify an existing email address; it may be hosted on any mail "
+"server; e.g., in a popular mail service such as Gmail or Yahoo!, and must be "
+"accessible for connection via POP3 protocol."
 
 #: /wa-apps/helpdesk/lib/sources/templates/email_settings.html:20
-msgid "<strong>IMPORTANT NOTE:</strong> It is recommended that you specify an email account which was specially created for use by the Helpdesk app."
+msgid ""
+"<strong>IMPORTANT NOTE:</strong> It is recommended that you specify an email "
+"account which was specially created for use by the Helpdesk app."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/email_settings.html:21
-msgid "After you configure and save this source, all messages from the specified email account will be downloaded into Helpdesk and will be <strong>deleted from your mail server!</strong>"
+msgid ""
+"After you configure and save this source, all messages from the specified "
+"email account will be downloaded into Helpdesk and will be <strong>deleted "
+"from your mail server!</strong>"
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/email_settings.html:30
@@ -1917,23 +2070,34 @@ msgid "Use Secure SSL/TLS Settings"
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/email_settings.html:66
-msgid "If your mail server supports this option, we recommend using POP3 over SSL/TLS since it provides increased security for your interactions with the remote mail server."
+msgid ""
+"If your mail server supports this option, we recommend using POP3 over SSL/"
+"TLS since it provides increased security for your interactions with the "
+"remote mail server."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/email_settings.html:88
-msgid "Please specify how requests received via this email address should be handled."
+msgid ""
+"Please specify how requests received via this email address should be "
+"handled."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/email_settings.html:101
-msgid "This state will be automatically set for new requests received via this email address."
+msgid ""
+"This state will be automatically set for new requests received via this "
+"email address."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/email_settings.html:118
-msgid "This action will be automatically performed with requests received via this email address."
+msgid ""
+"This action will be automatically performed with requests received via this "
+"email address."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/email_settings.html:133
-msgid "Select a user or a user group who should be automatically assigned to requests received via this email address."
+msgid ""
+"Select a user or a user group who should be automatically assigned to "
+"requests received via this email address."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/email_settings.html:160
@@ -1941,16 +2105,30 @@ msgid "Reply to reply handling"
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/email_settings.html:164
-msgid "Email Reply templates in the Helpdesk by default contain the request ID in their subject; e.g., [ID:12345]."
-msgstr "Email notifications sent by Helpdesk by default contain the request ID in their subject; e.g., [ID:12345]."
+msgid ""
+"Email Reply templates in the Helpdesk by default contain the request ID in "
+"their subject; e.g., [ID:12345]."
+msgstr ""
+"Email notifications sent by Helpdesk by default contain the request ID in "
+"their subject; e.g., [ID:12345]."
 
 #: /wa-apps/helpdesk/lib/sources/templates/email_settings.html:165
-msgid "Following replies to these emails sent by your clients and received in Helpdesk can be associated with the corresponding requests."
-msgstr "Subsequent replies to these notifications sent by your clients and received in Helpdesk can be associated with the corresponding requests."
+msgid ""
+"Following replies to these emails sent by your clients and received in "
+"Helpdesk can be associated with the corresponding requests."
+msgstr ""
+"Subsequent replies to these notifications sent by your clients and received "
+"in Helpdesk can be associated with the corresponding requests."
 
 #: /wa-apps/helpdesk/lib/sources/templates/email_settings.html:166
-msgid "Select an action in the table below that should be performed with such requests; the choice of such an action depends on the current request state and the sender of the reply."
-msgstr "Select an action in the table below, which must be executed on receipt of such replies; the choice of action may be different depending on the current request state and the sender of the reply."
+msgid ""
+"Select an action in the table below that should be performed with such "
+"requests; the choice of such an action depends on the current request state "
+"and the sender of the reply."
+msgstr ""
+"Select an action in the table below, which must be executed on receipt of "
+"such replies; the choice of action may be different depending on the current "
+"request state and the sender of the reply."
 
 #: /wa-apps/helpdesk/lib/sources/templates/email_settings.html:179
 msgid "The person that sent you the original request"
@@ -2011,7 +2189,9 @@ msgid "Request field constructor"
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:14
-msgid "Name and company fields are always displayed in the heading area on contact page."
+msgid ""
+"Name and company fields are always displayed in the heading area on contact "
+"page."
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:15
@@ -2114,7 +2294,10 @@ msgid "Person"
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:683
-msgid "Additional fields are always shown at the top area of contact page. Add here the fields that you access most frequently, e.g. Email, Phone, Address, and etc."
+msgid ""
+"Additional fields are always shown at the top area of contact page. Add here "
+"the fields that you access most frequently, e.g. Email, Phone, Address, and "
+"etc."
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:488
@@ -2126,10 +2309,13 @@ msgid "Categories"
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/faq/Faq.html:21
-msgid "Categories help you to arrange questions and answers by themes to simplify naviagation and search, e.g.: Common questions, How to.., and etc."
+msgid ""
+"Categories help you to arrange questions and answers by themes to simplify "
+"naviagation and search, e.g.: Common questions, How to.., and etc."
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/faq/Faq.html:24
+#: /wa-apps/helpdesk/templates/actions/faq/FaqCategory.html:11
 msgid "New category"
 msgstr ""
 
@@ -2193,7 +2379,10 @@ msgid "Add fields"
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/sources/includeFormConstructor.html:64
-msgid "Allows your subscriber to create a password for further authorization on your site and log in to their customer portal. Requires Email field in the form."
+msgid ""
+"Allows your subscriber to create a password for further authorization on "
+"your site and log in to their customer portal. Requires Email field in the "
+"form."
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/sources/includeFormConstructor.html:76
@@ -2273,8 +2462,16 @@ msgid "Main fields"
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:8
-msgid "Main request fields can not be modified or disabled. Email requests usually contain subject and text with optional attachments. Requests sent via public or customer portal form may not have data in these fields. In this case they will be filled with default values."
-msgstr "Main request fields cannot be modified or disabled. Email requests usually contain subject and text with optional attachments. Requests sent from your website or via customer portal may not contain data in these fields. In this case they are filled with default values."
+msgid ""
+"Main request fields can not be modified or disabled. Email requests usually "
+"contain subject and text with optional attachments. Requests sent via public "
+"or customer portal form may not have data in these fields. In this case they "
+"will be filled with default values."
+msgstr ""
+"Main request fields cannot be modified or disabled. Email requests usually "
+"contain subject and text with optional attachments. Requests sent from your "
+"website or via customer portal may not contain data in these fields. In this "
+"case they are filled with default values."
 
 #: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:19
 msgid "Attached files"
@@ -2350,7 +2547,9 @@ msgid "Identification"
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/form_constructor.html:144
-msgid "If enabled we shall search for an existing contact with the same phone number and associate request sent via this form with the contact found."
+msgid ""
+"If enabled we shall search for an existing contact with the same phone "
+"number and associate request sent via this form with the contact found."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/helpdeskFormConstructor.class.php:439
@@ -2366,15 +2565,25 @@ msgid "To enable this option, your form must contain Email field."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:93
-msgid "After successful submission of this form an automatic notification will be sent to the sender's email address. This notification contains a special link which must be clicked to confirm the sending of the request. You may also add extra instructions for your clients to the notification text."
+msgid ""
+"After successful submission of this form an automatic notification will be "
+"sent to the sender's email address. This notification contains a special "
+"link which must be clicked to confirm the sending of the request. You may "
+"also add extra instructions for your clients to the notification text."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/email_settings.html:248
-msgid "Every time you receive a message from an unknown email address which is not yet stored in your Contacts database, an automatic notification will be sent to the sender's address."
+msgid ""
+"Every time you receive a message from an unknown email address which is not "
+"yet stored in your Contacts database, an automatic notification will be sent "
+"to the sender's address."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/email_settings.html:249
-msgid "This notification contains a special link which must be clicked to confirm the sending of the first request. You may also add extra instructions for your clients to the notification text."
+msgid ""
+"This notification contains a special link which must be clicked to confirm "
+"the sending of the first request. You may also add extra instructions for "
+"your clients to the notification text."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/actions/backend/helpdeskBackendSidebar.action.php:147
@@ -2418,8 +2627,12 @@ msgid "unmark"
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/form_constructor.html:153
-msgid "If enabled, data in this field are available for clients in their Customer portal."
-msgstr "If enabled, data in this field are available to clients in the Customer Portal."
+msgid ""
+"If enabled, data in this field are available for clients in their Customer "
+"portal."
+msgstr ""
+"If enabled, data in this field are available to clients in the Customer "
+"Portal."
 
 #: /wa-apps/helpdesk/templates/layouts/includeUnreadSettings.html:62
 msgid "I want to receive email notifications on unread requests"
@@ -2448,7 +2661,11 @@ msgid "Select access level:"
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/requests/RequestsInfo.html:542
-msgid "After you set \"Follow and advise\" mark, next time someone performs an action with this request it will appear as \"Unread\" for you and you will receive email notification about this action. So you will be able to follow all further activity related to this request."
+msgid ""
+"After you set \"Follow and advise\" mark, next time someone performs an "
+"action with this request it will appear as \"Unread\" for you and you will "
+"receive email notification about this action. So you will be able to follow "
+"all further activity related to this request."
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/requests/RequestsInfo.html:543
@@ -2464,8 +2681,22 @@ msgid "Follow and advise mark"
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:26
-msgid "Additional fields allow you to add a number of multiple parameters to requests content. These parameters essentially depend on a type of product and services you deliver to your customers. For example, if you accept requests to repair household appliances, you may wish to know some manufacturing details, e.g. model name, and etc. Additional fields can be added to the request form to be submitted by your client, or be available on the request page for your Helpdesk app users manipulations."
-msgstr "Additional fields allow customers to specify extra multiple parameters when sending a support requests. These parameters essentially depend on the types of products and services you deliver to your customers. For example, if you accept requests to repair household appliances, you may wish to know some additional details; e.g. model name, date of manufacture, etc. Additional fields can be added to a request-sending form and be available on the request-viewing page for your Helpdesk app users."
+msgid ""
+"Additional fields allow you to add a number of multiple parameters to "
+"requests content. These parameters essentially depend on a type of product "
+"and services you deliver to your customers. For example, if you accept "
+"requests to repair household appliances, you may wish to know some "
+"manufacturing details, e.g. model name, and etc. Additional fields can be "
+"added to the request form to be submitted by your client, or be available on "
+"the request page for your Helpdesk app users manipulations."
+msgstr ""
+"Additional fields allow customers to specify extra multiple parameters when "
+"sending a support requests. These parameters essentially depend on the types "
+"of products and services you deliver to your customers. For example, if you "
+"accept requests to repair household appliances, you may wish to know some "
+"additional details; e.g. model name, date of manufacture, etc. Additional "
+"fields can be added to a request-sending form and be available on the "
+"request-viewing page for your Helpdesk app users."
 
 #: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:206
 msgid "Using this form"
@@ -2476,7 +2707,10 @@ msgid "Available in the Helpdesk backend"
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:213
-msgid "Allows you to manually create new requests via this form in Helpdesk backend using the “New request” button. This option may be useful when a client cannot send you a request personally; e.g., during a telephone call."
+msgid ""
+"Allows you to manually create new requests via this form in Helpdesk backend "
+"using the “New request” button. This option may be useful when a client "
+"cannot send you a request personally; e.g., during a telephone call."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:217
@@ -2500,8 +2734,16 @@ msgid "Text of comment"
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:18
-msgid "This source enables you to receive new requests via a web form published in the frontend of any Webasyst app or anywhere on the Internet. Also this form can be used to add requests directly from your backend (\"New request\" button), or from your clients customer portals."
-msgstr "This source enables you to receive new requests via a web form published on your website or anywhere on the Internet. This form can also be used to add requests directly in your backend using the \"New request\" button or by your clients in the Customer Portal."
+msgid ""
+"This source enables you to receive new requests via a web form published in "
+"the frontend of any Webasyst app or anywhere on the Internet. Also this form "
+"can be used to add requests directly from your backend (\"New request\" "
+"button), or from your clients customer portals."
+msgstr ""
+"This source enables you to receive new requests via a web form published on "
+"your website or anywhere on the Internet. This form can also be used to add "
+"requests directly in your backend using the \"New request\" button or by "
+"your clients in the Customer Portal."
 
 #: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:204
 msgid "Available in the Helpdesk backend:"
@@ -2554,7 +2796,9 @@ msgid "Request has been changed"
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/handlers/PersonalSettings.html:38
-msgid "Choose new request forms that should be available for clients in their Customer portals:"
+msgid ""
+"Choose new request forms that should be available for clients in their "
+"Customer portals:"
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/requests/RequestsInfo.html:252
@@ -2574,15 +2818,20 @@ msgid "No data in the field"
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/backend/BackendSidebar.html:297
-msgid "Sources, states and actions with requests are customized separately for every workflow."
-msgstr "Sources, states, and actions are customized separately for each workflow."
+msgid ""
+"Sources, states and actions with requests are customized separately for "
+"every workflow."
+msgstr ""
+"Sources, states, and actions are customized separately for each workflow."
 
 #: /wa-apps/helpdesk/templates/actions/requests/RequestsInfo.html:84
 msgid "Click to edit subject"
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/workflow/templates/Basic_settings.html:18
-msgid "Customize form that appears for users when they perform this action. Choose required fields and set up their properties and location in the form."
+msgid ""
+"Customize form that appears for users when they perform this action. Choose "
+"required fields and set up their properties and location in the form."
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/requests/RequestsSearch.html:53
@@ -2715,7 +2964,9 @@ msgid "Visible in the public category"
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/requests/RequestsSearch.html:13
-msgid "New filter is easy to create using search function. To do so, use <strong>Save as filter</strong> option on the search results page."
+msgid ""
+"New filter is easy to create using search function. To do so, use "
+"<strong>Save as filter</strong> option on the search results page."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/actions/faq/helpdeskFaqCategorySave.controller.php:20
@@ -2735,7 +2986,11 @@ msgid "no categories"
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/layouts/includeFilterSettings.html:78
-msgid "This filter displays all requests independent on their status. If you don't need this whole list for a permanent access, simply hide it. Once you need it again, you can turn it on anytime using Add filter option in the left-hand sidebar."
+msgid ""
+"This filter displays all requests independent on their status. If you don't "
+"need this whole list for a permanent access, simply hide it. Once you need "
+"it again, you can turn it on anytime using Add filter option in the left-"
+"hand sidebar."
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/layouts/includeFilterSettings.html:109
@@ -2743,7 +2998,9 @@ msgid "Hide All requests filter"
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/faq/includeList.html:175
-msgid "Please <a href="#/faq/category/new">create a category</a> first, to start adding questions and answers."
+msgid ""
+"Please <a href=\"#/faq/category/new\">create a category</a> first, to start "
+"adding questions and answers."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/workflow/templates/Basic_settings.html:590
@@ -2813,7 +3070,10 @@ msgid "After successful submission (if client is not authorized)"
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/form_settings.html:74
-msgid "This setting will redirect new clients (who are not yet authorized on your site) to any specified URL or display any text message after the form is submitted."
+msgid ""
+"This setting will redirect new clients (who are not yet authorized on your "
+"site) to any specified URL or display any text message after the form is "
+"submitted."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/form_settings.html:120
@@ -2821,7 +3081,9 @@ msgid "After successful submission (if client is authorized)"
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/form_settings.html:122
-msgid "For registered clients authorized on your site at the moment of this form submission, you can customize a different behaviour."
+msgid ""
+"For registered clients authorized on your site at the moment of this form "
+"submission, you can customize a different behaviour."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/form_settings.html:281
@@ -2876,7 +3138,11 @@ msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/requests/RequestsInfo.html:611
 #: /wa-apps/helpdesk/js/wa.controller.js:485
-msgid "After you set \"Follow\" mark, next time someone performs an action with this request it will appear as \"Unread\" for you and you will receive email notification about this action. So you will be able to follow all further activity related to this request."
+msgid ""
+"After you set \"Follow\" mark, next time someone performs an action with "
+"this request it will appear as \"Unread\" for you and you will receive email "
+"notification about this action. So you will be able to follow all further "
+"activity related to this request."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/classes/helpdeskRequest.class.php:148
@@ -2884,7 +3150,11 @@ msgid "Reply by email"
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/email_settings.html:94
-msgid "In case a message incoming to this email address contains a request ID in their subject (e.g., [ID:12345-XXXXX]; 12345 is request ID in this sample), then we bind incoming message with this request. However, you can customize special processing for this kind of messages."
+msgid ""
+"In case a message incoming to this email address contains a request ID in "
+"their subject (e.g., [ID:12345-XXXXX]; 12345 is request ID in this sample), "
+"then we bind incoming message with this request. However, you can customize "
+"special processing for this kind of messages."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/email_settings.html:386
@@ -2910,7 +3180,6 @@ msgstr ""
 #: /wa-apps/helpdesk/templates/actions/editor/EditorState.html:56
 msgid "Selected color will be used to display this state name."
 msgstr ""
-
 
 #: /wa-apps/helpdesk/lib/workflow/templates/Basic_settings.html:149
 msgid "Customize button color"
@@ -3029,7 +3298,8 @@ msgid "checkbox"
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/workflow/templates/Basic.html:193
-msgid "This message template is customized by administrator in workflow settings."
+msgid ""
+"This message template is customized by administrator in workflow settings."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/workflow/helpdeskWorkflowBasicAction.class.php:1082
@@ -3037,11 +3307,17 @@ msgid "Status:"
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/form_settings.html:108
-msgid "NOTE: Request will be accepted and shows up in your request lists only after client clicks confirmation link in this message. It's probably a good idea to write about this in the text that appears on your web page after this form submission."
+msgid ""
+"NOTE: Request will be accepted and shows up in your request lists only after "
+"client clicks confirmation link in this message. It's probably a good idea "
+"to write about this in the text that appears on your web page after this "
+"form submission."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/classes/helpdeskHelper.class.php:703
-msgid "Users must have access to Helpdesk app. To add users or user groups, or manage their access rights use <a href=\"%s\">Contacts/Users</a> section."
+msgid ""
+"Select a user or a user group who have access to Helpdesk app. Manage users "
+"and user groups, and their access rights in <a href=\"%s\">Team</a> app."
 msgstr ""
 
 #: /wa-apps/helpdesk/themes/default/my.requestpage.html:85
@@ -3049,7 +3325,9 @@ msgid "Request created"
 msgstr ""
 
 #: /wa-apps/helpdesk/themes/default/my.requestpage.html:87
-msgid "Attention: initial request parameters <a href=\"javascript:void(0);\" class=\"request-params-changed-link\">was changed</a>"
+msgid ""
+"Attention: initial request parameters <a href=\"javascript:void(0);\" class="
+"\"request-params-changed-link\">was changed</a>"
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/workflow/templates/Basic_settings.html:408
@@ -3057,16 +3335,24 @@ msgid "Use color of the state %s where this button forwards request"
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/layouts/includeUnreadSettings.html:5
-msgid "These are your personal settings. They define rules that cause some requests to be marked as \"unread\" and display them in a dedicated list in the left side navigation panel."
+msgid ""
+"These are your personal settings. They define rules that cause some requests "
+"to be marked as \"unread\" and display them in a dedicated list in the left "
+"side navigation panel."
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/layouts/includeUnreadSettings.html:28
 #: /wa-apps/helpdesk/templates/layouts/includeUnreadSettings.html:40
-msgid "Any new action performed on these requests will cause them to be marked as \"unread\""
+msgid ""
+"Any new action performed on these requests will cause them to be marked as "
+"\"unread\""
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/workflow/templates/Basic_settings.html:206
-msgid "When a user performs this action the request state will be changed to the state you select here. Your choice will be shown by an arrow in the workflow setup diagram."
+msgid ""
+"When a user performs this action the request state will be changed to the "
+"state you select here. Your choice will be shown by an arrow in the workflow "
+"setup diagram."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/fields/helpdeskRequestFields.class.php:68
@@ -3079,7 +3365,9 @@ msgid "Backend"
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/faq/FaqCategory.html:34
-msgid "Users can see questions and answers from this category when they reply to client requests"
+msgid ""
+"Users can see questions and answers from this category when they reply to "
+"client requests"
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/faq/FaqCategory.html:40
@@ -3092,7 +3380,8 @@ msgid "Category is visible in the public part of your site"
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/faq/Faq.html:26
-msgid "Users can see this question and answer when they reply to client requests"
+msgid ""
+"Users can see this question and answer when they reply to client requests"
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/classes/helpdeskHelper.class.php:711
@@ -3104,7 +3393,10 @@ msgid "Subject of the request"
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/classes/helpdeskHelper.class.php:713
-msgid "Request subject followed by the request ID (e.g. Request subject [ID: 1001-XXXXX]). The request ID and hash will associate any reply you receive from the customer with the original request."
+msgid ""
+"Request subject followed by the request ID (e.g. Request subject [ID: 1001-"
+"XXXXX]). The request ID and hash will associate any reply you receive from "
+"the customer with the original request."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/classes/helpdeskHelper.class.php:714
@@ -3112,15 +3404,20 @@ msgid "Text of the original request"
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/classes/helpdeskHelper.class.php:716
-msgid "Request status (its current state) that the customer sees in Customer Portal"
+msgid ""
+"Request status (its current state) that the customer sees in Customer Portal"
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/classes/helpdeskHelper.class.php:717
-msgid "Full history of request, including the original message. Similar to the request view in backend."
+msgid ""
+"Full history of request, including the original message. Similar to the "
+"request view in backend."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/classes/helpdeskHelper.class.php:718
-msgid "History of request as seen by the customer. Similar to the request view in Customer Portal."
+msgid ""
+"History of request as seen by the customer. Similar to the request view in "
+"Customer Portal."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/classes/helpdeskHelper.class.php:719
@@ -3148,7 +3445,9 @@ msgid "Full name of person who has performed this action"
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/classes/helpdeskHelper.class.php:727
-msgid "Company name specified in your Installer settings (also displayed in the top-left corner of your backend)"
+msgid ""
+"Company name specified in your Installer settings (also displayed in the top-"
+"left corner of your backend)"
 msgstr ""
 
 #: /wa-apps/helpdesk/js/redactor.codeblock.js:6
@@ -3163,15 +3462,13 @@ msgstr ""
 #: /wa-apps/helpdesk/themes/ascetic/my.requestpage.html:87
 #: /wa-apps/helpdesk/themes/vk/my.requestpage.html:87
 #: /wa-apps/helpdesk/themes/facebook/my.requestpage.html:87
-msgid "Attention: initial request parameters <a href=\"javascript:void(0);\" class=\"request-params-changed-link\">was_changed</a>"
+msgid ""
+"Attention: initial request parameters <a href=\"javascript:void(0);\" class="
+"\"request-params-changed-link\">was_changed</a>"
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/layouts/includeUnreadSettings.html:82
 msgid "Mark all as read"
-msgstr ""
-
-#: /wa-apps/helpdesk/templates/actions/faq/FaqCategory.html:11
-msgid "New category"
 msgstr ""
 
 msgid "Access denied."
@@ -3207,7 +3504,9 @@ msgid "Comment"
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/faq/Faq.html:47
-msgid "Write a brief instruction here that may help users to select this answer when they work on a client's request."
+msgid ""
+"Write a brief instruction here that may help users to select this answer "
+"when they work on a client's request."
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/backend/BackendSidebar.html:260
@@ -3364,7 +3663,10 @@ msgid "Use Secure STARTTLS Settings"
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/email/email_settings.html:82
-msgid "If your mail server supports this option, we recommend using POP3 over STARTTLS or SSL/TLS since it provides increased security for your interactions with the remote mail server."
+msgid ""
+"If your mail server supports this option, we recommend using POP3 over "
+"STARTTLS or SSL/TLS since it provides increased security for your "
+"interactions with the remote mail server."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/templates/email/email_settings.html:504
@@ -3421,7 +3723,9 @@ msgid "Add a field to the heading area"
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:137
-msgid "NOTE: You can drag and drop fields to change its position in the heading area of request page."
+msgid ""
+"NOTE: You can drag and drop fields to change its position in the heading "
+"area of request page."
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:45
@@ -3502,7 +3806,9 @@ msgid "Customer"
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/workflow/templates/Basic_settings.html:238
-msgid "Choose if this action is available for customer (request's originator) in their customer portal."
+msgid ""
+"Choose if this action is available for customer (request's originator) in "
+"their customer portal."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/workflow/templates/Basic_settings.html:252
@@ -3526,15 +3832,21 @@ msgid "Revoke all access rights for customer"
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/workflow/templates/Basic_settings.html:282
-msgid "If you turn on this option, then execution of this action will automatically cause a complete banning of the contact who sent you this request."
+msgid ""
+"If you turn on this option, then execution of this action will automatically "
+"cause a complete banning of the contact who sent you this request."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/workflow/templates/Basic_settings.html:283
-msgid "The contact will not be able to log in to your site and customer portal anymore, and all further requests from this contact will be bounced."
+msgid ""
+"The contact will not be able to log in to your site and customer portal "
+"anymore, and all further requests from this contact will be bounced."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/workflow/templates/Basic_settings.html:284
-msgid "This option can be used for banning contacts for spam or other illegal actions."
+msgid ""
+"This option can be used for banning contacts for spam or other illegal "
+"actions."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/sources/helpdeskCommonST.class.php:645
@@ -3568,7 +3880,13 @@ msgid "1-Click Feedback"
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/editor/email_template_editor.html:191
-msgid "Add a snippet in your email template that will allow recipient with just one click to select a value for pull down or checkbox field. This field must exist in your Helpdesk app (refer to the Field constructor section) and be available for clients in their customer portals. Recipients will be redirected to their customer portals. This option can be used for quick evaluation of the request reply by your customers."
+msgid ""
+"Add a snippet in your email template that will allow recipient with just one "
+"click to select a value for pull down or checkbox field. This field must "
+"exist in your Helpdesk app (refer to the Field constructor section) and be "
+"available for clients in their customer portals. Recipients will be "
+"redirected to their customer portals. This option can be used for quick "
+"evaluation of the request reply by your customers."
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/editor/email_template_editor.html:193
@@ -3596,7 +3914,9 @@ msgid "Action performed by user"
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/workflow/templates/choose_action_type.include.html:9
-msgid "Users perform this action manually on the request's page or in their Customer portals."
+msgid ""
+"Users perform this action manually on the request's page or in their "
+"Customer portals."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/workflow/templates/choose_action_type.include.html:14
@@ -3605,7 +3925,9 @@ msgstr ""
 
 #: /wa-apps/helpdesk/lib/workflow/templates/choose_action_type.include.html:17
 #: /wa-apps/helpdesk/lib/workflow/templates/Basic_settings.html:76
-msgid "This action will be triggered automatically (by time-out) if no other actions are performed with request during a certain period of time."
+msgid ""
+"This action will be triggered automatically (by time-out) if no other "
+"actions are performed with request during a certain period of time."
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/editor/EditorNewaction.html:29
@@ -3643,11 +3965,14 @@ msgid "Only selected sites"
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/faq/FaqCategory.html:58
-msgid "Helpdesk app is not settled on any site. Use %s app to manage settlements."
+msgid ""
+"Helpdesk app is not settled on any site. Use %s app to manage settlements."
 msgstr ""
 
 #: /wa-apps/helpdesk/templates/actions/faq/FaqCategory.html:101
-msgid "Shown above are only sites where Helpdesk app is settled. Use %s app to manage settlements."
+msgid ""
+"Shown above are only sites where Helpdesk app is settled. Use %s app to "
+"manage settlements."
 msgstr ""
 
 #: /wa-apps/helpdesk/lib/actions/faq/helpdeskFaqCategorySave.controller.php:19

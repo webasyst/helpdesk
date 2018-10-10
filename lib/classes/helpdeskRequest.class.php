@@ -358,50 +358,7 @@ class helpdeskRequest extends helpdeskRequestRecord
     public static function formatHTML($entity)
     {
         $text = $entity['text'];
-
-        $is_html = preg_match("!(^|[^\[])<(br|div|span|font|p|b|i|s|table|body|a)[^>@]*>!uis", $text);
-        if (!$is_html) {
-            // not an HTML formatted string: add some hypertext sugar
-            $text = str_replace("\r\n", "\n", $text);
-            $text = str_replace("\r", "\n", $text);
-            $text = preg_replace('~(\n\s*){3,}~', "\n\n\n", $text);
-            $text = preg_replace('~(\n\s*)+(&gt;|>)~uis', "\n>", $text); // Remove blank lines inside quotes
-            $text = str_replace("  ", "&nbsp; ", nl2br($text));
-
-            // Links are replaced by JS in browser
-            //$text = preg_replace("!([^\n\s]+)\s\[(http:[^\]]+)\]!uis", '<a href="$1">$2</a>', $text);
-            //$text = preg_replace("!([^\n\s]+)\s\[mailto:\\1\]!uis", '<a href="mailto:$1">$1</a>', $text);
-            //$text = preg_replace("!([\s\n\r\t])(https?:[^\s\r\t\n<]+)\.[\s\r\t\n<]!is", '$1<a href="$2">$2/</a>.', $text);
-            //$text = preg_replace("!([\s\n\r\t])(https?:[^\s\r\t\n<]+)!is", '$1<a href="$2">$2</a>', $text);
-        }
-
-        // html cleanup
-        if (preg_match('~<(title|style|script|frameset|object|embed|applet|iframe|meta|!DOCTYPE|html|body|head|base)~usi', $text)) {
-            $text = self::stripTags($text, array('title', 'style', 'script', 'frameset', 'object', 'embed', 'iframe', 'applet'));
-            $text = self::stripTags($text, array('meta'), true, false);
-            $text = preg_replace('@(<!DOCTYPE[^>]*>[\r\n\s\t]*)?<html[^>]*>(.*?)</html>@usi', '$2', $text);
-            $text = preg_replace('@(<!DOCTYPE[^>]*>[\r\n\s\t]*)?<html[^>]*>(.*?)<body@usi', '<div', $text);
-            $text = preg_replace('!<head[^>]*>(.*?)</head>!usi', '$1', $text);
-            $text = preg_replace('!<body([^>]*)>(.*?)</body>!usi', '<div$1>$2</div>', $text);
-            $text = preg_replace('!<base[^>]*>!is', '', $text);
-        }
-
-        // JS cleanup
-        $text = preg_replace('~\\\\0~', '\\ 0', $text);
-        $text = preg_replace('~(onAbort|onBlur|onChange|onClick|onDblClick|onDragDrop|onError|onFocus|onKeyDown|onKeyPress|onKeyUp|onLoad|onMouseDown|onMouseMove|onMouseOut|onMouseOver|onMouseUp|onMove|onReset|onResize|onSelect|onSubmit|onUnload|javascript:|expression\s*\()~is', '__hack_$1__', $text);
-
-        // Fix blockquotes
-        while (preg_match("!(\r?\n\s?(&gt;|>)[^\r\n]*)!uis", $text)) {
-            $text = preg_replace_callback("!(\r?\n\s?(&gt;|>)[^\r\n]*)!uis", array(__CLASS__, 'blockquote'), $text);
-        }
-        while (preg_match('!</blockquote>[\s\r\t\n]*(<br ?/?>)?[\s\r\t\n]*<blockquote[^>]*>!uis', $text)) {
-            $text = preg_replace('!</blockquote>[\s\r\t\n]*(<br ?/?>)?[\s\r\t\n]*<blockquote[^>]*>!uis', '', $text);
-        }
-
-        $text = preg_replace('@<[^>]+$@usi', '', $text);
-        $text = str_replace('<!--', '&lt;!--', $text);
-        $text = self::fixTags($text);
-
+        $text = helpdeskHtmlSanitizer::work($text);
         return $text;
     }
 
@@ -494,78 +451,6 @@ class helpdeskRequest extends helpdeskRequestRecord
             }
         }
         return implode('', $blocks);
-    }
-
-
-    /** Helper for self::formatHTML()
-      * Removes HTML tags from a string.
-      * @param string $text string to remove tags from
-      * @param array $tags list of tags to remove
-      * @param boolean $with_content whether to remove everything between <tag> and </tag> (defaults to true)
-      * @param boolean $closed true to remove everything until end of string when tag is not closed; false to only remove opening tag */
-    protected static function stripTags($text, $tags, $with_content = true, $closed = true)
-    {
-        $tags = implode('|', $tags);
-        if ($with_content) {
-            $text = preg_replace('!<('.$tags.')[^>]*>.*?</\\1>!usi', '', $text);
-            if ($closed) {
-                $text = preg_replace('!<('.$tags.')[^>]*>.*!usi', '', $text);
-            } else {
-                $text = preg_replace('!<('.$tags.')[^>]*>!usi', '', $text);
-            }
-        } else {
-            $text = preg_replace('!<('.$tags.')[^>]*>(.*?)</\\1>!usi', '$2', $text);
-        }
-        return $text;
-    }
-
-    /** Helper for self::formatHTML()
-      * Closes all open unclosed html tags.
-      * !!! TODO should probably remove closing tags that have no matched open tag. */
-    protected static function fixTags($text)
-    {
-        $text = preg_replace_callback('%(<td[^>]*><div[^>]*>.*?</td>)%uis', "self::fixDiv", $text);
-        // Fix unclosed tags
-        $patt_open = "%((?<!</)(?<=<)[\s]*[^/!>\s]+(?=>|[\s]+[^>]*[^/]>)(?!/>))%is";
-        $patt_close = "%((?<=</)([^>]+)(?=>))%is";
-        $c_tags = $m_open = $m_close = array();
-        if (preg_match_all($patt_open, $text, $matches)) {
-            $m_open = $matches[1];
-            if ($m_open) {
-                preg_match_all($patt_close, $text, $matches2);
-                $m_close = $matches2[1];
-                if (count($m_open) > count($m_close)) {
-                    $m_open = array_reverse($m_open);
-                    foreach ($m_close as $tag) {
-                        if (isset($c_tags[$tag])) {
-                            $c_tags[$tag]++;
-                        } else {
-                            $c_tags[$tag] = 1;
-                        }
-                    }
-                    $close_html = "";
-                    foreach ($m_open as $k => $tag) {
-                        if ((!isset($c_tags[$tag]) || $c_tags[$tag]-- <= 0) && !in_array(strtolower($tag), array('br', 'img'))) {
-                            $close_html = $close_html.'</'.$tag.'>';
-                        }
-                    }
-                    $text .= $close_html;
-                }
-            }
-        }
-        return $text;
-    }
-
-    /** Helper for self::fixTags()
-      * Adds missing </div> tags inside <td>...</td>
-      * !!! why is this a separate case?.. */
-    protected static function fixDiv($text)
-    {
-        $text = stripcslashes($text[1]);
-        if (strstr($text, '</div>') === false) {
-            $text = str_replace('</td>', '</div></td>', $text);
-        }
-        return $text;
     }
 
     /** Helper for self::formatHTML()

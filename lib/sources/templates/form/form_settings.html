@@ -596,7 +596,7 @@ select { min-width: 80px; }
                         .find('input, textarea')
                         .prop('disabled', true);
             }
-        }
+        };
 
         // Recalculate all on change form width input or focus lost
         $form_width.on('keyup blur', 'input', function (e) {
@@ -611,7 +611,7 @@ select { min-width: 80px; }
         $available_fields.on('change', function () {
             fieldStatus(this);
             calcLabelWidth($caption_place.find(':checked').val());
-        })
+        });
         $caption_place.on('change', 'input', function(){
             var val = $(this).val();
             calcLabelWidth(val);
@@ -635,13 +635,13 @@ select { min-width: 80px; }
             });
             calcFormWidth( parseInt($form_width.find('input').val()) );
             $preview.find('.wa-captcha-input').prop('disabled', true);
-        }
+        };
 
         init(initial_position);
-    }
+    };
     var caption_position = 'left';
     {if (isset($source.params.captionplace))}
-    caption_position = '{$source.params.captionplace}';
+        caption_position = '{$source.params.captionplace}';
     {/if}
     new editableForm($('.form-constructor'), caption_position);
 

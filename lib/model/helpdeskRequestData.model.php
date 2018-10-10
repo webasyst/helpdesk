@@ -199,6 +199,9 @@ class helpdeskRequestDataModel extends waModel
             $fld = self::getField($field_id);
             if ($fld) {
                 $field['value'] = $fld->format($field['value'], 'html');
+                if (in_array($fld->getType(), array('SocialNetwork', 'Phone', 'IM'))) {
+                    $field['value'] = htmlspecialchars($field['value']);
+                }
                 $name = $fld->getName();
             }
             $data[$field_id] = array(

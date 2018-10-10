@@ -80,6 +80,7 @@ RedactorPlugins.faq = function() {
             return str;
         },
         insertSnippet: function(title, body) {
+            console.log(body);
             this.modal.close();
             this.selection.restore();
             $('.h-faq-question-settings').find('.h-name').val(title);

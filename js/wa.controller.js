@@ -70,8 +70,9 @@ $.wa.helpdesk_controller = {
         // Set up default AJAX error handler
         $.wa.errorHandler = function() {};
         $(document).ajaxError(function(e, xhr, settings, exception) {
-            if ($.wa.helpdesk_controller.ignore_ajax_errors || exception == 'abort' || (settings.url && settings.url.indexOf('background_process') >= 0) || (settings.data && settings.data.indexOf('background_process') >= 0)) {
-                console && console.log && console.log('Notice: XHR failed ', exception, arguments);
+            // Ignore 502 error in background process
+            if (xhr.status === 502 && exception == 'abort' || (settings.url && settings.url.indexOf('background_process') >= 0) || (settings.data && settings.data.indexOf('background_process') >= 0)) {
+                console && console.log && console.log('Notice: XHR failed on load: '+ settings.url);
                 return;
             }
 
@@ -1662,8 +1663,8 @@ $.wa.helpdesk_controller = {
     /** Initialize a WYSIWYG editor on top of given textarea. */
     initWYSIWYG: function(textarea, options, csrf) {
         options = $.extend({
-            focusEnd: true,
-            plugins: ['fontcolor', 'fontsize', 'fontfamily', 'alignment', 'codeblock', 'faq'],
+            focus: true,
+            buttons: ['format', 'bold', 'italic', 'underline', 'unorderedlist', 'orderedlist', 'link', 'image', 'horizontalrule'],
             minHeight: 200,
             source: false,
             uploadImage: true,
@@ -1689,14 +1690,16 @@ $.wa.helpdesk_controller = {
     initEditor: function(textarea, options) {
         var $textarea = $(textarea);
         $textarea.waEditor($.extend({}, options || {}, {
-            plugins: ['fontcolor', 'fontsize', 'fontfamily', 'codeblock'],
+            buttons: ['format', 'bold', 'italic', 'underline', 'unorderedlist', 'orderedlist', 'link', 'image', 'horizontalrule'],
             imageUpload: '?module=files&action=uploadimage&r=2',
             imageUploadFields: {
                 '_csrf': options._csrf || ''
             },
-            //keydownCallback: function(event) { }, // without this waEditor intercents Ctrl+S event in Redaktor
-            changeCallback: function() {
-                $textarea.closest('form').find(':submit').removeClass('green').addClass('yellow');
+            //keydownCallback: function(event) { }, // without this waEditor intercents Ctrl+S event in Redactor
+            callbacks: {
+                change: function () {
+                    $textarea.closest('form').find(':submit').removeClass('green').addClass('yellow');
+                }
             }
         }));
 

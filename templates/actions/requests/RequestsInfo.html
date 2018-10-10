@@ -1094,8 +1094,7 @@
         var setname = function(name) {
             $input_name.val(name);
             $inputs.hide();
-            $editable.show()
-                    .find('h1').html(name + '<i class="icon16 edit" data="edit"></i>');
+            $editable.show(); // .find('h1').html(name + '<i class="icon16 edit" data="edit"></i>');
         };
 
         var discard = function() {

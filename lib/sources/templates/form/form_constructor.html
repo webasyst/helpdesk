@@ -229,10 +229,9 @@
                 var initRedactor = function(el, placeholder) {
                     if (!el.data('redactor')) {
                         $.wa.helpdesk_controller.initWYSIWYG($('.h-text-editor'), {
-                            buttons: ['bold', 'italic', 'underline', 'unorderedlist', 'orderedlist', 'link', 'fontcolor', 'fontsize', 'fontfamily'],
-                            plugins: ['fontcolor', 'alignment', 'fontsize'],
+                            buttons: ['format', 'bold', 'italic', 'underline', 'unorderedlist', 'orderedlist', 'link', 'image', 'horizontalrule'],
                             width: $('#form-request-constructor-preview').width(),
-                            uploadImage: false,
+                            uploadImage: true,
                             focus: false,
                             maxHeight: 100,
                             minHeight: 100,

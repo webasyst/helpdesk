@@ -9,6 +9,10 @@ class helpdeskDesignActions extends waDesignActions
 
     public function __construct()
     {
+        if (!$this->getRights('design')) {
+            throw new waRightsException(_ws("Access denied"));
+        }
+
         $this->options['is_ajax'] = true;
         $this->options['container'] = false;
     }

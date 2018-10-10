@@ -191,15 +191,23 @@
 
     {if $wa->getEnv() == 'backend'}
         {if $action->getOption('show_textarea')}
+            var grid_view = $.storage.get('helpdesk/grid/view') || 'list',
+                options = {
+                    lang: "{substr($wa->locale(), 0, 2)}",
+                    convertUrlLinks: true,
+                    convertLinks: false,
+                    callbacks: {
+                        change: function () {
+                            cleditor_text_changed = true;
+                        }
+                    }
+                };
+
+            if (grid_view !== 'split') {
+                options.toolbarFixedTopOffset = 100;
+            }
             // WYSIWYG
-            cleditor = $.wa.helpdesk_controller.initWYSIWYG('#{$action_id}-comment', {
-                lang: "{substr($wa->locale(), 0, 2)}",
-                convertUrlLinks: true,
-                convertLinks: false,
-                changeCallback: function() {
-                    cleditor_text_changed = true;
-                },
-            }, "{waRequest::cookie('_csrf', '')}");
+            cleditor = $.wa.helpdesk_controller.initWYSIWYG('#{$action_id}-comment', options, "{waRequest::cookie('_csrf', '')}");
         {/if}
 
         {if !empty($will_be_sent_to)}
