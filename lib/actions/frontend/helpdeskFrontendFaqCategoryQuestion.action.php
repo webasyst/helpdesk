@@ -29,6 +29,14 @@ class helpdeskFrontendFaqCategoryQuestionAction extends helpdeskFrontendViewActi
 
         $this->setThemeTemplate('faq.category.question.html');
         $this->getResponse()->setTitle($faq['question']);
+        if (!empty($faq['title'])) {
+            $this->getResponse()->setTitle($faq['title']);
+        }
+        $meta = array('keywords', 'description');
+        foreach ($meta as $meta_field)
+            if (!empty($faq[$meta_field])) {
+                $this->getResponse()->setMeta($meta_field, $faq[$meta_field]);
+        }
         $this->view->assign('category', $category);
         $this->view->assign('faq', $faq);
 

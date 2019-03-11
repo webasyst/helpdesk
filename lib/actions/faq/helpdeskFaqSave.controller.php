@@ -65,6 +65,9 @@ class helpdeskFaqSaveController extends waJsonController
         $data['is_backend'] = waRequest::request('is_backend', 0, waRequest::TYPE_INT);
         $data['comment'] = waRequest::request('comment', null, waRequest::TYPE_STRING_TRIM);
         $data['url'] = waRequest::request('faq_url', '', waRequest::TYPE_STRING_TRIM);
+        $data['title'] = waRequest::post('title', '', waRequest::TYPE_STRING_TRIM);
+        $data['keywords'] = waRequest::post('keywords', '', waRequest::TYPE_STRING_TRIM);
+        $data['description'] = waRequest::post('description', '', waRequest::TYPE_STRING_TRIM);
         return $data;
     }
 }
