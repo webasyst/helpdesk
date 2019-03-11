@@ -26,6 +26,10 @@ return array(
         'is_backend' => array('tinyint', 1, 'null' => 0, 'default' => '0'),
         'url' => array('varchar', 255),
         'comment' => array('text'),
+        'title' => array('varchar', 255, 'null' => 0),
+        'description' => array('varchar', 255, 'null' => 0),
+        'keywords' => array('varchar', 255, 'null' => 0),
+        'update_datetime' => array('datetime'),
         ':keys' => array(
             'PRIMARY' => 'id',
         ),

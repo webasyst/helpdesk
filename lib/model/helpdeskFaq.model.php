@@ -7,6 +7,7 @@ class helpdeskFaqModel extends waModel
     public function add($data)
     {
         $data['create_datetime'] = date('Y-m-d H:i:s');
+        $data['update_datetime'] = date('Y-m-d H:i:s');
         $data['contact_id'] = wa()->getUser()->getId();
 
         if (empty($data['faq_category_id'])) {
@@ -51,6 +52,7 @@ class helpdeskFaqModel extends waModel
         if (!$item) {
             return false;
         }
+        $data['update_datetime'] = date('Y-m-d H:i:s');
         $this->updateById($id, $data);
         $this->copyAnswerFiles($id);
         if ($item['faq_category_id'] != $data['faq_category_id']) {
