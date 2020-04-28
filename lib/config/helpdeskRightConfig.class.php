@@ -73,12 +73,12 @@ class helpdeskRightConfig extends waRightConfig
 
         $wfs = array();
         foreach (self::$model->getByField('contact_id', $contact_id, true) as $row) {
-            if ($row['action_id'] && $row['action_id']{0} == '!') {
+            if ($row['action_id'] && $row['action_id'][0] == '!') {
                 $result["wf.{$row['workflow_id']}.".substr($row['action_id'], 1)] = 1;
             } else {
                 $result["wf.{$row['workflow_id']}.action.@".$row['action_id']] = 1;
             }
-            if ($row['state_id'] && $row['state_id']{0} == '!') {
+            if ($row['state_id'] && $row['state_id'][0] == '!') {
                 $result["wf.{$row['workflow_id']}.".substr($row['state_id'], 1)] = 1;
             } else {
                 $result["wf.{$row['workflow_id']}.state.@".$row['state_id']] = 1;
@@ -102,14 +102,14 @@ class helpdeskRightConfig extends waRightConfig
         $aid = $sid = null;
         if ($name[2] == 'action') {
             $aid = (isset($name[3]) && strlen($name[3])) ? $name[3] : '';
-            if ($aid && $aid{0} == '@') {
+            if ($aid && $aid[0] == '@') {
                 $aid = substr($aid, 1);
             } else {
                 $aid = '!action.'.$aid;
             }
         } else if ($name[2] == 'state') {
             $sid = (isset($name[3]) && strlen($name[3])) ? $name[3] : '';
-            if ($sid && $sid{0} == '@') {
+            if ($sid && $sid[0] == '@') {
                 $sid = substr($sid, 1);
             } else {
                 $sid = '!state.'.$sid;

@@ -156,6 +156,7 @@ class helpdeskTagModel extends waModel
             JOIN `helpdesk_request_tags` rt ON rt.tag_id = t.id
             JOIN `helpdesk_request` r ON r.id = rt.request_id
             WHERE r.workflow_id IN ('".implode("','", $workflow_ids)."') AND t.count > 0
+            GROUP BY t.id
             ORDER BY t.name";
         return $this->query($sql)->fetchAll();
     }

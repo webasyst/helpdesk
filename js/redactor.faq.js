@@ -76,11 +76,10 @@ RedactorPlugins.faq = function() {
                       '</div>' +
                       '<footer style="margin-top: 12px;">' +
                       '<button id="redactor-modal-button-cancel">' + $_('Close') + '</button>' +
-                      '<footer>';
+                      '</footer>';
             return str;
         },
         insertSnippet: function(title, body) {
-            console.log(body);
             this.modal.close();
             this.selection.restore();
             $('.h-faq-question-settings').find('.h-name').val(title);

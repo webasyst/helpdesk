@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2018-09-13 09:09+0300\n"
+"PO-Revision-Date: 2020-04-21 12:09+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -12,11 +12,10 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Language: ru\n"
-"X-Generator: Poedit 1.8.7.1\n"
+"X-Generator: Poedit 2.0.6\n"
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: .\n"
 
-# &ldquo;%s&rdquo; &mdash; &laquo;%s&raquo;    :::    “%s” — «%s»
 msgid "Helpdesk"
 msgstr "Поддержка"
 
@@ -659,11 +658,9 @@ msgstr[0] "%d запрос"
 msgstr[1] "%d запроса"
 msgstr[2] "%d запросов"
 
-# %s is replaced with 'X request(s)'
 msgid "%s found in this state. These requests will NOT be deleted, but they will stay in unknown state."
 msgstr "Найдено %s в данном состоянии. После удаления состояния запросы сохранятся, но для них будет установлено неопределенное состояние."
 
-# Request ID formatter
 msgid "#<strong>%s</strong>"
 msgstr "№<strong>%s</strong>"
 
@@ -814,11 +811,9 @@ msgstr "Будет отображаться в сайдбаре в главно�
 msgid "Personal settings"
 msgstr "Личные настройки"
 
-# Singular, e.g.: unread request
 msgid "Unread"
 msgstr "Непрочитанный"
 
-# Plural, e.g.: unread requests
 msgid "Unread "
 msgstr "Непрочитанные"
 
@@ -1374,7 +1369,6 @@ msgstr "Выберите язык нового клиента"
 msgid "no action"
 msgstr "не выполнять"
 
-# 2 days 3 months 4 years ago
 msgid "ago"
 msgstr "назад"
 
@@ -1408,520 +1402,387 @@ msgstr "Каждое из искомых слов должно быть не к�
 msgid "Customer contact ID."
 msgstr "Номер клиента (ID)"
 
-#: /wa-apps/helpdesk/lib/classes/helpdeskRequest.class.php:123
 msgid "Edit subject"
 msgstr "Редактировать тему"
 
-#: /wa-apps/helpdesk/templates/actions/requests/RequestsInfo.html:202
 msgid "Old subject"
 msgstr "Старая тема"
 
-#: /wa-apps/helpdesk/templates/email_preview.html:25
 msgid "From:"
 msgstr "От кого:"
 
-#: /wa-apps/helpdesk/templates/email_preview.html:29
 msgid "To:"
 msgstr "Кому:"
 
-#: /wa-apps/helpdesk/templates/email_preview.html:44
 msgid "Subject:"
 msgstr "Тема:"
 
-#: /wa-apps/helpdesk/lib/workflow/templates/Basic_settings.html:32
 msgid "Text:"
 msgstr "Текст:"
 
-#: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:181
 msgid "Edit button label"
 msgstr "Редактировать название кнопки"
 
-#: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:192
 msgid "Form width (200-600px)"
 msgstr "Ширина формы (200-600 пикселей)"
 
-#: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:233
 msgid "After successfull submission:"
 msgstr "После успешной отправки:"
 
-#: /wa-apps/helpdesk/themes/webasystcom/error.html:5
 msgid "The requested resource is not available."
 msgstr "Запрошенный ресурс недоступен."
 
-#: /wa-apps/helpdesk/templates/layouts/Backend.html:101
 msgid "Change search conditions"
 msgstr "Изменить условия поиска"
 
-#: /wa-apps/helpdesk/templates/layouts/includeFilterSettings.html:14
 msgid "Icon"
 msgstr "Иконка"
 
-#: /wa-apps/helpdesk/templates/layouts/includeFilterSettings.html:27
 msgid "Access"
 msgstr "Доступ"
 
-#: /wa-apps/helpdesk/templates/layouts/includeFilterSettings.html:48
 msgid "Delete filter"
 msgstr "Удалить фильтр"
 
-#: /wa-apps/helpdesk/templates/actions/settings/SettingsWorkflow.html:5
 msgid "Delete workflow"
 msgstr "Удалить поток"
 
-#: /wa-apps/helpdesk/templates/actions/settings/SettingsWorkflowEdit.html:7
 msgid "Edit workflow"
 msgstr "Редактировать поток"
 
-#: /wa-apps/helpdesk/templates/actions/backend/BackendSidebar.html:208
 msgid "New workflow"
 msgstr "Новый поток"
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:4 /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:594 /wa-apps/helpdesk/templates/actions/backend/BackendSidebar.html:213
 msgid "Request field constructor"
 msgstr "Конструктор полей запроса"
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:14
 msgid "Name and company fields are always displayed in the heading area on contact page."
 msgstr "Поля имени и название компании всегда отображаются в области заголовка на странице контакта."
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:15 /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:683
 msgid "Customize additional heading fields"
 msgstr "Настройте дополнительные поля заголовка"
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:19
 msgid "Title"
 msgstr "Обращение"
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:19
 msgid "First name"
 msgstr "Имя"
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:19
 msgid "Middle name"
 msgstr "Отчество"
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:19
 msgid "Last name"
 msgstr "Фамилия"
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:20
 msgid "Job title"
 msgstr "Должность"
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:20
 msgid "@"
 msgstr ""
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:20 /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:657
 msgid "Company"
 msgstr "Компания"
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:34
 msgid "Contact"
 msgstr "Контакт"
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:44 /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:69
 msgid "person"
 msgstr "персона"
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:45 /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:71
 msgid "company"
 msgstr "компания"
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:68
 msgid "disabled"
 msgstr "отключено"
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:78 /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:399
 msgid "New field"
 msgstr "Новое поле"
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:233 /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:670 /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:229
 msgid "Delete field"
 msgstr "Удалить поле"
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:233
 msgid "Checking data in this field"
 msgstr "Проверка данных в этом поле"
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:402
 msgid "Edit field"
 msgstr "Редактировать поле"
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:631
 msgid "Field ID"
 msgstr "ID поля"
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:638
 msgid "Type of field"
 msgstr "Тип поля"
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:647
 msgid "Menu items"
 msgstr "Элементы меню"
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:649
 msgid "Enter each new item on new line"
 msgstr "Введите каждый элемент на отдельной строке"
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:654
 msgid "Applied to"
 msgstr "Применено к"
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:655
 msgid "Person"
 msgstr "Персона"
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:683
 msgid "Additional fields are always shown at the top area of contact page. Add here the fields that you access most frequently, e.g. Email, Phone, Address, and etc."
 msgstr "Дополнительные поля всегда показаны в верхней области страницы контакта. Добавьте сюда поля, которые вам часто необходимы, например, Email, Телефон, Адрес."
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:488
 msgid "List items"
 msgstr "Элементы списка"
 
-#: /wa-apps/helpdesk/templates/actions/faq/Faq.html:10
 msgid "Categories"
 msgstr "Категории"
 
-#: /wa-apps/helpdesk/templates/actions/faq/Faq.html:21
 msgid "Categories help you to arrange questions and answers by themes to simplify naviagation and search, e.g.: Common questions, How to.., and etc."
 msgstr "Категории позволяют распределить вопросы и ответы по темам для упрощения навигации и поиска, например: «Общие вопросы», «Вопросы про это...» и т. д."
 
-#: /wa-apps/helpdesk/templates/actions/faq/Faq.html:24
 msgid "New category"
 msgstr "Новая категория"
 
-#: /wa-apps/helpdesk/templates/actions/backend/BackendSidebar.html:178
 msgid "Admin"
 msgstr "Админ"
 
-#: /wa-apps/helpdesk/templates/actions/backend/BackendSidebar.html:200
 msgid "Questions & Answers"
 msgstr "Вопросы и ответы"
 
-#: /wa-apps/helpdesk/templates/actions/faq/includeCategory.html:19
 msgid "Icons"
 msgstr "Иконки"
 
-#: /wa-apps/helpdesk/templates/actions/faq/includeCategory.html:36
 msgid "Delete category"
 msgstr "Удалить категорию"
 
-#: /wa-apps/helpdesk/templates/actions/faq/includeCategory.html:48 /wa-apps/helpdesk/templates/actions/faq/includeCategory.html:51
 msgid "New question"
 msgstr "Новый вопрос"
 
-#: /wa-apps/helpdesk/templates/actions/faq/includeCategory.html:64
 msgid "Delete this question & answer"
 msgstr "Удалить этот вопрос и ответ"
 
-#: /wa-apps/helpdesk/templates/actions/faq/Faq.html:49
 msgid "Add category"
 msgstr "Добавить категорию"
 
-#: /wa-apps/helpdesk/templates/layouts/Backend.html:102
 msgid "Sorting:"
 msgstr "Сортировка:"
 
-#: /wa-apps/helpdesk/templates/layouts/Backend.html:103 /wa-apps/helpdesk/templates/layouts/Backend.html:105
 msgid "newest on top"
 msgstr "новые наверху"
 
-#: /wa-apps/helpdesk/templates/layouts/Backend.html:106
 msgid "oldest on top"
 msgstr "старые наверху"
 
-#: /wa-apps/helpdesk/templates/layouts/Backend.html:107
 msgid "recently updated on top"
 msgstr "недавно обновленные наверху"
 
-#: /wa-apps/helpdesk/templates/actions/requests/RequestsInfo.html:84
 msgid "Mark"
 msgstr "Пометить"
 
-#: /wa-apps/helpdesk/templates/actions/requests/RequestsInfo.html:88
 msgid "Notify about actions "
 msgstr "Сообщить о действиях "
 
-#: /wa-apps/helpdesk/templates/actions/sources/includeFormConstructor.html:50 /wa-apps/helpdesk/lib/sources/templates/include_form_constructor.html:64
 msgid "Add fields"
 msgstr "Добавить поля"
 
-#: /wa-apps/helpdesk/templates/actions/sources/includeFormConstructor.html:64
 msgid "Allows your subscriber to create a password for further authorization on your site and log in to their customer portal. Requires Email field in the form."
 msgstr "Позволяет подписчику придумать пароль для дальнейшей авторизации на вашем сайте и входа в личный кабинет. Необходимо наличие поля для ввода email в этой форме."
 
-#: /wa-apps/helpdesk/templates/actions/sources/includeFormConstructor.html:76 /wa-apps/helpdesk/templates/actions/sources/includeFormConstructor.html:77 /wa-apps/helpdesk/lib/sources/templates/include_form_constructor.html:76 /wa-apps/helpdesk/lib/sources/templates/include_form_constructor.html:77
 msgid "Sign up"
 msgstr "Зарегистрироваться"
 
-#: /wa-apps/helpdesk/templates/actions/backend/includeSnippets.html:25
 msgid "more"
 msgstr "ещё"
 
-#: /wa-apps/helpdesk/js/redactor.faq.js:41 /wa-apps/helpdesk/js/redactor.faq.js:43
 msgid "Insert snippet"
 msgstr "Вставить фрагмент"
 
-#: /wa-apps/helpdesk/lib/model/helpdeskFollow.model.php:83
 msgid "for request"
 msgstr "для запроса"
 
-#: /wa-apps/helpdesk/lib/sources/templates/include_form_constructor.html:96
 msgid "Field settings"
 msgstr "Настройки поля"
 
-#: /wa-apps/helpdesk/lib/sources/templates/include_form_constructor.html:99
 msgid "Field"
 msgstr "Поле"
 
-#: /wa-apps/helpdesk/lib/sources/templates/include_form_constructor.html:103
 msgid "Label"
 msgstr "Подпись"
 
-#: /wa-apps/helpdesk/lib/sources/templates/include_form_constructor.html:109
 msgid "Label placement"
 msgstr "Размещение подписи"
 
-#: /wa-apps/helpdesk/lib/sources/templates/include_form_constructor.html:117
 msgid "Placeholder"
 msgstr "Подсказка"
 
-#: /wa-apps/helpdesk/lib/sources/templates/include_form_constructor.html:124
 msgid "Required"
 msgstr "Обязательное"
 
-#: /wa-apps/helpdesk/lib/sources/templates/include_form_constructor.html:136
 msgid "Apply"
 msgstr "Применить"
 
-#: /wa-apps/helpdesk/templates/actions/faq/includeList.html:51
 msgid "Search result"
 msgstr "Результаты поиска"
 
-#: /wa-apps/helpdesk/templates/actions/faq/Faq.html:12
 msgid "search"
 msgstr "поиск"
 
-#: /wa-apps/helpdesk/lib/sources/templates/include_form_constructor.html:105
 msgid "Left aligned"
 msgstr "Слева от поля"
 
-#: /wa-apps/helpdesk/lib/sources/templates/include_form_constructor.html:106
 msgid "Top aligned"
 msgstr "Над полем"
 
-#: /wa-apps/helpdesk/lib/sources/templates/include_form_constructor.html:107
 msgid "Do not show"
 msgstr "Не показывать"
 
-#: /wa-apps/helpdesk/lib/actions/files/helpdeskFilesUploadimage.controller.php:48
 msgid "Files with extensions %s are allowed only."
 msgstr "Разрешены поля с расширениями «%s»"
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:7
 msgid "Main fields"
 msgstr "Главные поля"
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:8
 msgid "Main request fields can not be modified or disabled. Email requests usually contain subject and text with optional attachments. Requests sent via public or customer portal form may not have data in these fields. In this case they will be filled with default values."
 msgstr "Главные поля запроса нельзя изменить или выключить. Email-запросы обычно содержат тему, текст и (иногда) прекреплённые файлы. Запросы, отправленные через форму на сайте или из личного кабинета могут не содержать указанные данные. В таком случае эти поля будут заполнены значениями по умолчанию."
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:25
 msgid "Additional fields"
 msgstr "Дополнительные поля"
 
-#: /wa-apps/helpdesk/lib/sources/helpdeskPublicfrontendSourceType.class.php:442 /wa-apps/helpdesk/lib/config/install.php:64
 msgid "Full name"
 msgstr "Полное имя"
 
-#: /wa-apps/helpdesk/lib/sources/templates/include_form_constructor.html:10
 msgid "Add contact fields"
 msgstr "Добавить поля контакта"
 
-#: /wa-apps/helpdesk/lib/sources/templates/include_form_constructor.html:17
 msgid "Add request fields"
 msgstr "Добавить поля запроса"
 
-#: /wa-apps/helpdesk/lib/sources/templates/include_form_constructor.html:35 /wa-apps/helpdesk/lib/sources/templates/include_form_constructor_preview.html:151
 msgid "Text paragraph"
 msgstr "Текст"
 
-#: /wa-apps/helpdesk/lib/sources/templates/include_form_constructor.html:66
 msgid "View"
 msgstr "Вид"
 
-#: /wa-apps/helpdesk/lib/sources/templates/include_form_constructor.html:68
 msgid "Plain text"
 msgstr "Простой текст"
 
-#: /wa-apps/helpdesk/lib/sources/templates/include_form_constructor.html:69
 msgid "Redactor"
 msgstr "Редактор"
 
-#: /wa-apps/helpdesk/lib/sources/templates/include_form_constructor_preview.html:148
 msgid "Horizontal rule"
 msgstr "Горизонтальный разделитель"
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:19
 msgid "Attached files"
 msgstr "Вложенные файлы"
 
-#: /wa-apps/helpdesk/templates/actions/backend/BackendSidebar.html:205
 msgid "Field constructor"
 msgstr "Конструктор полей"
 
-#: /wa-apps/helpdesk/lib/sources/helpdeskPublicfrontendSourceType.class.php:162 /wa-apps/helpdesk/lib/sources/helpdeskAbstractST.class.php:163
 msgid "no subject"
 msgstr "нет темы"
 
-#: /wa-apps/helpdesk/lib/sources/templates/include_form_constructor.html:117
 msgid "Address labels placement"
 msgstr "Размещение подписей компонентов адреса"
 
-#: /wa-apps/helpdesk/lib/sources/templates/include_form_constructor.html:121
 msgid "As a placeholder inside of field input"
 msgstr "В виде подсказки внутри поля"
 
-#: /wa-apps/helpdesk/templates/actions/requests/RequestsSearch.html:41 /wa-apps/helpdesk/templates/actions/requests/RequestsSearch.html:62 /wa-apps/helpdesk/templates/actions/requests/RequestsSearch.html:90 /wa-apps/helpdesk/templates/actions/requests/RequestsSearch.html:111 /wa-apps/helpdesk/templates/actions/requests/RequestsSearch.html:137 /wa-apps/helpdesk/templates/actions/requests/RequestsSearch.html:161
-#: /wa-apps/helpdesk/templates/actions/requests/RequestsSearch.html:443
 msgid "select"
 msgstr "выбрать"
 
-#: /wa-apps/helpdesk/lib/sources/templates/form_constructor.html:140
 msgid "Identification"
 msgstr "Идентификация"
 
-#: /wa-apps/helpdesk/lib/sources/templates/form_constructor.html:144
 msgid "If enabled we shall search for an existing contact with the same phone number and associate request sent via this form with the contact found."
 msgstr "Если включено, мы будем искать существующий контакт с таким же телефонным номером и связывать запрос, переданный через эту форму, с найденным контактом."
 
-#: /wa-apps/helpdesk/lib/sources/helpdeskFormConstructor.class.php:439
 msgid "Attachments"
 msgstr "Вложения"
 
-#: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:86
 msgid "Request double opt-in"
 msgstr "Подтверждение запроса клиентом"
 
-#: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:90
 msgid "To enable this option, your form must contain Email field."
 msgstr "Для включения этой функции ваша форма должна содержать поле Email."
 
-#: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:93
 msgid "After successful submission of this form an automatic notification will be sent to the sender's email address. This notification contains a special link which must be clicked to confirm the sending of the request. You may also add extra instructions for your clients to the notification text."
 msgstr "После отправки формы клиенту будет автоматически отправлено ответное уведомление по электронной почте. Такое уведомление содержит специальную ссылку, по которой необходимо перейти для подтверждения отправки запроса. В текст такого уведомления вы можете добавить дополнительные инструкции для клиентов."
 
-#: /wa-apps/helpdesk/lib/actions/backend/helpdeskBackendSidebar.action.php:147
 msgid "no status"
 msgstr "нет статуса"
 
-#: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:133
 msgid "Forwarding request to workflow"
 msgstr "Передача запроса в поток"
 
-#: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:496
 msgid "Delete form"
 msgstr "Удалить форму"
 
-#: /wa-apps/helpdesk/templates/actions/requests/RequestsInfo.html:302
 msgid "creates request"
 msgstr "создает запрос"
 
-#: /wa-apps/helpdesk/templates/actions/requests/RequestsInfo.html:725
 msgid "Add tag"
 msgstr "Добавить тег"
 
-#: /wa-apps/helpdesk/templates/layouts/Backend.html:94
 msgid "Mark as read"
 msgstr "Отметить как прочитанные"
 
-#: /wa-apps/helpdesk/templates/layouts/Backend.html:95
 msgid "Mark as unread"
 msgstr "Отметить как непрочитанные"
 
-#: /wa-apps/helpdesk/templates/actions/requests/RequestsInfo.html:29
 msgid "Read"
 msgstr "Прочитанный"
 
-#: /wa-apps/helpdesk/templates/actions/requests/RequestsInfo.html:31
 msgid "Follow"
 msgstr "Следить"
 
-#: /wa-apps/helpdesk/templates/actions/backend/BackendSidebar.html:131
 msgid "Tags"
 msgstr "Теги"
 
-#: /wa-apps/helpdesk/templates/actions/requests/RequestsInfo.html:35
 msgid "unmark"
 msgstr "снять метку"
 
-#: /wa-apps/helpdesk/lib/sources/templates/form_constructor.html:153
 msgid "If enabled, data in this field are available for clients in their Customer portal."
 msgstr "Включите, чтобы сделать это поле доступным в личных кабинетах клиентов."
 
-#: /wa-apps/helpdesk/templates/layouts/includeUnreadSettings.html:62
 msgid "I want to receive email notifications on unread requests"
 msgstr "Хочу получать email-уведомления при появлении непрочитанных запросов"
 
-#: /wa-apps/helpdesk/lib/model/helpdeskUnread.model.php:123
 msgid "You got unread requests"
 msgstr "У вас есть непрочитанные запросы"
 
-#: /wa-apps/helpdesk/templates/layouts/includeFilterSettings.html:56
 msgid "This list is the search result:"
 msgstr "Этот список является результатом поиска:"
 
-#: /wa-apps/helpdesk/templates/layouts/includeFilterSettings.html:59
 msgid "Created by"
 msgstr "Создан пользователем"
 
-#: /wa-apps/helpdesk/templates/actions/backend/BackendSidebar.html:172 /wa-apps/helpdesk/templates/actions/backend/BackendSidebar.html:311 /wa-apps/helpdesk/templates/actions/backend/BackendSidebar.html:373
 msgid "Add a filter"
 msgstr "Добавить фильтр"
 
-#: /wa-apps/helpdesk/templates/actions/backend/BackendSidebar.html:294
 msgid "Select access level:"
 msgstr "Выберите уровень доступа:"
 
-#: /wa-apps/helpdesk/templates/actions/requests/RequestsInfo.html:542
 msgid "After you set \"Follow\" mark, next time someone performs an action with this request it will appear as \"Unread\" for you and you will receive email notification about this action. So you will be able to follow all further activity related to this request."
 msgstr "Если установить этот флажок, то каждый раз когда с данным запросом будут выполняться какие-либо действия, он будем становиться для вас «непрочитанным» и вы будете получать email-уведомление об этом. Таким образом, вы сможете следить за дальнейшими действиями с данным запросом."
 
-#: /wa-apps/helpdesk/templates/actions/requests/RequestsInfo.html:543
 msgid "Don't show this message anymore"
 msgstr "Больше не показывать это предупреждение"
 
-#: /wa-apps/helpdesk/templates/actions/requests/RequestsInfo.html:548
 msgid "Set mark"
 msgstr "Установить флажок"
 
-#: /wa-apps/helpdesk/templates/actions/requests/RequestsInfo.html:542
 msgid "Follow mark"
 msgstr "Флажок «Следить»"
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:26
-msgid ""
-"Additional fields allow you to add a number of multiple parameters to requests content. These parameters essentially depend on a type of product and services you deliver to your customers. For example, if you accept requests to repair household appliances, you may wish to know some manufacturing details, e.g. model name, and etc. Additional fields can be added to the request form to be submitted by your client, or be "
-"available on the request page for your Helpdesk app users manipulations."
-msgstr ""
-"Дополнительные поля позволяют наполнить запрос произвольным набором уточняющих параметров. Этот набор полей существенно зависит от того, какого рода продукты и услуги вы предоставляете своим клиентам. Например, если вы принимаете запросы на ремонт бытовой техники, то возможно вам понадобятся поля, позволяющие указать модель устройства, год выпуска, характер неисправности и т.д. Дополнительные поля можно разместить в "
-"форме, через которую клиент отправляет вам запрос, а также на странице выполнения действий с запросом, если эти поля предназначены для заполнения пользователями приложения «Поддержка»."
+msgid "Additional fields allow you to add a number of multiple parameters to requests content. These parameters essentially depend on a type of product and services you deliver to your customers. For example, if you accept requests to repair household appliances, you may wish to know some manufacturing details, e.g. model name, and etc. Additional fields can be added to the request form to be submitted by your client, or be available on the request page for your Helpdesk app users manipulations."
+msgstr "Дополнительные поля позволяют наполнить запрос произвольным набором уточняющих параметров. Этот набор полей существенно зависит от того, какого рода продукты и услуги вы предоставляете своим клиентам. Например, если вы принимаете запросы на ремонт бытовой техники, то возможно вам понадобятся поля, позволяющие указать модель устройства, год выпуска, характер неисправности и т.д. Дополнительные поля можно разместить в форме, через которую клиент отправляет вам запрос, а также на странице выполнения действий с запросом, если эти поля предназначены для заполнения пользователями приложения «Поддержка»."
 
-#: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:206
 msgid "Using this form"
 msgstr "Использование формы"
 
-#: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:210
 msgid "Available in the Helpdesk backend"
 msgstr "Доступна в бекенде приложения «Поддержка»"
 
-#: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:213
 msgid "Allows you to manually create new requests via this form in Helpdesk backend using the “New request” button. This option may be useful when a client cannot send you a request personally; e.g., during a telephone call."
 msgstr "Позволяет добавлять запросы через эту форму в бекенде приложения «Поддержка» с помощью кнопки «Новый запрос», когда клиент не имеет возможности сделать это самостоятельно — например, во время телефонного разговора."
 
-#: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:217
 msgid "Available for your clients in their Customer portal for these websites:"
 msgstr "Доступна вашим клиентам в их личных кабинетах на этих сайтах:"
 
@@ -1931,482 +1792,366 @@ msgstr "Для дальнейшей настройки личного кабин
 msgid "This source enables you to receive new requests via a web form published in the frontend of any Webasyst app or anywhere on the Internet. Also this form can be used to add requests directly from your backend (“New request” button), or from your clients customer portals."
 msgstr "Этот источник позволяет получать новые запросы через веб-форму, опубликованную на любой странице в приложениях Webasyst или где угодно в интернете. Форму можно также использовать для добавления запросов непосредственно из бекенда (кнопка «Новый запрос»), либо из личных кабинетов ваших клиентов."
 
-#: /wa-apps/helpdesk/templates/actions/constructor/ConstructorDeleteConfirm.html:12
 msgid "Deleting this field will not cause a loss of any data."
 msgstr "Удаление этого поля не приведет к потере каких-либо данных."
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:451
 msgid "Field name"
 msgstr "Название поля"
 
-#: /wa-apps/helpdesk/lib/workflow/templates/Basic_settings.html:17
 msgid "Form settings"
 msgstr "Настройка формы"
 
-#: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:18
 msgid "This source enables you to receive new requests via a web form published in the frontend of any Webasyst app or anywhere on the Internet. Also this form can be used to add requests directly from your backend (\"New request\" button), or from your clients customer portals."
 msgstr "Этот источник позволяет получать запросы через веб-форму, опубликованную на вашем сайте или где-либо в интернете. С помощью этой формы можно также создавать запросы в бекенде «Поддержки» при нажатии на кнопку «Новый запрос» или клиентами в личном кабинете."
 
-#: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:204
 msgid "Available in the Helpdesk backend:"
 msgstr "Доступно в бекенде Поддержки:"
 
-#: /wa-apps/helpdesk/lib/sources/templates/publicfrontend_settings.html:237
 msgid "iframe"
 msgstr ""
 
-#: /wa-apps/helpdesk/lib/actions/constructor/helpdeskConstructor.action.php:181
 msgid "Drop down"
 msgstr "Выпадающий список"
 
-#: /wa-apps/helpdesk/lib/actions/constructor/helpdeskConstructorDeleteConfirm.action.php:10
 msgid "Access denied"
 msgstr "Доступ запрещен"
 
-#: /wa-apps/helpdesk/lib/workflow/templates/Basic_settings.html:99
 msgid "clear previous assignment"
 msgstr "снять назначение"
 
-#: /wa-apps/helpdesk/lib/workflow/templates/Basic_settings.html:100
 msgid "keep previous assignment"
 msgstr "не менять прежнее назначение"
 
-#: /wa-apps/helpdesk/lib/workflow/templates/Basic_settings.html:101
 msgid "assign user performing this action"
 msgstr "назначить исполнителя данного действия"
 
-#: /wa-apps/helpdesk/lib/config/helpdeskRightConfig.class.php:45
 msgid "Available states"
 msgstr "Доступные состояния"
 
-#: /wa-apps/helpdesk/templates/actions/constructor/ConstructorDeleteConfirm.html:15
 msgid "Deleting this field will cause a loss of these data."
 msgstr "Удаление поля приведет к потере этих данных."
 
-#: /wa-apps/helpdesk/templates/actions/constructor/ConstructorDeleteConfirm.html:14
 msgid "%d request have data in the field:"
 msgid_plural "%d requests have data in the field:"
 msgstr[0] "%d запрос имеет данные в поле"
 msgstr[1] "%d запроса имеют данные в поле"
 msgstr[2] "%d запросов имеют данные в поле"
 
-#: /wa-apps/helpdesk/templates/actions/requests/RequestsInfo.html:344
 msgid "Request has been changed"
 msgstr "Запрос изменён"
 
 msgid "Choose new request forms that should be available for clients in their Customer portals:"
 msgstr "Выберите формы создания нового запроса, которые должны быть доступны клиентам в их личных кабинетах:"
 
-#: /wa-apps/helpdesk/templates/actions/requests/RequestsInfo.html:252
 msgid "New subject"
 msgstr "Новая тема"
 
-#: /wa-apps/helpdesk/templates/actions/requests/RequestsInfo.html:256
 msgid "Old workflow"
 msgstr "Старый поток"
 
-#: /wa-apps/helpdesk/lib/classes/helpdeskViewHelper.class.php:13
 msgid "Routing rules are not defined for Helpdesk app"
 msgstr "Не заданы правила маршрутизации для приложения «Поддержка»"
 
-#: /wa-apps/helpdesk/templates/actions/constructor/ConstructorDeleteConfirm.html:11
 msgid "No data in the field"
 msgstr "Нет данных в поле"
 
-#: /wa-apps/helpdesk/templates/actions/backend/BackendSidebar.html:297
 msgid "Sources, states and actions with requests are customized separately for every workflow."
 msgstr "Источники, состояния и действия с запросами настраиваются отдельно для каждого потока."
 
-#: /wa-apps/helpdesk/templates/actions/requests/RequestsInfo.html:84
 msgid "Click to edit subject"
 msgstr "Щелкните для редактирования темы"
 
-#: /wa-apps/helpdesk/lib/workflow/templates/Basic_settings.html:18
 msgid "Customize form that appears for users when they perform this action. Choose required fields and set up their properties and location in the form."
 msgstr "Настройте вид формы, которая будет открываться при выполнении данного действия пользователями. Выберите необходимые поля и настройте их свойства и место расположения в форме."
 
-#: /wa-apps/helpdesk/templates/actions/requests/RequestsSearch.html:53
 msgid "Search requests that were added via selected sources"
 msgstr "Поиск запросов, которые были добавлены через выбранные источники"
 
-#: /wa-apps/helpdesk/templates/actions/requests/RequestsSearch.html:88 /wa-apps/helpdesk/templates/actions/requests/RequestsSearch.html:106
 msgid "Search requests that are currently in selected states"
 msgstr "Поиск запросов, которые сейчас находятся в выбранных состояниях"
 
-#: /wa-apps/helpdesk/templates/actions/requests/RequestsSearch.html:187
 msgid "Search requests that were ever subjected to selected actions"
 msgstr "Поиск запросов, с которыми когда-либо выполнялись выбранные действия"
 
-#: /wa-apps/helpdesk/templates/actions/requests/RequestsSearch.html:210
 msgid "Search requests that have selected tags assigned"
 msgstr "Поиск запросов, для которых установлены выбранные теги"
 
-#: /wa-apps/helpdesk/templates/actions/requests/RequestsSearch.html:536
 msgid "No options available"
 msgstr "Нет доступных вариантов"
 
-#: /wa-apps/helpdesk/lib/sources/templates/form_settings.html:48
 msgid "Use this form in backend"
 msgstr "Использовать форму в бекенде"
 
-#: /wa-apps/helpdesk/lib/sources/templates/form_settings.html:61
 msgid "Use this form in customer portal"
 msgstr "Использовать форму в личном кабинете"
 
-#: /wa-apps/helpdesk/lib/sources/templates/form_settings.html:80
 msgid "Use this form on the site"
 msgstr "Использовать форму на сайте"
 
-#: /wa-apps/helpdesk/lib/sources/templates/form_settings.html:125
 msgid "Authorized user redirected to the request page in customer portal"
 msgstr "Авторизованный пользователь перенаправляется на страницу запроса в личном кабинете"
 
-#: /wa-apps/helpdesk/templates/actions/requests/RequestsSearch.html:25 /wa-apps/helpdesk/lib/classes/helpdeskRequestsCollection.class.php:441 /wa-apps/helpdesk/lib/classes/helpdeskRequestsCollection.class.php:444 /wa-apps/helpdesk/lib/classes/helpdeskRequestsCollection.class.php:450
 msgid "Create date"
 msgstr "Дата создания"
 
-#: /wa-apps/helpdesk/lib/sources/templates/backend.html:373
 msgid "select form"
 msgstr "выбрать форму"
 
-#: /wa-apps/helpdesk/lib/sources/templates/form_settings.html:86
 msgid "Form can be published on any page of the site."
 msgstr "Форму можно опубликовать на любой странице сайта"
 
-#: /wa-apps/helpdesk/lib/sources/templates/form_settings.html:96
 msgid "To publish the form on external site use this code:"
 msgstr "Для публикации формы на внешнем сайте используйте следующий код:"
 
-#: /wa-apps/helpdesk/lib/sources/templates/form_settings.html:128
 msgid "Send a request for confirmation"
 msgstr "Отправлять запрос для подтверждения"
 
-#: /wa-apps/helpdesk/lib/sources/templates/form_settings.html:152
 msgid "If a client is authorized"
 msgstr "Если клиент авторизован"
 
-#: /wa-apps/helpdesk/lib/sources/templates/form_settings.html:157
 msgid "Redirect to the request page in pustomer portal"
 msgstr "Перейти на страницу запроса в личном кабинете"
 
-#: /wa-apps/helpdesk/js/wa.grid.js:379
 msgid "No requests."
 msgstr "Нет запросов."
 
-#: /wa-apps/helpdesk/lib/sources/templates/form_settings.html:158
 msgid "Redirect to the request page in customer portal"
 msgstr "Перейти на страницу запроса в личном кабинете"
 
-#: /wa-apps/helpdesk/templates/actions/requests/RequestsInfo.html:376 /wa-apps/helpdesk/templates/actions/requests/RequestsInfo.html:873
 msgid "All tags"
 msgstr "Все теги"
 
-#: /wa-apps/helpdesk/templates/actions/requests/RequestsInfo.html:377
 msgid "Select tags for this request"
-msgstr "Выберите теги для данного запроса"
+msgstr "Выберите теги для этого запроса"
 
-#: /wa-apps/helpdesk/templates/actions/faq/includeList.html:41
 msgid "Visibility"
 msgstr "Видимость"
 
-#: /wa-apps/helpdesk/templates/actions/faq/includeList.html:46
 msgid "Category is visible in the pubalic part of your site"
 msgstr "Категория видна в публичной части сайта"
 
-#: /wa-apps/helpdesk/templates/actions/faq/includeList.html:56
 msgid "Apply visibility change to all questions in category"
 msgstr "Применить видимость ко всем вопросам в этой категории"
 
-#: /wa-apps/helpdesk/templates/actions/faq/includeList.html:66
 msgid "Page URL"
 msgstr "Адрес страницы"
 
-#: /wa-apps/helpdesk/lib/classes/helpdeskRequestsCollection.class.php:703
 msgid "Summary"
 msgstr "Тема"
 
-#: /wa-apps/helpdesk/lib/classes/helpdeskRequestsCollection.class.php:704
 msgid "Action text"
 msgstr "Текст запроса"
 
-#: /wa-apps/helpdesk/lib/classes/helpdeskRequestsCollection.class.php:981
 msgid "Not assigned"
 msgstr "Не назначен"
 
-#: /wa-apps/helpdesk/lib/classes/helpdeskRequestsCollection.class.php:984
 msgid "Assigned to id="
 msgstr "Назначен для id="
 
-#: /wa-apps/helpdesk/templates/actions/faq/includeList.html:46
 msgid "Catefgory is visible in the public part of your site"
 msgstr "Категория видна в публичной части сайта"
 
-#: /wa-apps/helpdesk/templates/actions/faq/includeList.html:112
 msgid "Visible in the public category"
 msgstr "Видно в публичной части сайта"
 
-#: /wa-apps/helpdesk/templates/actions/requests/RequestsSearch.html:13
 msgid "New filter is easy to create using search function. To do so, use <strong>Save as filter</strong> option on the search results page."
 msgstr "Новый фильтр легко сделать с помощью функции поиска. Используйте для этого действие <strong>Сохранить как фильтр</strong> на странице результатов поиска."
 
-#: /wa-apps/helpdesk/lib/actions/faq/helpdeskFaqCategorySave.controller.php:20
 msgid "This field is already used"
 msgstr "Это поле уже используется"
 
-#: /wa-apps/helpdesk/lib/actions/faq/helpdeskFaqCategorySave.controller.php:24
 msgid "This field is required"
 msgstr "Это поле обязательное"
 
-#: /wa-apps/helpdesk/themes/default/faqCategory.html:13
 msgid "no records"
 msgstr "нет записей"
 
-#: /wa-apps/helpdesk/themes/default/home.html:14
 msgid "no categories"
 msgstr "нет разделов"
 
-#: /wa-apps/helpdesk/templates/layouts/includeFilterSettings.html:78
 msgid "This filter displays all requests independent on their status. If you don't need this whole list for a permanent access, simply hide it. Once you need it again, you can turn it on anytime using Add filter option in the left-hand sidebar."
 msgstr "Этот фильтр показывает все запросы, независимо от их статуса. Если вам не нужен список всех запросов для постоянного доступа, просто скройте его. При необходимости, вы всегда сможете включить его вновь с помощью действия «Добавить фильтр» в левой панели."
 
-#: /wa-apps/helpdesk/templates/layouts/includeFilterSettings.html:109
 msgid "Hide All requests filter"
 msgstr "Скрыть фильтр «Все запросы»"
 
-#: /wa-apps/helpdesk/templates/actions/faq/includeList.html:175
 msgid "Please <a href=\"#/faq/category/new\">create a category</a> first, to start adding questions and answers."
 msgstr "Чтобы начать добавлять вопросы и ответы, пожалуйста, <a href=\"#/faq/category/new\">создайте прежде категорию</a>."
 
-#: /wa-apps/helpdesk/lib/workflow/templates/Basic_settings.html:590
 msgid "action name"
 msgstr "названия действия"
 
-#: /wa-apps/helpdesk/lib/workflow/templates/Basic.html:82
 msgid "Send message"
 msgstr "Отправить сообщение"
 
-#: /wa-apps/helpdesk/lib/workflow/templates/Basic.html:86
 msgid "preview"
 msgstr "предпросмотр"
 
-#: /wa-apps/helpdesk/themes/default/faq.category.question.html:23 /wa-apps/helpdesk/themes/default/faq.category.html:23
 msgid "Questions & Answer"
 msgstr "Вопросы и Ответы"
 
-#: /wa-apps/helpdesk/templates/layouts/includeRequestsMenu.html:18
 msgid "Unmark as Follow"
 msgstr "Снять метку «Следить»"
 
-#: /wa-apps/helpdesk/templates/layouts/includeRequestsMenu.html:20
 msgid "Mark as Follow"
 msgstr "Поставить метку «Следить»"
 
-#: /wa-apps/helpdesk/lib/actions/requests/helpdeskRequestsFollow.controller.php:19
 msgid "%d request has been marked as Follow"
 msgid_plural "%d requests have been marked as Follow"
 msgstr[0] "%d запрос помечен «Следить»"
 msgstr[1] "%d запроса помечены «Следить»"
 msgstr[2] "%d запросов помечены «Следить»"
 
-#: /wa-apps/helpdesk/lib/actions/requests/helpdeskRequestsFollow.controller.php:22
 msgid "%d request has been removed from the Follow list"
 msgid_plural "%d requests have been removed from the Follow list"
 msgstr[0] "%d запрос удален из списка «Следить»"
 msgstr[1] "%d запроса удалены из списка «Следить»"
 msgstr[2] "%d запросов удалены из списка «Следить»"
 
-#: /wa-apps/helpdesk/lib/sources/templates/form_constructor.html:147
 msgid "Radio buttons"
 msgstr "Радио-селектор"
 
-#: /wa-apps/helpdesk/lib/actions/constructor/helpdeskConstructor.action.php:30
 msgid "string"
 msgstr "строка"
 
-#: /wa-apps/helpdesk/lib/actions/constructor/helpdeskConstructor.action.php:31
 msgid "number"
 msgstr "число"
 
-#: /wa-apps/helpdesk/lib/actions/constructor/helpdeskConstructor.action.php:32
 msgid "drop down"
 msgstr "выпадающий список"
 
-#: /wa-apps/helpdesk/lib/actions/faq/helpdeskFaqCategorySave.controller.php:19 /wa-apps/helpdesk/lib/actions/faq/helpdeskFaqSave.controller.php:20
 msgid "This URL is already used"
 msgstr "Указанный URL уже используется"
 
-#: /wa-apps/helpdesk/lib/sources/templates/form_settings.html:73
 msgid "After successful submission (if client is not authorized)"
 msgstr "После отправки формы (если клиент не авторизован)"
 
-#: /wa-apps/helpdesk/lib/sources/templates/form_settings.html:74
 msgid "This setting will redirect new clients (who are not yet authorized on your site) to any specified URL or display any text message after the form is submitted."
 msgstr "Эта настройка позволяет после отправки запроса перенаправлять новых клиентов, которые не авторизованы на вашем сайте, на любую указанную страницу, либо показывать на месте формы какое-либо сообщение."
 
-#: /wa-apps/helpdesk/lib/sources/templates/form_settings.html:120
 msgid "After successful submission (if client is authorized)"
 msgstr "После отправки формы клиенту (если клиент авторизован)"
 
-#: /wa-apps/helpdesk/lib/sources/templates/form_settings.html:122
 msgid "For registered clients authorized on your site at the moment of this form submission, you can customize a different behaviour."
 msgstr "Для зарегистрированных клиентов, которые в момент отправки формы авторизованы на вашем сайте, вы можете настроить другое поведение."
 
-#: /wa-apps/helpdesk/lib/sources/templates/form_settings.html:281
 msgid "Form design"
 msgstr "Настройка формы"
 
-#: /wa-apps/helpdesk/lib/sources/templates/form_settings.html:286
 msgid "Use default CSS"
 msgstr "CSS по умолчанию"
 
-#: /wa-apps/helpdesk/lib/sources/templates/form_settings.html:287
 msgid "Custom CSS"
 msgstr "Собственный CSS"
 
-#: /wa-apps/helpdesk/lib/sources/templates/form_settings.html:296
 msgid "Revert code to default"
 msgstr "Сбросить изменения"
 
-#: /wa-apps/helpdesk/lib/config/logs.php:5
 msgid "created a new request"
 msgstr "создал новый запрос"
 
-#: /wa-apps/helpdesk/lib/config/logs.php:8
 msgid "performed an action with request"
 msgstr "выполнил действие с запросом"
 
-#: /wa-apps/helpdesk/js/wa.controller.js:478
 msgid "What is this?"
 msgstr "Что это?"
 
-#: /wa-apps/helpdesk/templates/actions/editor/email_template_editor.html:45
 msgid "Client (request originator)"
 msgstr "Клиенту (от кого поступил запрос)"
 
-#: /wa-apps/helpdesk/js/wa.grid.js:630 /wa-apps/helpdesk/js/compiled/helpdesk.js:2358
 msgid "#%s"
 msgstr "№%s"
 
-#: /wa-apps/helpdesk/js/wa.controller.js:491
 msgid "Ok"
 msgstr "Закрыть"
 
-#: /wa-apps/helpdesk/templates/actions/requests/RequestsInfo.html:280
 msgid "Message sent:"
 msgstr "Отправлено сообщение:"
 
-#: /wa-apps/helpdesk/lib/classes/helpdeskRequest.class.php:148
 msgid "Reply by email"
 msgstr "Ответить по email"
 
-#: /wa-apps/helpdesk/lib/sources/templates/email_settings.html:94
 msgid "In case a message incoming to this email address contains a request ID in their subject (e.g., [ID:12345-XXXXX]; 12345 is request ID in this sample), then we bind incoming message with this request. However, you can customize special processing for this kind of messages."
 msgstr "В том случае, если на данный адрес поступит письмо, содержащее в своей теме номер запроса (например: [ID:12345-XXXXX], здесь 12345 это номер запроса в данном примере), то мы свяжем поступившее письмо с этим запросом. Однако вы можете настроить особую обработку для таких писем."
 
-#: /wa-apps/helpdesk/lib/sources/templates/email_settings.html:386
 msgid "Custom handling"
 msgstr "Пользовательская обработка"
 
-#: /wa-apps/helpdesk/lib/sources/templates/email_settings.html:387
 msgid "Default handling"
 msgstr "Обработка по умолчанию"
 
-#: /wa-apps/helpdesk/templates/actions/settings/SettingsWorkflowEdit.html:10
 msgid "Workflow name"
 msgstr "Название потока"
 
-#: /wa-apps/helpdesk/templates/layouts/includeUnreadSettings.html:10
 msgid "Mark as \"unread\""
 msgstr "Отмечать как \"непрочитанные\""
 
-#: /wa-apps/helpdesk/templates/layouts/includeUnreadSettings.html:48
 msgid "Mark request as \"read\""
 msgstr "Отмечать запрос как \"прочитанный\""
 
-#: /wa-apps/helpdesk/templates/actions/editor/EditorState.html:56
 msgid "Selected color will be used to display this state name."
 msgstr "Выбранным цветом будет выводиться название данного состояния."
 
-#: /wa-apps/helpdesk/lib/workflow/templates/Basic_settings.html:149
 msgid "Customize button color"
 msgstr "Настроить цвет кнопки"
 
-#: /wa-apps/helpdesk/lib/workflow/templates/Basic_settings.html:176
 msgid "After this action is executed"
 msgstr "После выполнения этого действия"
 
-#: /wa-apps/helpdesk/lib/workflow/templates/Basic_settings.html:184
 msgid "Leave request in the same state"
 msgstr "Оставить запрос в текущем состоянии"
 
-#: /wa-apps/helpdesk/lib/workflow/templates/Basic_settings.html:188
 msgid "Forward request to state"
 msgstr "Переслать запрос в состояние"
 
-#: /wa-apps/helpdesk/lib/actions/constructor/helpdeskConstructorSave.controller.php:12
 msgid "Empty id."
 msgstr "Пустой ID."
 
-#: /wa-apps/helpdesk/lib/actions/constructor/helpdeskConstructorSave.controller.php:25
 msgid "Unknown field:"
 msgstr "Неизвестное поле:"
 
-#: /wa-apps/helpdesk/lib/actions/constructor/helpdeskConstructorSave.controller.php:50
 msgid "Required field"
 msgstr "Обязательное поле"
 
-#: /wa-apps/helpdesk/lib/actions/constructor/helpdeskConstructorSave.controller.php:54
 msgid "Only English alphanumeric, hyphen and underline symbols are allowed"
 msgstr "Допустимы только латинские буквы, цифры, а также дефис и символ подчеркивания"
 
-#: /wa-apps/helpdesk/lib/actions/constructor/helpdeskConstructorSave.controller.php:60
 msgid "This ID is already in use"
 msgstr "Этот ID уже используется"
 
-#: /wa-apps/helpdesk/lib/actions/constructor/helpdeskConstructorSave.controller.php:82
 msgid "Unknown field type:"
 msgstr "Неизвестный тип поля:"
 
 msgid "Start by <a href=\"%s\">filling database of frequently asked questions</a> in your helpdesk backend."
 msgstr "Начните с <a href=\"%s\">заполнения базы часто задаваемых вопросов</a> в бекенде Поддержки."
 
-#: /wa-apps/helpdesk/templates/actions/requests/RequestsAdd.html:16 /wa-apps/helpdesk/templates/actions/backend/BackendSidebar.html:15
 msgid "default form"
 msgstr "стандартная форма"
 
-#: /wa-apps/helpdesk/lib/sources/templates/email_settings.html:146
 msgid "Add new rule"
 msgstr "Добавить новое правило"
 
-#: /wa-apps/helpdesk/lib/sources/templates/email_settings_rtr.html:3
 msgid "If the sender of the message is"
 msgstr "Если отправителем сообщения является"
 
-#: /wa-apps/helpdesk/lib/sources/templates/email_settings_rtr.html:12
 msgid "and request state is"
 msgstr "и запрос находится в состоянии"
 
-#: /wa-apps/helpdesk/lib/sources/templates/email_settings_rtr.html:21
 msgid ", then perform action"
 msgstr ", то выполнить действие"
 
-#: /wa-apps/helpdesk/lib/sources/templates/email_settings_rtr.html:33
 msgid "Delete rule"
 msgstr "Удалить правило"
 
-#: /wa-apps/helpdesk/themes/default/home.html:21
 msgid "Welcome to new helpdesk section on your site!"
 msgstr "Добро пожаловать в ваш новый раздел поддержки клиентов!"
 
-#: /wa-apps/helpdesk/templates/actions/faq/includeList.html:66
 msgid "All answers on one page"
 msgstr "Все ответы на одной странице"
 
-#: /wa-apps/helpdesk/templates/actions/faq/includeList.html:70
 msgid "Every answer on separate page"
 msgstr "Каждый ответ на отдельной странице"
 
-#: /wa-apps/helpdesk/themes/default/header.html:10
 msgid "FAQ"
 msgstr "ЧАВО"
 
@@ -2419,409 +2164,309 @@ msgstr "Название"
 msgid "Published"
 msgstr "Опубликованный"
 
-#: /wa-apps/helpdesk/lib/actions/constructor/helpdeskConstructor.action.php:30
 msgid "single line text"
 msgstr "одна строка текста"
 
-#: /wa-apps/helpdesk/templates/actions/faq/includeList.html:155
 msgid "WYSIWYG"
 msgstr "Визуальный редактор"
 
-#: /wa-apps/helpdesk/lib/actions/constructor/helpdeskConstructor.action.php:33
 msgid "checkbox"
 msgstr "флажок"
 
 msgid "NOTE: Request will be accepted and shows up in your request lists only after client clicks confirmation link in this message. It's probably a good idea to write about this in the text that appears on your web page after this form submission."
 msgstr "ВНИМАНИЕ: Запрос будет принят и появится в списке запросов только после того, как клиент получит данное сообщение и щелкнет в нем ссылку подтверждения. Возможно, вам следует написать об этом в тексте, который открывается после отправки формы."
 
-#: /wa-apps/helpdesk/lib/workflow/templates/Basic.html:193
 msgid "This message template is customized by administrator in workflow settings."
 msgstr "Шаблон этого сообщения настраивается администратором в настройках потока."
 
-#: /wa-apps/helpdesk/lib/classes/helpdeskHelper.class.php:703
 msgid "Select a user or a user group who have access to Helpdesk app. Manage users and user groups, and their access rights in <a href=\"%s\">Team</a> app."
 msgstr "Выберите пользователя или группу пользователей, у которых есть доступ к приложению «Поддержка». Редактируйте пользователей, группы пользователей и их права доступа в приложении «<a href=\"%s\">Команда</a>»."
 
-#: /wa-apps/helpdesk/themes/default/my.requestpage.html:85
 msgid "Request created"
 msgstr "Запрос создан"
 
-#: /wa-apps/helpdesk/themes/default/my.requestpage.html:87
 msgid "Attention: initial request parameters <a href=\"javascript:void(0);\" class=\"request-params-changed-link\">was changed</a>"
 msgstr "Внимание: первоначальные параметры запроса <a href=\"javascript:void(0);\" class=\"request-params-changed-link\">были изменены</a>"
 
-#: /wa-apps/helpdesk/lib/workflow/templates/Basic_settings.html:408
 msgid "Use color of the state %s where this button forwards request"
 msgstr "Использовать цвет состояния \"%s\", в который эта кнопка переводит запрос"
 
-#: /wa-apps/helpdesk/templates/layouts/includeUnreadSettings.html:5
 msgid "These are your personal settings. They define rules that cause some requests to be marked as \"unread\" and display them in a dedicated list in the left side navigation panel."
 msgstr "Это ваши персональные настройки. Они позволяют установить правила, по которым запросы будут отмечаться как \"непрочитанные\" и появляться в данном списке в левой навигационной панели."
 
-#: /wa-apps/helpdesk/templates/layouts/includeUnreadSettings.html:28 /wa-apps/helpdesk/templates/layouts/includeUnreadSettings.html:40
 msgid "Any new action performed on these requests will cause them to be marked as \"unread\""
 msgstr "Любое новое действие, выполненное с такими запросами, будет помечать их как \"непрочитанные\""
 
-#: /wa-apps/helpdesk/lib/workflow/templates/Basic_settings.html:206
 msgid "When a user performs this action the request state will be changed to the state you select here. Your choice will be shown by an arrow in the workflow setup diagram."
 msgstr "Выберите состояние, в которое должен перейти запрос при выполнении пользователем данного действия. Ваш выбор будет показан стрелкой на диаграмме настройки потока."
 
-#: /wa-apps/helpdesk/lib/fields/helpdeskRequestFields.class.php:68
 msgid "Value of the field \"%s\""
 msgstr "Значение поля \"%s\""
 
-#: /wa-apps/helpdesk/templates/actions/faq/FaqCategory.html:33 /wa-apps/helpdesk/templates/actions/faq/Faq.html:25
 msgid "Backend"
 msgstr "Бекенд"
 
-#: /wa-apps/helpdesk/templates/actions/faq/FaqCategory.html:34
 msgid "Users can see questions and answers from this category when they reply to client requests"
 msgstr "Пользователи видят вопросы этой категории при подготовке ответов на запросы клиентов"
 
-#: /wa-apps/helpdesk/templates/actions/faq/FaqCategory.html:40 /wa-apps/helpdesk/templates/actions/faq/Faq.html:32
 msgid "Site"
 msgstr "Сайт"
 
-#: /wa-apps/helpdesk/templates/actions/faq/FaqCategory.html:41
 msgid "Category is visible in the public part of your site"
 msgstr "Категория видна в публичной части сайта"
 
-#: /wa-apps/helpdesk/templates/actions/faq/Faq.html:26
 msgid "Users can see this question and answer when they reply to client requests"
 msgstr "Пользователи видят этот вопрос при подготовке ответов на запросы клиентов"
 
-#: /wa-apps/helpdesk/lib/classes/helpdeskHelper.class.php:711
 msgid "Unique identifier automatically assigned to each request (e.g. #1001)"
 msgstr "Уникальный идентификатор, автоматически присваиваемый каждому запросу (напр. 1001)"
 
-#: /wa-apps/helpdesk/lib/classes/helpdeskHelper.class.php:712
 msgid "Subject of the request"
 msgstr "Тема запроса"
 
-#: /wa-apps/helpdesk/lib/classes/helpdeskHelper.class.php:713
 msgid "Request subject followed by the request ID (e.g. Request subject [ID: 1001-XXXXX]). The request ID and hash will associate any reply you receive from the customer with the original request."
 msgstr "Тема запроса с последующим ID запроса (напр., тема [ID:1234-XXXXX]). Такой формат ID с хеш-функцией позволяет идентифицировать оригинальный запрос при последующих ответах по email."
 
-#: /wa-apps/helpdesk/lib/classes/helpdeskHelper.class.php:714
 msgid "Text of the original request"
 msgstr "Оригинальный текст запроса"
 
-#: /wa-apps/helpdesk/lib/classes/helpdeskHelper.class.php:716
 msgid "Request status (its current state) that the customer sees in Customer Portal"
 msgstr "Статус запроса (его текущее состояние), который клиент видит в личном кабинете"
 
-#: /wa-apps/helpdesk/lib/classes/helpdeskHelper.class.php:717
 msgid "Full history of request, including the original message. Similar to the request view in backend."
 msgstr "Полная история действий с запросом, вместе с оригинальным текстом. Аналогична содержимому страницы запроса в бекенде."
 
-#: /wa-apps/helpdesk/lib/classes/helpdeskHelper.class.php:718
 msgid "History of request as seen by the customer. Similar to the request view in Customer Portal."
 msgstr "История действий с запросом, которые доступны клиенту. Аналогична содержимому страницы запроса в личном кабинете клиента."
 
-#: /wa-apps/helpdesk/lib/classes/helpdeskHelper.class.php:719
 msgid "URL of the request page in the backend"
 msgstr "Адрес (URL) страницы запроса в бекенде приложения"
 
-#: /wa-apps/helpdesk/lib/classes/helpdeskHelper.class.php:720
 msgid "URL of the request page in the Customer Portal"
 msgstr "Адрес (URL) страницы запроса в личном кабинете клиента"
 
-#: /wa-apps/helpdesk/lib/classes/helpdeskHelper.class.php:721
 msgid "Unique identifier automatically assigned to each customer in Contacts"
 msgstr "Уникальный идентификатор клиента, который автоматически присваивается каждому клиенту в Контактах"
 
-#: /wa-apps/helpdesk/lib/classes/helpdeskHelper.class.php:722
 msgid "Primary email for customer"
 msgstr "Главный email-адрес клиента"
 
-#: /wa-apps/helpdesk/lib/classes/helpdeskHelper.class.php:723
 msgid "Name of customer in the format First Middle Last"
 msgstr "Имя клиента в формате Имя Отчество Фамилия"
 
-#: /wa-apps/helpdesk/lib/classes/helpdeskHelper.class.php:724
 msgid "Full name of person who has performed this action"
 msgstr "Полное имя исполнителя данного действия"
 
-#: /wa-apps/helpdesk/lib/classes/helpdeskHelper.class.php:727
 msgid "Company name specified in your Installer settings (also displayed in the top-left corner of your backend)"
 msgstr "Название компании, которое указано в настройках «Инсталлера» (также отображается в левом верхнем углу в бекенде)"
 
-#: /wa-apps/helpdesk/js/redactor.codeblock.js:6 /wa-apps/helpdesk/js/redactor.codeblock.js:20
 msgid "Insert code block"
 msgstr "Вставить блок кода"
 
-#: /wa-apps/helpdesk/js/redactor.codeblock.js:27
 msgid "Insert"
 msgstr "Вставить"
 
-#: /wa-apps/helpdesk/templates/layouts/includeUnreadSettings.html:82
 msgid "Mark all as read"
 msgstr "Пометить все как прочитанные"
 
 msgid "Access denied."
 msgstr "Доступ запрещен."
 
-#: /wa-apps/helpdesk/lib/actions/frontend/my/helpdeskFrontendMyRequest.action.php:23 /wa-apps/helpdesk/lib/actions/frontend/helpdeskFrontendActionForm.controller.php:16
 msgid "You have no access rights to this request."
 msgstr "У вас нет прав доступа к этому запросу."
 
-#: /wa-apps/helpdesk/lib/actions/frontend/helpdeskFrontendActionForm.controller.php:20
 msgid "This action cannot be performed from frontend."
 msgstr "Это действие не может быть выполнено из фронтенда"
 
-#: /wa-apps/helpdesk/lib/actions/backend/helpdeskBackendActionForm.controller.php:27
 msgid "This action cannot be performed by user."
 msgstr "Это действие не может быть выполнено."
 
-#: /wa-apps/helpdesk/templates/actions/faq/FaqSearch.html:29
 msgid "No search results"
 msgstr "Ничего не найдено"
 
-#: /wa-apps/helpdesk/themes/default/banner.html:4
 msgid "Find the answer"
 msgstr "Найти ответ"
 
-#: /wa-apps/helpdesk/templates/actions/requests/RequestsConstructor.html:90
 msgid "Name of client"
 msgstr "Имя клиента"
 
-#: /wa-apps/helpdesk/templates/actions/faq/Faq.html:47
 msgid "Write a brief instruction here that may help users to select this answer when they work on a client's request."
 msgstr "Напишите здесь краткую инструкцию для пользователя, которая поможет ему в выборе данного ответа при работе над запросом."
 
-#: /wa-apps/helpdesk/templates/actions/backend/BackendSidebar.html:260
 msgid "Request page constructor"
 msgstr "Конструктор страницы запроса"
 
-#: /wa-apps/helpdesk/lib/sources/templates/email_settings.html:389
 msgid "Please specify required data"
 msgstr "Пожалуйста, укажите необходимые данные"
 
-#: /wa-apps/helpdesk/lib/sources/templates/email_settings_rtr.html:6
 msgid "any"
 msgstr "любой"
 
-#: /wa-apps/helpdesk/lib/sources/helpdeskFormSourceType.class.php:493 /wa-apps/helpdesk/lib/sources/helpdeskFormSourceType.class.php:495
 msgid "Thank you for sending request to our support team!"
 msgstr "Спасибо за обращение в нашу службу поддержки!"
 
-#: /wa-apps/helpdesk/templates/actions/faq/FaqSnippets.html:36 /wa-apps/helpdesk/templates/actions/faq/FaqSnippets.html:42
 msgid "show all"
 msgstr "показать все"
 
-#: /wa-apps/helpdesk/templates/actions/requests/RequestsInfo.html:991
 msgid "Rotate left"
 msgstr "Повернуть влево"
 
-#: /wa-apps/helpdesk/templates/actions/requests/RequestsInfo.html:992
 msgid "Rotate right"
 msgstr "Повернуть вправо"
 
-#: /wa-apps/helpdesk/templates/actions/faq/FaqSnippets.html:64
 msgid "No search results."
 msgstr "Ничего не найдено."
 
-#: /wa-apps/helpdesk/templates/actions/faq/FaqSnippets.html:66
 msgid "No questions in this category."
 msgstr "Нет вопросов в этой категории."
 
-#: /wa-apps/helpdesk/js/redactor.faq.js:27 /wa-apps/helpdesk/js/redactor.faq.js:57
 msgid "Loading"
 msgstr "Загрузка"
 
-#: /wa-apps/helpdesk/lib/classes/helpdeskHelper.class.php:818
 msgid "Request fields"
 msgstr "Поля запроса"
 
-#: /wa-apps/helpdesk/lib/classes/helpdeskHelper.class.php:822
 msgid "Customer contact fields"
 msgstr "Поля контакта клиента"
 
-#: /wa-apps/helpdesk/lib/classes/helpdeskHelper.class.php:826
 msgid "User contact fields"
 msgstr "Поля контакта исполнителя действия"
 
-#: /wa-apps/helpdesk/lib/classes/helpdeskHelper.class.php:830
 msgid "Assignee contact fields"
 msgstr "Поля контакта назначенного исполнителя"
 
-#: /wa-apps/helpdesk/lib/classes/helpdeskHelper.class.php:834
 msgid "Common fields"
 msgstr "Общие поля"
 
-#: /wa-apps/helpdesk/lib/classes/helpdeskHelper.class.php:929
 msgid "Value of customer field \"%s\""
 msgstr "Значение поля контакта клиента \"%s\""
 
-#: /wa-apps/helpdesk/lib/classes/helpdeskHelper.class.php:931
 msgid "Value of actor field \"%s\""
 msgstr "Значение поля контакта исполнителя \"%s\""
 
-#: /wa-apps/helpdesk/lib/classes/helpdeskHelper.class.php:933
 msgid "Value of assigned user field \"%s\""
 msgstr "Значение поля контакта назначенного исполнителя \"%s\""
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:31
 msgid "Yes/No"
 msgstr "Да/Нет"
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:107
 msgid "Customer's name"
 msgstr "Имя клиента"
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:109
 msgid "9 days ago"
 msgstr "9 дней назад"
 
-#: /wa-apps/helpdesk/lib/sources/templates/form/form_settings.html:46
 msgid "Default"
 msgstr "По умолчанию"
 
-#: /wa-apps/helpdesk/lib/sources/templates/form/form_settings.html:49
 msgid "Blue"
 msgstr "Синий"
 
-#: /wa-apps/helpdesk/lib/sources/templates/form/form_settings.html:50
 msgid "Green"
 msgstr "Зеленый"
 
-#: /wa-apps/helpdesk/lib/sources/templates/form/form_settings.html:51
 msgid "Orange"
 msgstr "Оранжевый"
 
-#: /wa-apps/helpdesk/lib/sources/templates/form/form_settings.html:60
 msgid "Custom"
 msgstr "Собственный"
 
-#: /wa-apps/helpdesk/lib/actions/editor/helpdeskEditorEmailTemplate.action.php:25
 msgid "We got new request from"
 msgstr "Поступил новый запрос от"
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:81
 msgid "Number"
 msgstr "Номер"
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:114
 msgid "Request source"
 msgstr "Источник"
 
-#: /wa-apps/helpdesk/lib/sources/templates/form/form_settings.html:59
 msgid "Edit CSS"
 msgstr "Редактировать CSS"
 
-#: /wa-apps/helpdesk/templates/actions/editor/email_template_editor.html:96
 msgid "Source email address"
 msgstr "Email-адрес источника"
 
-#: /wa-apps/helpdesk/templates/actions/backend/BackendSidebar.html:126
 msgid "No states available."
 msgstr "Нет доступных статусов."
 
-#: /wa-apps/helpdesk/lib/sources/templates/email/email_settings.html:75
 msgid "Use Secure STARTTLS Settings"
 msgstr "Использовать настройки STARTTLS"
 
-#: /wa-apps/helpdesk/lib/sources/templates/email/email_settings.html:82
 msgid "If your mail server supports this option, we recommend using POP3 over STARTTLS or SSL/TLS since it provides increased security for your interactions with the remote mail server."
 msgstr "Если ваш почтовый сервер поддерживает эту опцию, мы рекомендуем использовать POP3 через STARTTLS или SSL/TLS, т. к. это обеспечивает большую безопасность при передаче данных."
 
-#: /wa-apps/helpdesk/templates/actions/faq/FaqLayout.html:17 /wa-apps/helpdesk/templates/actions/faq/FaqCategory.html:8
 msgid "draft"
 msgstr "черновик"
 
-#: /wa-apps/helpdesk/templates/actions/faq/FaqCategory.html:11
 msgid "backend"
 msgstr "бекенд"
 
-#: /wa-apps/helpdesk/templates/actions/faq/FaqCategory.html:14
 msgid "site"
 msgstr "сайт"
 
-#: /wa-apps/helpdesk/lib/model/helpdeskFaqCategory.model.php:103
 msgid "<no category>"
 msgstr "<без категории>"
 
-#: /wa-apps/helpdesk/templates/actions/faq/Faq.html:35
 msgid "Comment for users"
 msgstr "Комментарий для пользователей"
 
-#: /wa-apps/helpdesk/templates/actions/faq/Faq.html:23
 msgid "Category"
 msgstr "Категория"
 
-#: /wa-apps/helpdesk/templates/actions/faq/Faq.html:250
 msgid "Write an answer here"
 msgstr "Здесь напишите ответ"
 
-#: /wa-apps/helpdesk/lib/sources/templates/backend/backend_settings.html:3
 msgid "Specify default values for new request."
 msgstr "Укажите значения по умолчанию для нового запроса."
 
-#: /wa-apps/helpdesk/templates/actions/requests/RequestsAdd.html:34
 msgid "select another form"
 msgstr "выбрать другую форму"
 
-#: /wa-apps/helpdesk/lib/config/helpdeskRightConfig.class.php:29
 msgid "Can add new tags"
 msgstr "Может добавлять новые теги"
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:58
 msgid "Add a field to the heading area"
 msgstr "Добавить поле в область заголовка запроса"
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:137
 msgid "NOTE: You can drag and drop fields to change its position in the heading area of request page."
 msgstr "ПРИМЕЧАНИЕ: Вы можете перетащить поля, чтобы поменять их расположение на странице запроса."
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:45
 msgid "Remove this field from the heading area."
 msgstr "Удалить это поле из области заголовка запроса."
 
-#: /wa-apps/helpdesk/templates/actions/constructor/Constructor.html:126
 msgid "All available fields are already added."
 msgstr "Все возможные поля уже добавлены."
 
-#: /wa-apps/helpdesk/templates/actions/faq/FaqCategory.html:120
 msgid "There are no records in this category."
 msgstr "В этой категории нет записей."
 
-#: /wa-apps/helpdesk/templates/actions/editor/email_template_editor.html:77
 msgid "Add another recipient"
 msgstr "Добавить еще получателя"
 
-#: /wa-apps/helpdesk/lib/sources/templates/form/include_form_constructor_preview.html:8
 msgid "Edit field settings"
 msgstr "Редактировать настройки поля"
 
-#: /wa-apps/helpdesk/lib/sources/templates/form/include_form_constructor_preview.html:54
 msgid "Remove this field from the form"
 msgstr "Удалить это поле из формы"
 
-#: /wa-apps/helpdesk/lib/sources/templates/form/form_settings.html:75
 msgid "Create custom view"
 msgstr "Создать мой вид"
 
-#: /wa-apps/helpdesk/lib/sources/templates/form/form_settings.html:383
 msgid "Copy CSS from another view"
 msgstr "Скопировать CSS из другого вида"
 
-#: /wa-apps/helpdesk/lib/sources/templates/form/form_settings.html:406
 msgid "Delete custom CSS"
 msgstr "Удалить мой CSS"
 
-#: /wa-apps/helpdesk/lib/sources/templates/form/form_settings.html:356
 msgid "You are using customized version of CSS."
 msgstr "Вы используете модифицированную версию CSS."
 
-#: /wa-apps/helpdesk/lib/sources/templates/form/form_settings.html:357
 msgid "Revoke to default CSS."
 msgstr "Вернуться к стандартному CSS."
 
-#: /wa-apps/helpdesk/lib/sources/templates/form/form_settings.html:360
 msgid "You are using the original version of CSS."
 msgstr "Вы используете стандартную версию CSS."
 
-#: /wa-apps/helpdesk/lib/config/helpdeskRightConfig.class.php:30
 msgid "Can be assigned to requests"
 msgstr "Может быть назначен на запросы"
 
@@ -2870,111 +2515,84 @@ msgstr "Доступны только действия для выбранног
 msgid "Support request"
 msgstr "Отправить запрос"
 
-#: /wa-apps/helpdesk/lib/sources/helpdeskCommonST.class.php:645
 msgid "Unknown contact"
 msgstr "Неизвестный контакт"
 
-#: /wa-apps/helpdesk/lib/config/site.php:10
 msgid "No request form"
 msgstr "Нет формы запроса"
 
-#: /wa-apps/helpdesk/lib/config/site.php:29
 msgid "Main request form"
 msgstr "Главная форма запроса"
 
-#: /wa-apps/helpdesk/lib/actions/requests/helpdeskRequestsSearch.action.php:59 /wa-apps/helpdesk/lib/actions/requests/helpdeskRequestsSearch.action.php:218
 msgid "Others"
 msgstr "Другие"
 
-#: /wa-apps/helpdesk/lib/actions/frontend/helpdeskFrontendActionFormByHash.controller.php:89
 msgid "This action is not available"
 msgstr "Это действие недоступно"
 
-#: /wa-apps/helpdesk/templates/actions/editor/email_template_editor.html:127 /wa-apps/helpdesk/templates/actions/editor/email_template_editor.html:188
 msgid "1-Click Feedback"
 msgstr "Отклик в 1 клик"
 
-#: /wa-apps/helpdesk/templates/actions/editor/email_template_editor.html:191
 msgid "Add a snippet in your email template that will allow recipient with just one click to select a value for pull down or checkbox field. This field must exist in your Helpdesk app (refer to the Field constructor section) and be available for clients in their customer portals. Recipients will be redirected to their customer portals. This option can be used for quick evaluation of the request reply by your customers."
 msgstr "Вставьте в шаблон сообщения код, который позволит получателю одним щелчком, прямо в тексте полученного сообщения, установить выбранное значение для поля типа «Выпадающее меню» или «Флажок». Такое поле необходимо добавить в «Конструкторе полей» и сделать его доступным клиенту в личном кабинете. Данная опция удобна, например, для быстрой оценки ответа клиентом."
 
-#: /wa-apps/helpdesk/templates/actions/editor/email_template_editor.html:193
 msgid "Available fields"
 msgstr "Доступные поля"
 
-#: /wa-apps/helpdesk/templates/actions/editor/email_template_editor.html:206
 msgid "There are no appropriate fields"
 msgstr "Нет доступных полей для выбора"
 
-#: /wa-apps/helpdesk/lib/workflow/helpdeskWorkflow.class.php:548
 msgid "Available values for \"%s\""
 msgstr "Варианты значений для поля \"%s\""
 
-#: /wa-apps/helpdesk/lib/classes/helpdeskRequest.class.php:778
 msgid "Auto action"
 msgstr "Автодействие"
 
-#: /wa-apps/helpdesk/lib/workflow/templates/timer_settings.include.html:7
 msgid "Time-out"
 msgstr "Тайм-аут"
 
-#: /wa-apps/helpdesk/lib/workflow/templates/choose_action_type.include.html:6
 msgid "Action performed by user"
 msgstr "Действие выполняется пользователем"
 
-#: /wa-apps/helpdesk/lib/workflow/templates/choose_action_type.include.html:9
 msgid "Users perform this action manually on the request's page or in their Customer portals."
 msgstr "Пользователь будет вручную выполнять это действие на странице запроса в бекенде или в личном кабинете клиента."
 
-#: /wa-apps/helpdesk/lib/workflow/templates/choose_action_type.include.html:14
 msgid "Action performed automatically"
 msgstr "Действие выполняется автоматически"
 
-#: /wa-apps/helpdesk/lib/workflow/templates/choose_action_type.include.html:17 /wa-apps/helpdesk/lib/workflow/templates/Basic_settings.html:76
 msgid "This action will be triggered automatically (by time-out) if no other actions are performed with request during a certain period of time."
 msgstr "Данное действие будет выполнено автоматически, если в течение определенного времени (тайм-аут) с запросом не выполняется никаких других действий."
 
-#: /wa-apps/helpdesk/templates/actions/editor/EditorNewaction.html:29
 msgid "Create a new action to be performed by user"
 msgstr "Добавить новое действие, выполняемое пользователем"
 
-#: /wa-apps/helpdesk/templates/actions/editor/EditorNewaction.html:38
 msgid "Create a new action to be performed automatically"
 msgstr "Добавить новое действие, выполняемое автоматически"
 
-#: /wa-apps/helpdesk/templates/actions/settings/SettingsWorkflow.html:626 /wa-apps/helpdesk/lib/workflow/templates/timer_settings.include.html:19
 msgid "d"
 msgstr "д"
 
-#: /wa-apps/helpdesk/templates/actions/settings/SettingsWorkflow.html:626 /wa-apps/helpdesk/lib/workflow/templates/timer_settings.include.html:26
 msgid "h"
 msgstr "ч"
 
-#: /wa-apps/helpdesk/lib/workflow/templates/timer_settings.include.html:19
 msgid "days"
 msgstr "дней"
 
-#: /wa-apps/helpdesk/lib/workflow/templates/timer_settings.include.html:26
 msgid "hours"
 msgstr "часов"
 
-#: /wa-apps/helpdesk/templates/actions/faq/FaqCategory.html:75
 msgid "All sites"
 msgstr "Все сайты"
 
-#: /wa-apps/helpdesk/templates/actions/faq/FaqCategory.html:81
 msgid "Only selected sites"
 msgstr "Только выбранные сайты"
 
-#: /wa-apps/helpdesk/templates/actions/faq/FaqCategory.html:58
 msgid "Helpdesk app is not settled on any site. Use %s app to manage settlements."
 msgstr "Приложение «Поддержка» не поселено ни на одном сайте. Используйте приложение %s для настройки поселений."
 
-#: /wa-apps/helpdesk/templates/actions/faq/FaqCategory.html:101
 msgid "Shown above are only sites where Helpdesk app is settled. Use %s app to manage settlements."
 msgstr "Показаны только те сайты, на которых поселено приложение «Поддержка». Используйте приложение %s для настройки поселений."
 
-#: /wa-apps/helpdesk/lib/actions/faq/helpdeskFaqCategorySave.controller.php:19 /wa-apps/helpdesk/lib/actions/faq/helpdeskFaqSave.controller.php:20
 msgid "Category URL may contain only letters, digits, and hyphens"
 msgstr "URL категории может содержать только латинские буквы, цифры и дефисы"
 
@@ -2990,22 +2608,20 @@ msgstr "Описание условий"
 msgid "Checked by default"
 msgstr "Отмечено по умолчанию"
 
-#: /wa-apps/helpdesk/templates/layouts/Mobile.html:65
 msgid "Sidebar"
-msgstr ""
+msgstr "Боковая панель"
 
-#: /wa-apps/helpdesk/lib/classes/helpdeskAgreementCheckboxField.class.php:71
 msgid "I agree to <a>{$this->default_link_text}</a>"
-msgstr ""
+msgstr "Я соглашаюсь с <a>{$this->default_link_text}</a>"
 
-#: /wa-apps/helpdesk/lib/classes/helpdeskAgreementCheckboxField.class.php:6
 msgid "personal data protection policy"
-msgstr ""
+msgstr "политика защиты персональных данных"
 
-#: /wa-apps/helpdesk/lib/classes/helpdeskAgreementCheckboxField.class.php:7
 msgid "---INSERT A LINK HERE!---"
-msgstr ""
+msgstr "---ВСТАВЬТЕ ССЫЛКУ ЗДЕСЬ!---"
 
-#: /wa-apps/helpdesk/lib/sources/templates/form/form_constructor_captcha.html:12 /wa-apps/helpdesk/lib/sources/templates/form/form_constructor_captcha.html:17
 msgid "Refresh CAPTCHA"
-msgstr ""
+msgstr "Обновить капчу"
+
+msgid "performs bulk operation “%s”"
+msgstr "выполняет массовое действие «%s»"

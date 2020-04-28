@@ -31,7 +31,7 @@ class helpdeskRightsModel extends waModel
             return false;
         }
 
-        if ($action_id{0} != '!') {
+        if ($action_id[0] != '!') {
             if (self::isAllowed($workflow_id, '!action.all', $contact_id)) {
                 return true;
             }

@@ -1664,7 +1664,8 @@ $.wa.helpdesk_controller = {
     initWYSIWYG: function(textarea, options, csrf) {
         options = $.extend({
             focus: true,
-            buttons: ['format', 'bold', 'italic', 'underline', 'unorderedlist', 'orderedlist', 'link', 'image', 'horizontalrule'],
+            buttons: ['format', 'bold', 'italic', 'underline', 'deleted', 'lists', 'link', 'image', 'horizontalrule'],
+            plugins: ['codeblock', 'faq'],
             minHeight: 200,
             source: false,
             uploadImage: true,
@@ -1690,7 +1691,8 @@ $.wa.helpdesk_controller = {
     initEditor: function(textarea, options) {
         var $textarea = $(textarea);
         $textarea.waEditor($.extend({}, options || {}, {
-            buttons: ['format', 'bold', 'italic', 'underline', 'unorderedlist', 'orderedlist', 'link', 'image', 'horizontalrule'],
+            buttons: ['format', 'bold', 'italic', 'underline', 'deleted', 'lists', 'link', 'image', 'horizontalrule'],
+            plugins: ['codeblock'],
             imageUpload: '?module=files&action=uploadimage&r=2',
             imageUploadFields: {
                 '_csrf': options._csrf || ''

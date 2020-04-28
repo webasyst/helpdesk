@@ -528,7 +528,7 @@ class helpdeskRequestsCollection
 
         if (wa_is_int($string)) {
             $string = $this->model->escape($string, 'like');
-            $this->where[] = "CONVERT(r.id USING utf8) LIKE '%{$string}%' COLLATE utf8_general_ci";
+            $this->where[] = "CONVERT(r.id USING utf8) LIKE '%{$string}%'";
             $this->header .= $this->header ? ', ' : '';
             $this->header .= _w('Request ID').'≈'.$string;
         } else {
@@ -538,7 +538,7 @@ class helpdeskRequestsCollection
             $this->from[] = 'JOIN wa_contact AS client ON client.id = r.client_contact_id';
             foreach(preg_split('~\s+~', $string) as $string) {
                 $string = $this->model->escape($string, 'like');
-                $this->where[] = "client.name LIKE '%{$string}%' COLLATE utf8_general_ci";
+                $this->where[] = "client.name LIKE '%{$string}%'";
             }
         }
     }

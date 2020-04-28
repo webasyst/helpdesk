@@ -141,7 +141,7 @@ class helpdeskRequest extends helpdeskRequestRecord
         )))
         {
             return _w('performs action').' <span style="color:black">'.$name.'</span>';
-        } else if ($action_id && $action_id{0} == '!') {
+        } else if ($action_id && $action_id[0] == '!') {
             return sprintf_wp('performs bulk operation “%s”', $name);
         } else {
             return _w('performs action').' '.$name;
@@ -162,7 +162,7 @@ class helpdeskRequest extends helpdeskRequestRecord
             case helpdeskOneClickFeedback::REQUEST_LOG_ACTION_ID:
                 return helpdeskOneClickFeedback::getRequestLogActionName();
             default:
-                if ($action_id && $action_id{0} == '!') {
+                if ($action_id && $action_id[0] == '!') {
                     return $action_id;
                 } else {
                     return htmlspecialchars($action_id);

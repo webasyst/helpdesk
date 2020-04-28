@@ -146,7 +146,7 @@
     {if !empty($source.params.fld_text.redactor)}
         redactor.redactor({
             lang: '{substr($wa->locale(), 0, 2)}',
-            buttons: ['format', 'bold', 'italic', 'underline', 'unorderedlist', 'orderedlist', 'link', 'image', 'horizontalrule'],
+            buttons: ['format', 'bold', 'italic', 'underline', 'deleted', 'lists', 'link', 'image', 'horizontalrule'],
             focus: false,
             imageUpload: '{$upload_image_url}?r=2',
             imageUploadFields: {

@@ -4,20 +4,41 @@ class helpdeskContactsProfileTabHandler extends waEventHandler
 {
     public function execute(&$params)
     {
+        if (!wa()->getUser()->getRights('helpdesk', 'backend')) {
+            return;
+        }
+
+        $contact_id = $params;
+
+        $backend_url = wa()->getConfig()->getBackendUrl(true);
+
         $old_app = wa()->getApp();
-        wa('helpdesk')->setActive('helpdesk');
+        wa('helpdesk', true);
+
+        $result = array();
+
+        $count = $e = null;
         try {
-            $a = new helpdeskHandlersProfiletabAction();
-            $result = $a->getTabContent($params);
-        } catch (Exception $e) {
-            $result = array(
-                'title' => wa()->getApp().' error',
-                'html' => (string) $e,
-                'count' => 0,
+            // List of requests
+            $c = helpdeskRequestsCollection::create(array(
+                array(
+                    'name'   => 'client',
+                    'params' => array($contact_id),
+                ),
+            ));
+            $count = $c->count();
+        } catch(Exception $e) {
+        }
+        if ($count || $e) {
+            $result[] = array(
+                'title' => _w('Requests').($count ? ' ('.$count.')' : '') ,
+                'html'  => $e ? $e->getMessage().' ('.$e->getCode().')' : '',
+                'url'   => $e ? '' : $backend_url.'helpdesk/?module=handlers&action=profiletab&contact_id='.$contact_id,
+                'count' => $e ? '!' : null,
             );
         }
 
-        waSystem::setActive($old_app);
-        return $result;
+        wa($old_app, true);
+        return ifempty($result, null);
     }
 }

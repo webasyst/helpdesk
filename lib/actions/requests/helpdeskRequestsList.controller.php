@@ -45,7 +45,7 @@ class helpdeskRequestsListController extends helpdeskJsonController
         if (!in_array($order, array('id', '!id', 'updated', '!updated'))) {
             $order = '!updated';
         }
-        if ($order{0} == '!') {
+        if ($order[0] == '!') {
             $c->orderBy('r.'.substr($order, 1), 'DESC');
         } else {
             $c->orderBy('r.'.$order);

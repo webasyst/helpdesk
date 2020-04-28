@@ -2,10 +2,31 @@
 
 class helpdeskConfig extends waAppConfig
 {
+    const ROWS_PER_PAGE = 30;
+
     /**
      * @var string datetime Y-m-d H:i:s
      */
     private $auto_actions_feature_release;
+
+    public function checkUpdates()
+    {
+        /**
+         * Event that triggered before any check updates of apps
+         * @event before_check_updates
+         */
+        wa()->event(array('helpdesk', 'before_check_updates'));
+
+        $result = parent::checkUpdates();
+
+        /**
+         * Event that triggered after check updates of apps
+         * @event after_check_updates
+         */
+        wa()->event(array('helpdesk', 'after_check_updates'));
+
+        return $result;
+    }
 
     /**
      * Automagically called in background by system JS.
@@ -269,4 +290,3 @@ class helpdeskConfig extends waAppConfig
     }
 
 }
-

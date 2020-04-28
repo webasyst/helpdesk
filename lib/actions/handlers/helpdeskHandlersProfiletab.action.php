@@ -4,36 +4,29 @@
  */
 class helpdeskHandlersProfiletabAction extends helpdeskViewAction
 {
-    public function getTabContent($params)
-    {
-        $this->contact_id = $params;
-        $html = $this->display();
-
-        if ($this->requests) {
-            return array(
-                'title' => _w('Requests').' ('.count($this->requests).')',
-                'html' => $html,
-                'count' => 0,
-            );
-        } else {
-            return null;
-        }
-    }
-
     public function execute()
     {
+        $contact_id = waRequest::get('contact_id', null, waRequest::TYPE_INT);
+        $page = waRequest::get('page', 0, waRequest::TYPE_INT);
+
         // List of requests
         $c = helpdeskRequestsCollection::create(array(
             array(
                 'name' => 'client',
-                'params' => array($this->contact_id),
+                'params' => array($contact_id),
             ),
         ));
         $c->orderBy('created', 'DESC');
-        $this->requests = helpdeskRequest::prepareRequests($c->limit(0)->getRequests());
+
+        $count = $c->count();
+        $offset = max(0, $page - 1) * helpdeskConfig::ROWS_PER_PAGE;
+        $pages_count = ceil($count / helpdeskConfig::ROWS_PER_PAGE);
+
+        $requests = helpdeskRequest::prepareRequests($c->limit($offset, helpdeskConfig::ROWS_PER_PAGE)->getRequests());
         $link_tpl = wa()->getAppUrl('helpdesk').'#/request/%id%/';
-        $this->view->assign('requests', $this->requests);
+        $this->view->assign('requests', $requests);
         $this->view->assign('link_tpl', $link_tpl);
+        $this->view->assign('pages_count', $pages_count);
+        $this->view->assign('total_count', $count);
     }
 }
-

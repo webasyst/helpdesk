@@ -218,18 +218,18 @@
                 }
                 var field_type = $(this).closest('.fr-field').data('frFieldWrapper');
                 var available_fields = container.find('.available-fields');
-                available_fields.find('[data-fr-field-add-id="' + field_type + '"]').closest('li').show()
+                available_fields.find('[data-fr-field-add-id="' + field_type + '"]').closest('li').show();
                 container.find('.new-field').show();
                 multi_counters[field_type] = Math.max(0, multi_counters[field_type] - 1);
                 $('#h-form-constructor').trigger('delete_field', [type, field_type]);
 
             });
-
+ 
             if (type === 'request') {
                 var initRedactor = function(el, placeholder) {
                     if (!el.data('redactor')) {
                         $.wa.helpdesk_controller.initWYSIWYG($('.h-text-editor'), {
-                            buttons: ['format', 'bold', 'italic', 'underline', 'unorderedlist', 'orderedlist', 'link', 'image', 'horizontalrule'],
+                            buttons: ['format', 'bold', 'italic', 'underline', 'deleted', 'lists', 'link', 'image', 'horizontalrule'],
                             width: $('#form-request-constructor-preview').width(),
                             uploadImage: true,
                             focus: false,

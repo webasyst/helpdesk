@@ -20,7 +20,7 @@ foreach (helpdeskWorkflow::getWorkflows() as $wf_id => $wf) {
                     continue;
                 }
                 $tmpl_sep[2] = trim($tmpl_sep[2]);
-                if ($tmpl_sep[2]{0} !== '<') {
+                if ($tmpl_sep[2][0] !== '<') {
                     $tmpl_sep[2] = '<p>' . $tmpl_sep[2] . '</p>';
                 }
                 $tmpl = implode($sep, $tmpl_sep);
@@ -63,7 +63,7 @@ foreach ($spm->getByField('name', 'messages', true) as $item) {
                         continue;
                     }
                     $tmpl_sep[2] = trim($tmpl_sep[2]);
-                    if ($tmpl_sep[2]{0} !== '<') {
+                    if ($tmpl_sep[2][0] !== '<') {
                         $tmpl_sep[2] = '<p>' . $tmpl_sep[2] . '</p>';
                     }
                     $tmpl = implode($sep, $tmpl_sep);
@@ -105,7 +105,7 @@ foreach ($spm->getByField('name', 'antispam_mail_template', true) as $item) {
                 continue;
             }
             $tmpl_sep[2] = trim($tmpl_sep[2]);
-            if ($tmpl_sep[2]{0} !== '<') {
+            if ($tmpl_sep[2][0] !== '<') {
                 $tmpl_sep[2] = '<p>' . $tmpl_sep[2] . '</p>';
             }
             $tmpl = implode($sep, $tmpl_sep);
