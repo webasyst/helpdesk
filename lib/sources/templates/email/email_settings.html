@@ -34,13 +34,13 @@ select { min-width: 80px; }
                     <div class="field top-padded">
                         <div class="name">[`Email`]</div>
                         <div class="value">
-                            <input type="text" name="params[email]" value="{$source.params.email}" class="equal-width">
+                            <input type="text" name="params[email]" value="{$source.params.email|escape}" class="equal-width">
                         </div>
                     </div>
                     <div class="field">
                         <div class="name">[`Username`]</div>
                         <div class="value">
-                            <input type="text" name="params[login]" value="{$source.params.login}" autocomplete="off" class="equal-width">
+                            <input type="text" name="params[login]" value="{$source.params.login|escape}" autocomplete="off" class="equal-width">
                         </div>
                     </div>
                     <div class="field">
@@ -57,13 +57,13 @@ select { min-width: 80px; }
                     <div class="field">
                         <div class="name">[`Incoming server`]</div>
                         <div class="value">
-                            <input type="text" name="params[server]" value="{$source.params.server}" class="equal-width">
+                            <input type="text" name="params[server]" value="{$source.params.server|escape}" class="equal-width">
                         </div>
                     </div>
                     <div class="field">
                         <div class="name">[`POP3 Port`]</div>
                         <div class="value">
-                            <input type="text" name="params[port]" value="{$source.params.port}" class="equal-width">
+                            <input type="text" name="params[port]" value="{$source.params.port|escape}" class="equal-width">
                         </div>
                     </div>
                     <div class="field">
