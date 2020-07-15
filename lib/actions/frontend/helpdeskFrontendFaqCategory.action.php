@@ -28,6 +28,11 @@ class helpdeskFrontendFaqCategoryAction extends helpdeskFrontendViewAction
         $this->view->assign('category', $category);
         $this->view->assign('faq_list', $faq_list);
 
+        $canonical_url = wa()->getRouteUrl('helpdesk/frontend/faqCategory', [
+            'category' => $category['url'],
+        ], true);
+        $this->getResponse()->setCanonical($canonical_url);
+
         parent::execute();
     }
 }

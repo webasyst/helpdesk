@@ -32,6 +32,12 @@ class helpdeskFrontendFaqCategoryQuestionAction extends helpdeskFrontendViewActi
         $this->view->assign('category', $category);
         $this->view->assign('faq', $faq);
 
+        $canonical_url = wa()->getRouteUrl('helpdesk/frontend/faqCategoryQuestion', [
+            'category' => $category['url'],
+            'question' => $faq['url'],
+        ], true);
+        $this->getResponse()->setCanonical($canonical_url);
+
         parent::execute();
     }
 }

@@ -148,6 +148,9 @@
             lang: '{substr($wa->locale(), 0, 2)}',
             buttons: ['format', 'bold', 'italic', 'underline', 'deleted', 'lists', 'link', 'image', 'horizontalrule'],
             focus: false,
+            shortcutsAdd: {
+                'enter': { func: 'keydown.onShiftEnter' }
+            },
             imageUpload: '{$upload_image_url}?r=2',
             imageUploadFields: {
                 '_csrf': '{waRequest::cookie('_csrf', '')}'
