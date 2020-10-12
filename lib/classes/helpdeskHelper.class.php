@@ -174,9 +174,9 @@ class helpdeskHelper
         } elseif ($source->type == 'backend') {
             return 'backend';
         } elseif ($source->type == 'form') {
-            if ($request['creator_type'] == 'auth') {
+            if (ifset($request['creator_type']) == 'auth') {
                 return 'my';
-            } elseif ($request['creator_type'] == 'backend') {
+            } elseif (ifset($request['creator_type']) == 'backend') {
                 return 'backend';
             }
             return 'form'; // $request['creator_type'] == 'public' and other
