@@ -525,7 +525,46 @@ class helpdeskFormConstructor
         }
 
         // Remove harmful attributes that survived escaping
-        $text = preg_replace('~<([^>]*)(onAbort|onBlur|onChange|onClick|onDblClick|onDragDrop|onError|onFocus|onKeyDown|onKeyPress|onKeyUp|onLoad|onMouseDown|onMouseMove|onMouseOut|onMouseOver|onMouseUp|onMove|onReset|onResize|onSelect|onSubmit|onUnload)[^>]*>~is', '<$1>', $text);
+        $all_harmful_attributes = [
+            'onAbort',
+            'onBlur',
+            'onChange',
+            'onClick',
+            'onDblClick',
+            'onDragDrop',
+            'onError',
+            'onFocus',
+            'onKeyDown',
+            'onKeyPress',
+            'onKeyUp',
+            'onLoad',
+            'onMouseDown',
+            'onMouseMove',
+            'onMouseOut',
+            'onMouseOver',
+            'onMouseUp',
+            'onMove',
+            'onReset',
+            'onResize',
+            'onSelect',
+            'onSubmit',
+            'onUnload'
+        ];
+
+        // collect only existing in this text attributes, to prevent build very complicated (in complexity meaning) regexp that couldn't work on long text
+        $harmful_attributes = [];
+        foreach ($all_harmful_attributes as $attribute) {
+            if (stripos($text, $attribute) !== false) {
+                $harmful_attributes[] = $attribute;
+            }
+        }
+
+        if ($harmful_attributes) {
+            $pattern = '(?:' . join('|', $harmful_attributes) . ')';
+            $pattern = '~<([^>]*?)' . $pattern . '[^>]*?>~is';
+            $text = preg_replace($pattern, '<$1>', $text);
+        }
+
         $text = preg_replace('~expression\s*\(~is', '_expression_ (', $text);
         $text = preg_replace('~javascript:~is', '_javascript_ : ', $text);
 

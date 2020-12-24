@@ -113,9 +113,15 @@
 </div>
 
 <script>
+
     var wa_url = '{$wa_url}', wa_app = 'helpdesk';
 
     $(function() {
+
+        {if $id && !$faq.id}
+            $.wa.setHash('#/faq/new/');
+            return;
+        {/if}
 
         var button = $(':submit');
         var updateBackLink = function(href, name) {

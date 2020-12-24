@@ -326,7 +326,9 @@ class helpdeskFaqModel extends waModel
 
     public function getById($value) {
         $item = parent::getById($value);
-        $item['faq_category_id'] = (int) $item['faq_category_id'];
+        if ($item) {
+            $item['faq_category_id'] = (int)$item['faq_category_id'];
+        }
         return $item;
     }
 }

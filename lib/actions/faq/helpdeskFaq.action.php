@@ -17,6 +17,9 @@ class helpdeskFaqAction extends waViewAction
             $category_id = waRequest::request('category_id', null, waRequest::TYPE_INT);
         } else {
             $faq = $fm->getById($id);
+            if (!$faq) {
+                $faq = $fm->getEmptyRow();
+            }
             $category_id = $faq['faq_category_id'];
         }
 
@@ -32,9 +35,8 @@ class helpdeskFaqAction extends waViewAction
         $this->view->assign(array(
             'category' => $category,
             'categories' => $fcm->getAllCategories(),
-            'faq' => $faq
+            'faq' => $faq,
+            'id' => $id,
         ));
     }
 }
-
-// EOF
