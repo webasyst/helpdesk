@@ -300,7 +300,7 @@ class helpdeskHtmlSanitizer
         }
 
         if (!$url_validator->isValid($url)) {
-            $url = 'http://'.preg_replace('~^([^:]+:)?(//|\\\\\\\\)~', '', $url);
+            $url = preg_replace('~^([^:]+:)?(//|\\\\\\\\)~', '', $url);
         }
 
         return $url;
