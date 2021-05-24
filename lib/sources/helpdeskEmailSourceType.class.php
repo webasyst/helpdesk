@@ -172,7 +172,7 @@ class helpdeskEmailSourceType extends helpdeskCommonST implements helpdeskCronST
      * Throws exceptions when something's wrong.
      * Declared public for easier testing.
      */
-    public function processEml(helpdeskSource $source, $eml_file_path, &$message = null, $cron_job_log_filename)
+    public function processEml(helpdeskSource $source, $eml_file_path, &$message, $cron_job_log_filename)
     {
         static $mail_decode = null;
         if (empty($mail_decode)) {

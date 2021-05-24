@@ -155,7 +155,7 @@ class helpdeskSendMessages
      * Also used for message previews for backend users.
      * Returns message recipients, email => name
      */
-    public function getMessageRecipients($request, $log = null, $m)
+    public function getMessageRecipients($request, $log, $m)
     {
         if (empty($m['to'])) {
             return array();
