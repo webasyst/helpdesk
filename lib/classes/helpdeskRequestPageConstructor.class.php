@@ -64,7 +64,20 @@ class helpdeskRequestPageConstructor
         return $this->fields['all'];
     }
 
-    public function  updateFields($fields)
+    public function updateField(helpdeskRequestField $field)
+    {
+        if (!$field) {
+            return;
+        }
+        $fields = $this->getAllFields();
+        $field_id = self::PREFIX_CUSTOM.$field->getId();
+        if (isset($fields[$field_id])) {
+            $fields[$field_id]['name'] = $field->getName();
+            $this->updateFields($fields);
+        }
+    }
+
+    public function updateFields($fields)
     {
         $config = $this->getConfig();
 

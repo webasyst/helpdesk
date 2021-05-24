@@ -64,13 +64,15 @@
                             {if $f_id === 'captcha'}
                                 {$wa->captcha(null, true, "[`Reload image`]")}
                             {elseif $f_id === 'text'}
-                                <textarea class="h-text-textarea" name="fld_data[text]" placeholder="{$fld.placeholder|escape}" autocomplete="off" {if !empty($fld.redactor)}style="display:none;"{/if}></textarea>
+                                <textarea class="h-text-textarea" name="fld_data[text]" placeholder="{$fld.placeholder|escape}"
+                                          autocomplete="off" {if !empty($fld.redactor)}style="display:none;"{/if}>{$fld.value|default:''|escape}</textarea>
                             {elseif $f_id === 'attachments'}
                                 <div class="h-file-attachments"></div>
                             {elseif !empty($field.html)}
                                 {$field.html}
                             {else}
-                                <input type="text" name="fld_data[{$f_id}]" placeholder="{$fld.placeholder|escape}" autocomplete="off">
+                                <input type="text" name="fld_data[{$f_id}]" placeholder="{$fld.placeholder|escape}"
+                                       autocomplete="off" value="{$fld.value|default:''}">
                             {/if}
                         </div>
                     </div>

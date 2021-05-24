@@ -34,7 +34,8 @@ class helpdeskEmailSourceType extends helpdeskCommonST implements helpdeskCronST
         $spm->updateLastDatetime($source->id);
         $source->params->last_timestamp = time(); // keep in sync with the DB
 
-        $wf = helpdeskWorkflow::getWorkflow($source->params->workflow); // make sure it exists before we start
+        $workflow_id = $source->params->ifset('workflow', 0);
+        $wf = helpdeskWorkflow::getWorkflow($workflow_id); // make sure it exists before we start
 
         $mail_reader = new waMailPOP3($source['params']->toArray());
         $n = $mail_reader->count();

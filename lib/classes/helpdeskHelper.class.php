@@ -815,8 +815,33 @@ class helpdeskHelper
             }
         }
         return $form_fields;
-
     }
+
+    public static function getFormContactFields($id, $env = null)
+    {
+        try {
+            $source = helpdeskSource::get($id);
+            $st = $source->getSourceType();
+        } catch (Exception $e) {
+            return array();
+        }
+        if (!($st instanceof helpdeskFormSourceType)) {
+            return array();
+        }
+
+        $env = $env !== null ? $env : wa()->getEnv();
+
+        $form_fields = array();
+        $form_constructor = new helpdeskFormConstructor();
+        $fields = $form_constructor->getContactFields($source, $env);
+        foreach ($fields as $field_id => $field_opt) {
+            if (!empty($field_opt['choosen'])) {
+                $form_fields[$field_id] = $field_opt;
+            }
+        }
+        return $form_fields;
+    }
+
 
     public static function transliterate($slug)
     {

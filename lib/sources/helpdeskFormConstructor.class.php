@@ -179,7 +179,7 @@ class helpdeskFormConstructor
                     $field_params['xhr_url'] = wa()->getRouteUrl('helpdesk/frontend/regions', array());
                     $field_params['xhr_cross_domain'] = true;
                 }
-                if (wa()->getUser()->isAuth() && !empty($field_params['value'])) {
+                if (wa()->getUser()->isAuth() && empty($field_params['value'])) {
                     $field_params['value'] = wa()->getUser()->get($field_id);
                     if (is_array($field_params['value'])) {
                         $field_params['value'] = array_shift($field_params['value']);

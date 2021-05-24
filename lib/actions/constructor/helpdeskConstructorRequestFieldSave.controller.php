@@ -7,14 +7,14 @@ class helpdeskConstructorRequestFieldSaveController extends helpdeskJsonControll
     {
         $id = wa()->getRequest()->post('id');
         $place = wa()->getRequest()->post('place', null, waRequest::TYPE_STRING_TRIM);
-        $request_page_contructor = helpdeskRequestPageConstructor::getInstance();
-        $fields = $request_page_contructor->getAllFields();
+        $request_page_constructor = helpdeskRequestPageConstructor::getInstance();
+        $fields = $request_page_constructor->getAllFields();
         if (isset($fields[$id])) {
             $field = $fields[$id];
             $field['place'] = $place;
             unset($fields[$id]);
             $fields[$id] = $field;
-            $request_page_contructor->updateFields($fields);
+            $request_page_constructor->updateFields($fields);
         }
     }
 }

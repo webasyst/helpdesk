@@ -299,9 +299,10 @@ class helpdeskRequest extends helpdeskRequestRecord
         $params = "r={$request_id}&a={$attach_id}".($log_id ? '&l='.$log_id : '');
 
         if (wa()->getEnv() == 'backend') {
-            return wa('helpdesk')->getUrl()."?action=attach&{$params}";
+            return wa('helpdesk')->getUrl(true)."?action=attach&{$params}";
         } else {
-            return wa()->getRouteUrl('helpdesk/frontend/myAttachment')."?{$params}";
+            $domain = wa()->getConfig()->getDomain();
+            return wa()->getRouteUrl('helpdesk/frontend/myAttachment', array(), true, $domain)."?{$params}";
         }
     }
 

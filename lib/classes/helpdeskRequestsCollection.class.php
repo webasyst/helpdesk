@@ -437,10 +437,9 @@ class helpdeskRequestsCollection
 
         if ($field && $field->getType() === 'Checkbox') {
             if ($param[2]) {
-                $this->from[] = $join;
+                $this->from[] = "{$join} AND {$t}.value != 0";
             } else {
-                $this->from[] = "LEFT {$join}";
-                $this->where[] = "{$t}.id IS NULL";
+                $this->from[] = "{$join} AND {$t}.value = 0";
             }
             // human-readable description
             $this->header .= $this->header ? ', ' : '';
@@ -1354,11 +1353,25 @@ class helpdeskRequestsCollection
                         $name = 'field_' . $r['params'][0];
                         $p = array_slice($r['params'], 2);
                         $field = helpdeskRequestFields::getField($r['params'][0]);
-                        if ($field && $field->getType() === 'Checkbox') {
-                            $p = $r['params'][2];
-                        } else {
-                            $p = explode(',', $p[0]);
+
+                        $val = null;
+                        if ($field) {
+                            if ($field->getType() === 'Checkbox') {
+                                $val = $r['params'][2];
+                            } elseif ($field->getType() === 'Select') {
+                                $val = explode(',', $p[0]);
+                            }
                         }
+
+                        if ($val === null) {
+                            if (strpos($p[0], ',') !== false) {
+                                $val = explode(',', $p[0]);
+                            } else {
+                                $val = $p[0];
+                            }
+                        }
+
+                        $p = $val;
 
                     } else {
                         $p = preg_split('/,|--/', $p);

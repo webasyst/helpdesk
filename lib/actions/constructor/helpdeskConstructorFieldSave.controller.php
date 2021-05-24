@@ -29,10 +29,20 @@ class helpdeskConstructorFieldSaveController extends waJsonController
                     return;
                 }
                 helpdeskRequestFields::updateField($field);
+                $this->updateRequestPageField($field);
                 break;
         }
 
         $this->response = 'done';
+    }
+
+    protected function updateRequestPageField(helpdeskRequestField $field)
+    {
+        if (!$field) {
+            return;
+        }
+        $request_page_constructor = helpdeskRequestPageConstructor::getInstance();
+        $request_page_constructor->updateField($field);
     }
 
     public function getUpdatedField($field = null) {
