@@ -241,10 +241,10 @@ class helpdeskEmailSourceType extends helpdeskCommonST implements helpdeskCronST
 
         // look up contact by email
         $email = !empty($mail['headers']['reply-to']['email']) ?
-            $mail['headers']['reply-to']['email'] : ifset($mail['headers']['from']['email']);
+            $mail['headers']['reply-to']['email'] : ifset($mail, 'headers', 'from', 'email', '');
         if ($email) {
             $name = !empty($mail['headers']['reply-to']['name']) ?
-                $mail['headers']['reply-to']['name'] : ifset($mail['headers']['from']['name']);
+                $mail['headers']['reply-to']['name'] : ifset($mail, 'headers', 'from', 'name', '');
 
             $this->logCronJob("Try find contact by email", $cron_job_log_filename);
 

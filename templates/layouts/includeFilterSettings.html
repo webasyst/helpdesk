@@ -13,7 +13,7 @@
                     {% if (!$.isEmptyObject(o.icons)) { %}
                         <div class="field">
                             <div class="name" style="width: 100px;">[`Icon`]</div>
-                            <div class="value" style="margin-left: 120px;">  
+                            <div class="value" style="margin-left: 120px;">
                                 <ul class="menu-h h-filter-settings-icons">
                                 {% for (var  i = 0; i < o.icons.length; i += 1) { %}
                                     <li data-icon="{%#o.icons[i]%}" {% if (o.icons[i] === f.icon) { %}class="selected"{% } %}>
@@ -24,7 +24,7 @@
                             </div>
                         </div>
                     {% } %}
-                
+
                     {% if (o.admin) { %}
                         <div class="field">
                             <div class="name">[`Access`]</div>
@@ -43,7 +43,7 @@
                         </div>
                     </div>
                 {% } %}
-        
+
                 <div class="buttons">
                     <input type="submit" class="button green" value="[`Save`]">
                     [`or`]
@@ -52,7 +52,7 @@
                         <a href="javascript:void(0);" class="no-underline h-delete float-right small h-filter-delete">[`Delete filter`]</a>
                     {% } %}
                 </div>
-        
+
                 {% if (f.id) { %}
                     <div class="field" style="margin-top: 10px;">
                         <p class="small">
@@ -73,10 +73,10 @@
             {% var f = o.f; %}
             <form class="h-filter-settings" style="margin-top: 10px;">
                 <div class="fields w100 width100px">
-                    <input type="hidden" name="id" value="{%#f.id%}">                    
-                    <p>[`This filter displays all requests independent on their status. If you don't need this whole list for a permanent access, simply hide it. Once you need it again, you can turn it on anytime using Add filter option in the left-hand sidebar.`]</p>
+                    <input type="hidden" name="id" value="{%#f.id%}">
+                    <p>[`This filter displays all requests regardless of their status or assignment. If you do not usually need this full list for your work, simply hide it. Once you need it again, you can turn it on anytime using the “Add filter” option in the left-hand sidebar.`]</p>
                     <div class="buttons">
-                        <a href="javascript:void(0);" class="no-underline h-delete float-right small h-filter-delete">[`Hide All requests filter`]</a>
+                        <a href="javascript:void(0);" class="no-underline h-delete float-right small h-filter-delete">[`Hide “All requests” filter`]</a>
                     </div>
                 </div>
             </form>

@@ -43,12 +43,9 @@ class helpdeskUnreadModel extends waModel
                     'max_request_id' => $max_request_id,
                 ));
             }
-        } else {
+        } else if (!$last_unread_request_id) {
             // This seems to be the first time user ever entered helpdesk app.
             // Set default settings for him.
-            if (!isset($settings['count_all_new'])) {
-                $csm->set($contact_id, 'helpdesk', 'count_all_new', 1);
-            }
             if (!isset($settings['count_assigned'])) {
                 $csm->set($contact_id, 'helpdesk', 'count_assigned', 1);
                 $csm->set($contact_id, 'helpdesk', 'count_assigned_logs', 1);

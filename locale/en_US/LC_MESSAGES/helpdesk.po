@@ -1837,10 +1837,10 @@ msgstr ""
 msgid "no categories"
 msgstr ""
 
-msgid "This filter displays all requests independent on their status. If you don't need this whole list for a permanent access, simply hide it. Once you need it again, you can turn it on anytime using Add filter option in the left-hand sidebar."
+msgid "This filter displays all requests regardless of their status or assignment. If you do not usually need this full list for your work, simply hide it. Once you need it again, you can turn it on anytime using the “Add filter” option in the left-hand sidebar."
 msgstr ""
 
-msgid "Hide All requests filter"
+msgid "Hide “All requests” filter"
 msgstr ""
 
 msgid "Please <a href=\"#/faq/category/new\">create a category</a> first, to start adding questions and answers."
