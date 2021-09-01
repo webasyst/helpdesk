@@ -106,6 +106,7 @@ class helpdeskConfig extends waAppConfig
                         }
                     } catch (Exception $e) {
                         $a = new waDbRecord(new helpdeskErrorModel());
+                        unset($a['id']);
                         $a->datetime = date('Y-m-d H:i:s');
                         $a->source_id = $source_id;
                         $a->message = sprintf(_wd('helpdesk', 'Helpdesk is unable to fetch messages from source “%s”:'), $source['name']).' '.$e->getMessage();

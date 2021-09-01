@@ -282,7 +282,7 @@ class helpdeskFormSourceType extends helpdeskCommonST implements helpdeskFormSTI
         $subject = trim($subject);
         if (!$subject) {
             if ($text) {
-                $subject = substr(strip_tags($text), 0, 100);
+                $subject = mb_substr(strip_tags($text), 0, 100);
             }
         }
 
@@ -436,7 +436,7 @@ class helpdeskFormSourceType extends helpdeskCommonST implements helpdeskFormSTI
         }
 
         if (!$subject) {
-            $subject = substr(strip_tags(implode(', ', $fld_values)), 0, 100);
+            $subject = mb_substr(strip_tags(implode(', ', $fld_values)), 0, 100);
             $message['summary'] = $subject;
             $message['params']['subject'] = $subject;
         }

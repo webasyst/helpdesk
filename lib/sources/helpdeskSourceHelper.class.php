@@ -126,6 +126,7 @@ class helpdeskSourceHelper
     {
         $r = new helpdeskRequest();
         $r->source_id = $message['source']->getId();
+        $r['last_log_id'] = 0;
         foreach (array('summary','text','message_id','rating','params','attachments','assets', 'workflow_id', 'state_id') as $key) {
             if (isset($message[$key])) {
                 $r[$key] = $message[$key];
