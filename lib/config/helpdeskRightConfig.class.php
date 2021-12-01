@@ -174,5 +174,15 @@ class helpdeskRightConfig extends waRightConfig
         {$html}
 EOF;
     }
+
+    public function getUI20HTML($rights = array(), $inherited = null)
+    {
+        $html = parent::getUI20HTML($rights, $inherited);
+        $pre_text = _w('Users with limited access are not allowed to change application settings, e.g. sources, workflows, and etc.');
+        return '<div class="alert"><div class="flexbox space-8"><i class="fas fa-info-circle gray"></i><span>' .
+            _w('Users with limited access are not allowed to change application settings, e.g. sources, workflows, and etc.') .
+            '</span></div></div>' . $html;
+    }
+
 }
 

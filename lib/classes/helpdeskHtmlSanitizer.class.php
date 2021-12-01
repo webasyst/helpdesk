@@ -101,7 +101,7 @@ class helpdeskHtmlSanitizer
             '~
                 &lt;
                     img\s+
-                    .*?
+                    .{0,800}?
                     src=&quot;
                         ([^"><]+?)
                     &quot;

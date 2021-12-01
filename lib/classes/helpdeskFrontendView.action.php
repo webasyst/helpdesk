@@ -58,7 +58,7 @@ class helpdeskFrontendViewAction extends helpdeskViewAction
             // Log the error if site is in debug mode
             if (waSystemConfig::isDebug()) {
                 $msg = 'Unable to show frontend page. Details follow.';
-                $msg .= "\n".self::getLogMessage($e);
+                $msg .= "\n".$this->getLogMessage($e);
                 waLog::log($msg, 'helpdesk.log');
             }
 
@@ -97,13 +97,13 @@ class helpdeskFrontendViewAction extends helpdeskViewAction
                 // Log initial error if not already logged
                 if (!waSystemConfig::isDebug()) {
                     $msg = 'Unable to show frontend page. Details follow.';
-                    $msg .= "\n".self::getLogMessage($e);
+                    $msg .= "\n".$this->getLogMessage($e);
                     waLog::log($msg, 'helpdesk.log');
                 }
 
                 // Log the second message
                 $msg = 'Unable to find front-end theme. Details follow.';
-                $msg .= "\n".self::getLogMessage($e2);
+                $msg .= "\n".$this->getLogMessage($e2);
                 waLog::log($msg, 'helpdesk.log');
 
                 // Show some clue

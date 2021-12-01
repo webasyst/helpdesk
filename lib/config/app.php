@@ -7,7 +7,7 @@ return array(
         48 => 'img/helpdesk.png',
         96 => 'img/helpdesk96.png',
     ),
-    'version' => '1.2.17',
+    'version' => '1.2.18',
     'critical' => '1.0.0',
     'vendor' => 'webasyst',
     'csrf' => true,

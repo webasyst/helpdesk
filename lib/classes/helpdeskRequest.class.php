@@ -537,6 +537,11 @@ class helpdeskRequest extends helpdeskRequestRecord
                     $data['name'] = ifset($data['name'], basename($data['file']));
 
                     if (isset($data['cid'])) {
+                        /**
+                         * Http protocol added in sanitizer for security
+                         * @see helpdeskHtmlSanitizer::sanitizeUrl()
+                         */
+                        $this->info['text'] = str_replace('http://cid:'.$data['cid'], $link, $this->info['text']);
                         $this->info['text'] = str_replace('cid:'.$data['cid'], $link, $this->info['text']);
                     } else if (preg_match('~\.(jpg|jpeg|gif|png)$~i', $data['name'])) {
                         // Show image at the bottom of the request text
@@ -777,6 +782,11 @@ class helpdeskRequest extends helpdeskRequestRecord
                         }
 
                         if (isset($data['cid'])) {
+                            /**
+                             * Http protocol added in sanitizer for security
+                             * @see helpdeskHtmlSanitizer::sanitizeUrl()
+                             */
+                            $l['text'] = str_replace('http://cid:'.$data['cid'], $link, $l['text']);
                             $l['text'] = str_replace('cid:'.$data['cid'], $link, $l['text']);
                         } else if (preg_match('~\.(jpg|jpeg|gif|png)$~i', $data['name'])) {
                             // Show image at the bottom of the request text
