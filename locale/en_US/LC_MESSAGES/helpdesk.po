@@ -318,7 +318,7 @@ msgstr ""
 msgid "<tt>cron</tt> job is set up properly."
 msgstr ""
 
-msgid "http://www.webasyst.com/framework/docs/server/cron/"
+msgid "https://developers.webasyst.com/installation/tips/cron/"
 msgstr ""
 
 msgid "Customer Portal is a personal page available for clients sending requests to your Helpdesk. On this page customers can see all their requests, check status of any request, add a new request, and etc."
@@ -459,7 +459,7 @@ msgstr ""
 msgid "Details"
 msgstr ""
 
-msgid "Enable Debug mode in the Installer app to see the details."
+msgid "Enable the “Developer mode” option in the Settings app to see the details."
 msgstr ""
 
 msgid "Cancel"
@@ -689,9 +689,6 @@ msgstr ""
 msgid "URL address for not registered clients to confirm their original email. Click on this link opens the request in the client's Customer Portal."
 msgstr ""
 
-msgid "Name of requestor"
-msgstr "Customer name"
-
 msgid "Company name specified in your Installer settings. Also displayed in the left top corner in your backend."
 msgstr "Company name specified in your Installer settings, also displayed in the top-left corner in your backend."
 
@@ -731,7 +728,7 @@ msgstr ""
 msgid "IMAP is not supported. Please use POP3."
 msgstr ""
 
-msgid "An error occured while attempting to connect with specified settings."
+msgid "An error occurred while attempting to connect with specified settings."
 msgstr ""
 
 msgid "Client original name"
@@ -908,9 +905,6 @@ msgstr ""
 msgid "Button"
 msgstr ""
 
-msgid "After successfull submit:"
-msgstr ""
-
 msgid "Redirect to URL"
 msgstr ""
 
@@ -977,7 +971,7 @@ msgstr ""
 msgid "Clients do not see any information associated with this action in their Customer Portal"
 msgstr "Clients cannot see any information associated with this action in their Customer Portal."
 
-msgid "Customer can perform the action but can not see these actions performed by other users"
+msgid "Customer can perform the action but cannot see the same actions performed by other users"
 msgstr "A client can perform this action but cannot see actions of this type performed by other clients."
 
 msgid "Clients can see this action record and it's description (except assignments info) in their Customer Portal"
@@ -1193,9 +1187,6 @@ msgstr ""
 msgid "This setting will redirect clients to any specified URL or display any text message after the form is submitted."
 msgstr ""
 
-msgid "After successfull submission:"
-msgstr ""
-
 msgid "Display text instead of the form"
 msgstr ""
 
@@ -1400,7 +1391,7 @@ msgstr ""
 msgid "Categories"
 msgstr ""
 
-msgid "Categories help you to arrange questions and answers by themes to simplify naviagation and search, e.g.: Common questions, How to.., and etc."
+msgid "Categories help you to arrange questions and answers by themes to simplify navigation and search, e.g.: Common questions, How to.., and etc."
 msgstr ""
 
 msgid "New category"
@@ -1777,9 +1768,6 @@ msgstr ""
 msgid "If a client is authorized"
 msgstr ""
 
-msgid "Redirect to the request page in pustomer portal"
-msgstr ""
-
 msgid "No requests."
 msgstr ""
 
@@ -1793,9 +1781,6 @@ msgid "Select tags for this request"
 msgstr ""
 
 msgid "Visibility"
-msgstr ""
-
-msgid "Category is visible in the pubalic part of your site"
 msgstr ""
 
 msgid "Apply visibility change to all questions in category"
@@ -1814,9 +1799,6 @@ msgid "Not assigned"
 msgstr ""
 
 msgid "Assigned to id="
-msgstr ""
-
-msgid "Catefgory is visible in the public part of your site"
 msgstr ""
 
 msgid "Visible in the public category"
@@ -1901,7 +1883,7 @@ msgstr ""
 msgid "After successful submission (if client is authorized)"
 msgstr ""
 
-msgid "For registered clients authorized on your site at the moment of this form submission, you can customize a different behaviour."
+msgid "For registered clients authorized on your site at the moment of this form submission, you can customize a different behavior."
 msgstr ""
 
 msgid "Form design"
@@ -1929,9 +1911,6 @@ msgid "Client (request originator)"
 msgstr ""
 
 msgid "#%s"
-msgstr ""
-
-msgid "Ok"
 msgstr ""
 
 msgid "Message sent:"
@@ -2547,4 +2526,7 @@ msgid "performs bulk operation “%s”"
 msgstr ""
 
 msgid "single line text"
+msgstr ""
+
+msgid "Helpdesk is unable to fetch messages from source “%s”:"
 msgstr ""

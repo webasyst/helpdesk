@@ -137,7 +137,7 @@
                 <label class="radio">
                     <input type="radio" name="customer_portal" value="triggerable_visible_own"{if ifempty($options.client_visible) != 'all' && !empty($options.client_triggerable)} checked{/if}>
                     [`Available for execution only`]
-                    <br><span class="hint">[`Customer can perform the action but can not see these actions performed by other users`]</span>
+                    <br><span class="hint">[`Customer can perform the action but cannot see the same actions performed by other users`]</span>
                 </label>
                 <label class="radio">
                     <input type="radio" name="customer_portal" value="triggerable_visible_all"{if ifempty($options.client_visible) == 'all' && !empty($options.client_triggerable)} checked{/if}>

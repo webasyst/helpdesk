@@ -495,7 +495,7 @@ $.wa.helpdesk_controller = {
                                         width: 500,
                                         height: 220,
                                         'min-height': 220,
-                                        buttons: $('<div><input type="submit" class="button gray" value="' + $_('Ok') + '"></div>'),
+                                        buttons: $('<div><input type="submit" class="button gray" value="' + $_('OK') + '"></div>'),
                                         onSubmit: function() {
                                             d.trigger('close');
                                             return false;

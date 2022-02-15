@@ -61,7 +61,7 @@ class helpdeskBackendLocController extends waController
             'Insert code block',
             'Loading',
             'Close',
-            'Ok'
+            'OK'
         ) as $s) {
             $strings[$s] = _w($s);
         }

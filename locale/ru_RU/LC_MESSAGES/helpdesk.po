@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: WebAsyst\n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2021-06-29 14:58+0300\n"
+"PO-Revision-Date: 2022-02-07 15:45+0300\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -574,7 +574,7 @@ msgstr "Неизвестная ошибка."
 msgid "IMAP is not supported. Please use POP3."
 msgstr "Протокол IMAP не поддерживается. Используйте POP3."
 
-msgid "An error occured while attempting to connect with specified settings."
+msgid "An error occurred while attempting to connect with specified settings."
 msgstr "При попытке подключиться с указанными параметрами возникла ошибка."
 
 msgid "Form"
@@ -793,8 +793,8 @@ msgstr "Без настройки <tt>cron</tt> почта забирается 
 msgid "Please set up a <tt>cron</tt> job (<a href=\"%s\" target=\"_blank\">view instructions</a>) using the command specified below in your web-hosting control panel:"
 msgstr "Настройте задание <tt>cron</tt> (<a href=\"%s\" target=\"_blank\">инструкция по настройке</a>) с указанной ниже командой в контрольной панели вашего хостинга:"
 
-msgid "http://www.webasyst.com/framework/docs/server/cron/"
-msgstr "http://www.webasyst.ru/developers/docs/tips/cron/"
+msgid "https://developers.webasyst.com/installation/tips/cron/"
+msgstr "https://developers.webasyst.ru/docs/tips/cron/"
 
 msgid "Last execution time:"
 msgstr "Последнее выполнение:"
@@ -803,10 +803,10 @@ msgid "<tt>cron</tt> job is set up properly."
 msgstr "<tt>cron</tt> настроен и работает."
 
 msgid "Will appear in the sidebar in MY FILTERS section and will be available for me only"
-msgstr "Будет отображаться в сайдбаре в секции &laquo;МОИ ФИЛЬТРЫ&raquo; и будет доступен только мне"
+msgstr "Будет отображаться в боковой панели в секции &laquo;МОИ ФИЛЬТРЫ&raquo; и будет доступен только мне"
 
 msgid "Will appear in the main section in sidebar and will be available for all users"
-msgstr "Будет отображаться в сайдбаре в главной группе фильтров и будет доступен всем пользователям"
+msgstr "Будет отображаться в боковой панели в главной группе фильтров и будет доступен всем пользователям"
 
 msgid "Personal settings"
 msgstr "Личные настройки"
@@ -934,9 +934,6 @@ msgstr "Адрес (URL) страницы запроса в бекенде пр�
 msgid "URL address of request page in customer portal."
 msgstr "Адрес (URL) страницы запроса в личном кабинете клиента"
 
-msgid "Name of requestor"
-msgstr "Имя отправителя запроса"
-
 msgid "Name of a person who performs the action"
 msgstr "Имя исполнителя действия"
 
@@ -976,7 +973,7 @@ msgstr "Клиент не видит никакой информации, свя
 msgid "Only personal"
 msgstr "Только собственные"
 
-msgid "Customer can perform the action but can not see these actions performed by other users"
+msgid "Customer can perform the action but cannot see the same actions performed by other users"
 msgstr "Клиент может выполнять действие, но не видит такие же действия, выполненные другими пользователями"
 
 msgid "All available for read only"
@@ -1002,9 +999,6 @@ msgstr "Телефон"
 
 msgid "Show"
 msgstr "Показать"
-
-msgid "After successfull submit:"
-msgstr "После успешной отправки:"
 
 msgid "History"
 msgstr "История"
@@ -1093,8 +1087,8 @@ msgstr "Ошибка обработки запроса"
 msgid "Details"
 msgstr "Подробно"
 
-msgid "Enable Debug mode in the Installer app to see the details."
-msgstr "Включите режим отладки (debug_mode) в приложении «Инсталлер», чтобы узнать подробности."
+msgid "Enable the “Developer mode” option in the Settings app to see the details."
+msgstr "Включите режим отладки (debug mode) в приложении «Инсталлер», чтобы узнать подробности."
 
 msgid "Search by name or email"
 msgstr "Поиск по имени или email"
@@ -1426,9 +1420,6 @@ msgstr "Редактировать название кнопки"
 msgid "Form width (200-600px)"
 msgstr "Ширина формы (200-600 пикселей)"
 
-msgid "After successfull submission:"
-msgstr "После успешной отправки:"
-
 msgid "The requested resource is not available."
 msgstr "Запрошенный ресурс недоступен."
 
@@ -1534,7 +1525,7 @@ msgstr "Элементы списка"
 msgid "Categories"
 msgstr "Категории"
 
-msgid "Categories help you to arrange questions and answers by themes to simplify naviagation and search, e.g.: Common questions, How to.., and etc."
+msgid "Categories help you to arrange questions and answers by themes to simplify navigation and search, e.g.: Common questions, How to.., and etc."
 msgstr "Категории позволяют распределить вопросы и ответы по темам для упрощения навигации и поиска, например: «Общие вопросы», «Вопросы про это...» и т. д."
 
 msgid "New category"
@@ -1638,9 +1629,6 @@ msgstr "Разрешены поля с расширениями «%s»"
 
 msgid "Main fields"
 msgstr "Главные поля"
-
-msgid "Main request fields can not be modified or disabled. Email requests usually contain subject and text with optional attachments. Requests sent via public or customer portal form may not have data in these fields. In this case they will be filled with default values."
-msgstr "Главные поля запроса нельзя изменить или выключить. Email-запросы обычно содержат тему, текст и (иногда) прекреплённые файлы. Запросы, отправленные через форму на сайте или из личного кабинета могут не содержать указанные данные. В таком случае эти поля будут заполнены значениями по умолчанию."
 
 msgid "Additional fields"
 msgstr "Дополнительные поля"
@@ -1760,7 +1748,7 @@ msgid "Select access level:"
 msgstr "Выберите уровень доступа:"
 
 msgid "After you set \"Follow\" mark, next time someone performs an action with this request it will appear as \"Unread\" for you and you will receive email notification about this action. So you will be able to follow all further activity related to this request."
-msgstr "Если установить этот флажок, то каждый раз когда с данным запросом будут выполняться какие-либо действия, он будем становиться для вас «непрочитанным» и вы будете получать email-уведомление об этом. Таким образом, вы сможете следить за дальнейшими действиями с данным запросом."
+msgstr "Если установить этот флажок, то каждый раз, когда с данным запросом будут выполняться какие-либо действия, он будем становиться для вас «непрочитанным» и вы будете получать email-уведомление об этом. Таким образом вы сможете следить за дальнейшими действиями с данным запросом."
 
 msgid "Don't show this message anymore"
 msgstr "Больше не показывать это предупреждение"
@@ -1772,7 +1760,7 @@ msgid "Follow mark"
 msgstr "Флажок «Следить»"
 
 msgid "Additional fields allow you to add a number of multiple parameters to requests content. These parameters essentially depend on a type of product and services you deliver to your customers. For example, if you accept requests to repair household appliances, you may wish to know some manufacturing details, e.g. model name, and etc. Additional fields can be added to the request form to be submitted by your client, or be available on the request page for your Helpdesk app users manipulations."
-msgstr "Дополнительные поля позволяют наполнить запрос произвольным набором уточняющих параметров. Этот набор полей существенно зависит от того, какого рода продукты и услуги вы предоставляете своим клиентам. Например, если вы принимаете запросы на ремонт бытовой техники, то возможно вам понадобятся поля, позволяющие указать модель устройства, год выпуска, характер неисправности и т.д. Дополнительные поля можно разместить в форме, через которую клиент отправляет вам запрос, а также на странице выполнения действий с запросом, если эти поля предназначены для заполнения пользователями приложения «Поддержка»."
+msgstr "Дополнительные поля позволяют наполнить запрос произвольным набором уточняющих параметров. Этот набор полей существенно зависит от того, какого рода продукты и услуги вы предоставляете своим клиентам. Например, если вы принимаете запросы на ремонт бытовой техники, то, возможно, вам понадобятся поля, позволяющие указать модель устройства, год выпуска, характер неисправности и т. д. Дополнительные поля можно разместить в форме, через которую клиент отправляет вам запрос, а также на странице выполнения действий с запросом, если эти поля предназначены для заполнения пользователями приложения «Поддержка»."
 
 msgid "Using this form"
 msgstr "Использование формы"
@@ -1909,9 +1897,6 @@ msgstr "Отправлять запрос для подтверждения"
 msgid "If a client is authorized"
 msgstr "Если клиент авторизован"
 
-msgid "Redirect to the request page in pustomer portal"
-msgstr "Перейти на страницу запроса в личном кабинете"
-
 msgid "No requests."
 msgstr "Нет запросов."
 
@@ -1926,9 +1911,6 @@ msgstr "Выберите теги для этого запроса"
 
 msgid "Visibility"
 msgstr "Видимость"
-
-msgid "Category is visible in the pubalic part of your site"
-msgstr "Категория видна в публичной части сайта"
 
 msgid "Apply visibility change to all questions in category"
 msgstr "Применить видимость ко всем вопросам в этой категории"
@@ -1947,9 +1929,6 @@ msgstr "Не назначен"
 
 msgid "Assigned to id="
 msgstr "Назначен для id="
-
-msgid "Catefgory is visible in the public part of your site"
-msgstr "Категория видна в публичной части сайта"
 
 msgid "Visible in the public category"
 msgstr "Видно в публичной части сайта"
@@ -2032,7 +2011,7 @@ msgstr "Эта настройка позволяет после отправки
 msgid "After successful submission (if client is authorized)"
 msgstr "После отправки формы клиенту (если клиент авторизован)"
 
-msgid "For registered clients authorized on your site at the moment of this form submission, you can customize a different behaviour."
+msgid "For registered clients authorized on your site at the moment of this form submission, you can customize a different behavior."
 msgstr "Для зарегистрированных клиентов, которые в момент отправки формы авторизованы на вашем сайте, вы можете настроить другое поведение."
 
 msgid "Form design"
@@ -2062,7 +2041,7 @@ msgstr "Клиенту (от кого поступил запрос)"
 msgid "#%s"
 msgstr "№%s"
 
-msgid "Ok"
+msgid "OK"
 msgstr "Закрыть"
 
 msgid "Message sent:"
