@@ -71,7 +71,7 @@ $.wa.helpdesk_controller = {
         $.wa.errorHandler = function() {};
         $(document).ajaxError(function(e, xhr, settings, exception) {
             // Ignore 502 error in background process
-            if (xhr.status === 502 && exception == 'abort' || (settings.url && settings.url.indexOf('background_process') >= 0) || (settings.data && settings.data.indexOf('background_process') >= 0)) {
+            if (xhr.status === 502 && exception == 'abort' || (settings.url && settings.url.indexOf('background_process') >= 0) || (settings.data && typeof settings.data === 'string' && settings.data.indexOf('background_process') >= 0)) {
                 console && console.log && console.log('Notice: XHR failed on load: '+ settings.url);
                 return;
             }

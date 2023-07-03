@@ -1,9 +1,8 @@
 {$_current_url = $wa->currentUrl()}
 {$_my_directory = $wa->globals('isMyAccount')}
-
+{$has_action = !empty($action)}
 <div class="h-main-wrapper">
-
-    {if !$_my_directory}
+    {if !$_my_directory && (!$has_action || ($has_action && $action !== 'ask') )}
         <nav class="h-sidebar-wrapper" role="navigation">
             {if !empty($categories)}
                 <ul class="menu-v stack">
@@ -17,17 +16,6 @@
                     {/foreach}
                 </ul>
             {/if}
-
-            <div class="h-search-wrapper">
-                <form method="get" action="{$wa->getUrl('/frontend/search')}">
-                    <input class="h-text-input" type="search" name="query" value="{$wa->request('query')|escape}" placeholder="[`Find the answer`]">
-                    <input class="h-submit-input" type="submit" value="">
-                </form>
-            </div>
-
-            <div class="add-request-wrapper">
-                <button class="add-request-button" onclick="location.href='{$wa->getUrl('/frontend/ask')}'">[`Support request`]</button>
-            </div>
         </nav>
     {/if}
 

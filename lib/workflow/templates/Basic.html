@@ -167,7 +167,7 @@
         iframe.one('load', function() {
             setTimeout(function() {
                 form.parent().html(iframe.contents().find('body').html());
-                $.post('?module=backend&action=messagesSend', {
+                $.post('{$messages_send_url}', {
                     rand: ('' + Math.random()).slice(2)
                 });
             }, 0);

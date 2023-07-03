@@ -9,6 +9,8 @@ class helpdeskConfig extends waAppConfig
      */
     private $auto_actions_feature_release;
 
+    private $_routes = [];
+
     public function checkUpdates()
     {
         /**

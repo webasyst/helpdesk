@@ -540,6 +540,7 @@ class helpdeskWorkflowBasicAction extends helpdeskWorkflowAction
             'action_id' => $this->getId(),
             'request_id' => $request->getId(),
             'form_submit_url' => $this->getFormSubmitUrl($request),
+            'messages_send_url' => $this->getMessagesSendUrl(),
             'will_be_sent_to' => $this->getMessageRecipientsPreview($request, $assignees),
             'textarea_default_text' => $textarea_default_text,
             'errors' => $errors,
@@ -764,6 +765,16 @@ class helpdeskWorkflowBasicAction extends helpdeskWorkflowAction
             ));
         } else {
             return '?module=backend&action=actionForm';
+        }
+    }
+
+    /** Helper for messagesSendController() */
+    protected function getMessagesSendUrl()
+    {
+        if (wa()->getEnv() == 'frontend') {
+            return wa()->getRouteUrl('helpdesk/frontend/messagesSend');
+        } else {
+            return '?module=backend&action=messagesSend';
         }
     }
 

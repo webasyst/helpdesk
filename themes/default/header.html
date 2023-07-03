@@ -1,15 +1,35 @@
 <!-- App page list -->
-
+{$_my_directory = $wa->globals('isMyAccount')}
 {$_pages = $wa->helpdesk->pages()}
-
-{if count($_pages)}
-    <ul class="pages">
-
+<div class="h-header">
+    <div class="h-header-left">
         {if count($_pages)}
-            {foreach $_pages as $_p}
-                <li{if strlen($_p.url)>1 && $wa->currentUrl() == $_p.url} class="selected"{/if}><a href="{$_p.url}">{$_p.name}</a></li>
-            {/foreach}
+            <ul class="pages">
+                {if count($_pages)}
+                    {foreach $_pages as $_p}
+                        <li{if strlen($_p.url)>1 && $wa->currentUrl() == $_p.url} class="selected"{/if}><a href="{$_p.url}">{$_p.name}</a></li>
+                    {/foreach}
+                {/if}
+            </ul>
         {/if}
+    </div>
 
-    </ul>
-{/if}
+    {if !$_my_directory}
+    <nav class="h-header-right" role="navigation">
+        <div class="add-request-wrapper">
+            <button class="add-request-button text-white nowrap" onclick="location.href='{$wa->getUrl('/frontend/ask')}'">[`Support request`]</button>
+        </div>
+
+        <div class="h-search-wrapper search">
+            <form method="get" action="{$wa->getUrl('/frontend/search')}">
+                <input class="h-text-input" type="search" name="query" value="{$wa->request('query')|escape}" placeholder="[`Find the answer`]">
+                <button type="submit" class="h-submit-input">
+                    <svg width="28" height="28" viewBox="0 0 28 28" xmlns="http://www.w3.org/2000/svg" version="1.1" preserveAspectRatio="xMinYMin">
+                        <use xlink:href="#img-find"></use>
+                    </svg>
+                </button>
+            </form>
+        </div>
+    </nav>
+    {/if}
+</div>

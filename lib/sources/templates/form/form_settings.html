@@ -35,6 +35,8 @@
 .hr-dashed { border-bottom: 1px dashed silver; clear: both; height: 20px; margin-bottom: 15px; }
 select { min-width: 80px; }
 .top-padded { margin-top: 20px; }
+.require-auth-checkbox-field { margin:5px 0 0 32px; position: relative; }
+.require-auth-checkbox-field input[type="checkbox"] { position:absolute;left:-16px; }
 
 </style>
 
@@ -100,15 +102,24 @@ select { min-width: 80px; }
                 <div id="use_on_site_block"{if empty($source.params.use_on_site)} style="display:none;"{/if}>
 
                     {if $source.id}
-                    <div class="field large-hint top-padded">
-                        [`To publish the form on your site use this code:`] <strong>{literal}{$wa->helpdesk->form({/literal}{$source.id}{literal})}{/literal}</strong>
-                    </div>
-                    <div class="field large-hint top-padded">
-                        [`To publish the form on external site use this code:`]
-                        <a href="javascript:void(0)" class="inline-link" onclick="$('#ta2').slideToggle(200);return false;"><b><i>[`iframe`]</i></b></a>
-                        <textarea id="ta2" style="width:96%;height:50px;font-size:80%;margin-bottom:10px;display:none;" readonly="readonly"><iframe frameborder="0" src="{$wa->getUrl('helpdesk/frontend/iframe', true)|escape}?id={$source.id}" id="wa-iframe" name="wa-iframe" marginheight="0" marginwidth="0" scrolling="no" style="width:100%; height:50px;"></iframe><script type="text/javascript" src="{$wa->helpdesk->getAppStaticUrl()|escape}js/iframeResizer.min.js"></script><script type="text/javascript">iFrameResize({ heightCalculationMethod:'max' });</script></textarea>
-                    </div>
-                    <div class="hr-dashed"></div>
+                        <div class="field large-hint top-padded">
+                            [`To publish the form on your site use this code:`]
+                            <strong>{literal}{$wa->helpdesk->form({/literal}{$source.id}{literal})}{/literal}</strong>
+                        </div>
+                        <div class="field require-auth-checkbox-field">
+                            <label>
+                                <input type="hidden" name="params[force_auth]" value="">
+                                <input type="checkbox" name="params[force_auth]" value="1"{if !empty($source->params->force_auth)} checked{/if}>
+                                <span>[`Require customers to be logged in to use this form.`]</span>
+                                <br><span class="hint">[`Form will only be usable on your domains with Helpdesk customer portal set up.`]</span>
+                            </label>
+                        </div>
+                        <div class="field large-hint top-padded js-publish-on-external-site-field">
+                            [`To publish the form on external site use this code:`]
+                            <a href="javascript:void(0)" class="inline-link" onclick="$('#ta2').slideToggle(200);return false;"><b><i>[`iframe`]</i></b></a>
+                            <textarea id="ta2" style="width:96%;height:50px;font-size:80%;margin-bottom:10px;display:none;" readonly="readonly"><iframe frameborder="0" src="{$wa->getUrl('helpdesk/frontend/iframe', true)|escape}?id={$source.id}" id="wa-iframe" name="wa-iframe" marginheight="0" marginwidth="0" scrolling="no" style="width:100%; height:50px;"></iframe><script type="text/javascript" src="{$wa->helpdesk->getAppStaticUrl()|escape}js/iframeResizer.min.js"></script><script type="text/javascript">iFrameResize({ heightCalculationMethod:'max' });</script></textarea>
+                        </div>
+                        <div class="hr-dashed"></div>
                     {/if}
 
                     <div class="field after-submit">
@@ -684,6 +695,17 @@ select { min-width: 80px; }
         $(this).select();
         return false;
     });
+
+    // When user checks "Require frontend user to be authorized" then show/hide "To publish the form on external site" code
+    $('.require-auth-checkbox-field :checkbox').on('change', function() {
+        var $checkbox = $(this);
+        var $code_field = $checkbox.closest('.field').siblings('.js-publish-on-external-site-field');
+        if ($checkbox.is(':checked')) {
+            $code_field.hide(delay);
+        } else {
+            $code_field.show(delay);
+        }
+    }).change();
 
     // Controller for "what to do after submit" block
     (function() {

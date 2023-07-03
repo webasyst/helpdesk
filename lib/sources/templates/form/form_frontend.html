@@ -263,10 +263,63 @@
         return true;
     });
 
+
+    function highlightedDrop($file) {
+        var timeout = null,
+            is_entered = false;
+
+        function onDrop(event) {
+            dropToggle(false);
+        }
+
+        function onDrag(event) {
+            if (!timeout)  {
+                if (!is_entered) {
+                    is_entered = true;
+                    dropToggle(true);
+                }
+            } else {
+                clearTimeout(timeout);
+            }
+
+            timeout = setTimeout(function () {
+                timeout = null;
+                is_entered = false;
+                dropToggle(false);
+            }, 100);
+        }
+
+        function dropToggle(show) {
+            var active_class = "is-highlighted";
+            if (show) {
+                $file.addClass(active_class);
+            } else {
+                $file.removeClass(active_class);
+            }
+        }
+
+        return {
+            bind: function () {
+                $file.on("dragover", onDrag);
+                $file.on("drop", onDrop);
+            },
+            unbind: function () {
+                $file.off("dragover", onDrag);
+                $file.off("drop", onDrop);
+            }
+        }
+    }
+
+    $(function () {
+        highlightedDrop($('.h-file-attachments [type="file"]')).bind();
+    })
+
     if ($('.h-file-attachments', form).length) {
         // Adds new file input field for attachments
         var addNewField = function() {
-            $('.h-file-attachments', form).append('<div class="value attach"><input type="file" name="fld_attachments[]"></div>');
+            var $file_wrapper = $('<div class="value attach"><input type="file" name="fld_attachments[]"></div>');
+            $('.h-file-attachments', form).append($file_wrapper);
+            highlightedDrop($file_wrapper.children()).bind();
         };
         addNewField();
 
@@ -284,7 +337,9 @@
             .off('click', '.h-file-attachments a.remove-attach')
             .on('click', '.h-file-attachments a.remove-attach',
                 function() {
-                    $(this).parents('.value.attach').remove();
+                    var $file_wrapper = $(this).parents('.value.attach');
+                    highlightedDrop($file_wrapper.children()).unbind();
+                    $file_wrapper.remove();
                     return false;
                 });
     }

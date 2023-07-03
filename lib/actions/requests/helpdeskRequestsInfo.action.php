@@ -12,6 +12,8 @@ class helpdeskRequestsInfoAction extends helpdeskViewAction
     public $allowed_actions = array();
     public $request_info = array();
     public $is_unread = null;
+    public $request_log;
+    public $unread_count;
 
     public $source = null;
     public $source_name = '';

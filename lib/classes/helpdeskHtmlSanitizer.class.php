@@ -56,7 +56,7 @@ class helpdeskHtmlSanitizer
         // Remove all tags except known.
         // We don't rely on this for protection. Everything should be escaped anyway.
         // strip_tags() is here so that unknown tags do not show as escaped sequences, making the text unreadable.
-        $content = strip_tags($content, '<a><b><i><u><pre><blockquote><p><strong><section><em><del><strike><span><ul><ol><li><div><font><br><table><thead><tbody><tfoot><tr><td><th><hr><h1><h2><h3><h4><h5><h6><figure><figcaption><img>');
+        $content = strip_tags($content, '<a><q><b><i><u><pre><blockquote><p><strong><section><em><del><strike><span><ul><ol><li><div><font><br><table><thead><tbody><tfoot><tr><td><th><hr><h1><h2><h3><h4><h5><h6><figure><figcaption><img>');
 
         // Replace all &entities; with UTF8 chars, except for &, <, >.
         $content = str_replace(array('&amp;','&lt;','&gt;'), array('&amp;amp;','&amp;lt;','&amp;gt;'), $content);
@@ -76,17 +76,19 @@ class helpdeskHtmlSanitizer
 
         // A trick we use to make sure there are no tags inside attributes of other tags.
         do {
-            $this->attr_start = $attr_start = uniqid('<ATTRSTART').'>';
-            $this->attr_end = $attr_end = uniqid('<ATTREND').'>';
+            $this->attr_start = $attr_start = str_replace('.', '', uniqid('!ATTRSTART', true).'!');
+            $this->attr_end = $attr_end = str_replace('.', '', uniqid('!ATTREND', true).'!');
         } while (strpos($content, $attr_start) !== false || strpos($content, $attr_end) !== false);
 
         // <a href="...">
         $content = preg_replace_callback(
             '~
                 &lt;
-                    a
-                    \s+
-                    href=&quot;
+                    (
+                        a\s+href
+                        |
+                        q\s+cite
+                    )=&quot;
                         ([^"><]+?)
                     &quot;
                     (.*?)
@@ -108,6 +110,12 @@ class helpdeskHtmlSanitizer
                     .*?
                     /?
                 &gt;
+                (?:
+                    \s*
+                    &lt;
+                        /img
+                    &gt;
+                )?
             ~iuxs',
             array($this, 'sanitizeHtmlImg'),
             $content
@@ -129,20 +137,54 @@ class helpdeskHtmlSanitizer
             $content
         );
 
+        // Separately cut off very long style="" blocks because next step has a limit on tag length
+        $content = preg_replace(
+            '~
+                \s+
+                style
+                \s*=\s*
+                &quot;
+                    [^&]*
+                &quot;
+            ~iux',
+            ' ',
+            $content
+        );
+
+        // Having a single-char > instead of &gt; greatly simplifies next regex.
+        // We unescape all > but mark them to be escaped back later.
+        do {
+            $tag_end = str_replace('.', '', uniqid('!TAGEND', true).'!');
+        } while (strpos($content, $tag_end) !== false);
+        $content_before = $content;
+        $content = str_replace('&gt;', '>'.$tag_end, $content);
+
         // Simple tags: <b>, <i>, <u>, <pre>, <blockquote> and closing counterparts.
         // All attributes are removed.
         $content = preg_replace(
             '~
                 &lt;
                     (
-                        /?(?:a|b|i|u|pre|blockquote|p|strong|section|em|del|strike|span|ul|ol|li|div|font|br|table|thead|tbody|tfoot|tr|td|th|hr|h1|h2|h3|h4|h5|h6|figure|figcaption)
+                        /?(?:a|q|b|i|u|pre|blockquote|p|strong|section|em|del|strike|span|ul|ol|li|div|font|br|table|thead|tbody|tfoot|tr|td|th|hr|h1|h2|h3|h4|h5|h6|figure|figcaption)
                     )
-                    ((?!&gt;)[^a-z\-\_]((?!&gt;)(\s|.))+)?
-                &gt;
+                    (?:
+                        [^a-z\-\_>]
+                        [^>]{0,1500}
+                    )?
+                >'.preg_quote($tag_end).'
             ~iux',
             '<\1>',
             $content
         );
+        if ($content === null) {
+            // Regex above may fail due to complexity.
+            // In this case we keep all tags escaped with lots of &lt; and &gt;
+            // but it's better than empty request body.
+            $content = $content_before;
+        } else {
+            $content = str_replace('>'.$tag_end, '&gt;', $content);
+            $content = str_replace($tag_end, '', $content);
+        }
 
         /*
         // Replace <h*> tags with a bold paragraph
@@ -210,8 +252,12 @@ class helpdeskHtmlSanitizer
 
     protected function sanitizeHtmlAHref($m)
     {
-        $url = $this->sanitizeUrl(ifset($m[1]));
-        return '<a href="'.$this->attr_start.$url.$this->attr_end.'" target="_blank" rel="nofollow">';
+        $url = $this->sanitizeUrl(ifset($m[2]));
+        if (strtolower($m[1][0]) == 'q') {
+            return '<q cite="'.$this->attr_start.$url.$this->attr_end.'">';
+        } else {
+            return '<a href="'.$this->attr_start.$url.$this->attr_end.'" target="_blank" rel="nofollow">';
+        }
     }
 
     protected function sanitizeHtmlImg($m)
@@ -288,9 +334,13 @@ class helpdeskHtmlSanitizer
         if (empty($url)) {
             return '';
         }
+        if (preg_match('~^mailto:.*@~i', $url)) {
+            return $url;
+        }
         $url_alphanumeric = preg_replace('~&amp;[^;]+;~i', '', $url);
+        $url_alphanumeric = preg_replace('~\\\\[0trn]~i', '', $url_alphanumeric);
         $url_alphanumeric = preg_replace('~[^a-z0-9:]~i', '', $url_alphanumeric);
-        if (preg_match('~^(javascript|vbscript):~i', $url_alphanumeric)) {
+        if (preg_match('~^(javascript|vbscript|mocha|livescript):~i', $url_alphanumeric)) {
             return '';
         }
 
@@ -300,7 +350,11 @@ class helpdeskHtmlSanitizer
         }
 
         if (!$url_validator->isValid($url)) {
-            $url = 'http://'.preg_replace('~^([^:]+:)?(//|\\\\\\\\)~', '', $url);
+            if (preg_match('~^data:image/[a-z]+;base64,[a-zA-Z0-9\/\r\n\s\+]*={0,2}$~', $url)) {
+                // good base64-encoded image
+            } else {
+                $url = 'http://'.preg_replace('~^([^:]+:)?(//|\\\\\\\\)~', '', $url);
+            }
         }
 
         return $url;
@@ -327,7 +381,7 @@ class helpdeskHtmlSanitizer
      */
     protected function closeTags($content)
     {
-        $content = preg_replace_callback('%(<td[^>]*><div[^>]*>.*?</td>)%uis', "self::fixDiv", $content);
+        $content = preg_replace_callback('%(<td[^>]*><div[^>]*>.*?</td>)%uis', "helpdeskHtmlSanitizer::fixDiv", $content);
         // Fix unclosed tags
         $patt_open = "%((?<!</)(?<=<)[\s]*[^/!>\s]+(?=>|[\s]+[^>]*[^/]>)(?!/>))%is";
         $patt_close = "%((?<=</)([^>]+)(?=>))%is";

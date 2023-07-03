@@ -40,7 +40,7 @@ class helpdeskFormConstructor
     protected function extractFromPost(array &$post_data = array())
     {
         foreach ($post_data as $param_key => $value) {
-            if (in_array($param_key, array('button_caption', 'after_submit', 'formwidth')) || substr($param_key, 0, 4) === helpdeskRequestLogParamsModel::PREFIX_REQUEST || substr($param_key, 0, 5) === 'fldc_') {
+            if (in_array($param_key, array('button_caption', 'after_submit', 'formwidth', 'force_auth')) || substr($param_key, 0, 4) === helpdeskRequestLogParamsModel::PREFIX_REQUEST || substr($param_key, 0, 5) === 'fldc_') {
                 $source_params[$param_key] = $value;
                 unset($post_data[$param_key]);
             }
@@ -115,6 +115,7 @@ class helpdeskFormConstructor
                 }
 
                 if (!$val) {
+                    unset($source->params[$k]);
                     continue;
                 }
 
@@ -431,7 +432,7 @@ class helpdeskFormConstructor
 
         usort($form_fields, wa_lambda('$a, $b', 'return $a["sort"] - $b["sort"];'));
         $form_fields = array_values($form_fields);
-        
+
         $top_fields = array();
 
         $top_fields_order = array(

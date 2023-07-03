@@ -274,6 +274,12 @@ class helpdeskFormSourceType extends helpdeskCommonST implements helpdeskFormSTI
             }
         }
 
+        if (!wa()->getUser()->isAuth()) {
+            if (empty($source->params->use_on_site) || !empty($source->params->force_auth)) {
+                $errors['session'] = _w('Please log into your customer account to send a request.');
+            }
+        }
+
 
         if ($email && !wao(new waEmailValidator())->isValid($email)) {
             $errors['fldc_data[email]'] = _ws('Invalid email');

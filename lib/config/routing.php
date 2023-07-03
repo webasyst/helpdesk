@@ -150,6 +150,13 @@ $routes_with_public_frontend = array(
         'secure' => false,
     ),
 
+    'messages_send' => array(
+        'url' => 'messages_send/',
+        'module' => 'frontend',
+        'action' => 'messagesSend',
+        'secure' => false,
+    ),
+
     // This will trigger an error since there's no such class
     '*' => 'routeNotFound',
 

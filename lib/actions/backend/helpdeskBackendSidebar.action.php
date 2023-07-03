@@ -12,6 +12,10 @@ class helpdeskBackendSidebarAction extends helpdeskViewAction
     public $assignments;
     public $workflows;
     public $states;
+    public $source_data;
+    public $personal_filters;
+    public $common_filters;
+    public $follow_count;
 
     public function execute()
     {
@@ -163,7 +167,7 @@ class helpdeskBackendSidebarAction extends helpdeskViewAction
                                 $f['children'][] = $child;
                             }
                         }
-                        if (count($workflow_states) == 1) {
+                        if (count($workflow_states) == 1 && isset($f['children'][0]['children'])) {
                             $f['children'] = $f['children'][0]['children'];
                         }
 

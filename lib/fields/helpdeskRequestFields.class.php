@@ -32,9 +32,11 @@ class helpdeskRequestFields
 
     public static function setFields(array $all_fields)
     {
-        $file = wa('helpdesk')->getConfig()->getConfigPath('fields/fields.php');
-        waUtils::varExportToFile($all_fields, $file);
-        self::$fields = null;   // clear cache
+        if (!waConfig::get('is_template')) {
+            $file = wa('helpdesk')->getConfig()->getConfigPath('fields/fields.php');
+            waUtils::varExportToFile($all_fields, $file);
+            self::$fields = null;   // clear cache
+        }
     }
 
     public static function setField(helpdeskRequestField $field, $rewrite = false)

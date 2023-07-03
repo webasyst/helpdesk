@@ -35,33 +35,51 @@
                                 <div class="variables-link-wrapper border-box w100" style="max-width:530px;">
                                     <textarea class="sized w100" placeholder="[`Enter a default text here`]" name="options[textarea_default_text]">{"\n"}{ifset($options.textarea_default_text)|escape}</textarea>
                                     <a href="javascript:void(0)" class="variables-link inline-link" style="font-size: 0.8em;"><b><i>[`Variables`]</i></b></a>
-                                </div>
-                                <div class="variables-wrapper">
-                                    <div class="fields shadowed top-spaced">
-                                        {foreach $default_text_vars|default:[] as $category_id => $category}
-                                            {if !empty($category.vars)}
-                                                <div class="block">
-                                                    <h3>{$category.name|default:''|escape}</h3>
-                                                    {foreach $category.vars as $k => $v}
+                                    <div class="variables-wrapper">
+                                        <div class="fields shadowed top-spaced">
+                                            {foreach $message_vars|default:[] as $category_id => $category}
+                                                {if !empty($category.vars)}
+                                                    <div class="block">
+                                                        <h3>{$category.name|default:''|escape}</h3>
+                                                        {foreach $category.vars as $k => $v}
+                                                            <div class="field">
+                                                                <div class="name"><a href="javascript:void(0)" class="inline-link{if strlen($k) > 35} small{/if}"><b><i>{$k|escape}</i></b></a></div>
+                                                                {if $v}
+                                                                    <div class="value hint">{$v|escape}</div>
+                                                                {/if}
+                                                            </div>
+                                                        {/foreach}
+                                                    </div>
+                                                {/if}
+                                            {/foreach}
+
+                                            <div class="block">
+                                                <div class="field">
+                                                    <h3>[`1-Click Feedback`]</h3>
+                                                    <p class="small">
+                                                        [`Add a snippet in your email template that will allow recipient with just one click to select a value for pull down or checkbox field. This field must exist in your Helpdesk app (refer to the Field constructor section) and be available for clients in their customer portals. Recipients will be redirected to their customer portals. This option can be used for quick evaluation of the request reply by your customers.`]
+                                                    </p>
+                                                </div>
+
+                                                {if !empty($oneclick_feedback_fields)}
+                                                    {foreach $oneclick_feedback_fields as $field_id => $info}
                                                         <div class="field">
-                                                            <div class="name"><a href="javascript:void(0)" class="inline-link{if strlen($k) > 35} small{/if}"><b><i>{$k|escape}</i></b></a></div>
-                                                            {if $v}
-                                                                <div class="value hint">{$v|escape}</div>
-                                                            {/if}
+                                                            <div class="name">
+                                                                <a href="javascript:void(0)" class="inline-link"><b><i>{$field_id}</i></b></a>
+                                                            </div>
+                                                            <div class="value hint">
+                                                                {$info.description}
+                                                            </div>
+                                                            <span class="h-html hidden">{$info.html}</span>
                                                         </div>
                                                     {/foreach}
-                                                </div>
-                                            {/if}
-                                        {/foreach}
-                                        {*
-                                        {foreach ifempty($default_text_vars, array()) as $k => $v}
-                                            <div class="field">
-                                                <div class="name"><a href="javascript:void(0)" class="inline-link{if strlen($k) > 35} small{/if}"><b><i>{$k|escape}</i></b></a></div>
-                                                {if $v}
-                                                    <div class="value hint">{$v|escape}</div>
+                                                {else}
+                                                    <div class="field">
+                                                        <div class="name">[`There are no appropriate fields`]</div>
+                                                    </div>
                                                 {/if}
                                             </div>
-                                        {/foreach}*}
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="clear-left"></div>
@@ -160,7 +178,10 @@
 <script>
     $(function() {
 
-        var container = $('#{$container_id}');
+        var container = $('#{$container_id}'),
+            textarea_with_variables = container.find('.textarea-with-variables'),
+            variables_wrapper = textarea_with_variables.find('.variables-wrapper'),
+            body_textarea = textarea_with_variables.find('textarea')[0];
 
         //
         // Show/hide parts of the form depending on checkbox status
@@ -185,6 +206,21 @@
                 }
             }).trigger('change');
         });
+
+        // Variables control
+        textarea_with_variables.find('.variables-link').click(function() {
+            variables_wrapper.slideToggle(0);
+        });
+
+        (function() {
+            variables_wrapper.on('click', 'a', function() {
+                var var_name = $(this).text();
+                var var_html = $(this).closest('.field').find('.h-html').html();
+
+                body_textarea.setRangeText((var_html ? var_html : var_name), body_textarea.selectionStart, body_textarea.selectionEnd, 'select');
+                return false;
+            });
+        })();
 
         // Color selector
         (function() {
