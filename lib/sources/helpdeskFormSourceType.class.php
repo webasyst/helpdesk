@@ -116,14 +116,14 @@ class helpdeskFormSourceType extends helpdeskCommonST implements helpdeskFormSTI
                 }
             }
             if (!$css) {
-                $file = dirname(waAutoload::getInstance()->get(get_class($this))).'/templates/form/include_form_frontend_default_css.html';
+                $file = dirname(waAutoload::getInstance()->get(get_class($this))).'/templates'.helpdeskHelper::getLegacyPrefix().'/form/include_form_frontend_default_css.html';
                 $css = $this->getView()->fetch('string:'.  file_get_contents($file));
             }
 
             $this->getView()->assign('css', $css);
 
         } else {
-            $default_css = file_get_contents(dirname(waAutoload::getInstance()->get(get_class($this))).'/templates/form/include_form_frontend_default_css.html');
+            $default_css = file_get_contents(dirname(waAutoload::getInstance()->get(get_class($this))).'/templates'.helpdeskHelper::getLegacyPrefix().'/form/include_form_frontend_default_css.html');
             $this->getView()->assign('default_css', $default_css);
         }
 
@@ -582,7 +582,7 @@ class helpdeskFormSourceType extends helpdeskCommonST implements helpdeskFormSTI
     protected function getCssViewContent($type)
     {
         $css = '';
-        $file = dirname(waAutoload::getInstance()->get(get_class($this))).'/templates/form/include_form_frontend_'.$type.'_css.html';
+        $file = dirname(waAutoload::getInstance()->get(get_class($this))).'/templates'.helpdeskHelper::getLegacyPrefix().'/form/include_form_frontend_'.$type.'_css.html';
         if (file_exists($file)) {
             $css = file_get_contents($file);
         }

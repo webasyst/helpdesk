@@ -108,15 +108,24 @@ $.wa.Grid = function(options) { "use strict";
             }
 
             // Make checkbox in header toggle all checkboxes in table
-            $('.h-select-all-checkbox').unbind('click').bind('click', function() {
-                    if ($(this).is(':checked')) {
-                        $('.requests-table td :checkbox').attr('checked', true);
-                        $('.requests-table tr').addClass('selected');
-                    } else {
-                        $('.requests-table td :checkbox').attr('checked', false);
-                        $('.requests-table tr').removeClass('selected');
-                    }
-                });
+            $('.js-select-all-checkbox').unbind('change').bind('change', function() {
+                if ($(this).is(':checked')) {
+                    $('.requests-table td :checkbox').prop('checked', true);
+                    $('.requests-table tr').addClass('selected');
+                } else {
+                    $('.requests-table td :checkbox').prop('checked', false);
+                    $('.requests-table tr').removeClass('selected');
+                }
+                $(this).prop('indeterminate', false);
+            });
+            $('.js-select-all-item').unbind('click').bind('click', function(e) {
+                if ($(e.target).is(':checkbox')) {
+                    return true;
+                }
+                const $checkbox = $(this).find(':checkbox');
+                let checked = $checkbox.prop('checked');
+                $checkbox.prop('checked', $checkbox.prop('indeterminate') ? checked : !checked).trigger('change');
+            });
 
             // init sort menu
             $('.h-sorting-menu')
@@ -126,7 +135,7 @@ $.wa.Grid = function(options) { "use strict";
                 });
             $('.h-sorting-menu').find('.h-sort-link').each(function() {
                 if ($(this).data('order') === settings.order) {
-                    $('.h-sorting-menu .h-name').text($(this).text());
+                    $('.h-sorting-menu .h-choose-sorting').html($(this).html());
                     return false;
                 }
             });
@@ -141,20 +150,15 @@ $.wa.Grid = function(options) { "use strict";
             return false;
         }
 
-        var self = this;
-        var grid_wrapper = domElement.parent();
-        var old_dom_element = domElement;
-
-        this.load(function(r) {
-            if (!old_dom_element.closest('html').length) {
+        var $old_dom_element = domElement;
+        this.load((r) => {
+            if (!$old_dom_element.closest('html').length) {
                 return;
             }
 
-            var new_table = self.getTable();
-            var els = old_dom_element.find('.header-above-requests-table').children();
-            new_table.find('.header-above-requests-table').empty().append(els);
-            grid_wrapper.empty().append(new_table);
-            new_table.find('.header-above-requests-table').change();
+            var $new_table = this.getTable();
+            $('#hd-support-content').empty().append($new_table);
+            $('.h-header-above-requests').change(); // refresh selected count
 
             if (callback && typeof callback == 'function') {
                 callback.call($.wa.helpdesk_controller, r);
@@ -200,80 +204,129 @@ $.wa.Grid = function(options) { "use strict";
                 throw new Error('$.wa.Grid.getTable() can not be called before load()');
             }
 
+            domElement = $('<div class="support-content-inner"></div>');
             var settings = grid.getSettings();
+            var p = Math.ceil(parseInt(settings.offset) / parseInt(settings.limit)) + 1;
 
-            if (settings.view == 'table') {
-                domElement =  $('<table class="full-width bottom-bordered requests-table view-'+settings.view+'">'+
-                                '<tbody></tbody></table>');
-            } else if (settings.view == 'split') {
-                domElement =  $('<div class="sidebar left300px" id="h-request-sidebar" style="border-top: 1px solid #CCC;">' +
-                                '<table class="full-width bottom-bordered requests-table view-'+settings.view+'" style="word-break: break-all;">'+
-                                '<tbody></tbody></table>' +
-                                '</div>' +
-                                '<div class="content left300px" id="h-request-content">' +
-                                '</div>');
+            // Links for list views
+            var $header = $('#hd-requests-header');
+            var hasHeaderAboveRequestsTable = () => !!$header.find('.h-header-above-requests').length;
+            var $bottom_header = hasHeaderAboveRequestsTable()
+                ? $header.find('.h-header-above-requests')
+                : $('<div class="js-mobile-hide-with-sidebar h-header-above-requests" id="list-views-toggle"><div class="h-list-views toggle small js-topic-control" /></div>');
+
+            $bottom_header.find('.h-list-views').empty().append($.parseHTML(
+                '<a rel="list"'+(settings.view == 'list' ? ' class="selected"' : '')+' href="'+this.getPagingHash(p, undefined, undefined, 'list')+'"><i class="fas fa-th-list view-thumb-list"></i></a>'+
+                '<a rel="list"'+(settings.view == 'split' ? ' class="selected"' : '')+' href="'+this.getPagingHash(p, undefined, undefined, 'split')+'"><i class="fas fa-columns view-splitview"></i></a>'+
+                '<a rel="table"'+(settings.view == 'table' ? ' class="selected"' : '')+' href="'+this.getPagingHash(p, undefined, undefined, 'table')+'"><i class="fas fa-list view-table"></i></a>'
+            ));
+            if (settings.view !== 'split') {
+                $header.addClass('h-fixed')
+            }
+
+            // add header above requests table
+            if (!hasHeaderAboveRequestsTable()) {
+                $header.find('.h-header-block').append($bottom_header);
+            }
+
+            // dummy: empty list
+            if (total == 0) {
+                return domElement.append($(`
+                    <div class="flexbox gray height-75 justify-content-center middle space-8 vertical">
+                        <div class="icon size-96 text-light-gray"><i class="far fa-life-ring"></i></div>
+                        <div>${$_('No requests.')}</div>
+                    </div>
+                `));
+            }
+
+
+            var domTable = null;
+            if (settings.view === 'table') {
+                domTable =  $('<table class="requests-table full-width view-'+settings.view+'">'+
+                                '<thead></thead><tbody></tbody></table>');
+
+            } else if (settings.view === 'split') {
+                domTable =
+                    $(`<div class="flexbox">
+                        <div class="sidebar width-adaptive-widest blank width-100-mobile" id="h-request-sidebar" data-mobile-sidebar="init" style="overflow:auto;">
+                            <table class="requests-table full-width view-${settings.view} break-word">
+                                <tbody></tbody>
+                            </table>
+                        </div>
+                        <div class="content not-blank" id="h-request-content" data-mobile-content=""></div>
+                    </div>`);
             } else {
-                domElement =  $('<table class="full-width bottom-bordered requests-table view-'+settings.view+'">'+
-                                '<tbody></tbody></table>');
+                domTable = $('<table class="requests-table full-width bottom-bordered view-'+settings.view+'">'+
+                             '<tbody></tbody></table>');
             }
 
-            if (total <= 0) {
-                domElement = $('<div></div>');
+            if (settings.view === 'table') {
+                domTable.addClass('single-lined');
+                domTable.find('thead').prepend(`<tr class="nowrap uppercase small">
+                    <th></th>
+                    <th>${$_('Status')}</th>
+                    <th></th>
+                    <th>${$_('ID')}</th>
+                    <th>${$_('Subject and text')}</th>
+                    <th>${$_('Time has passed')}</th>
+                    <th>${$_('Created')}</th>
+                    <th>${$_('From')}</th>
+                    <th>${$_('Assigned')}</th>
+                </tr>`);
             }
-
-            if (settings.view == 'table') {
-                domElement.addClass('zebra single-lined');
-            }
-            var rs = requests, tbody = domElement.find('tbody');
+            var rs = requests, tbody = domTable.find('tbody');
             for(var i = 0; i < rs.length; i++) {
                 tbody.append(getTableRow(rs[i], settings));
             }
 
             // Make row checkboxes select the rows
-            domElement.on('change', 'td :checkbox', function() {
+            domTable.on('change', 'td :checkbox', function() {
                 var cb = $(this);
+                var $select_all_checkbox = $('.js-select-all-checkbox');
+
+                var all_checkboxes = domTable.find(`${domTable.is(':not(table)') ? '.requests-table ' : ''}td :checkbox`);
+                var count_checked = all_checkboxes.filter(':checked').length;
+                if (count_checked > 0) {
+                    if (count_checked === all_checkboxes.length) {
+                        $select_all_checkbox.prop({
+                            "checked": true,
+                            "indeterminate": false
+                        });
+                    } else {
+                        $select_all_checkbox.prop({
+                            "checked": false,
+                            "indeterminate": true
+                        });
+                    }
+                } else {
+                    $select_all_checkbox.prop({
+                        "checked": false,
+                        "indeterminate": false
+                    });
+                }
+
                 if (cb.is(':checked')) {
                     cb.closest('tr').addClass('selected');
                 } else {
                     cb.closest('tr').removeClass('selected');
-                    domElement.find('th :checkbox').prop('checked', false);
+                    domTable.find('th :checkbox').prop('checked', false);
                 }
             });
+            domElement.toggleClass('table-scrollable-x', settings.view !== 'split').append(domTable);
 
-            domElement = $('<div class="block not-padded"></div>').append(domElement);
-            var p = Math.ceil(parseInt(settings.offset) / parseInt(settings.limit)) + 1;
-            var paging = this.getPaging(total, true, true);
-            if (settings.view == 'split' && total > 0) {
-                $('<div class="block not-padded float-left">').css({
-                    position: 'relative',
-                    width: '100%'
-                }).append(
-                    paging.css({
-                        left: 0,
-                        right: 0
-                    })
-                ).appendTo(domElement.find('#h-request-sidebar'));
+            // add bottom paging
+            var paging = this.getPaging(total, true, true, settings.view === 'split');
+            if (settings.view === 'split' && total > 0) {
+                paging.css({ 'padding-bottom': '10rem' }).appendTo(domElement.find('#h-request-sidebar'));
             } else {
                 domElement.append(paging);
             }
-
-            // Links for list views
-            domElement.prepend($.parseHTML(
-                '<div class="block header-above-requests-table bottom-bordered">'+
-                    '<ul class="list-views menu-h float-right">'+
-                        '<li rel="list"'+(settings.view == 'list' ? ' class="selected"' : '')+'><a href="'+this.getPagingHash(p, undefined, undefined, 'list')+'"><i class="icon16 view-thumb-list"></i></a></li>'+
-                        '<li rel="list"'+(settings.view == 'split' ? ' class="selected"' : '')+'><a href="'+this.getPagingHash(p, undefined, undefined, 'split')+'"><i class="icon16 view-splitview"></i></a></li>'+
-                        '<li rel="table"'+(settings.view == 'table' ? ' class="selected"' : '')+'><a href="'+this.getPagingHash(p, undefined, undefined, 'table')+'"><i class="icon16 view-table"></i></a></li>'+
-                    '</ul>'+
-                    '<div class="clear-both"></div>'+
-                '</div>'
-            ));
 
             // Current sort col
             var order_th = domElement.find('[data-order="'+settings.order.replace('!', '')+'"]');
             if (order_th.length) {
                 order_th.children('a').append($('<i class="icon16"></i>'));
-                if (settings.order[0] == '!') {
+                if (settings.order[0] === '!') {
                     order_th.find('i.icon16').addClass('darr');
                     order_th.children('a').attr('href', this.getPagingHash(p, undefined, settings.order.substring(1)));
                 } else {
@@ -287,11 +340,16 @@ $.wa.Grid = function(options) { "use strict";
             var e = new $.Event('helpdesk.list.element');
             e.list_element = domElement;
 
-            if (settings.view == 'split') {
+            if (settings.view === 'split') {
                 var $request_sidebar = domElement.find('#h-request-sidebar');
+                $request_sidebar.prepend($header.detach());
 
                 if (!settings.request && rs.length) {
-                    settings.request = rs[0].id;
+                    const { id } = rs[0];
+                    if (id) {
+                        $.wa.setHash(location.hash.replace(new RegExp('/split/\\w+'), `/split/${id}`));
+                    }
+                    settings.request = id;
                 }
                 if (settings.request) {
                     this.loadRequestInSplit(settings.request);
@@ -305,7 +363,7 @@ $.wa.Grid = function(options) { "use strict";
                                         settings.view + '/' +
                                         id;
                         $.wa.helpdesk_controller.stopDispatch(1);
-                        hash[4] = id;
+                        grid.changeIdInSplit(id);
                         grid.loadRequestInSplit(id);
                     };
 
@@ -325,20 +383,85 @@ $.wa.Grid = function(options) { "use strict";
 
             $(document).trigger(e);
         }
+
+        const self = this;
+        setTimeout(() => {
+            // Records per page selector
+            $('#records-per-page').off('change').on('change', function() {
+                if (!self.isActive()) {
+                    return;
+                }
+                $.wa.setHash(($.wa.helpdesk_controller.hashBase || '#/') + $(this).val());
+            });
+            $(document).trigger('wa_content_sidebar_loaded.helpdesk');
+        });
+
         return domElement;
     };
 
     this.loadRequestInSplit = function(request_id) {
+        $.wa.helpdesk_controller.showLoading();
         var $request_content = domElement.find('#h-request-content');
         var $request_sidebar = domElement.find('#h-request-sidebar');
         request_id = parseInt(request_id);
         if (request_id > 0) {
-            $request_content.html('<i class="icon16 loading" style="margin: 5px;"></i>');
+            $request_content.html(`
+            <div class="skeleton">
+            <div class="article wide">
+            <div class="article-body custom-py-20">
+                <div class="content flexbox">
+                    <div class="width-100">
+                        <div class="flexbox middle">
+                            <span class="button custom-mr-16 light-gray" style="width: 120px;height:32px;"></span>
+                            <span class="skeleton-line custom-mb-0" style="width:42px;height:20px;"></span>
+                        </div>
+
+                        <div class="flexbox middle custom-mt-32">
+                            <span class="skeleton-line custom-mb-8" style="width:70%;height:32px;"></span>
+                        </div>
+
+                        <span class="skeleton-list custom-m-0 custom-ml-40 custom-mt-16" style="height: 18px; width: 42%;"></span>
+                        <span class="skeleton-line custom-mb-8 custom-mt-16" style="width:70%;height:56px;"></span>
+
+                        <span class="skeleton-list custom-m-0 custom-ml-40 custom-mt-16" style="height: 14px; width: 42%;"></span>
+                        <span class="skeleton-list custom-m-0 custom-ml-40 custom-mt-16" style="height: 14px; width: 30%;"></span>
+
+                        <div class="flexbox vertical space-8 custom-ml-4 custom-mt-32">
+                            <span class="skeleton-line custom-mb-8" style="width:50%;height:12px;"></span>
+                            <span class="skeleton-line custom-mb-8" style="width:50%;height:12px;"></span>
+                            <span class="skeleton-line custom-mb-8" style="width:50%;height:12px;"></span>
+                        </div>
+
+                        <div class="flexbox wrap custom-mt-32">
+                            <span class="button custom-mr-16 custom-mt-8 rounded light-gray" style="width: 120px;height: 32px;"></span>
+                            <span class="button custom-mr-16 custom-mt-8 rounded light-gray" style="width: 120px;height: 32px;"></span>
+                            <span class="button custom-mr-16 custom-mt-8 rounded light-gray" style="width: 100px;height: 32px;"></span>
+                        </div>
+                        <span class="skeleton-line custom-mt-20" style="height: 1px;"></span>
+
+                        <div class="box flexbox vertical custom-mt-32">
+                            <span class="skeleton-custom-box" style="height: 70px; margin-bottom: 2rem;border-radius: 1rem;"></span>
+                            <span class="skeleton-custom-box" style="height: 74px; margin-bottom: 2rem;border-radius: 1rem;"></span>
+                            <span class="skeleton-custom-box" style="height: 94px; margin-bottom: 2rem;border-radius: 1rem;"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </div>
+            </div>
+            `);
             $.get( '?module=requests&action=info&id=' + request_id, function (r) {
                 $(window).scrollTop(0, 200);
                 $request_sidebar.find('[rel="'+request_id+'"]').addClass('selected2').siblings().removeClass('selected2');
-                $request_content.empty().html(r)
-                    .find('.hidden.block').remove();
+                $request_content.empty().html(r);
+                const $ha = $('#hd-announcement');
+                if ($ha.length) {
+                    $request_content.prepend($ha.detach().show());
+                }
+
+                $request_content.find('.js-mobile-back').removeClass('hidden');
+                $.wa.helpdesk_controller.hideLoading();
+                $(document).trigger('wa_loaded.helpdesk');
             });
         }
     };
@@ -352,11 +475,8 @@ $.wa.Grid = function(options) { "use strict";
      * @param {Boolean} show_options need to show "Show X records on page" selector: Default: true
      * @returns {Object} jquery DOM-object
      */
-    this.getPaging = function(total, show_total, show_options) {
-
-        var paging = $('<div class="block paging">' +
-                (show_total && paginator_type === 'page' ? $_('Requests:') + ' <span id="h-grid-total">' + total + '</span>' : '') +
-            '</div>');
+    this.getPaging = function(total, show_total, show_options, is_render_hidden_button) {
+        var paging = $('<div class="hd-paging"></div>');
 
         var settings = this.getSettings();
 
@@ -369,54 +489,55 @@ $.wa.Grid = function(options) { "use strict";
                     newPage = Math.floor(settings.offset/newLimit) + 1;
                     options += '<option value="'+this.getPagingHash(newPage, newLimit)+'"'+(settings.limit == o[i] ? ' selected="selected"' : '')+'>'+o[i]+'</option>';
                 }
-                paging.append('<div class="hd-page-num">'+$_('Show %s records on a page').replace('%s', '<select id="records-per-page">'+
-                    options+
-                '</select>')+'</div>');
+                paging.append('<div class="hd-page-num small">'+$_('Show %s records on a page').replace('%s', '<select id="records-per-page">'+options+'</select>')+'</div>');
             }
         }
 
         // Pagination
+        var type_is_page = paginator_type === 'page' && !is_render_hidden_button;
         var pages = Math.ceil(total / parseInt(settings.limit));
         var p = Math.ceil(parseInt(settings.offset) / parseInt(settings.limit)) + 1;
-        var html = '<div class="hd-pages">';
+        var html = '<ul class="'+(type_is_page ? 'paging' : 'hd-pages list')+'">';
+
+        const dummy_link = 'javascript:void(0)';
+        const dummy_class = 'opacity-0 pointer-events-none';
+        const has_prev_page = p > 1;
+        if (has_prev_page || is_render_hidden_button) {
+            html += `<li><a href="${has_prev_page ? this.getPagingHash(p-1) : dummy_link}" class="prevnext ${!type_is_page ? 'button nobutton small rounded' : ''} custom-mr-0 ${has_prev_page ? '' : dummy_class}">
+                ${type_is_page ? '←': `<i class="fas fa-caret-left icon middle"></i> ${$_('prev')}`}
+            </a></li>`;
+        }
 
         if (pages > 1) {
-
-            if (paginator_type === 'page') {
-                html += '<span>'+$_('Pages')+':</span>';
-
+            if (type_is_page) {
                 var f = 0;
                 for (var i = 1; i <= pages; i++) {
                     if (Math.abs(p - i) < 3 || i < 5 || pages - i < 3) {
-                        html += '<a' + (i == p ? ' class="selected"' : '') + ' href="'+this.getPagingHash(i)+'">' + i + '</a>';
+                        html += '<li' + (i == p ? ' class="selected"' : '') + '><a href="'+this.getPagingHash(i)+'">' + i + '</a></li>';
                         f = 0;
                     } else if (f++ < 3) {
                         html += '.';
                     }
                 }
             } else {
-                html += (parseInt(settings.offset, 10) + 1) + '&mdash;' + Math.min(total, (parseInt(settings.offset, 10) + parseInt(settings.limit, 10)));
-                html += ' ' + $_('of') + ' '  + total;
+                html += `<li class="small">${(parseInt(settings.offset, 10) + 1)} &mdash; ${Math.min(total, (parseInt(settings.offset, 10) + parseInt(settings.limit, 10)))}</li>`;
+                html += `<li class="small">${$_('of')} ${total}</li>`;
             }
 
-        } else if (paginator_type !== 'page') {
-            if (pages <= 0) {
-                html += $_('No requests.');
-            } else {
-                html += Math.min(parseInt(settings.offset, 10) + 1, total) + '&mdash;' + Math.min(total, (parseInt(settings.offset, 10) + parseInt(settings.limit, 10)));
-                html += ' ' + $_('of') + ' '  + total;
-            }
+        } else if (paginator_type !== 'page' && pages > 0) {
+            html += `<li class="small">${Math.min(parseInt(settings.offset, 10) + 1, total)} &mdash; ${Math.min(total, (parseInt(settings.offset, 10) + parseInt(settings.limit, 10)))}</li>`;
+            html += `<li class="small">${$_('of')} ${total}</li>`;
         }
 
         // Prev and next links
-        if (p > 1) {
-            html += '<a href="' + this.getPagingHash(p-1) + '" class="prevnext"><i class="icon10 larr"></i> '+$_('prev')+'</a>';
-        }
-        if (p < pages) {
-            html += '<a href="' + this.getPagingHash(p+1) + '" class="prevnext">'+$_('next')+' <i class="icon10 rarr"></i></a>';
+        const has_next_page = p < pages;
+        if (has_next_page || is_render_hidden_button) {
+            html += `<li><a href="${has_next_page ? this.getPagingHash(p+1) : dummy_link}" class="prevnext ${!type_is_page ? 'button nobutton small rounded' : ''} ${has_next_page ? '' : dummy_class}">
+                ${type_is_page ? '→': `${$_('next')} <i class="fas fa-caret-right icon middle"></i>`}
+            </a></li>`;
         }
 
-        html += '</div>';
+        html += '</ul>';
 
         paging.prepend(html);
 
@@ -527,6 +648,10 @@ $.wa.Grid = function(options) { "use strict";
         return total;
     };
 
+    /** Change ID for split mode */
+    this.changeIdInSplit = function (new_id) {
+        hash[4] = new_id;
+    };
 
     /** Returns a string to pass to PHP controller as `filters` paarmeter value.
       * When called with no parameters, uses filters var set by constructor.
@@ -567,18 +692,74 @@ $.wa.Grid = function(options) { "use strict";
       * @param object r row data from PHP controller
       * @return jQuery object */
     var getTableRow = function(r, settings) {
-        var tr;
         settings = settings || getSettings();
-        if (settings.view == 'table') {
-            tr = $('<tr'+(r.is_unread ? ' class="unread"' : '')+' rel="'+r.id+'"'+(r.list_row_css ? ' style="'+r.list_row_css+'"' : '')+'>'+
-                    '<td class="checkboxes-col"><input type="checkbox"></td>'+
-                    '<td class="id-col"><span class="request-id">'+r.id+'</span></td>'+
+
+        var truncStr = (str, max_length) => {
+            if (!str) {
+                return '';
+            }
+            if (str.length > max_length) {
+                return String(str).slice(0, max_length) + '...';
+            }
+
+            return str;
+        };
+
+        var getStatusBadgeElement = (right_element) => {
+            var state_name = r.state;
+            var status_badge = state_name
+                ? `<div class="state-wrapper"><span class="state-name badge"
+                        style="${(String(r.list_row_css).trim() ? r.list_row_css.replace('color:', 'background:') : 'background:var(--light-gray);font-style:italic;')}"
+                        title="${state_name}"><span>${state_name}</span>
+                    </span>`
+                : '';
+
+            if (right_element) {
+                status_badge += right_element;
+            }
+            if (state_name) {
+                status_badge += '</div>';
+            }
+
+            return status_badge;
+        };
+        var getIndicatorsElement = () => {
+            var indicators  = '<span class="indicators-list">';
+            if (r.priority === 1) {
+                indicators += '<i class="fas fa-exclamation-triangle text-red"></i> ';
+            }
+            if (r.is_presale) {
+                indicators += '<i class="fas fa-wallet text-green"></i> ';
+            }
+            if (r.is_unread) {
+                indicators += '<i class="fas fa-dot-circle text-orange"></i>';
+            }
+            if (r.type_is_requred) {
+                indicators += `<i class="fas fa-exclamation-circle text-gray fa-sm" title="${$_('Request type must be specified')}"></i>`;
+            }
+            indicators += '</span>';
+            return indicators;
+        };
+        var getSourceBadgeElement = () => {
+            return r.source_class
+                ? `<span class="userstatus ${r.source_bg}" title="${r.source_name}">
+                        <i class="${r.source_class}"></i>
+                    </span>`
+                : '';
+        };
+
+        var tr;
+        if (settings.view === 'table') {
+            tr = $('<tr'+(r.is_unread ? ' class="unread"' : '')+' rel="'+r.id+'">'+
+                    '<td class="checkboxes-col min-width"><input type="checkbox"></td>'+
+                    '<td class="state-col min-width">'+getStatusBadgeElement()+'</td>'+
+                    '<td class="indicators-col min-width">'+getIndicatorsElement()+'</td>'+
+                    '<td class="id-col min-width"><span class="request-id">'+formatRequestId(r.id)+'</span></td>'+
+                    '<td class="summary-col"><div><span class="h-summary">'+r.summary+'</span>' + (r.text_clean ? ' <span class="h-summary-text small"></span>' : '')+'<i class="shortener"></i></div></td>'+
                     '<td class="age-col nowrap">'+r.age+'</td>'+
                     '<td class="upd-col nowrap">'+r.upd_formatted+'</td>'+
                     '<td class="client-col"><div>'+r.client_name+'<i class="shortener"></i></div></td>'+
-                    '<td class="summary-col"><div><span class="h-summary">'+r.summary+'</span>' + (r.text_clean ? ' <span class="h-summary-text"></span>' : '')+'<i class="shortener"></i></div></td>'+
-                    '<td class="state-col nowrap"><div class="h-hide-rest status-max-width">'+r.state+'</div></td>'+
-                    '<td class="assigned-col nowrap"><div>'+r.assigned_name+'<i class="shortener"></i></div></td>'+
+                    '<td class="assigned-col nowrap"><div>'+(r.assigned_name || '<span class="gray">'+$_('No assigned')+'</span>')+'<i class="shortener"></i></div></td>'+
                 '</tr>');
             tr.find('.h-summary-text').html(r.text_clean);
             tr.children(':not(.checkboxes-col)').each(function() {
@@ -594,76 +775,78 @@ $.wa.Grid = function(options) { "use strict";
                 text = text.slice(0, len - summary.length > 0 ? len - summary.length : 0);
                 tr.find('.h-summary-text').html(text + '...');
             }
-        } else if (settings.view == 'split') {
-            tr = $( '<tr' + (r.is_unread ? ' class="unread"' : '') + ' rel="' + r.id + '">' +
+        } else if (settings.view === 'split') {
+            tr = $('<tr' + (r.is_unread ? ' class="unread"' : '') + ' rel="' + r.id + '">' +
                         '<td class="checkboxes-col"><input type="checkbox"></td>' +
-                        '<td class="avatar-col"><a data-request-id="' + r.id + '" href="#/request/' + r.id + '/" class="request-summary"><img class="userpic" src="' + (r.client_photo_url || '../../wa-content/img/userpic50.jpg') + '" width="50" height="50"></a></td>' +
+                        `<td class="avatar-col">
+                            <a class="userpic userpic48" data-request-id="${r.id}" href="#/request/${r.id}/" class="request-summary">
+                                <img src="${(r.client_photo_url || '../../wa-content/img/userpic50.jpg')}" width="50" height="50">
+                                ${getSourceBadgeElement()}
+                            </a>
+                        </td>` +
                         '<td class="description-col">' +
-                            '<div>' +
-                            '<a data-request-id="' + r.id + '" href="#/request/' + r.id + '/" class="request-summary">' + r.summary + '</a>' +
-                            '</div>' +
-                            '<div>' +
-                            '<span class="client-name">' + r.client_name  + '</span> ' +
-                            '</div>' +
+                            `<div class="description-top">${getStatusBadgeElement(getIndicatorsElement())} <div class="workflow-name text-ellipsis" title="${r.workflow}">${r.workflow}</div></div>`+
+                            `<div><a data-request-id="${r.id}" href="#/request/${r.id}/" class="request-summary">${r.summary}</a></div>` +
+                            `<div class="description-text text-clean small" title="${String(r.text_clean)}"><div class="text-ellipsis">${truncStr(String(r.text_clean), 64)}</div></div>` +
+                            `<div class="description-bottom">
+                                <span class="client-name small text-ellipsis" title="${formatRequestId(r.id)} ${r.client_name.replace(new RegExp('<\\/?strong>', 'g'),'')}"><span class="semibold custom-mr-8">${formatRequestId(r.id)}</span>${r.client_name}</span>
+                                <div class="datetime-formatted hint text-ellipsis" title="${r.dt_formatted}">${r.age}</div>
+                             </div>` +
                         '</td>' +
                     '</tr>');
-            tr.find('.performs-action').attr('title', tr.find('.performs-action-text').text());
         } else {
+            // list
             tr = $('<tr'+(r.is_unread ? ' class="unread"' : '')+' rel="'+r.id+'">'+
                     '<td class="checkboxes-col"><input type="checkbox"></td>'+
-                    '<td class="avatar-col"><a href="#/request/'+r.id+'/" class="request-summary"><img class="userpic" src="'+(r.client_photo_url||'../../wa-content/img/userpic50.jpg')+'" width="50" height="50"></a></td>'+
+                    `<td class="avatar-col">
+                        <a href="#/request/${r.id}/" class="userpic userpic48" data-request-id="${r.id}" class="request-summary">
+                            <img src="${(r.client_photo_url || '../../wa-content/img/userpic50.jpg')}" width="50" height="50">
+                            ${getSourceBadgeElement()}
+                        </a>
+                    </td>` +
                     '<td class="description-col">'+
-                        '<div><a href="#/request/'+r.id+'/" class="request-summary">'+r.summary+'</a>'+
-                        (r.text_clean ? ' <span class="h-summary-text">&mdash; </span>' : '')+'</div>'+
-                        '<div>'+
-                            '<span class="client-name">' + r.client_name + '</span> '+
-                            '<span class="age hint">'+r.age+' '+$_('ago')+'</span> '+
-                            (r.source_class ?
-                                ('<span class="via-source hint">'+$_('via')+' <i class="icon16 source-'+r.source_class+'" title="'+r.source_name+'"></i>')
-                                : ''
-                            )+
+                        `<div class="description-top">
+                            ${getStatusBadgeElement(getIndicatorsElement())}<a href="#/request/${r.id}/" class="request-summary">${r.summary}</a>
+                        </div>`+
+                        `<div class="description-text text-clean" title="${r.text_clean}">${(r.text_clean ? '<div class="h-summary-text text-ellipsis"></div>' : '')}</div>`+
+                        '<div class="description-bottom">'+
+                            '<span class="client-name"><span class="request-id semibold"> '+formatRequestId(r.id)+'</span> ' + r.client_name + '</span> '+
+                            '<span class="age hint custom-ml-4">'+r.age+' '+$_('ago')+'</span> '+
                         '</div>'+
                     '</td>'+
                     '<td class="info-col">'+
-                        '<div class="first-row"><span class="request-id">'+formatRequestId(r.id)+'</span>'+
-                        '<span class="state-name"'+(r.list_row_css ? ' style="'+r.list_row_css+'"' : '')+'>'+r.state+'</span></div>'+
+                        `<div class="first-row assigned-header text-ellipsis"><span class="source" title="${$_('Workflow')}: ${r.workflow}"> ${r.workflow}</span></div>`+
                         '<div class="second-row">'+
-                            '<span class="hint assigned-header">'+$_('Assigned:')+'</span>'+
-                            (r.assigned_contact_id-0 == 0 ?
-                                ('<strong class="assigned-name nobody"></strong>')
-                                :
-                                ('<strong class="assigned-name">'+r.assigned_name+'</strong>')
+                            (r.assigned_contact_id-0 == 0
+                                ? `<span class="hint text-ellipsis">${$_('No assigned')}</span>`
+                                : `<span class="assigned-name text-ellipsis">${r.assigned_name}</span>`
                             )+
                         '</div>'+
                         '<div class="third-row">'+
-                        (r.last_log_id > 0 ?
-                            (
-                                '<span class="performs-action hint">'+$_('Last action')+' '+r.time_since_update+' '+$_('ago')+'</span> '+
-                                '<span class="hidden performs-action-text">' + r.actor_name+' '+r.last_action_performs_string+'</span>'
+                        (r.last_log_id > 0
+                            ? (
+                                '<span class="performs-action text-ellipsis">'+r.time_since_update+' '+$_('ago')+'</span> '+
+                                '<span class="hidden performs-action-text">'+r.actor_name+' '+r.last_action_performs_string+'</span>'
                             )
-                            :
-                            '<span class="no-actions-yet">'+$_('No actions with this request.')+'</span>'
+                            : '<span class="no-actions-yet hint text-ellipsis">'+$_('No actions with this request.')+'</span>'
                         )+
                         '</div>'+
                     '</td>'+
                 '</tr>');
-            tr.find('.performs-action').attr('title', tr.find('.performs-action-text').text());
+            tr.find('.assigned-name').attr('title', $_('Assigned:')+' '+tr.find('.assigned-name').text());
+            tr.find('.performs-action').attr('title', $_('Last action')+' '+tr.find('.performs-action-text').text());
             tr.find('.h-summary-text').html(r.text_clean);
 
-            var text = tr.find('.h-summary-text').html() || '';
-            var summary = tr.find('.description-col .request-summary').html() || '';
-            var len = 200;
-            if (text.length + summary.length > len) {
-                text = text.slice(0, len - summary.length > 0 ? len - summary.length : 0);
-                tr.find('.h-summary-text').html(text + '...');
-            }
+            var $summary_text = tr.find('.h-summary-text');
+            var text = $summary_text.html() || '';
+            tr.find('.h-summary-text').html(truncStr(text, 200));
         }
 
         return tr;
     };
 
     var formatRequestId = function(id) {
-        return $_('#%s').replace('%s', id);
+        return '#%s'.replace('%s', id);
     };
 
     /** Escapes &, : and ` with backtick: `&, `:, ``, >=, <=. */
@@ -676,4 +859,3 @@ $.wa.Grid = function(options) { "use strict";
                     replace(/<=/g, '`<=');
     };
 };
-

@@ -3,40 +3,30 @@
     $.wa.helpdesk_history = {
         data: null,
         updateHistory: function (historyData) {
-            var li;
+            $.wa.helpdesk_controller.cleanHash(location.hash);
             this.data = historyData;
+            var li;
             var searchUl = $('#hd-search-history').empty();
-            var currentHash = $.wa.helpdesk_controller.cleanHash(location.hash);
             for (var i = 0; i < historyData.length; i++) {
                 var h = historyData[i];
                 h.hash = $.wa.helpdesk_controller.cleanHash(h.hash);
-                li = $('<li rel="' + h.id + '" class="break-words">' +
+                li = $('<li rel="' + h.id + '">' +
                     (h.cnt >= 0 ? '<span class="count">' + h.cnt + '</span>' : '') +
                     '<a href="' + h.hash + '"></a>' +
                     '</li>');
-                li.children('a').text(h.name);
+                li.children('a').prepend($('<span />').text(h.name));
                 searchUl.append(li);
             }
 
             // Link to clear history
             if (historyData.length > 0) {
                 li = $('<li rel="' + h.id + '">' +
-                    '<a href="javascript:void(0)" style="font-size:10px;color:#888;text-align:center;"></a>' +
+                    '<a href="javascript:void(0)" class="small text-gray"></a>' +
                     '</li>');
-                li.children('a').text($_('Clear')).prepend('<i class="icon10 delete-bw" style="margin-top:1px"></i>').click(function () {
+                li.children('a').text($_('Clear')).prepend('<i class="fas fa-times-circle"></i>').on('click', function () {
                     $.wa.helpdesk_history.clear('search');
                 });
                 searchUl.append(li);
-            }
-
-            var lists = [searchUl];
-            for (var l = 0; l < lists.length; l++) {
-                var ul = lists[l];
-                if (ul.children().size() > 0) {
-                    ul.parents('.block.wrapper').show();
-                } else {
-                    ul.parents('.block.wrapper').hide();
-                }
             }
 
             $.wa.helpdesk_history.updateVisibility();
@@ -61,7 +51,7 @@
             var ul = $('#hd-search-history');
             var link = $('#hd-search-history-link');
             ul.parent().hide();
-            if (ul.children().length <= 0) {
+            if (!ul.children().length) {
                 link.hide();
             } else {
                 link.show();

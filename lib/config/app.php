@@ -1,14 +1,8 @@
 <?php
 return array(
     'name' => 'Helpdesk',
-    'icon' => array(
-        16 => 'img/helpdesk16.png',
-        24 => 'img/helpdesk24.png',
-        48 => 'img/helpdesk.png',
-        96 => 'img/helpdesk96.png',
-    ),
-    'version' => '1.3.2',
-    'critical' => '1.0.0',
+    'icon' => 'img/helpdesk.svg',
+    'version' => '2.0.0',
     'vendor' => 'webasyst',
     'csrf' => true,
 
@@ -23,4 +17,6 @@ return array(
     'routing_params' => array(
         'main_form_id' => 3,
     ),
+
+    'ui' => '1.3,2.0'
 );

@@ -1,19 +1,23 @@
 {if $actions || !$auto_action_already_exists}
-    <h1>[`Add a new action`] <span class="hint" style="font-size:12px;">{sprintf_wp('for state &ldquo;%s&rdquo;', $state->getName())}</span></h1>
-
-    <div class="h-action-create-block">
-        <form>
-            <div class="fix-p">
+{capture assign="_dialog_new_action"}
+<div class="dialog" data-global-close>
+    <div class="dialog-background"></div>
+    <div class="dialog-body">
+        <header class="dialog-header">
+            <h1>[`Add a new action`] <span class="hint">{sprintf_wp('for state &ldquo;%s&rdquo;', $state->getName())}</span></h1>
+        </header>
+        <div class="dialog-content">
+            <form>
                 <input type="hidden" name="wid" value="{$wf->getId()}">
                 <input type="hidden" name="state_id" value="{$state->getId()}">
 
                 {if $actions}
-                    <p><label>
+                    <div><label>
                         <input type="radio" name="new_or_existing" value="existing"{if ifempty($data.new_or_existing) != 'new'} checked{/if}>
                         [`Choose an existing action:`]
-                    </label></p>
+                    </label></div>
 
-                    <ul class="menu-v with-icons" id="action-selector">
+                    <ul class="menu custom-ml-20 custom-mt-8 space-8" id="action-selector">
                         {foreach $actions as $id => $name}
                             <li><label>
                                 <input type="checkbox" name="existing_action_ids[]" value="{$id|escape}"{if in_array($id, ifempty($data.existing_action_ids, array()))} checked{/if}>
@@ -23,50 +27,54 @@
                     </ul>
                 {/if}
 
-                <ul class="menu-v h-action-type-selector">
+                <ul class="menu large">
                     <li>
                         <label>
                             <input type="radio" name="new_or_existing" value="helpdeskWorkflowBasicAction" {if ifempty($data.new_or_existing) == 'new'} checked{/if}>
                             [`Create a new action to be performed by user`]
-                        </label><br>
+                        </label>
                         <div class="hint">
                             [`Users perform this action manually on the request's page or in their Customer portals.`]
                         </div>
                     </li>
                     {if !$auto_action_already_exists}
-                        <li>
+                        <li class="custom-mt-16">
                             <label>
                                 <input type="radio" name="new_or_existing" value="helpdeskWorkflowBasicAutoAction" {if ifempty($data.new_or_existing) == 'new'} checked{/if}>
                                 [`Create a new action to be performed automatically`]
-                            </label><br>
+                            </label>
                             <div class="hint">
                                 [`This action will be triggered automatically (by time-out) if no other actions are performed with request during a certain period of time.`]
                             </div>
                         </li>
                     {/if}
                 </ul>
-            </div>
-        </form>
+            </form>
+        </div>
+        <footer class="dialog-footer">
+            <button type="submit" class="button" {if ifempty($data.new_or_existing) != 'new'}disabled{/if}>[`Proceed`]</button>
+            <button type="button" class="js-close-dialog button light-gray">[`Close`]</button>
+        </footer>
     </div>
+</div>
+{/capture}
 
 <script>(function() { "use strict";
-
-
-        $('#hd-e-graph-new-action').waDialog({
-            onLoad: function() {
-                var dialog = $(this);
+        $.waDialog({
+            html: {$_dialog_new_action|json_encode},
+            onOpen: function(dialog, dialog_instance) {
                 var ul = $('#action-selector');
-                var dialog_buttons = dialog.find('.dialog-buttons-gradient');
                 var radios = dialog.find('input[name=new_or_existing]');
                 var checkboxes = dialog.find('input[name="existing_action_ids[]"]');
-                var form = ul.closest('form');
+                var form = dialog.find('form');
+                var $submit = dialog.find(':submit');
 
                 var enableButton = function() {
-                    dialog_buttons.find('[type=submit]').attr('disabled', false);
+                    $submit.prop('disabled', false);
                 };
 
                 var disabledButton = function () {
-                    dialog_buttons.find('[type=submit]').attr('disabled', true);
+                    $submit.prop('disabled', true);
                 };
 
                 var isAllCheckboxesUnchecked = function() {
@@ -113,26 +121,22 @@
                     ul.find(':checkbox:checked').change();
                 {/if}
 
-                dialog_buttons.empty();
-                dialog_buttons.append($('<input type="submit" class="button green" disabled="disabled" value="'+"[`Proceed`]"+'">').click(function() {
-                    if (radios.filter(':checked').attr('value') == 'existing') {
-                        dialog_buttons.append('<i class="icon16 loading"></i>');
+                $submit.click(function() {
+                    const loadingSubmit = $.wa.helpers.createLoadingSubmit($submit).show();
+                    if (radios.filter(':checked').prop('value') == 'existing') {
                         $.post('?module=editor&action=newaction', form.serialize(), function(r) {
-                            form.parent().html(r);
+                            loadingSubmit.hide();
+                            form.parent().append(r);
                         });
                     } else {
-                        dialog_buttons.append('<i class="icon16 loading"></i>');
                         var action_class = radios.filter(':checked').val();
-                        $.wa.dialogHide();
-                        $.wa.helpdesk_controller.showActionSettings('{$wf->getId()}', "{$state->getId()}", '', action_class, "[`Save`]", "[`or`]", "[`cancel`]", "[`Delete this action`]", "[`The action will be eliminated only for the state &ldquo;%s&rdquo;. For other states this action will stay available.`]", function() {
-                            dialog.remove();
-                        });
+                        $.wa.helpdesk_controller.showActionSettings('{$wf->getId()}', "{$state->getId()}", '', action_class, "[`Save`]", "[`or`]", "[`cancel`]", "[`Delete this action`]", "[`The action will be eliminated only for the state &ldquo;%s&rdquo;. For other states this action will stay available.`]")
+                            .then(() => {
+                                loadingSubmit.hide();
+                                dialog_instance.close();
+                            });
                     }
-                }));
-                dialog_buttons.append("<span> [`or`] </span>");
-                dialog_buttons.append($('<a href="javascript:void(0)">'+"[`cancel`]"+'</a>').click(function() {
-                    dialog.remove();
-                }));
+                });
             }
         });
 

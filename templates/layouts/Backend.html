@@ -1,35 +1,49 @@
 <!DOCTYPE html>
-<html>
+<html lang="{if $wa->locale()}{$wa->locale()|substr:0:2}{else}ru{/if}">
 <head>
 <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>[`Helpdesk`] &mdash; {$wa->accountName()}</title>
 
 {$wa->css()}
 <link rel="stylesheet" type="text/css" href="{$wa_url}wa-content/css/jquery-ui/base/jquery.ui.autocomplete.css" media="screen" />
-<link rel="stylesheet" type="text/css" href="{$wa_url}wa-content/js/jquery-plugins/ibutton/jquery.ibutton.min.css" />
 <link rel="stylesheet" type="text/css" href="{$wa_app_static_url}css/helpdesk.css?{$wa->version()}" media="screen" />
-<link rel="stylesheet" href="{$wa_app_static_url}css/font-awesome.min.css?{$wa->version()}" />
 <link type="text/css" rel="stylesheet" href="{$wa_url}wa-content/js/jquery-plugins/jquery-tagsinput/jquery.tagsinput.css">
+<link href="{$wa_url}wa-content/css/jquery-ui/base/jquery.ui.datepicker.css" rel="stylesheet" />
 
 {*
  * Js
  *}
-<script src="{$wa_url}wa-content/js/jquery/jquery-1.11.1.min.js" type="text/javascript"></script>
-<script src="{$wa_url}wa-content/js/jquery/jquery-migrate-1.2.1.min.js" type="text/javascript"></script>
-<script src="{$wa_app_static_url}/js/helpdesk.min.js?v{$wa->version(true)}"></script>
+<script src="{$wa_url}wa-content/js/jquery/jquery-3.6.0.min.js"></script>
+<script src="{$wa_url}wa-content/js/jquery/jquery-migrate-3.3.2.min.js"></script>
+<script src="{$wa_url}wa-content/js/jquery-wa/wa.js?v={$wa->version(true)}"></script>
+{*<script src="{$wa_app_static_url}/js/helpdesk.min.js?v{$wa->version(true)}"></script>*}
+{wa_js file="js/helpdesk.min.js"}
+    {$wa_url}wa-content/js/jquery-plugins/jquery.history.js
+    {$wa_url}wa-content/js/jquery-plugins/jquery.json.js
+    {$wa_url}wa-content/js/jquery-plugins/jquery.scrollTo-min.js
+    {$wa_url}wa-content/js/jquery-plugins/jquery.store.js
+    {$wa_url}wa-content/js/jquery-plugins/jquery.hoverIntent.minified.js
+    {$wa_url}wa-content/js/jquery-plugins/jquery.swap.js
+    {$wa_url}wa-content/js/jquery-ui/jquery-ui.custom.min.js
+    {$wa_url}wa-content/js/jquery-ui/jquery.ui.autocomplete.min.js
 
-<script>
-    (function ($) {
-        var __hide = $.fn.hide;
-        $.fn.hide = function () {
-            if (this.hasClass('field') && this.find('.h-form-constructor-wrapper').length) {
-                console.error('Constructor hiding error');
-            }
-            return __hide.apply(this, arguments);
-        };
-    })(jQuery);
+    {$wa_app_static_url}/js/helpers.js
+    {$wa_app_static_url}/js/sidebar.js
 
-</script>
+    {$wa_app_static_url}/js/raphael-min.js
+    {$wa_app_static_url}/js/tmpl.min.js
+    {$wa_app_static_url}/js/redactor.codeblock.js
+    {$wa_app_static_url}/js/redactor.faq.js
+    {$wa_app_static_url}/js/faq.js
+    {$wa_app_static_url}/js/wa.controller.js
+    {$wa_app_static_url}/js/wa.grid.js
+    {$wa_app_static_url}/js/wa.history.js
+{/wa_js}
+
+{if is_readable("wa-content/js/jquery-ui/i18n/jquery.ui.datepicker-{$wa->locale()}.js")}
+    <script src="{$wa_url}wa-content/js/jquery-ui/i18n/jquery.ui.datepicker-{$wa->locale()}.js"></script>
+{/if}
 
 {* Ace *}
 <script type="text/javascript" src="{$wa_url}wa-content/js/ace/ace.js?v{$wa->version(true)}"></script>
@@ -54,135 +68,141 @@
 
 </head>
 <body id="{$wa_app}">
-
-<div id="wa">
-    {wa_header}
-    <div id="wa-app">
-        <div class="sidebar left200px h-sidebar">
-            {if !empty($sidebar)}
-                {$sidebar}
-            {/if}
-        </div>
-        <div class="content left200px" id="s-core">
-            <div class="support-background shadowed">
-                <div class="block not-padded c-core-content" id="c-core-content">
-                    {if !empty($content)}
-                        {$content}
-                    {else}
-                        <div class="block">
-                            <h1 class="wa-page-heading">[`Loading...`]</h1>
-                        </div>
+    <div id="wa">
+        {wa_header}
+        <div id="wa-app">
+            <div class="flexbox wrap-mobile">
+                <div class="js-app-sidebar h-sidebar sidebar flexbox width-adaptive-wider mobile-friendly">
+                    {if !empty($sidebar)}
+                        {$sidebar}
                     {/if}
                 </div>
-                <div class="clear-left"></div>
-            </div>
-        </div>
-    </div>
-</div>
-
-{*
- * Init wa.controller
- *}
-<script type="text/javascript">
-    $.wa.helpdesk_controller.init({
-        url: "{$wa_url|escape:javascript}",
-        user_id: {$wa->user('id')},
-        backend_url: "{wa_backend_url()|escape:javascript}",
-        admin: {$admin|intval},
-        accountName: "{$wa->accountName(false)|escape:javascript}",
-        global_admin: {$global_admin|intval},
-        disable_shared_filters: {$disable_shared_filters|intval},
-        is_debug: {waSystemConfig::isDebug()|intval},
-        paginator_type: {json_encode($paginator_type|default:'page')}
-    });
-
-    {if empty($content)}
-    if($.wa.helpdesk_controller.getHash()) {
-        $.wa.helpdesk_controller.dispatch();
-    } else {
-        $.wa.helpdesk_controller.lastPage();
-    }
-    {/if}
-</script>
-
-
-{*
- * Template for right search result menu
- *}
-<div class="hidden template for search-result-header-menu">
-    <div class="float-right">
-        <ul class="float-right menu-v h-search-result-header-menu hidden">
-            <li class=""><a href="javascript:void(0);" class="h-change-search-conditions">[`Change search conditions`]</a></li>
-            <li class="if-search"><a href="javascript:void(0)" class="h-save-as-filter">[`Save as a filter`]</a></li>
-        </ul>
-        <a href="javascript:void(0);" class="h-filter-settings-toggle hidden float-right"><i class="icon16 settings"></i></a>
-    </div>
-</div>
-
-{* Template for filter settings panel *}
-{include file="./includeFilterSettings.html"}
-
-{* Template for unread settings panel *}
-{include file="./includeUnreadSettings.html"}
-
-{* Template for drop-down menu above request list views *}
-{include file="./includeRequestsMenu.html"}
-
-{*
- * Template for error page
- *}
-<div class="hidden template for error-page">
-    <div class="block triple-padded">
-        <h1>[`Error`] <span class="error-code"></span></h1>
-        <p class="hidden if-404">[`Page not found`]</p>
-        <p class="hidden if-403">[`Insufficient access rights`]</p>
-        <p class="hidden otherwise">[`Internal server error`]</p>
-        {if waSystemConfig::isDebug()}
-            <p><a href="javascript:void(0)" onclick="$(this).closest('.error-page').find('.place-for-iframe').slideToggle(200);" class="inline-link iframe-toggle"><b><i>[`Details`]</i></b></a></p>
-            <div class="hidden place-for-iframe"></div>
-        {elseif $global_admin}
-            <p class="hint">[`Enable the “Developer mode” option in the Settings app to see the details.`]</p>
-        {/if}
-    </div>
-</div>
-
-{* Custom HTML and JS from plugins. *}
-{foreach $plugin_blocks as $html}
-    {$html}
-{/foreach}
-
-{* dialogs section *}
-<div class="dialog width650px height350px persistent" id="h-add-fiter-dialog" style="display:none;">
-    <form method="post" action="?module=backend&action=sidebarSave">
-        <div class="dialog-background"></div>
-        <div class="dialog-window">
-            <div class="dialog-content">
-                <div class="dialog-content-indent">
-                    <h1></h1>
-                    <div class="block">
-                        [`Select access level:`]
-                        <label class="radio">
-                            <input type="radio" name="shared" value="" checked="checked" class="h-default">
-                            [`Personal`]<br>
-                            <span class="hint">[`Will appear in the sidebar in MY FILTERS section and will be available to me only`]</span>
-                        </label>
-                        <label class="radio">
-                            <input type="radio" name="shared" value="1">
-                            [`Public`]<br>
-                            <span class="hint">[`Will appear in the main section in sidebar and will be available to all users`]</span>
-                        </label>
+                <div class="content blank" id="s-core">
+                    <div class="c-core-content" id="c-core-content">
+                        <div class="article wide">
+                            <div class="article-body">
+                                {if !empty($content)}
+                                    {$content}
+                                {else}
+                                    <div class="flexbox vertical space-16" style="position: absolute;top: 45%;left: 50%;transform: translate(-50%, -50%);">
+                                        <div class="spinner custom-p-24"></div>
+                                        <div class="wa-page-heading text-dark-gray">[`Loading...`]</div>
+                                    </div>
+                                {/if}
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="dialog-buttons">
-                <div class="dialog-buttons-gradient">
-                    {$wa->csrf()}
-                    <input class="button green" type="submit" value="[`Add filter`]">
-                    <i class="icon16 loading" style="display:none;"></i> [`or`] <a class="cancel" href="javascript:void(0);">[`cancel`]</a>
-                </div>
-            </div>
         </div>
-    </form>
-</div>
+    </div>
 
-</body></html>
+    {*
+    * Init wa.controller
+    *}
+    <script type="text/javascript">
+        $.sidebar.init();
+
+        $.wa.helpdesk_controller.init({
+            url: "{$wa_url|escape:javascript}",
+            user_id: {$wa->user('id')},
+            backend_url: "{wa_backend_url()|escape:javascript}",
+            admin: {$admin|intval},
+            accountName: "{$wa->accountName(false)|escape:javascript}",
+            global_admin: {$global_admin|intval},
+            disable_shared_filters: {$disable_shared_filters|intval},
+            is_debug: {waSystemConfig::isDebug()|intval},
+            paginator_type: {json_encode($paginator_type|default:'page')}
+        });
+
+        {if empty($content)}
+        if($.wa.helpdesk_controller.getHash()) {
+            $.wa.helpdesk_controller.dispatch();
+        } else {
+            $.wa.helpdesk_controller.lastPage();
+        }
+        {/if}
+    </script>
+
+
+    {*
+    * Template for right search result menu
+    *}
+    <script id="h-search-result-header-menu-template" type="text/html">
+        <div>
+            <div class="h-search-result-header-menu custom-m-0 flexbox nowrap space-8 small">
+               <a href="javascript:void(0);" class="h-change-search-conditions button light-gray circle" title="[`Change search conditions`]"><i class="fas fa-sliders-h text-gray"></i></a>
+               <a href="javascript:void(0)" class="h-save-as-filter button light-gray rounded" title="[`Save as a filter`]"><i class="fas fa-plus-circle text-green"></i> [`Save as a filter`]</a>
+            </div>
+            <a href="javascript:void(0);" class="h-filter-settings-toggle button light-gray circle small custom-m-0">
+                <span class="icon size-14 shift-7"><i class="fas fa-cog"></i></span>
+            </a>
+        </div>
+    </script>
+
+    {* Template for filter settings panel *}
+    {include file="./includeFilterSettings.html"}
+
+    {* Template for unread settings panel *}
+    {include file="./includeUnreadSettings.html"}
+
+    {* Template for drop-down menu above request list views *}
+    {include file="./includeRequestsMenu.html"}
+
+    {*
+    * Template for error page
+    *}
+    <div class="hidden template for error-page">
+        <div class="block triple-padded">
+            <h1>[`Error`] <span class="error-code"></span></h1>
+            <p class="hidden if-404">[`Page not found`]</p>
+            <p class="hidden if-403">[`Insufficient access rights`]</p>
+            <p class="hidden otherwise">[`Internal server error`]</p>
+            {if waSystemConfig::isDebug()}
+                <p><a href="javascript:void(0)" onclick="$(this).closest('.error-page').find('.place-for-iframe').slideToggle(200);" class="inline-link iframe-toggle"><b><i>[`Details`]</i></b></a></p>
+                <div class="hidden place-for-iframe"></div>
+            {elseif $global_admin}
+                <p class="hint">[`Enable the “Developer mode” option in the Settings app to see the details.`]</p>
+            {/if}
+        </div>
+    </div>
+
+    {* Custom HTML and JS from plugins. *}
+    {foreach $plugin_blocks as $html}
+        {$html}
+    {/foreach}
+
+    {* dialogs section *}
+    <script id="h-add-fiter-dialog-template" type="text/html">
+        <div class="dialog persistent" id="h-add-fiter-dialog">
+            <div class="dialog-background"></div>
+            <form class="dialog-body" method="post" action="?module=backend&action=sidebarSave">
+                <header class="dialog-header"><h1></h1></header>
+                <div class="dialog-content">
+                    <p>[`Select access level:`]</p>
+                    <label class="radio">
+                        <input type="radio" name="shared" value="" checked="checked" class="h-default">
+                        [`Personal`]<br>
+                        <span class="hint">[`Will appear in the sidebar in MY FILTERS section and will be available to me only`]</span>
+                    </label>
+                    <label class="radio">
+                        <input type="radio" name="shared" value="1">
+                        [`Public`]<br>
+                        <span class="hint">[`Will appear in the main section in sidebar and will be available to all users`]</span>
+                    </label>
+                </div>
+                <footer class="dialog-footer">
+                    {$wa->csrf()}
+                    <button type="submit" class="button green">[`Add filter`]</button>
+                    <button type="button" class="js-dialog-close button light-gray">[`Cancel`]</button>
+                </footer>
+            </form>
+        </div>
+    </script>
+    <script>
+        ( function($) {
+            $("[data-wa-tooltip-content]").waTooltip();
+        })(jQuery);
+    </script>
+</body>
+</html>

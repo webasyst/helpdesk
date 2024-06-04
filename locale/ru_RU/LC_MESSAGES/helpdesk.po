@@ -40,6 +40,9 @@ msgstr "или"
 msgid "cancel"
 msgstr "отменить"
 
+msgid "Leave"
+msgstr "Покинуть"
+
 msgid "Public"
 msgstr "Общий"
 
@@ -96,6 +99,9 @@ msgstr "группа"
 
 msgid "Select"
 msgstr "Выбрать"
+
+msgid "Choose file"
+msgstr "Выберите файл"
 
 msgid "&lt;select&gt;"
 msgstr "&lt;выбрать&gt;"
@@ -2254,6 +2260,9 @@ msgstr "Спасибо за обращение в нашу службу подд
 msgid "show all"
 msgstr "показать все"
 
+msgid "Show answer"
+msgstr "Показать ответ"
+
 msgid "Rotate left"
 msgstr "Повернуть влево"
 
@@ -2580,3 +2589,75 @@ msgstr "Пожалуйста, войдите в свой аккаунт клие
 
 msgid "Require customers to be logged in to use this form."
 msgstr "Требовать авторизацию клиентов для использования этой формы."
+
+msgid "More about the request"
+msgstr "Подробнее о запросе"
+
+msgid "Selected"
+msgstr "Выбрано"
+
+msgid "Filters"
+msgstr "Фильтры"
+
+msgid "Request type must be specified"
+msgstr "Должен быть указан тип запроса"
+
+msgid "Subject and text"
+msgstr "Тема и текст"
+
+msgid "Time has passed"
+msgstr "Прошло времени"
+
+msgid "Заголовок"
+msgstr "Заголовок"
+
+msgid "Поля в области заголовка"
+msgstr "Поля в области заголовка"
+
+msgid "You can drag and drop fields to change its position in the heading area of request page."
+msgstr "Вы можете перетащить поля, чтобы поменять их расположение на странице запроса."
+
+msgid "Add field"
+msgstr "Добавить поле"
+
+msgid "Create new tag"
+msgstr "Создать новый тег"
+
+msgid "Assigned contact"
+msgstr "Назначенный"
+
+msgid "Popular tags"
+msgstr "Популярные теги"
+
+msgid "Начните вводить для поиска в базе знаний..."
+msgstr "Начните вводить для поиска в базе знаний..."
+
+msgid "Attach file"
+msgstr "Прикрепить файл"
+
+msgid "Select all"
+msgstr "Выбрать все"
+
+msgid "No assigned"
+msgstr "Нет назначенного"
+
+msgid "Hide filter"
+msgstr "Скрыть фильтр"
+
+msgid "not specified"
+msgstr "не указано"
+
+msgid "Mark as viewed"
+msgstr "Отметить как просмотренное"
+
+msgid "Mark as unviewed"
+msgstr "Отметить как не просмотренное"
+
+msgid "Not viewed"
+msgstr "Не просмотрено"
+
+msgid "Mark all as viewed"
+msgstr "Пометить все как просмотренные"
+
+msgid "Create a filter to quickly search requests by source, status, tag, and assigned users."
+msgstr "Создайте фильтр для быстрого поиска запросов по источникам, статусам, тегам и ответственным сотрудникам."

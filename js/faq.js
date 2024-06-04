@@ -3,40 +3,16 @@
     $.helpdesk_faq = {
 
         // helpers:
-        onChangeInput: function(input, onChange) {
-            var val = input.val();
-            input.change(function() {
-                onChange.call(input);
-            });
-            var timer = null;
-            input.keydown(function() {
-                if (timer) {
-                    clearTimeout(timer);
-                }
-                timer = setTimeout(function() {
-                    if (val !== input.val()) {
-                        val = input.val();
-                        onChange.call(input);
-                    }
-                }, 250);
-            });
-        },
-
         translitInput: function(dst_input, src_input, onChange) {
             var timer = null;
             if (!dst_input.val()) {
                 src_input.off('keydown').on('keydown', function() {
                     var input = $(this);
                     if (!dst_input.data('edited') && $('input[name="is_public"]:checked').val() === '1' && input.val()) {
-                        var loading = dst_input.next('.loading');
-                        if (!loading.length) {
-                            loading = $('<i class="icon16 loading"></i>').insertAfter(dst_input);
-                        }
                         timer && clearTimeout(timer);
                         timer = setTimeout(function () {
                             if (!dst_input.data('edited')) {
                                 $.get('?action=translit', { str: input.val(), prefix: 'url_' }, function(r) {
-                                    loading.remove();
                                     if (r.status === 'ok') {
                                         if (!dst_input.data('edited')) {
                                             dst_input.val(r.data);
@@ -56,35 +32,6 @@
                     }
                 });
             }
-        },
-
-        changeButton: function(button, back) {
-            if (back) {
-                button.removeClass('yellow').addClass('green');
-            } else {
-                button.removeClass('green').addClass('yellow');
-            }
-        },
-
-        sticky: function(el, parent) {
-            el.css({
-                position: 'fixed',
-                bottom: 0,
-                left: 0,
-                right: 0,
-                zIndex: 1054
-            });
-            el.find('.button').css({
-                marginLeft: 420
-            });
-            /*
-            $(window).unbind('resize.h-faq-sticky').bind('resize.h-faq-sticky', function() {
-                if (el && el.length && el.parent().length) {
-                    el.width(el.parent().width() - 10);
-                } else {
-                    $(this).unbind('.h-faq-sticky');
-                }
-            });*/
         },
 
         updateCounters: function(counters) {

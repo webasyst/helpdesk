@@ -1,101 +1,111 @@
-<div class="sidebar left200px h-faq-sidebar" id="h-faq-sidebar">
-    <div class="h-inner-sidebar">
+{function category_li category=[]}
+<li class="h-category {if $category.id === 0}h-faq-none{/if}" data-category-id="{$category.id}" {if $category.id === 0}{if $category.count <= 0}style="display:none;"{/if}{/if}>
+    <a href="#/faq/category/{if $category.id}{$category.id}{else}none{/if}/">
+        {if $category.icon}
+            <i class="{$wa->helpdesk->convertIcon($category.icon)}"></i>
+        {/if}
+        <span class="name">
+            {$category.name|escape}
+            {if $category.id > 0}
+                {$category.draft_html}
+                {$category.site_only_html}
+                {$category.backend_only_html}
+                {$category.backend_and_site_html}
+            {/if}
+        </span>
+        <span class="count">{$category.count}</span>
+    </a>
+</li>
+{/function}
 
-        <ul class="menu-v with-icons stack">
-            <li style="margin:15px 5px 5px 27px;padding:0;">
-                <a href="#/faq/new/" class="h-add-faq-question no-underline">
-                    <i class="icon16 add"></i>[`New question`]
+<div class="flexbox wrap-mobile">
+<div class="h-faq-sidebar sidebar width-19rem width-100-mobile bordered-right blank" id="h-faq-sidebar" data-mobile-sidebar="init">
+    <div class="h-inner-sidebar sidebar-header">
+
+        <ul class="menu">
+            <li>
+                <a href="#/faq/new/" class="h-add-faq-question">
+                    <i class="fas fa-plus-circle text-green"></i>
+                    <span>[`New question`]</span>
                 </a>
+            </li>
+            <li class="h-faq-search-wrapper custom-px-12 custom-py-12">
+                <div class="state-with-inner-icon left width-100">
+                    <div class="icon"><i class="fas fa-search"></i></div>
+                    <input class="h-faq-search width-100" type="search" placeholder="[`search`]" class="h-faq-search">
+                </div>
             </li>
         </ul>
 
-        {function category_li category=[]}
-            <li class="h-category {if $category.id === 0}h-faq-none{/if}" data-category-id="{$category.id}" {if $category.id === 0}{if $category.count <= 0}style="display:none;"{/if}{/if}>
-                <span class="count">{$category.count}</span>
-                <a href="#/faq/category/{if $category.id}{$category.id}{else}none{/if}/">
-                    {if $category.icon}
-                        <i class="icon16 {$category.icon}"></i>
-                    {/if}
-                    <span class="name">{$category.name|escape}</span>
-                    {if $category.id > 0}
-                        {$category.draft_html}
-                        {$category.site_only_html}
-                        {$category.backend_only_html}
-                        {$category.backend_and_site_html}
-                    {/if}
-                </a>
+        <ul class="menu custom-mt-32">
+            <li>
+                <h5 class="heading custom-mr-8">
+                    [`Categories`]
+                    <a href="#/faq/category/new" class="count h-add-faq-category" title="[`New category`]"><i class="fas fa-plus-circle"></i></a>
+                </h5>
             </li>
-        {/function}
-
-        <ul class="menu-v with-icons stack">
-            <li style="margin:15px 5px 5px 5px;padding:0; text-align: center;">
-                <input type="search" placeholder="[`search`]" class="h-faq-search">
-            </li>
-            <li class="" style="text-transform: uppercase; margin-left: -15px;">
-                <h5 class="heading">[`Categories`]</h5>
-            </li>
-            <ul class="menu-v with-icons collapsible stack" id="h-faq-categories">
+            <ul class="menu ellipsis collapsible" id="h-faq-categories">
                 {foreach $categories as $c}
                     {category_li category=$c}
                 {foreachelse}
-                    <div class="align-center hint h-faq-categories-message" style="padding: 10px;">[`Categories help you to arrange questions and answers by themes to simplify navigation and search, e.g.: Common questions, How to.., and etc.`]</div>
+                    <div class="align-center box custom-mb-12 h-faq-categories-message hint">[`Categories help you to arrange questions and answers by themes to simplify navigation and search, e.g.: Common questions, How to.., and etc.`]</div>
                 {/foreach}
 
                 {if $none_category}
                     {category_li category=$none_category}
+                {else}
+                    <div class="h-faq-content-no-categories-template box small" style="display:none;">
+                        <div class="alert info">[`Please <a href="#/faq/category/new">create a category</a> first, to start adding questions and answers.`]</div>
+                    </div>
                 {/if}
-
-                <li class="h-new-template" style="display:none;">
-                    <span class="count">0</span>
-                    <a href="javascript:void(0);">
-                        <i class="icon16 folder"></i><span class="name"></span>
-                    </a>
-                </li>
-
-                <li class="small h-add-faq-category-li">
-                    <a href="#/faq/category/new" class="h-add-faq-category"><i class="icon10 add"></i>[`New category`]</a>
-                </li>
             </ul>
         </ul>
     </div>
 </div>
 
-<div class="content left200px bordered-left blank h-faq-content" id="h-faq-content">
+<div class="content h-faq-content not-blank" id="h-faq-content" data-mobile-content="">
+</div>
 </div>
 
-<div class="clear"></div>
 
-<div class="h-faq-content-no-categories-template" style="display:none;">
-    <div class="block large-hint double-padded">[`Please <a href="#/faq/category/new">create a category</a> first, to start adding questions and answers.`]</div>
-    <div class="clear"></div>
-</div>
+
 
 <script>
     $(function() {
 
+        var prev_search = '';
         $('.h-faq-search').keydown(function(e) {
-            if (e.keyCode === 13) {
-                $.wa.setHash('#/faq/search/' + encodeURIComponent($(this).val()));
+            const search_str = $(this).val();
+            if (prev_search !== search_str && e.keyCode === 13) {
+                prev_search = search_str;
+                $.wa.setHash('#/faq/search/' + encodeURIComponent(search_str));
+                $(document).trigger('show_mobile_content');
             }
         });
 
         $.helpdesk_faq.initFaqCategoriesDroppable();
 
-        $('#h-faq-categories').sortable({
-            distance: 5,
-            opacity: 0.75,
-            items: 'li.h-category:not(.h-faq-none)',
-            axis: 'y',
-            update: function(event, ui) {
-                var id = $(ui.item).data('categoryId');
-                var before_id = $(ui.item).next().data('categoryId');
-                var self = $(this);
-                $.post('?module=faq&action=categoryMove', { id: id, before_id: before_id }, function(r) {
-                    if (r.status !== 'ok') {
-                        self.sortable('cancel');
-                    }
-                }, 'json');
-            }
+        $.wa.helpers.loadSortableJS().then(() => {
+            $('#h-faq-categories').sortable({
+                draggable: 'li.h-category:not(.h-faq-none)',
+                onEnd: function(event) {
+                    var $item = $(event.item);
+                    var id = $item.data('categoryId');
+                    var before_id = $item.next().data('categoryId');
+
+                    $item.find('svg').addClass('hidden');
+                    var $loading = $('<span class="icon text-gray"><i class="fas fa-spinner wa-animation-spin speed-1000" /></span>')
+                        .prependTo($item.find('a'));
+
+                    $.post('?module=faq&action=categoryMove', { id: id, before_id: before_id }, function(r) {
+                        $loading.remove();
+                        $item.find('svg').removeClass('hidden');
+                        if (r.status !== 'ok') {
+                            $.wa.helpers.cancelSortable();
+                        }
+                    }, 'json');
+                }
+            });
         });
 
         {if count($categories) <= 0}
@@ -106,5 +116,6 @@
             {/if}
         {/if}
 
+        $(document).trigger('wa_content_sidebar_loaded.helpdesk');
     });
 </script>

@@ -3,7 +3,7 @@
 .wa-form .wa-field .wa-name { float: left; width: 155px; padding-top: 0.3em; padding-bottom: 10px; font-size: 0.95em; }
 .wa-form .wa-field.wa-separator { height: 10px; }
 .wa-form .wa-field .wa-value { margin-left: 180px; margin-bottom: 5px; position: relative; }
-.wa-form .wa-field .wa-value.buttons { margin-left: 0px; }
+.wa-form .wa-field .wa-value.buttons { margin-left: 0px; margin-top: 16px; }
 .wa-form .wa-field .wa-value input.wa-error { border: 2px solid red; }
 .wa-form .wa-field .wa-value .wa-error-msg { font-size: 0.9em; color: red; display: block; }
 .wa-form .wa-field .wa-value input[type="text"],
@@ -12,7 +12,7 @@
 .wa-form .wa-field .wa-value textarea { min-width: {$formwidth - 180}px; width: 30%; height: 70px; }
 .wa-form .wa-field.fld_type_checkbox .wa-name { float: none; margin-left: 20px; width: {$formwidth - 40}px; }
 .wa-form .wa-field.fld_type_checkbox .wa-value { float: left; width: 10px; margin-left: 0; margin-top: -30px; }
-.wa-form .wa-field.fld_type_checkbox .errormsg { margin-left: 0; width: {$formwidth}px; }
+.wa-form .wa-field.fld_type_checkbox .state-error-hint { margin-left: 0; width: {$formwidth}px; }
 .wa-form .wa-field .wa-value.wa-submit { margin-top: 10px; }
 .wa-form .wa-field.above .wa-name { float:none; width: {$formwidth}px; max-width: {$formwidth}px; }
 .wa-form .wa-field.above .wa-value { margin-left: 0; }
@@ -60,12 +60,23 @@
 .wa-captcha img { float: left !important; margin-right: 5px; margin-top: -8px; }
 .wa-captcha input[type="text"] { width: 4em !important; min-width: 4em !important; }
 .wa-captcha .wa-captcha-refresh { display: inline-block; clear: left; font-size: 0.8em; text-decoration: underline; color: #aaa; }
-.wa-captcha .errormsg { display: inline; margin-left: 10px; }
-.error { border: 2px solid red; color: red; }
-.wa-form .errormsg { color: red; display: block; font-weight: normal; font-size: 12px; margin-left: 180px; }
+.wa-captcha .state-error-hint { display: inline; margin-left: 10px; }
+.state-error { border: 2px solid red; color: red; }
+.wa-form .state-error-hint { color: red; display: block; font-weight: normal; font-size: 12px; margin-left: 180px; }
 .wa-form .wa-value .h-agreement-checkbox-wrapper { position: relative; }
-.wa-form .wa-value .h-agreement-checkbox-wrapper input[type=checkbox] { position: absolute; }
+.wa-form .wa-value .h-agreement-checkbox-wrapper input[type=checkbox] { position: absolute; margin: 0; }
 .wa-form .wa-value .h-agreement-checkbox-wrapper .h-agreement-checkbox-html-label { display: inline-block; margin-left: 16px; margin-top: -3px; }
-.wa-form .h-agreement-checkbox-wrapper.error { border: none; }
-.wa-form .h-agreement-checkbox-wrapper.error a { color: red; }
-.wa-form .h-agreement-checkbox-wrapper.error a:hover { color: red; }
+.wa-form .h-agreement-checkbox-wrapper.state-error { border: none; }
+.wa-form .h-agreement-checkbox-wrapper.state-error a { color: red; }
+.wa-form .h-agreement-checkbox-wrapper.state-error a:hover { color: red; }
+
+.wa-form .wa-field.fldc_birthday .wa-value { display: flex; gap: 0.5rem; font-size: 87.5%; }
+#wa-app .wa-form .wa-field.fldc_birthday .wa-value [name="fldc_data[birthday][month]"] { min-width: 0; flex: 0 1 120px; }
+#wa-app .wa-form .h-agreement-checkbox-wrapper [type="checkbox"] { margin: 0; }
+#wa-app .wa-form .h-agreement-checkbox-wrapper .h-agreement-checkbox-html-label { margin-left: 22px; }
+#wa-app [type=checkbox]:not(.not-styled) { appearance: none; width: 1em; height: 1em; margin-top: 0.2em; vertical-align: text-top !important; border-radius: 0.25em; border: 1px solid var(--background-color-checkbox-border); background-repeat: no-repeat; background-position: center; background-size: 0.75em; background-color: var(--background-color-input); cursor: pointer; flex: none;}
+#wa-app [type=checkbox]:checked:not(.not-styled) { background-color: var(--accent-color); background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%23fff' d='M173.898 439.404l-166.4-166.4c-9.997-9.997-9.997-26.206 0-36.204l36.203-36.204c9.997-9.998 26.207-9.998 36.204 0L192 312.69 432.095 72.596c9.997-9.997 26.207-9.997 36.204 0l36.203 36.204c9.997 9.997 9.997 26.206 0 36.204l-294.4 294.401c-9.998 9.997-26.207 9.997-36.204-.001z'%3E%3C/path%3E%3C/svg%3E");}
+#wa-app [type=radio]:not(.not-styled) { appearance: none; width: 1em; height: 1em; margin-top: 0.2em; vertical-align: text-top; border-radius: 50%; border: 1px solid var(--background-color-checkbox-border); background-repeat: no-repeat; background-color: var(--background-color-input); cursor: pointer; flex: none;}
+#wa-app [type=radio]:checked:not(.not-styled) { background-color: var(--accent-color); background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='2' fill='%23fff'/%3e%3c/svg%3e");}
+#wa-app *:not(.wa-select) > select:not(.not-styled) { padding: 0.1875em 2.25em 0.1875em 0.375em; line-height: 1.5em; border: 0.125em solid var(--border-color-input); color: var(--text-color-input); appearance: none; outline: none; box-sizing: border-box; background-color: var(--background-color-input); background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 177 94' fill='none'%3e%3cpath fill='%23aab' d='M88.5 94L0.598419 0.25L176.402 0.25L88.5 94Z'/%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 0.6rem center; background-size: 0.75em; border-radius: 0.25em; transition: 0.1s;}
+#wa-app *:not(.wa-select) > select:not(.not-styled) option { background-color: var(--background-color-blank); }

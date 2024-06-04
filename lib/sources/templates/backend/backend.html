@@ -1,50 +1,51 @@
 <form id="{$uniqid}" action="{$action_url}" target="{$uniqid}-target" method="post" enctype="multipart/form-data" autocomplete="off">
-
-    <div class="h-contact-search-block h-form-top-wrapper">
-
-        <div class="sidebar right200px">
-            <a href="javascript:void(0)" class="inline-link new-contact-link"><b><i>[`New contact`]</i></b></a>
-        </div>
-
-        <div class="content right200px">
+    <div class="backend-new-request-form-contact fields-group blank">
+        <div class="h-contact-search-block h-form-top-wrapper">
             {* Autocompletion field to look for existing contacts *}
             <input type="hidden" name="contact_id" value="">
             <div class="contact-search">
                 <div class="field">
                     <div class="name">[`From`]</div>
                     <div class="value">
-                        <input type="text" class="autocomplete-contact" placeholder="[`find by name, email, of phone number`]">
+                        <div class="flexbox middle space-4">
+                            <div class="state-with-inner-icon left width-100-mobile">
+                                <span class="icon"><i class="fas fa-search"></i></span>
+                                <input type="text" class="autocomplete-contact" placeholder="[`find by name, email, of phone number`]">
+                            </div>
+                            <span class="desktop-and-tablet-only">[`or`]</span>
+                            <button type="button" class="new-contact-link button nowrap light-gray small"><i class="fas fa-user-plus text-blue"></i> <span class="desktop-and-tablet-only">[`New contact`]</span></button>
+                        </div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="h-form-top-wrapper">
+            <div class="flexbox space-8">
+                <input type="hidden" name="source_id" value="{$source.id}">
+                {$wa->csrf()}
+
+                {* Wrapper for data of existing contact selected via autocomplete *}
+                <div class="contact-existing contacts-data" style="display: none;">{* Populated via XHR *}</div>
+
+                {* Form to create new contact *}
+                <div class="h-contact-new width-100" style="display: none;">
+                    {$form->html()}
+                </div>
+
+                <div class="custom-ml-auto" style="display: none;">
+                    <button type="button" class="another-contact-link button nowrap light-gray smaller">
+                        <i class="fas fa-exchange-alt text-blue"></i> <span class="desktop-and-tablet-only">[`Another contact`]</span>
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="backend-new-request-form">
-
-        <div class="h-form-top-wrapper">
-            <div class="sidebar right200px">
-                <div class="hidden block">
-                    <a href="javascript:void(0)" class="inline-link another-contact-link"><b><i>[`Another contact`]</i></b></a>
-                </div>
-            </div>
-            <div class="content right200px">
-                <input type="hidden" name="source_id" value="{$source.id}">
-                {$wa->csrf()}
-
-                {* Wrapper for data of existing contact selected via autocomplete *}
-                <div class="hidden double-padded contact-existing contacts-data">{* Populated via XHR *}</div>
-
-                {* Form to create new contact *}
-                <div class="hidden field-group h-contact-new">
-                    {$form->html()}
-                </div>
-            </div>
-        </div>
+    <div class="backend-new-request-form fields-group blank">
 
         <div>
-
-            <div class="fields request-form" style="width:100%;max-width:900px;">
+            <div class="fields request-form">
 
                 {* Request fields *}
                 <div>
@@ -57,16 +58,17 @@
                     <div class="field">
                         <div class="name">[`Text`]</div>
                         <div class="value">
-                            <textarea name="text" style="min-height: 250px;"></textarea>
+                            <textarea name="text" style="min-height: 200px;"></textarea>
                         </div>
                     </div>
-                    <div class="field" id="attachments">
+                    <div class="field">
                         <div class="name">
                             [`Attach`]
                         </div>
+                        <div class="value" id="hd-new-request-attachments"></div>
                     </div>
 
-                    <div class="field">
+                    <div class="field custom-mt-32">
                         <div class="name">[`Assign to`]</div>
                         <div class="value">
                             <select name="assigned_contact_id">
@@ -100,15 +102,14 @@
 
                 </div>
 
-                <div class="field">
-                    <div class="value">
-                        <input type="submit" class="button green" value="[`Save`]">
-                        <i class="icon16 loading" style="display:none"></i>
-                    </div>
-                    <div class="top-spaced value">
-                        <i class="icon16 exclamation"></i>
-                        <span class="h-message-see-action">[`Clients can see information about this action in their Customer Portal, except for names of assigned users.`]</span>
-                        <span class="h-message-do-no-see-action" style="display:none;">[`Clients cannot see any information associated with this action in their Customer Portal.`]</span>
+                <div class="field custom-mt-40">
+                    <div class="value submit">
+                        <button type="submit" class="button green">[`Save`]</button>
+                        <div class="custom-mt-16 hint">
+                            <i class="fas fa-exclamation-circle text-blue custom-mr-4"></i>
+                            <span class="h-message-see-action">[`Clients can see information about this action in their Customer Portal, except for names of assigned users.`]</span>
+                            <span class="h-message-do-no-see-action" style="display:none;">[`Clients cannot see any information associated with this action in their Customer Portal.`]</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -116,11 +117,12 @@
     </div>
 
 </form>
-<iframe src="javascript:true" id="{$uniqid}-target" name="{$uniqid}-target" style="width:0;height:0;border:0px solid #fff;"></iframe>
+<iframe src="javascript:true" frameborder="0" id="{$uniqid}-target" name="{$uniqid}-target" style="width:0;height:0;"></iframe>
 
 <script>(function() { "use strict";
 
     var form = $('#{$uniqid}');
+    var $submit = form.find(':submit');
     var search_field = $('.autocomplete-contact');
     var contact_id_hidden = form.find('input[name="contact_id"]');
 
@@ -133,7 +135,6 @@
     // Save
     var rand;
     form.submit(function() {
-
         clearErrors();
 
         // JS-validation
@@ -145,24 +146,26 @@
             } else {
                 txt = "[s`This field is required.`]";
             }
-            search_field.addClass('error').parent().append($('<em class="errormsg"></em>').text(txt));
+            search_field.addClass('state-error').closest('.value').append($('<div class="state-error-hint"></div>').text(txt));
+
+            $.wa.helpers.scrollToElement(search_field);
             return false;
         }
 
-        form.find('.loading').show();
-        form.find(':submit').prop('disabled', true);
+        const loadingSubmit = $.wa.helpers.createLoadingSubmit($submit).show();
 
         // catch iframe load event when uploading finishes
         var r = rand = Math.random();
         $('iframe[name="{$uniqid}-target"]').one('load', function() {
             if (r != rand) {
+                loadingSubmit.hide();
                 return;
             }
 
             // Make sure we'll show something even when bad things happen and we don't have any JSON.
             var timeout = setTimeout(function() {
-                form.find('.loading').hide();
-                form.find(':submit').prop('disabled', false).parent().append($('<em class="errormsg"></em>').html("[`An error occurred while processing your request. Please try again later.`]"));
+                loadingSubmit.hide();
+                $submit.parent().append($('<div class="state-error-hint custom-mt-8"></div>').html("[`An error occurred while processing your request. Please try again later.`]"));
             }, 200);
 
             var iframe = $(this);
@@ -178,18 +181,17 @@
                         eval('json = ('+json+')');
                     }
                     if (json && json.errors) {
-                        form.find(':submit').prop('disabled', false);
-                        form.find('.loading').hide();
+                        loadingSubmit.hide();
                         for (var fld_name in json.errors) {
                             if (json.errors.hasOwnProperty(fld_name)) {
                                 if (fld_name) {
                                     var el = form.find('[name="'+fld_name+'"]');
                                     if (el.length) {
-                                        el.addClass('error').parent().append($('<em class="errormsg"></em>').html(json.errors[fld_name]));
+                                        el.addClass('state-error').parent().append($('<div class="state-error-hint"></div>').html(json.errors[fld_name]));
                                         continue;
                                     }
                                 }
-                                form.find(':submit').parent().append($('<em class="errormsg"></em>').html(json.errors[fld_name]));
+                                $submit.parent().append($('<div class="state-error-hint custom-mt-8"></div>').html(json.errors[fld_name]));
                             }
                         }
                     } else if (json && json.data) {
@@ -220,6 +222,7 @@
 
         // Show new contact form when user click the link
         new_contact_link.click(function() {
+            clearErrors();
             contact_id_hidden.val('');
             block_contact_existing.hide();
             block_contact_search.slideUp(200);
@@ -227,11 +230,11 @@
             another_contact_link.parent().show();
             new_contact_link.parent().hide();
             updateEWBSTfromNew();
-            clearErrors();
         });
 
         // Show search field again when user clicks "another contact" link
         another_contact_link.click(function() {
+            clearErrors();
             contact_id_hidden.val('');
             block_contact_new.slideUp(200);
             block_contact_search.slideDown(200);
@@ -240,7 +243,6 @@
             another_contact_link.parent().hide();
             new_contact_link.parent().show();
             search_field.focus();
-            clearErrors();
         });
 
         // Show "email will be sent to" link when new client has an email
@@ -270,13 +272,14 @@
                 return false;
             },
             select: function(event, ui) {
+                clearErrors();
                 search_field.val('');
                 contact_id_hidden.val(ui.item.id);
                 block_contact_new.hide();
-                block_contact_search.slideUp(200);
+                block_contact_search.hide();
                 new_contact_link.parent().hide();
                 another_contact_link.parent().show();
-                block_contact_existing.slideDown(200).html('<i class="icon16 loading"></i>');
+                block_contact_existing.show().html('<i class="spinner custom-p-4"></i>');
                 block_contact_new.next().find('input:text').focus();
 
                 $.post('?action=contactInfo', { id: ui.item.id }, function(r) {
@@ -294,33 +297,17 @@
         });
     })();
 
-    // Adds new file input field for attachments
-    var addNewField = function() {
-        $('#attachments').append('<div class="value attach"><input type="file" name="attachment[]"></div>');
-    };
-    addNewField();
+    $.wa.helpdesk_controller.initAttachments('#hd-new-request-attachments', 'attachment[]');
 
-    // when user selects an attachment, add another field
-    $('.value:last-child :file', $('#attachments')).die('change').live('change', function() {
-        $(this).parent().append('<a href="javascript:void(0)" class="small inline-link remove-attach"><i>'+"[`remove`]"+'</i></a>');
-        addNewField();
-    });
-
-    // attachment removal
-    $('a.remove-attach', $('#attachments')).die('click').live('click', function() {
-        $(this).parents('.value.attach').remove();
-        return false;
-    });
-
-    form.on('keyup change', '.error', function() {
-        $(this).removeClass('error').siblings('.errormsg').remove();
+    form.on('keyup change', '.state-error', function() {
+        $(this).removeClass('state-error').siblings('.state-error-hint').remove();
     });
 
     search_field.focus();
 
     function clearErrors() {
-        form.find('.errormsg').remove();
-        form.find('.error').removeClass('error');
+        form.find('.state-error-hint').remove();
+        form.find('.state-error').removeClass('state-error');
     }
 
     function triggerStateMessage()
@@ -341,4 +328,3 @@
     });
 
 })();</script>
-

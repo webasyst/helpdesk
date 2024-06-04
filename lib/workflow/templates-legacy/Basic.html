@@ -1,0 +1,334 @@
+<style>
+#hd-{$action_id}-form .wa-field .wa-name { width: 125px; line-height: 20px; }
+#hd-{$action_id}-form .wa-field .wa-value { margin-left: 150px; }
+#hd-{$action_id}-form .wa-field .wa-value ul li { margin: 0 1em 0 0; padding: 0; }
+#{$action_id}-comment { min-width: 500px; min-height: 170px; }
+.errormsg { color: red; }
+</style>
+<form id="hd-{$action_id}-form" target="hd-{$action_id}-form-target" action="{$form_submit_url}" method="post" enctype="multipart/form-data" style="overflow:visible;"
+      class="basic-action-form {if $wa->getEnv() === 'backend'}{if $action->getOption('client_visible') != 'all'}not-{else}shadowed {/if}{/if}visible-to-client">
+    <div class="ticket-log-container wa-form" style="width:100%;">
+        {if $wa->getEnv() == 'backend'}
+            <input type="hidden" name="id" value="{$request_id}">
+            <input type="hidden" name="wfa" value="{$action_id}">
+        {else}
+            <input type="hidden" name="workflow_id" value="{$action->getWorkflow()->getId()}">
+            <input type="hidden" name="action_id" value="{$action_id}">
+            <input type="hidden" name="params" value="{$request_id}">
+        {/if}
+        {$wa->csrf()}
+
+
+        {foreach $allowed_fields_order as $field_name}
+            {if $field_name === 'show_textarea'}
+                <div class="wa-field custom-mb-8">
+                    <textarea id="{$action_id}-comment" name="comment">{$textarea_default_text|escape}</textarea>
+                </div>
+            {else if $field_name === 'allow_attachments'}
+                <div class="wa-field" id="{$action_id}-attachments">
+                    <div class="wa-name">
+                        [`Attach:`]
+                    </div>
+                </div>
+            {else if $field_name === 'assignment'}
+                {if $wa->getEnv() == 'backend' && $action->getOption('allow_choose_assign')}
+                    <div class="wa-field">
+                        <div class="wa-name">
+                            [`Assignment`]:
+                        </div>
+                        <div class="wa-value">
+                            {if $action->getOption('default_assignee') === ''} {* keep previous assignment *}
+                                {$assignee_selected = (int) $request->ifset('assigned_contact_id')}
+                            {else}
+                                {$assignee_selected = (int) $action->getOption('default_assignee')}
+                            {/if}
+                            <select name="assigned_contact_id">
+                                {if $action->getOption('assignment_required')}
+                                    <option value="">[`&lt;select&gt;`]</option>
+                                {else}
+                                    <option value="0"{if $assignee_selected === 0} selected{/if}></option>
+                                {/if}
+                                {foreach from=$assignees key=user_id item=user_name}
+                                    <option value="{$user_id}"{if $assignee_selected == $user_id} selected{/if}>{$user_name|escape}</option>
+                                {/foreach}
+                            <select>
+                        </div>
+                    </div>
+                {/if}
+            {else}
+                {$field = $allowed_request_fields[substr($field_name, 10)]}
+                <div class="wa-field" id="{$action_id}-fields">
+                    <div class="wa-name">
+                        {$field['name']|escape}
+                    </div>
+                    <div class="wa-value">
+                        {$field['html']}
+                    </div>
+                </div>
+            {/if}
+        {/foreach}
+
+        {if !empty($will_be_sent_to) && $wa->getEnv() == 'backend'}
+            {foreach $will_be_sent_to as $message_id => $msgs}
+                <div class="wa-field">
+                    <div class="wa-name" style="width: 100%;">
+                    [`Send message`]
+                    (<a href="javascript:void(0);"
+                                        class="message-preview-link inline-link"
+                                        title="[`Notification preview`]"
+                                        data-message-id="{$message_id}">[`preview`]</a>){if $will_be_sent_to}:
+                            {foreach $msgs as $m}{strip}
+                                {if strlen($m.name)}
+                                    {$m.name|escape}
+                                    {if $m.email}
+                                        &nbsp;&lt;{$m.email|escape}&gt;
+                                    {/if}
+                                {else}
+                                    {$m.email|escape}
+                                {/if}
+                            {/strip}{if !$m@last}, {/if}{/foreach}
+                        {/if}
+                    </div>
+                </div>
+            {/foreach}
+        {/if}
+
+
+        {if $wa->getEnv() == 'backend'}
+            <div class="wa-field">
+                {if empty($will_be_sent_to)}
+                    <a href="javascript:void(0)" class="inline-link send-copy-link" style="font-size: 0.95em;"><b><i>[`Send message`]</i></b></a>
+                {else}
+                    <a href="javascript:void(0)" class="inline-link send-copy-link" style="font-size: 0.95em;"><b><i>[`Send copy`]</i></b></a>
+                {/if}
+                <ul class="hidden menu-h">
+                    <li class="hidden template">
+                        <input type="hidden" name="bcc[%VALUE%]" value="1" disabled>
+                        <span class="val"></span>
+                        <i class="cursor-pointer icon10 no" style="position:relative;top:-1px;"></i>
+                    </li>
+                    <li><input type="text" placeholder="[`Search by name or email`]"></li>
+                </ul>
+            </div>
+        {/if}
+
+        <div class="wa-field">
+            {if empty($errors.state_changed)}
+                <div class="top-spaced wa-value buttons flexbox middle" style="margin-left: 0px;">
+                    {$action->getButton()}
+                    [`or`] <a href="#" class="cancel-btn">[`cancel`]</a>
+                </div>
+                {if $wa->getEnv() == 'backend'}
+                    <div class="top-spaced wa-value" style="margin-left: 0px;">
+                        {if $action->getOption('client_visible') == 'all'}
+                            <i class="icon16 exclamation"></i><span class="hint">[`Clients can see information about this action in their Customer Portal, except for names of assigned users.`]</span>
+                        {else}
+                            <span class="hint">[`Clients cannot see any information associated with this action in their Customer Portal.`]</span>
+                        {/if}
+                    </div>
+                {/if}
+            {else}
+                <div class="top-spaced wa-value">
+                    <em class="errormsg">{$errors.state_changed|escape}</em>
+                </div>
+            {/if}
+        </div>
+    </div>
+    <div class="clear-both"></div>
+</form>
+<iframe src="javascript:true" name="hd-{$action_id}-form-target" style="width:0;height:0;border:0px solid #fff;"></iframe>
+<script>setTimeout(function(){ {if $wa->getEnv() == 'backend'}"use strict";{/if}
+
+    var cleditor = null;
+    var cleditor_text_changed = false;
+    var warning_message = '[`Unsaved changes will be lost if you leave this page now.`]';
+    var confirm_question = '[`Are you sure?`]';
+
+    // form submission handler
+    var form = $('#hd-{$action_id}-form').submit(function() {
+
+        if (cleditor) {
+            cleditor.data('redactor').code.sync();
+        }
+
+        {if $wa->getEnv() == 'backend' && !empty($assignees) && $action->getOption('assignment_required')}
+            var select = form.find('[name="assigned_contact_id"]');
+            if (!select.val() || select.val() == '0') {
+                select.addClass('error').parent().append($('<em class="errormsg"></em>').text("[`Assignment is required`]"));
+                return false;
+            }
+        {/if}
+
+        form.attr('target', 'hd-{$action_id}-form-target');
+        form.find('.buttons').append('<i class="icon16 loading"></i>').find('input').prop('disabled', true).removeAttr('name');
+        var iframe = $('iframe[name="hd-{$action_id}-form-target"]');
+
+        // catch iframe load event when uploading finishes
+        iframe.one('load', function() {
+            setTimeout(function() {
+                form.parent().html(iframe.contents().find('body').html());
+                $.post('{$messages_send_url}', {
+                    rand: ('' + Math.random()).slice(2)
+                });
+            }, 0);
+        });
+
+        // allow form to submit via its target iframe
+        return true;
+    });
+
+    // Reset validation errors when user edits the field
+    form.on('change keyup', '.error', function() {
+        $(this).removeClass('error').siblings('.errormsg').remove();
+    });
+
+    // cancel link
+    $('.cancel-btn').click(function(e) {
+        $('#action-form-wrapper').empty().hide();
+        $('.ticket-buttons').show();
+        return false;
+    });
+
+    {if $wa->getEnv() == 'backend'}
+        {if $action->getOption('show_textarea')}
+            var grid_view = $.storage.get('helpdesk/grid/view') || 'list',
+                options = {
+                    lang: "{substr($wa->locale(), 0, 2)}",
+                    convertUrlLinks: true,
+                    convertLinks: false,
+                    callbacks: {
+                        change: function () {
+                            cleditor_text_changed = true;
+                        }
+                    }
+                };
+
+            if (grid_view !== 'split') {
+                options.toolbarFixedTopOffset = 100;
+            }
+            // WYSIWYG
+            cleditor = $.wa.helpdesk_controller.initWYSIWYG('#{$action_id}-comment', options, "{waRequest::cookie('_csrf', '')}");
+        {/if}
+
+        {if !empty($will_be_sent_to)}
+            // Message preview links
+            form.on('click', 'a.message-preview-link', function() {
+                var hidden = $('<input type="hidden" name="message_preview" value="'+$(this).data('messageId')+'">').appendTo(form);
+                var dialog = $('<div></div>').waDialog({
+                    onLoad: function() {
+                        $(this).find(':submit').after(' <span class="hint">[`This message template is customized by administrator in workflow settings.`]</span>');
+                    },
+                    buttons: $('<input type="submit" class="button green" value="'+"[`Close`]"+'">').click(function() { dialog.trigger('close'); })
+                });
+                dialog.find('.dialog-background').css({
+                    zIndex: '501'
+                }).end().find('.dialog-window').css({
+                    zIndex: '502'
+                });
+                $.post(form.attr('action'), form.serialize(), function(r) {
+                    dialog.find('.dialog-content-indent').html(r);
+                });
+                hidden.remove();
+                return false;
+            });
+        {/if}
+
+        // Controller for 'send copy'
+        (function() {
+            var link = form.find('.send-copy-link');
+            var ul = link.parent().find('ul');
+            var search_field = ul.find('input:text');
+
+            // Click on "send copy" link shows the contoller element
+            link.on('click', function() {
+                link.hide().closest('.wa-field').children('.wa-name').show();
+                ul.slideDown(200);
+                search_field.focus();
+            });
+
+            // Autocomplete for search input
+            search_field.autocomplete({
+                source: '?action=contactAutocomplete&is_user_first=1',
+                minLength: 3,
+                delay: 300,
+                html: 1,
+                focus: function() {
+                    return false;
+                },
+                select: function(event, ui) {
+                    addLi(ui.item.id, ui.item.name);
+                    search_field.val('').autocomplete('close');
+                    return false;
+                }
+            });
+
+            // Enter in search field selects current value
+             search_field.keydown(function(e) {
+                 if (e.which == 13 || e.which == 10) {
+                    var val = search_field.val();
+                    if (val && val.indexOf('@') > 0) {
+                        addLi(val, val);
+                        search_field.val('').autocomplete('close');
+                    }
+                     return false;
+                 }
+             });
+
+            // Click on an icon removes recipient
+            ul.on('click', 'i.no', function() {
+                $(this).closest('li').remove();
+            });
+
+            function addLi(id, name) {
+                var tmpl = ul.find('li.template');
+                var attr_name = tmpl.find('input[type="hidden"]').attr('name').replace('%VALUE%', id);
+
+                if (!ul.find('[name="'+attr_name+'"]').length) {
+                    var li = tmpl.clone().removeClass('hidden template').insertBefore(tmpl);
+                    li.find('.val').text(name);
+                    li.find('input[type="hidden"]').prop('disabled', false).attr('name', attr_name);
+                }
+            }
+        })();
+    {/if}
+
+    {if $action->getOption('allow_attachments')}
+        const is_wa2 = $('html').hasClass('wa2');
+        // Adds new file input field for attachments
+        var addNewField = function() {
+            if (is_wa2) {
+                $('#{$action_id}-attachments').append('<div class="wa-value attach upload custom-mt-8" style="width:auto;"><label class="link"><i class="fas fa-file-upload custom-mr-4"></i><span>[`Upload`]</span><input type="file" name="attachment[]"></label></div>');
+            }else{
+                $('#{$action_id}-attachments').append('<div class="wa-value attach"><input type="file" name="attachment[]"></div>');
+            }
+        };
+        addNewField();
+
+        // when user selects an attachment, add another field
+        $('.wa-value:last-child :file', $('#{$action_id}-attachments')).die('change').live('change', function() {
+            $(this).parent().append('<a href="javascript:void(0)" class="small inline-link remove-attach"><i>'+"[`remove`]"+'</i></a>');
+            addNewField();
+        });
+
+        // attachment removal
+        $('a.remove-attach', $('#{$action_id}-attachments')).die('click').live('click', function() {
+            $(this).parents('.wa-value.attach').remove();
+            return false;
+        });
+    {/if}
+
+    {if $wa->getEnv() === 'backend'}
+        $.wa.helpdesk_controller.confirmLeave(
+            function() {
+                return cleditor_text_changed && $('#hd-{$action_id}-form').parent().length;
+            },
+            warning_message,
+            confirm_question,
+            function() {
+                return !$('#hd-{$action_id}-form').parent().length;
+            },
+            'h-basic-action'
+        );
+    {/if}
+
+}, 1);</script>

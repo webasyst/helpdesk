@@ -1,0 +1,71 @@
+.wa-form { margin: 10px 0; overflow: visible; width: {$formwidth}px; }
+.wa-form .wa-field { clear: left; margin: 0; padding-top: 3px; width: {$formwidth}px; }
+.wa-form .wa-field .wa-name { float: left; width: 155px; padding-top: 0.3em; padding-bottom: 10px; font-size: 0.95em; }
+.wa-form .wa-field.wa-separator { height: 10px; }
+.wa-form .wa-field .wa-value { margin-left: 180px; margin-bottom: 5px; position: relative; }
+.wa-form .wa-field .wa-value.buttons { margin-left: 0px; }
+.wa-form .wa-field .wa-value input.wa-error { border: 2px solid red; }
+.wa-form .wa-field .wa-value .wa-error-msg { font-size: 0.9em; color: red; display: block; }
+.wa-form .wa-field .wa-value input[type="text"],
+.wa-form .wa-field .wa-value input[type="email"],
+.wa-form .wa-field .wa-value input[type="password"] { width: 30%; min-width: {$formwidth - 180}px;  margin:0;}
+.wa-form .wa-field .wa-value textarea { min-width: {$formwidth - 180}px; width: 30%; height: 70px; }
+.wa-form .wa-field.fld_type_checkbox .wa-name { float: none; margin-left: 20px; width: {$formwidth - 40}px; }
+.wa-form .wa-field.fld_type_checkbox .wa-value { float: left; width: 10px; margin-left: 0; margin-top: -30px; }
+.wa-form .wa-field.fld_type_checkbox .errormsg { margin-left: 0; width: {$formwidth}px; }
+.wa-form .wa-field .wa-value.wa-submit { margin-top: 10px; }
+.wa-form .wa-field.above .wa-name { float:none; width: {$formwidth}px; max-width: {$formwidth}px; }
+.wa-form .wa-field.above .wa-value { margin-left: 0; }
+.wa-form .wa-field.above .wa-value input[type="text"],
+.wa-form .wa-field.above .wa-value input[type="email"],
+.wa-form .wa-field.above .wa-value input[type="password"] { min-width: {$formwidth}px; }
+.wa-form .wa-field.above .wa-value textarea { min-width: {$formwidth}px; width: 30%; height: 70px; }
+.wa-form .wa-value.subfields-left { margin-top: -30px; }
+.wa-form .wa-value.subfields-left p { width: 100%; max-width: 100%; }
+.wa-form .wa-value.subfields-left .field { float: left; width: 100%; margin: 2px 0 2px 20px;}
+.wa-form .wa-value.subfields-left .field > span { float:left; width: 160px; display: block; }
+.wa-form .wa-value.subfields-left .field input[type="text"],
+.wa-form .wa-value.subfields-left .field input[type="email"],
+.wa-form .wa-value.subfields-left .field input[type="password"] { float: left; min-width: {$formwidth - 180}px; display: block; }
+.wa-form .wa-value.subfields-left .field select  { float: left; width: {$formwidth - 180}px; display: block; }
+.wa-form .wa-value.subfields-left .field textarea { float: left; min-width: {$formwidth - 180}px; display: block; }
+.wa-form .wa-value.subfields-placeholder { margin-top: -24px; }
+.wa-form .wa-value.subfields-placeholder .field { float: left; width: 100%; margin: 2px 0; }
+.wa-form .wa-value.subfields-placeholder .field > span { display: none; }
+.wa-form .wa-field.above .wa-value.subfields-placeholder .field input[type="text"],
+.wa-form .wa-field.above .wa-value.subfields-placeholder .field input[type="email"],
+.wa-form .wa-field.above .wa-value.subfields-placeholder .field input[type="password"] { float: left; min-width: {$formwidth}px; display: block; }
+.wa-form .wa-field.above .wa-value.subfields-placeholder .field select  { float: left; width: {$formwidth}px; display: block; }
+.wa-form .wa-field.above .wa-value.subfields-placeholder .field textarea { float: left; min-width: {$formwidth}px; display: block; }
+.wa-form .wa-value.subfields-placeholder .field input[type="text"],
+.wa-form .wa-value.subfields-placeholder .field input[type="email"],
+.wa-form .wa-value.subfields-placeholder .field input[type="password"] { float: left; min-width: {$formwidth - 180}px; display: block; }
+.wa-form .wa-value.subfields-placeholder .field select  { float: left; width: {$formwidth - 180}px; display: block; }
+.wa-form .wa-value.subfields-placeholder .field textarea { float: left; min-width: {$formwidth - 180}px; display: block; }
+.wa-form .wa-field.none .wa-name { display: none; }
+.wa-form .wa-field.none .wa-value { margin-left: 0; }
+.wa-form .wa-field.none .wa-value input[type="text"],
+.wa-form .wa-field.none .wa-value input[type="email"],
+.wa-form .wa-field.none .wa-value input[type="password"] { min-width: {$formwidth}px; }
+.wa-form .wa-field.none .wa-value select { min-width: {$formwidth}px; }
+.wa-form .wa-field.none .wa-value textarea { min-width: {$formwidth}px; width: 30%; height: 70px; }
+.wa-form .wa-field.none .wa-value.subfields-left input[type="text"],
+.wa-form .wa-field.none .wa-value.subfields-left input[type="email"],
+.wa-form .wa-field.none .wa-value.subfields-left input[type="password"] { min-width: {$formwidth - 180}px; }
+.wa-form .wa-field.none .wa-value.subfields-left select { min-width: {$formwidth - 180}px; }
+.wa-form .wa-field.none .wa-value.subfields-left textarea { min-width: {$formwidth - 180}px; width: 30%; height: 70px; }
+.wa-captcha { padding: 7px 0 10px; float: left; }
+.wa-captcha p { margin: 0; }
+.wa-captcha strong { font-size: 1.2em; }
+.wa-captcha img { float: left !important; margin-right: 5px; margin-top: -8px; }
+.wa-captcha input[type="text"] { width: 4em !important; min-width: 4em !important; }
+.wa-captcha .wa-captcha-refresh { display: inline-block; clear: left; font-size: 0.8em; text-decoration: underline; color: #aaa; }
+.wa-captcha .errormsg { display: inline; margin-left: 10px; }
+.error { border: 2px solid red; color: red; }
+.wa-form .errormsg { color: red; display: block; font-weight: normal; font-size: 12px; margin-left: 180px; }
+.wa-form .wa-value .h-agreement-checkbox-wrapper { position: relative; }
+.wa-form .wa-value .h-agreement-checkbox-wrapper input[type=checkbox] { position: absolute; }
+.wa-form .wa-value .h-agreement-checkbox-wrapper .h-agreement-checkbox-html-label { display: inline-block; margin-left: 16px; margin-top: -3px; }
+.wa-form .h-agreement-checkbox-wrapper.error { border: none; }
+.wa-form .h-agreement-checkbox-wrapper.error a { color: red; }
+.wa-form .h-agreement-checkbox-wrapper.error a:hover { color: red; }

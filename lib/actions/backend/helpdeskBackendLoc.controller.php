@@ -34,12 +34,14 @@ class helpdeskBackendLocController extends waController
             'or', //_w('or')
             'cancel', //_w('cancel')
             'Cancel', //_w('Cancel')
+            'Leave', //_w('Leave')
             'Clear', //_w('Clear')
             'Empty response from server', //_w('Empty response from server')
             'Assigned:', //_w('Assigned:')
             '#%s', //_w('#%s')
             'ago', //_w('ago')
             'via', //_w('via')
+            'no status', //_w('no status')
             'Last action', //_w('Last action')
             'Sort by:', //_w('Sort by:')
             'No actions with this request.', //_w('No actions with this request.')
@@ -51,6 +53,8 @@ class helpdeskBackendLocController extends waController
             'No requests.', //_w('No requests.')
             'of', //_w('of')
             'Saved', //_w('Saved')
+            'Attach file', //_w('Attach file')
+            'remove', //_w('remove')
             'Unsaved changes will be lost if you leave this page now.', //_w('Unsaved changes will be lost if you leave this page now.')
             'What is this?', //_w('What is this?')
             '“Follow” mark', //_w('“Follow” mark')
@@ -60,6 +64,10 @@ class helpdeskBackendLocController extends waController
             'Loading', //_w('Loading')
             'Close', //_w('Close')
             'OK', //_w('OK')
+            'Request type must be specified',
+            'Subject and text',
+            'Time has passed',
+            'No assigned',
         ) as $s) {
             $strings[$s] = _w($s);
         }

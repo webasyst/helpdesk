@@ -1,203 +1,224 @@
+<div class="not-blank">
+<div class="article wide">
+<div class="article-body custom-py-16">
+
 <style>
-    .h-sortable-placeholder { display: block; background: #FCFBE8; height: 18px; max-width: 220px; }
-    #{$uniqid} .h-fields-location { margin-left: -20px; min-height: 2px; }
-    #{$uniqid} .h-fields-location .h-field { margin: 3px 0; font-size: 0.9em;  line-height: 1.5em; font-family: 'Lucida Grande', 'Lucida Sans Unicode', 'Helvetica Neue', Arial, sans-serif; }
-    #{$uniqid} .h-fields-location .h-field .sort { cursor: pointer; opacity: 0; }
-    #{$uniqid} .h-fields-location .h-field .delete { cursor: pointer; opacity: 0; }
-    #{$uniqid} .h-fields-location .h-field .h-field-wrapper { display: inline; }
-    #{$uniqid} .h-fields-location .h-field .h-field-wrapper:hover .sort { opacity: 1; }
-    #{$uniqid} .h-fields-location .h-field .h-field-wrapper:hover .delete { opacity: 1; }
-    #{$uniqid} .h-fields-location .h-field .h-name { color: #aaa; }
+    #{$uniqid} .h-fields-location { display: flex; flex-direction: column; gap: .75rem; }
+    #{$uniqid} .h-fields-location .h-field { display: flex; gap: .75rem; align-items: center; }
+    #{$uniqid} .h-fields-location .h-field .icon, #{$uniqid} .h-other-fields .icon { color: var(--light-gray); }
+    #{$uniqid} .h-fields-location .h-field .h-name { color: var(--gray); }
     #{$uniqid} .h-fields-location .h-field .h-value { font-weight: bold; }
-    #{$uniqid} .h-fields-location .h-field .sort { margin-top: 1px; float:left; }
-    #{$uniqid} .h-fields-location .h-field-id-tags { position: relative; width: 220px; }
-    #{$uniqid} .h-fields-location .h-field-id-tags .delete { position: absolute; left: 200px; top: 2px; }
-    #{$uniqid} .h-fields-location .h-field-id-tags .sort {  position: absolute; left: 0; top: 2px;  }
-    #{$uniqid} .h-fields-location .h-field-id-tags:hover .sort { opacity: 1; }
-    #{$uniqid} .h-fields-location .h-field-id-tags:hover .delete { opacity: 1; }
-    #{$uniqid} .h-fields-location .h-field-id-tags #h-request-tags-input_tagsinput { margin-left: 20px; }
-    #{$uniqid} .h-add-field { padding: 5px 0; }
-    #{$uniqid} .profile.image50px .details { margin-left: 70px; }
+    #{$uniqid} .h-other-fields .field { display: flex; flex-wrap: nowrap; gap: 0.5rem; }
+    #{$uniqid} .h-other-fields .h-edit-field { font-weight: 500; font-size: 15px; }
+    #{$uniqid} .h-other-fields .sort { margin-top: 3px; }
+    #h-edit-field-dialog .dialog-content { min-height: 300px }
 </style>
 
 {function field_item field_opt=[] hidden=false}
-    <div class="h-field h-place-right h-field-id-{$field_opt.id} {if $hidden}hidden{/if}" data-id="{$field_opt.id}">
+    {if $field_opt.id !== 'status'}
+        <div class="h-field h-field-id-{$field_opt.id} {if $hidden}hidden{/if}" data-id="{$field_opt.id}">
 
-        {if $field_opt.id !== 'tags'}
-            <div class="h-field-wrapper">
-        {/if}
-
-        <i class="icon16 sort"></i>
-        <span class="h-name">{$field_opt.name|default:''|escape}:</span>
-        <span class="h-value">{strip}
-            {$f_id = helpdeskRequestPageConstructor::cutOffPrefix($field_opt.id)}
-            {if helpdeskRequestPageConstructor::getType($field_opt.id) == helpdeskRequestPageConstructor::TYPE_CUSTOM &&
-                isset($fields[$f_id]) && $fields[$f_id].type === 'Checkbox'}
-                [`Yes/No`]
-            {else}
-                {if !empty($field_opt.value)}
-                    {$field_opt.value|default:''|escape}
-                {else}
-                    {$field_opt.name|default:''|escape}
-                {/if}
+            <span class="sort icon cursor-move"><i class="fas fa-grip-vertical"></i></span>
+            {if  $field_opt.id === 'assigned'}
+                <span class="icon"><img class="userpic userpic-20" src="{helpdeskHelper::getGravatar(null)}"></span>
             {/if}
-        {/strip}</span>
-        <i class="icon16 delete" title="[`Remove this field from the heading area.`]"></i>
-
-        {if $field_opt.id !== 'tags'}
-            </div>
-        {/if}
-
-    </div>
+            <span class="h-name">{$field_opt.name|default:''|escape}:</span>
+            <span class="h-value">{strip}
+                {$f_id = helpdeskRequestPageConstructor::cutOffPrefix($field_opt.id)}
+                {if helpdeskRequestPageConstructor::getType($field_opt.id) == helpdeskRequestPageConstructor::TYPE_CUSTOM &&
+                    isset($fields[$f_id]) && $fields[$f_id].type === 'Checkbox'}
+                    [`Yes/No`]
+                {else}
+                    {if !empty($field_opt.value)}
+                        {$field_opt.value|default:''|escape}
+                    {else}
+                        {$field_opt.name|default:''|escape}
+                    {/if}
+                {/if}
+            {/strip}</span>
+            <span class="delete small cursor-pointer"><i class="fas fa-times-circle text-gray opacity-50" title="[`Remove this field from the heading area.`]"></i></span>
+        </div>
+    {/if}
 {/function}
 
 <div id="{$uniqid}">
-    <div class="block">
+    <header>
         <h1>[`Request field constructor`]</h1>
-    </div>
+        <p class="dark-hint custom-mt-12">[`You can drag and drop fields to change its position in the heading area of request page.`]</p>
+    </header>
 
     <div class="support-content">
-        <div class="s-request" id="ticket">
+        <div class="s-request custom-mt-32" id="ticket">
 
-            <div class="shadowed" id="h-contact-info"></div>
+            <div class="fields">
+                <div class="fields-group blank">
+                    <h3>Поля в области заголовка</h3>
 
-            <div class="block double-padded" style="padding-top: 10px; padding-bottom: 0;">
-                <div class="request-status" style="max-width:400px;">
-                    <div class="request-basic-info-block">
-                        <div>
-                            {sprintf_wp('#<strong>%s</strong>', '[`Number`]')}
+                    <div class="h-fields-location">
+                        <div class="h-field">
+                            <span class="icon"><i class="fas fa-thumbtack"></i></span>
+                            <strong># [`Number`]</strong>
                         </div>
-                        <div class="h-fields-location" data-place="right">
-                            {foreach $right_fields as $field_opt}
-                                {field_item field_opt=$field_opt}
-                            {foreachelse}
-                                <div class="h-field"></div>
-                            {/foreach}
+                        <div class="h-field">
+                            <span class="icon"><i class="fas fa-thumbtack"></i></span>
+                            <h5 class="custom-my-4">[`Заголовок`]</h5>
                         </div>
-
-                    </div>
-                </div>
-
-                <div class="request-header">
-                    <h1 style="display:inline;">
-                        [`Request subject`]
-                    </h1>
-                    <div class="profile image50px">
-                        <div class="image">
-                            <a href="javascript:void(0);">
-                                <img class="userpic" src="{helpdeskHelper::getGravatar(null)}">
-                            </a>
+                        {$visible_status = !empty($right_fields.status) || !empty($left_fields.status)}
+                        <div class="h-field{if !$visible_status} js-off{/if}" data-id="status">
+                            <span class="icon"><i class="fas fa-thumbtack"></i></span>
+                            <span class="state-marker badge small {if $visible_status}bg-dark-gray{else}bg-light-gray{/if}">[`Status`]</span>
+                            <span class="icon cursor-pointer js-toggle-status"><i class="fas {if $visible_status}fa-eye{else}fa-eye-slash{/if}"></i></span>
                         </div>
-                        <div class="details">
-                            <h3>
-                                <a href="javascript:void(0);">[`Customer's name`]</a>
-                                <span class="age-label">
-                                    <span class="hint">[`9 days ago`]</span>
-                                </span>
-                                <span class="source-label">
-                                    <span class="hint">[`via`]</span>
-                                    <span class="source-name">
-                                        <i class="icon16 source-my"></i> [`Request source`]
-                                    </span>
-                                </span>
-                            </h3>
+                        <div class="h-field">
+                            <span class="icon"><i class="fas fa-thumbtack"></i></span>
+                            <span class="icon"><img class="userpic userpic-20" src="{helpdeskHelper::getGravatar(null)}"></span>
+                            <strong>[`Customer's name`]</strong>
+                            <span>
+                                <span class="hint">[`Create date`] [`via`] </span>
+                                <span class="source-badge bg-yellow custom-mx-2"><i class="fas fa-key"></i></span> <span>[`Request source`]</span>
+                            </span>
                         </div>
                     </div>
-                    <div style="margin-left: 70px; margin-top: -25px;">
 
-                        <div class="h-fields-location" data-place="left">
-                            {foreach $left_fields as $field_opt}
-                                {field_item field_opt=$field_opt}
-                            {/foreach}
-                        </div>
-
-                        <ul class="menu-h dropdown clickable h-add-new-field">
-                            <li>
-                                <a href="javascript:void(0)" class="inline-link h-add-field no-underline">
-                                    <i class="icon16 add"></i>[`Add a field to the heading area`]
-                                </a>
-                                <ul class="menu-v h-available-fields" style="display: none;">
-                                    {$no_available_fields = true}
-                                    {foreach $all_fields as $field_opt}
-                                        <li class="h-new-request-field middle" data-id="{$field_opt.id}" {if !empty($field_opt.place)}style="display:none;"{else}{$no_available_fields = false}{/if}>
-                                            <a href="javascript:void(0);" class="h-choose-field">{$field_opt.name|escape}</a>
-                                            {field_item field_opt=$field_opt hidden=true}
-                                        </li>
-                                    {/foreach}
-                                    <li class="h-no-available-fields" style="{if !$no_available_fields}display:none;{/if}">[`All available fields are already added.`]</li>
-                                </ul>
-                            </li>
-                        </ul>
-
+                    <div class="h-fields-location custom-mt-12" data-place="right">
+                        {foreach $right_fields as $field_opt}
+                            {field_item field_opt=$field_opt}
+                        {foreachelse}
+                            <div class="h-field"></div>
+                        {/foreach}
                     </div>
 
-                </div>
+                    <div class="h-fields-location custom-mt-12" data-place="left">
+                        {foreach $left_fields as $field_opt}
+                            {field_item field_opt=$field_opt}
+                        {/foreach}
+                    </div>
 
-                <div style="margin-top: 30px;">
-                    <p>[`NOTE: You can drag and drop fields to change its position in the heading area of request page.`]</p>
-                    <hr>
-                </div>
+                    <div class="dropdown h-add-new-field custom-mt-32">
+                        <button class="dropdown-toggle button light-gray rounded" type="button">
+                            <i class="fas fa-plus-circle text-green"></i> [`Add field`]
+                        </button>
+                        <div class="dropdown-body" style="min-width:285px;">
 
-                <div class="clear-both"></div>
-            </div>
-
-            <div class="h-field-constructor block" style="padding-top:0;">
-                <div class="block not-padded">
-                    <div class="block">
-                        <div class="block not-padded fieldset no-border h-other-fields">
-                            <h2 class="black">[`Additional fields`]</h2>
-                            <p class="gray">[`Additional fields allow customers to specify extra multiple parameters when sending a support requests. These parameters essentially depend on the types of products and services you deliver to your customers. For example, if you accept requests to repair household appliances, you may wish to know some additional details; e.g. model name, date of manufacture, etc. Additional fields can be added to a request-sending form and be available on the request-viewing page for your Helpdesk app users.`]</p>
-                            <div class="fields">
-                                {foreach $fields as $field}
-                                    <div data-field-id="{$field.id}" class="field sortable">
-                                        <div class="name">
-                                            <i class="icon16 sort"></i>
-                                            {if !empty($field.icon)}{$field.icon}{/if}
-                                            <a href="javascript:void(0);" class="h-edit-field" data-field-id="{$field.id}">{$field.name|escape}</a>
-                                        </div>
-                                    </div>
+                            <ul class="menu h-available-fields">
+                                {$no_available_fields = true}
+                                {foreach $all_fields as $field_opt}
+                                    {if $field_opt.id === 'status'}
+                                        {continue}
+                                    {/if}
+                                    <li class="h-new-request-field" data-id="{$field_opt.id}" {if !empty($field_opt.place)}style="display:none;"{else}{$no_available_fields = false}{/if}>
+                                        <a href="javascript:void(0);" class="h-choose-field">{$field_opt.name|escape}</a>
+                                        {field_item field_opt=$field_opt hidden=true}
+                                    </li>
                                 {/foreach}
-                            </div>
-                            <div class="float-right" style="width:35%; padding: 1px 0;">
-                                <a href="javascript:void(0);" class="h-new-field bold no-underline"><i class="icon16 add"></i>[`New field`]</a>
-                            </div>
+                                <li class="h-no-available-fields gray box" style="{if !$no_available_fields}display:none;{/if}"><span class="icon size-12"><i class="fas fa-info text-gray"></i></span> [`All available fields are already added.`]</li>
+                            </ul>
+
                         </div>
-                        <div class="clear-left"></div>
+                    </div>
+
+                </div>
+
+                <div class="h-field-constructor fields-group blank">
+                    <h3>[`Additional fields`]</h3>
+                    <p class="gray custom-mt-8 small">[`Additional fields allow customers to specify extra multiple parameters when sending a support requests. These parameters essentially depend on the types of products and services you deliver to your customers. For example, if you accept requests to repair household appliances, you may wish to know some additional details; e.g. model name, date of manufacture, etc. Additional fields can be added to a request-sending form and be available on the request-viewing page for your Helpdesk app users.`]</p>
+                    <div class="h-other-fields">
+                        {foreach $fields as $field}
+                            <div data-field-id="{$field.id}" class="field sortable">
+                                <span class="icon sort"><i class="fas fa-grip-vertical"></i></span>
+                                {if !empty($field.icon)}{$field.icon}{/if}
+                                <a href="javascript:void(0);" class="h-edit-field" data-field-id="{$field.id}">{$field.name|escape}</a>
+                            </div>
+                        {/foreach}
+                        <div class="custom-mt-32">
+                            <button class="h-new-field button rounded light-gray" type="button">
+                                <i class="fas fa-plus-circle text-green"></i> [`Add field`]
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="clear-left"></div>
-    </div>
 
+        </div>
+    </div>
 </div>
 
+{* dialog section *}
+{capture assign="_dialog_edit_field"}
+<div class="dialog" id="h-edit-field-dialog">
+    <form method="post" action="?module=constructor&action=fieldSave">
+        <div class="dialog-background"></div>
+        <div class="dialog-body">
+            <header class="dialog-header"><h1></h1></header>
+            <div class="dialog-content">
+                <div class="fields">
+                    <div class="field">
+                        <div class="name">[`Field name`]</div>
+                        <div class="value">
+                            <input class="width-70 width-100-mobile" type="text" name="name" value="">
+                            <div class="state-error-hint custom-mt-4"></div>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="name">[`Field ID`]</div>
+                        <div class="value">
+                            <input class="width-70 width-100-mobile" type="text" name="id_val" data-error-id="id_val" value="">
+                            <div class="state-error-hint custom-mt-4"></div>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="name">[`Field type`]</div>
+                        <div class="value">
+                            <select name="ftype">
+                                {foreach $field_types as $ftype => $ftype_str}
+                                    <option value="{$ftype}">{$ftype_str}</option>
+                                {/foreach}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="field" data-field-values>
+                        <div class="name">[`List items`]</div>
+                        <div class="value" data-field-value="Select">
+                            <textarea name="select_field_value" placeholder="[`Enter each new item on new line`]"></textarea>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="name">[`Customer Portal`]</div>
+                        <div class="value">
+                            <div class="switch" id="h-edit-field-my_visible">
+                                <input type="checkbox" name="my_visible" value="1">
+                            </div>
+                            <div class="hint">[`If enabled, data in this field are available to clients in the Customer Portal.`]</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="state-error-hint common-errors"></div>
+            </div>
+            <footer class="dialog-footer">
+                {$wa->csrf()}
+                <div class="flexbox middle space-4">
+                    <input type="hidden" name="id" value="#new">
+                    <button type="submit" class="button green">[`Save`]</button>
+                    <button type="button" class="js-close-dialog button light-gray">[`Close`]</button>
+                    <a href="javascript:void(0);" class="custom-ml-auto red small outlined button h-field-delete" data-delete-field-id="{$field.id}"><i class="fas fa-times-circle"></i> <span class="desktop-and-tablet-only">[`Delete field`]</span></a>
+                </div>
+            </footer>
+        </div>
+
+    </form>
+</div>
+{/capture}
+
 <script>
-    $(function() {
-
-        function iButton(checkbox, options) {
-            if (checkbox.closest('.ibutton-wrapper').length) {
-                var clone = checkbox.clone();
-                checkbox.closest('.ibutton-wrapper').replaceWith(clone);
-                checkbox = clone;
-            }
-            $.wa.helpdesk_controller.iButton(checkbox, options);
-        }
-
-        // Sort fields
-        function initSortable()
-        {
+        // Sort custom fields
+        function initSortableCustomFields() {
             var context = $('.h-field-constructor .h-other-fields');
             context.sortable({
-                distance: 5,
                 helper: 'clone',
-                items: '.field.sortable',
-                opacity: 0.75,
+                draggable: '.field.sortable',
                 handle: '.sort',
-                tolerance: 'pointer',
-                containment: context,
-                update: function(event, ui) {
-                    var item = ui.item;
+                onEnd: function(event) {
+                    var item = $(event.item);
                     var id = item.data('fieldId');
                     var next, before_id = '';
                     if (id) {
@@ -217,18 +238,19 @@
                                     if (r && r.errors) {
                                         console.log(r.errors);
                                     }
-                                    context.sortable('cancel');
+                                    $.wa.helpers.cancelSortable(event);
                                 }
                             }, 'json'
                         ).error(function() {
-                            context.sortable('cancel');
+                            $.wa.helpers.cancelSortable(event);
                         });
                     }
                 }
             });
         }
-
-        initSortable();
+        $.wa.helpers.loadSortableJS().then(() => {
+            initSortableCustomFields()
+        });
 
         // Add new field
         $('.h-new-field').click(function() {
@@ -238,7 +260,7 @@
         var fields = {json_encode(array_values($fields))};
         var field_types = {json_encode($field_types)};
         $('.h-edit-field').click(function() {
-            var field_id = '' + $(this).data('fieldId');    // to string
+            var field_id = '' + $(this).data('fieldId'); // to string
             var field = null;
             for (var i = 0, l = fields.length; i < l; i += 1) {
                 if (fields[i].id === field_id) {
@@ -255,17 +277,54 @@
             }
         });
 
-        function EditFieldDialog(field)
-        {
-            $('#h-edit-field-dialog').waDialog({
-                disableButtonsOnSubmit: true,
-                onLoad: function() {
-                    var d = $(this);
-                    d.find('.errormsg').empty().end().
-                        find('.error').removeClass('error');
+        function EditFieldDialog(field) {
+            $.waDialog({
+                html: {$_dialog_edit_field|json_encode},
+                onOpen: function(d, dialog_instance) {
+                    d.find('.state-error-hint').empty().end().
+                        find('.state-error').removeClass('state-error');
 
-                    d.find('.cancel').click(function() {
-                        d.trigger('close');
+                    const form = d.find('form');
+                    if (field) {
+                        $.wa.helpers.watchChangeForm(form);
+                    }
+
+                    // add/edit field
+                    d.on('submit', 'form', function(e) {
+                        e.preventDefault();
+
+                        const submitLoading = $.wa.helpers.createLoadingSubmit(form.find(':submit')).show();
+                        form.find('.state-error-hint').empty();
+                        $.post(form.attr('action'), form.serialize(), function(r) {
+                            submitLoading.hide();
+                            if (r.status !== 'ok' && r.errors) {
+                                for (var i = 0, l = r.errors.length; i < l; i += 1) {
+                                    var e = r.errors[i];
+                                    if (typeof e === 'string') {
+                                        form.find('.state-error-hint.common-errors').append(e);
+                                    } else if (typeof e === 'object') {
+                                        for (var k in e) {
+                                            if (e.hasOwnProperty(k)) {
+                                                var input = form.find('[data-error-id="'+k+'"]');
+                                                input.addClass('state-error');
+                                                input.nextAll('.state-error-hint:first').text(e[k]);
+
+                                                form.one('input, keydown', '.state-error', function() {
+                                                    $(this).removeClass('state-error')
+                                                            .nextAll('.state-error-hint:first').empty();
+                                                });
+                                            }
+                                        }
+                                    }
+                                }
+                            } else {
+                                $.wa.helpdesk_controller.redispatch();
+                                dialog_instance.close();
+                            }
+                        }, 'json').error(function() {
+                            submitLoading.hide();
+                        });
+                        return false;
                     });
 
                     // delete fields
@@ -274,49 +333,44 @@
                     } else {
                         var delete_link = d.find('[data-delete-field-id]');
                         delete_link.show().data('field-id', field.id);
-                        delete_link.text($_('Delete field'));
+                        delete_link.children('span').text($_('Delete field'));
                         delete_link.off('click').on('click', function () {
                             var field_id = $(this).data('fieldId');
-                            var left = d.find('.dialog-window').css('left');
-                            var top = d.find('.dialog-window').css('top');
-                            d.find('.dialog-content-indent').html('<h1>' + '[`Delete field`]' + '</h1><br><h2>' + '[`Checking data in this field`]...' + ' <i class="icon16 loading"></i></h2>');
-                            d.find('.dialog-buttons').empty();
+                            var left = d.find('.dialog-body').css('left');
+                            var top = d.find('.dialog-body').css('top');
+                            d.find('.dialog-header').html('<h1>[`Delete field`]</h1>');
+                            d.find('.dialog-content').html('<strong>[`Checking data in this field`]... <i class="spinner loading"></i></strong>');
+                            d.find('.dialog-footer').empty();
 
                             $.get('?module=constructor&action=fieldDeleteConfirm&id=' + field_id, function (response) {
                                 setTimeout(function () {
                                     d.html(response);
-                                    d.find('.dialog-window').css({
+                                    d.find('.dialog-body').css({
                                         'left': left,
                                         'top': top
                                     });
-                                    d.find('[type=submit]').click(function () {
-                                        var form = d.find('form');
-                                        form.find('.loading').show();
-                                        form.find('.errormsg').empty();
+
+                                    const $submit = d.find(':submit');
+                                    const submitLoading = $.wa.helpers.createLoadingSubmit($submit);
+                                    $submit.click(function () {
+                                        const form = d.find('form');
+                                        submitLoading.show();
+                                        form.find('.state-error-hint').empty();
                                         $.post(form.attr('action'), form.serialize(), function (r) {
-                                            form.find('.loading').hide();
-                                            form.find('[type=submit]').attr('disabled', false);
+                                            submitLoading.hide();
                                             if (r.status !== 'ok' && r.errors) {
-                                                form.find('.errormsg').text(r.errors[0]);
-                                                form.find('[type=submit]').attr('disabled', false);
+                                                form.find('.state-error-hint').text(r.errors[0]);
                                             } else {
                                                 $.wa.helpdesk_controller.redispatch();
+                                                dialog_instance.close();
                                             }
                                         }, 'json').error(function () {
-                                            form.find('.loading').hide();
-                                            form.find('[type=submit]').attr('disabled', false);
+                                            submitLoading.hide();
                                         });
                                         return false;
                                     });
-                                    d.on('close', function () {
-                                        $.wa.helpdesk_controller.redispatch();
-                                    });
-                                    d.find('.cancel').click(function () {
-                                        $.wa.helpdesk_controller.redispatch();
-                                    });
-                                }, 1000);
+                                }, 500);
                             });
-
 
 
                         });
@@ -398,17 +452,15 @@
                                 }).closest('.field').show();
                         }
                         if (field.type == 'String') {
-                            d.find('[data-field-value="Select"]').children(':first').attr('disabled', true);
+                            d.find('[data-field-value="Select"]').children(':first').prop('disabled', true);
                             d.find('[data-field-value="Select"]').parent().hide();
                         } else if (field.type == 'Select') {
-                            d.find('[data-field-value="Select"]').children(':first').attr('disabled', false);
+                            d.find('[data-field-value="Select"]').children(':first').prop('disabled', false);
                         }
-                        d.find('input[name="my_visible"]').attr('checked', field.my_visible ? true : false);
+                        d.find('input[name="my_visible"]').prop('checked', field.my_visible ? true : false);
                     }
-                    iButton(d.find('input[name="my_visible"]'), {
-                        labelOn: "[`On`]",
-                        labelOff: "[`Off`]"
-                    });
+
+                    $('#h-edit-field-my_visible').waSwitch();
 
                     // change field type
                     d.find('select[name="ftype"]').off('change').on('change', function () {
@@ -433,13 +485,16 @@
                             if (!id_val_input.data('edited')) {
                                 var loading = id_val_input.next('.loading');
                                 if (!loading.length) {
-                                    loading = $('<i class="icon16 loading"></i>').insertAfter(id_val_input);
+                                    loading = $('<span class="loading"><i class="fas fa-spinner fa-spin wa-animation-spin speed-1000 gray" /></span>').insertAfter(id_val_input);
                                 }
                                 transliterateTimer && clearTimeout(transliterateTimer);
                                 transliterateTimer = setTimeout(function () {
                                     if (!id_val_input.data('edited')) {
+                                        const $submit = d.find(':submit');
+                                        $submit.prop('disabled', true);
                                         $.post('?module=constructor&action=transliterate', input.serialize(),
                                             function(data) {
+                                                $submit.prop('disabled', false);
                                                 loading.remove();
                                                 if (data.status === 'ok') {
                                                     if (!id_val_input.data('edited')) {
@@ -460,208 +515,116 @@
                         d.find('input[name="name"]').val(field.name);
                     }
 
-                },
-                onSubmit: function(d) {
-                    var form = $(this);
-                    form.find('.loading').show();
-                    form.find('.errormsg').empty();
-                    $.post(form.attr('action'), form.serialize(), function(r) {
-                        form.find('.loading').hide();
-                        if (r.status !== 'ok' && r.errors) {
-                            for (var i = 0, l = r.errors.length; i < l; i += 1) {
-                                var e = r.errors[i];
-                                if (typeof e === 'string') {
-                                    form.find('.errormsg.common-errors').append(e);
-                                } else if (typeof e === 'object') {
-                                    for (var k in e) {
-                                        if (e.hasOwnProperty(k)) {
-                                            var input = form.find('[data-error-id="'+k+'"]');
-                                            input.addClass('error');
-                                            input.nextAll('.errormsg:first').text(e[k]);
-
-                                            form.one('input, keydown', '.error', function() {
-                                                $(this).removeClass('error')
-                                                        .nextAll('.errormsg:first').empty();
-                                            });
-                                        }
-                                    }
-                                }
-                            }
-                            form.find('[type=submit]').attr('disabled', false);
-                        } else {
-                            $.wa.helpdesk_controller.redispatch();
-                            d.trigger('close');
-                        }
-                    }, 'json').error(function() {
-                        form.find('.loading').hide();
-                        form.find('[type=submit]').attr('disabled', false);
-                    });
-                    return false;
                 }
             });
         }
 
         $.wa.helpdesk_controller.setBrowserTitle('[`Request field constructor`]');
 
-        (function() {
+        // init fields loactions
+        initAddFieldsMenus($('.h-add-new-field'));
+        initFieldsLocations($('.h-fields-location'));
 
-            initTagsField($('.h-field-id-tags:visible'));
-            initAddFieldsMenus($('.h-add-new-field'));
-            initFieldsLocations($('.h-fields-location'));
+        function initFieldsLocations(blocks) {
+            $.wa.helpers.loadSortableJS().then(() => {
+                initSortable(blocks)
+            });
 
-            function initTagsField(field) {
-                field.children(':not(.icon16)').hide();
-                field.append('<input type="text" id="h-request-tags-input" value="' + field.find('.h-value').text() + '">');
-                $('#h-request-tags-input').tagsInput({
-                    height: 80,
-                    width: 190,
-                    defaultText: '[`Add tag`]',
-                    interactive: false
+            blocks.each(function() {
+                var block = $(this);
+                block.off('click', '.delete').on('click', '.delete', function() {
+                    var field = $(this).closest('.h-field');
+                    $('.h-available-fields li[data-id="' + field.data('id') + '"]').show();
+                    field.remove();
+                    $('.h-add-new-field').find('.h-no-available-fields').hide();
+                    deleteFieldRequest(field.data('id'));
                 });
-                $('#h-request-tags-input_tagsinput').addClass('h-demo');
-            }
+            });
+        }
 
-            function initFieldsLocations(blocks)
-            {
-                initSortable(blocks).each(function() {
-                    var block = $(this);
-                    block.off('click', '.delete').on('click', '.delete', function() {
-                        var field = $(this).closest('.h-field');
-                        $('.h-available-fields li[data-id="' + field.data('id') + '"]').show();
-                        field.remove();
-                        $('.h-add-new-field').find('.h-no-available-fields').hide();
-                        $.post('?module=constructor&action=requestFieldDelete', {
-                            id: field.data('id')
+        function initSortable(blocks) {
+            blocks.sortable({
+                group: "fieldsLocations",
+                handle: '.sort',
+                draggable: '.h-field',
+                onEnd: function(event) {
+                    var info = {};
+                    blocks.each(function() {
+                        var block = $(this);
+                        var field_ids = [];
+                        block.find('.h-field').each(function() {
+                            field_ids.push($(this).data('id'));
                         });
+                        info[block.data('place')] = field_ids;
                     });
-                });
-            }
-
-            function initSortable(blocks) {
-                return blocks.sortable({
-                    distance: 5,
-                    opacity: 0.75,
-                    handle: '.sort',
-                    items: '.h-field',
-                    connectWith: '.h-fields-location',
-                    tolerance: 'pointer',
-                    placeholder: 'h-sortable-placeholder',
-                    update: function(event, ui) {
-                        var info = { };
-                        blocks.each(function() {
-                            var block = $(this);
-                            var field_ids = [];
-                            block.find('.h-field').each(function() {
-                                field_ids.push($(this).data('id'));
-                            });
-                            info[block.data('place')] = field_ids;
-                        });
-                        $.post('?module=constructor&action=requestFieldMove', info,
-                            function(r) {
-                                if (!r || r.status != 'ok') {
-                                    if (r && r.errors) {
-                                        console.log(r.errors);
-                                    }
-                                    block.sortable('cancel');
+                    $.post('?module=constructor&action=requestFieldMove', info,
+                        function(r) {
+                            if (!r || r.status !== 'ok') {
+                                if (r && r.errors) {
+                                    console.log(r.errors);
                                 }
-                            }, 'json'
-                        ).error(function() {
-                            block.sortable('cancel');
-                        });
-                    }
-                });
-            }
 
-            function initAddFieldsMenus(menus)
-            {
-                menus.each(function() {
-                    var menu = $(this);
+                                $.wa.helpers.cancelSortable(event);
+                            }
+                        }, 'json'
+                    ).error(function() {
+                        $.wa.helpers.cancelSortable(event);
+                    });
+                }
+            });
+            return blocks;
+        }
+
+        function initAddFieldsMenus($select)
+        {
+            $select.waDropdown({
+                hover: false,
+                ready: function (dropdown_instance) {
+                    var $menu = dropdown_instance.$menu.find('ul.menu');
                     var place = 'left';
                     var target = $('.h-fields-location[data-place="' + place + '"]');
-                    $.wa.helpdesk_controller.initClickableMenu(menu);
-                    menu.off('click', '.h-available-fields .h-choose-field').on('click', '.h-available-fields .h-choose-field', function() {
+                    $menu.off('click', '.h-choose-field').on('click', '.h-choose-field', function() {
                         var item = $(this).closest('.h-new-request-field');
-                        var field = item.find('.h-field').clone().show();
-                        target.append(field.show());
-                        menus.find('.h-new-request-field[data-id="' + item.data('id') + '"]').hide();
-                        if (field.data('id') === 'tags') {
-                            initTagsField(field);
+                        var field = item.find('.h-field').clone();
+                        target.append(field.removeClass('hidden'));
+                        $menu.find('.h-new-request-field[data-id="' + item.data('id') + '"]').hide();
+                        if (!$menu.find('.h-new-request-field:visible').length) {
+                            $menu.find('.h-no-available-fields').show();
                         }
-                        if (!menu.find('.h-new-request-field:visible').length) {
-                            menu.find('.h-no-available-fields').show();
-                        }
-                        $.post('?module=constructor&action=requestFieldSave', {
-                            id: field.data('id'),
-                            place: place
-                        });
+                        addFieldRequest(field.data('id'), place);
                     });
+                }
+            });
+        }
+
+        $('.js-toggle-status').on('click', function () {
+            var $field = $(this).closest('.h-field');
+            var id = $field.data('id');
+            var $state_marker = $field.find('.state-marker');
+            var $svg = $(this).find('svg');
+            if ($field.hasClass('js-off')) {
+                addFieldRequest(id, 'right').done(() => {
+                    $state_marker.removeClass('bg-light-gray').addClass('bg-dark-gray');
+                    $svg.removeClass('fa-eye-slash').addClass('fa-eye');
+                    $field.removeClass('js-off');
+                });
+            } else {
+                deleteFieldRequest(id).done(() => {
+                    $state_marker.addClass('bg-light-gray').removeClass('bg-dark-gray');
+                    $svg.addClass('fa-eye-slash').removeClass('fa-eye');
+                    $field.addClass('js-off');
                 });
             }
-        })();
+        });
 
-    });
+        function addFieldRequest (id, place) {
+            return $.post('?module=constructor&action=requestFieldSave', { id, place });
+        }
+        function deleteFieldRequest (id) {
+            return $.post('?module=constructor&action=requestFieldDelete', { id });
+        }
 </script>
 
-{* dialog section *}
-<div class="dialog width650px height350px" id="h-edit-field-dialog" style="display:none;">
-    <form method="post" action="?module=constructor&action=fieldSave">
-        <div class="dialog-background"></div>
-        <div class="dialog-window">
-            <div class="dialog-content">
-                <div class="dialog-content-indent">
-                    <h1></h1>
-                    <div class="fields">
-                        <div class="field">
-                            <div class="name">[`Field name`]</div>
-                            <div class="value">
-                                <input type="text" name="name" value="">
-                                <span class="errormsg" style="margin-top: 4px;"></span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="field">
-                        <div class="name">[`Field ID`]</div>
-                        <div class="value">
-                            <input type="text" name="id_val" data-error-id="id_val" value="">
-                            <span class="errormsg" style="margin-top: 4px;"></span>
-                        </div>
-                    </div>
-                    <div class="field">
-                        <div class="name">[`Field type`]</div>
-                        <div class="value">
-                            <select name="ftype">
-                                {foreach $field_types as $ftype => $ftype_str}
-                                    <option value="{$ftype}">{$ftype_str}</option>
-                                {/foreach}
-                            </select>
-                        </div>
-                    </div>
-                    <div class="field" data-field-values>
-                        <div class="name">[`List items`]</div>
-                        <div class="value" data-field-value="Select">
-                            <textarea name="select_field_value" placeholder="[`Enter each new item on new line`]"></textarea>
-                        </div>
-                    </div>
-                    <div class="field">
-                        <div class="name">[`Customer Portal`]</div>
-                        <div class="value">
-                            <input type="checkbox" name="my_visible" value="1">
-                            <div class="hint">[`If enabled, data in this field are available to clients in the Customer Portal.`]</div>
-                        </div>
-                    </div>
-                    <em class="errormsg common-errors"></em>
-                </div>
-            </div>
-            <div class="dialog-buttons">
-                <div class="dialog-buttons-gradient">
-                    {$wa->csrf()}
-                    <input type="hidden" name="id" value="#new">
-                    <input class="button green" type="submit" value="[`Save`]">
-                    <i class="icon16 loading" style="display:none;"></i> [`or`] <a class="cancel" href="javascript:void(0);">[`cancel`]</a>
-                    <a href="javascript:void(0);" class="red small float-right field-delete" data-delete-field-id="{$field.id}">[`Delete field`]</a>
-                </div>
-            </div>
-        </div>
-
-    </form>
+</div>
+</div>
 </div>

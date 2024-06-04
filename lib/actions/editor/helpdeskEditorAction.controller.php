@@ -22,7 +22,10 @@ class helpdeskEditorActionController extends waController
         if ($form_html) {
             echo $form_html;
         } else {
-            echo '<script>(function() { "use strict"; $("#c-core-content .tab-content:first").html(\'<div class="triple-padded block"><i class="icon16 loading"></i></div>\'); $.wa.helpdesk_controller.redispatch(); $.wa.dialogHide(); })();</script>';
+            echo (helpdeskHelper::isLegacyUi()
+                ? '<script>(function() { "use strict"; $("#c-core-content .tab-content:first").html(\'<div class="triple-padded block"><i class="icon16 loading"></i></div>\'); $.wa.helpdesk_controller.redispatch(); $.wa.dialogHide(); })();</script>'
+                : 'ok'
+            );
             $params = array();
             wa('helpdesk')->event('action_editor', $params);
         }

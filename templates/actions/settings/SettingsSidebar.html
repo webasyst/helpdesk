@@ -1,6 +1,8 @@
-<div class="block">
+<div class="h-settings-sidebar not-blank height-100">
+<div class="article">
+<div class="article-body">
 
-    <div class="block">
+    <div class="h-header">
         <h1>[`Settings`]</h1>
     </div>
 
@@ -13,21 +15,22 @@
     {/function}
 
     <style>
-    span.special-filter-styled { text-transform:uppercase;color:#888;font-weight:bold; }
+    span.special-filter-styled { text-transform:uppercase;color:var(--text-color-heading);font-weight:bold; }
     .add-filter-menu span.special-filter-styled { color: inherit !important; }
-    .disabled span.special-filter-styled .icon10 { opacity: .4; }
-    .add-filter-menu .special-filter-styled .icon10 { display: none; }
-    .add-filter-menu ul li { padding: 4px 6px; }
+    .add-filter-menu li.disabled { display: none; }
+    .add-filter-menu .special-filter-styled .icon { display: none; }
+    .add-filter-menu:not(:has(li[data-id]:not(.disabled))) .hr { display: none; }
+
     .filter-edit .hide-when-edit { display: none !important; }
     .filter-no-edit .hide-when-no-edit { display: none !important; }
     </style>
 
-    <div class="block">
-        <div class="fields w100p">
+    <div class="fields custom-mt-32">
+        <div class="fields-group blank">
 
             {function style_name id=null n=null}{strip}
                 {if in_array(ifset($specials_hash_by_id[$id], $id), ['@by_assignment', '@by_sources', '@by_states', '@by_tags'])}
-                    <span class="special-filter-styled"><i class="icon10 rarr"></i>{$n|escape}</span>
+                    <span class="special-filter-styled"><span class="icon custom-mr-4"><i class="fas fa-caret-right"></i></span>{$n|escape}</span>
                 {else}
                     {$n|escape}
                 {/if}
@@ -36,63 +39,80 @@
             {* Helper to draw draggable items *}
             {function filter_lidrag n=null id=null}
                 <li data-id="{$id}"{if !empty($specials_hash_by_id[$id])} data-special="1"{/if} class="filter-no-edit">
-                    <i class="icon16 sort drag"></i>
+                    <div class="box flexbox space-8">
+                        <span class="sort back cursor-move"><i class="fas fa-grip-vertical"></i></span>
 
-                    <span class="filter-name hide-when-edit">{style_name id=$id n=$n}</span>
+                        <span class="filter-name hide-when-edit">{style_name id=$id n=$n}</span>
 
-                    {if empty($specials_hash_by_id[$id])}
-                        <input type="text" value="{$n|escape}" class="hide-when-no-edit filter-name-edit">
-                        <a href="javascript:void(0)" class="edit hide-when-edit" title="[`Rename`]" style="display:inline;margin-left:3px;"><i class="icon10 edit"></i></a>
-                    {/if}
+                        {if empty($specials_hash_by_id[$id])}
+                            <input type="text" value="{$n|escape}" class="hide-when-no-edit filter-name-edit">
+                            <a href="javascript:void(0)" class="edit hide-when-edit custom-ml-8" title="[`Rename`]"><i class="fas fa-edit"></i></a>
+                        {/if}
 
-                    <a href="javascript:void(0)" class="delete" title="[`delete`]" style="display:inline;margin-left:3px;"><i class="icon10 no"></i></a>
+                        <a href="javascript:void(0)" class="delete" title="[`delete`]"><i class="fas fa-times-circle back"></i></a>
+                    </div>
                 </li>
             {/function}
 
-            <div class="top-padded field">
+            <div class="field">
                 <div class="name">[`Navigation pane`]</div>
-                <div class="value no-shift">
+                <div class="value">
                     <div id="{$uniqid}-sidebar-editor" style="max-width:800px">
 
                         {if $admin}
-                            <div class="clear-right">
-                                <div class="content right300px position-relative">
+                            <div class="filter-group custom-mb-24">
+                                <div class="flexbox">
                                     <h6 class="heading">
                                         [`Common filters`]
-                                        <a href="javascript:void(0)" class="add-filter-link inline-link small" style="margin-left:2em"><b><i>[`Add`]</i></b><i class="icon10 darr-tiny"></i></a>
-                                    </h5>
-                                    <ul class="menu-v droppable" id="section-common" style="margin-bottom:20px;">
-                                        {foreach $common_filters as $id => $f}
-                                            {filter_lidrag n=$f.name id=$id}
-                                        {/foreach}
-                                    </ul>
+                                    </h6>
+                                    <div class="dropdown custom-mt-4 custom-ml-16">
+                                        <a href="javascript:void(0)" class="add-filter-link dropdown-toggle small"><i class="fas fa-plus-circle"></i> [`Add`]</a>
+                                        <div class="dropdown-body right">
+                                            <ul class="menu add-filter-menu">
+                                                {foreach $all_specials as $id => $name}
+                                                    <li data-id="{$id}"{if empty($specials[$id])} class="disabled"{/if}><a href="javascript:void(0)">
+                                                        {style_name id=$id n=$name}
+                                                    </a></li>
+                                                {/foreach}
+                                                <li class="hr"></li>
+                                                <li><a href="#/requests/search/">[`New filter`]</a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        {/if}
 
-                        <div class="clear-right">
-                            <div class="content right300px position-relative">
-                                <h6 class="heading">
-                                    [`My filters`]
-                                    <a href="javascript:void(0)" class="add-filter-link inline-link small" style="margin-left:2em"><b><i>[`Add`]</i></b><i class="icon10 darr-tiny"></i></a>
-                                </h5>
-                                <ul class="menu-v droppable" id="section-my" style="min-height:150px;">
-                                    {foreach $my_filters as $id => $f}
+                                <ul class="menu space-4 droppable custom-mt-0 custom-mt-8-mobile" id="section-common">
+                                    {foreach $common_filters as $id => $f}
                                         {filter_lidrag n=$f.name id=$id}
                                     {/foreach}
                                 </ul>
                             </div>
-                        </div>
+                        {/if}
 
-                        <div class="hidden shadowed add-filter-menu" style="position:absolute;background:white;z-index:99;margin:0">
-                            <ul class="menu-v">
-                                {foreach $all_specials as $id => $name}
-                                    <li data-id="{$id}"{if empty($specials[$id])} class="disabled"{/if}><a href="javascript:void(0)">
-                                        {style_name id=$id n=$name}
-                                    </a></li>
+                        <div class="filter-group">
+                            <div class="flexbox">
+                                <h6 class="heading">
+                                    [`My filters`]
+                                </h6>
+                                <div class="dropdown custom-mt-4 custom-ml-16">
+                                    <a href="javascript:void(0)" class="dropdown-toggle add-filter-link small"><i class="fas fa-plus-circle"></i> [`Add`]</a>
+                                    <div class="dropdown-body right">
+                                        <ul class="menu add-filter-menu">
+                                            {foreach $all_specials as $id => $name}
+                                                <li data-id="{$id}"{if empty($specials[$id])} class="disabled"{/if}><a href="javascript:void(0)">
+                                                    {style_name id=$id n=$name}
+                                                </a></li>
+                                            {/foreach}
+                                            <li class="hr"></li>
+                                            <li><a href="#/requests/search/">[`New filter`]</a></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            <ul class="menu space-4 droppable custom-mt-0 custom-mt-8-mobile" id="section-my" style="min-height:150px;">
+                                {foreach $my_filters as $id => $f}
+                                    {filter_lidrag n=$f.name id=$id}
                                 {/foreach}
-                                <li class="hr"></li>
-                                <li><a href="#/requests/search/">[`New filter`]</a></li>
                             </ul>
                         </div>
 
@@ -101,35 +121,36 @@
                                 {filter_lidrag n=$name id=$id}
                             {/foreach}
                         </ul>
-
-                        <div class="clear-right"></div>
                     </div>
                 </div>
             </div>
 
         </div>
+        <div class="bottombar h-fixed-bottombar sticky flexbox middle box rounded custom-mt-24" id="sticky-bottom-buttons">
+            <button type="submit" class="button green">[`Save`]</button>
+        </div>
     </div>
 
 </div>
 
-<div id="sticky-bottom-buttons" class="block" style="background:white;max-width:800px">
-    <input type="submit" class="button green" value="[`Save`]">
-</div>
-
-
 <script>(function() { "use strict";
-
     var form = $('#{$uniqid}');
     var wrapper = $('#{$uniqid}-sidebar-editor');
     var containers = wrapper.find('.droppable');
     var submit = $('#sticky-bottom-buttons').find(':submit');
     var special_stubs = wrapper.find('.special-stubs');
     var add_filter_menu = wrapper.find('.add-filter-menu');
+    var changeSubmit = () => {
+        if (submit.hasClass('yellow')) return;
+        submit.removeClass('green').addClass('yellow');
+    }
+
+    $('.dropdown').waDropdown({ hover: false });
 
     // Controller for settings form
     window.setTimeout(function() {
         form.on('change', function() {
-            submit.removeClass('green').addClass('yellow');
+            changeSubmit();
         });
     }, 0);
     dependency(form.find('[name="count_assigned"]'), form.find('[name="count_assigned_logs"]'));
@@ -148,18 +169,15 @@
     }
 
     // Drag-and-drop between sections
-    containers.sortable({
-        placeholder: 'drag-newparent',
-        axis: 'y',
-        distance: 5,
-        items: 'li',
-        opacity: 0.7,
-        revert: 300,
-        tolerance: 'pointer',
-        connectWith: containers,
-        change: function() {
-            submit.removeClass('green').addClass('yellow');
-        }
+    $.wa.helpers.loadSortableJS().then(() => {
+        containers.sortable({
+            group: 'filters',
+            handle: '.sort',
+            draggable: 'li:not(.filter-edit)',
+            onSort: function() {
+                changeSubmit();
+            }
+        });
     });
 
     // Links to delete items
@@ -172,10 +190,11 @@
         } else {
             li.remove();
         }
+        changeSubmit();
     });
 
     // Links to edit items
-    wrapper.on('click', 'li i.edit', function() {
+    wrapper.on('click', 'li a.edit', function() {
         var li = $(this).closest('li');
         li.removeClass('filter-no-edit').addClass('filter-edit');;
     });
@@ -187,29 +206,10 @@
             var li = $(this).closest('li');
             li.addClass('filter-no-edit').removeClass('filter-edit');;
             input.val(li.find('.filter-name').text());
+        } else {
+            changeSubmit();
         }
     })
-
-    // Click on 'add' link opens drop-down menu
-    wrapper.on('click', '.add-filter-link', function() {
-        var a = $(this);
-        if (a.closest('.disabled').length) {
-            return false;
-        }
-        if (add_filter_menu.is(':visible') && add_filter_menu.parent().is(a.offsetParent())) {
-            $(document).click();
-            return false;
-        }
-        var pos = a.position();
-        add_filter_menu.appendTo(a.offsetParent()).css({
-            top: pos.top + a.height() + 1,
-            left: pos.left + (a.css('margin-left').replace('px', '') - 3)
-        }).slideDown(200);
-        $(document).one('click', function() {
-            add_filter_menu.slideUp(200);
-        });
-        return false;
-    });
 
     // Click on a link in menu adds the item in appropriate list
     add_filter_menu.on('click', 'li', function() {
@@ -219,8 +219,9 @@
         }
 
         var id = li.data('id');
-        var filter_li = special_stubs.find('li[data-id="'+id+'"]').appendTo(li.closest('.content').find('ul.droppable'));
+        var filter_li = special_stubs.find('li[data-id="'+id+'"]').appendTo(li.closest('.filter-group').find('ul.droppable'));
         li.addClass('disabled');
+        changeSubmit();
     });
 
     // Submit button
@@ -246,8 +247,9 @@
             data.settings[v.name] = v.value;
         });
 
-        submit.parent().append('<i class="icon16 loading"></i>');
+        const loading = $.wa.helpers.createLoadingSubmit(submit).show();
         $.post('?module=settings&action=sidebar', data, function(r) {
+            loading.hide();
             $.wa.helpdesk_controller.reloadSidebar();
             $('#c-core-content').html(r);
         });
@@ -257,23 +259,11 @@
 
     {if waRequest::post()}
         // 'Saved' hint
-        submit.parent().append(
-            $('<span><i class="icon16 yes after-button"></i> '+"[`Saved`]"+'</span>').animate({ opacity: 0 }, 1000, function() {
+        $('<span><i class="fas fa-check-circle text-green"></i> '+"[`Saved`]"+'</span>')
+            .animate({ opacity: 0 }, 1000, function() {
                 $(this).remove();
-            })
-        );
+            }).insertAfter(submit);
     {/if}
-
-    $('#sticky-bottom-buttons').sticky({
-        fixed_css: { bottom: 0 },
-        fixed_class: 'sticky-bottom-shadow',
-        showFixed: function(e) {
-            e.element.css('min-height', e.element.height());
-            e.fixed_clone.empty().append(e.element.children());
-        },
-        hideFixed: function(e) {
-            e.fixed_clone.children().appendTo(e.element);
-        }
-    });
 })();</script>
-
+</div>
+</div>

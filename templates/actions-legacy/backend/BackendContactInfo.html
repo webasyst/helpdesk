@@ -1,0 +1,24 @@
+<div class="profile image50px">
+    <div class="image">
+        <img class="userpic" src="{$contact->getPhoto(50)}">
+    </div>
+    <div class="details">
+        <p class="contact-name">
+            {$contact->getName()|escape}
+        </p>
+        {foreach $data_visible as $name => $value}
+            <p>
+                <span class="c-details-label">{$name|escape}</span> {$value}
+            </p>
+        {/foreach}
+        {if $data_hidden}
+            <p><a href="javascript:void(0)" onclick="$(this).parent().hide().siblings('p.hidden').show(200);" class="inline-link small gray"><b><i>[`Show all fields`]</i></b></a></p>
+            {foreach $data_hidden as $name => $value}
+                <p class="hidden">
+                    <span class="c-details-label">{$name|escape}</span> {$value}
+                </p>
+            {/foreach}
+        {/if}
+    </div>
+    <div class="hidden contact-email">{$contact_email|escape}</div>
+</div>

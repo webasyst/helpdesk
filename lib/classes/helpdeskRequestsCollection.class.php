@@ -1242,7 +1242,7 @@ class helpdeskRequestsCollection
         $this->from[] = 'JOIN helpdesk_unread AS unr ON unr.request_id=r.id';
         $this->where[] = 'unr.contact_id='.wa()->getUser()->getId();
         $this->header .= $this->header ? ', ' : '';
-        $this->header .= _w('Unread ');
+        $this->header .= _w('Not viewed');
     }
 
     /**
@@ -1425,4 +1425,3 @@ class helpdeskRequestsCollection
     }
 
 }
-

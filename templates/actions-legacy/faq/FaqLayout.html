@@ -1,0 +1,110 @@
+<div class="sidebar left200px h-faq-sidebar" id="h-faq-sidebar">
+    <div class="h-inner-sidebar">
+
+        <ul class="menu-v with-icons stack">
+            <li style="margin:15px 5px 5px 27px;padding:0;">
+                <a href="#/faq/new/" class="h-add-faq-question no-underline">
+                    <i class="icon16 add"></i>[`New question`]
+                </a>
+            </li>
+        </ul>
+
+        {function category_li category=[]}
+            <li class="h-category {if $category.id === 0}h-faq-none{/if}" data-category-id="{$category.id}" {if $category.id === 0}{if $category.count <= 0}style="display:none;"{/if}{/if}>
+                <span class="count">{$category.count}</span>
+                <a href="#/faq/category/{if $category.id}{$category.id}{else}none{/if}/">
+                    {if $category.icon}
+                        <i class="icon16 {$category.icon}"></i>
+                    {/if}
+                    <span class="name">{$category.name|escape}</span>
+                    {if $category.id > 0}
+                        {$category.draft_html}
+                        {$category.site_only_html}
+                        {$category.backend_only_html}
+                        {$category.backend_and_site_html}
+                    {/if}
+                </a>
+            </li>
+        {/function}
+
+        <ul class="menu-v with-icons stack">
+            <li style="margin:15px 5px 5px 5px;padding:0; text-align: center;">
+                <input type="search" placeholder="[`search`]" class="h-faq-search">
+            </li>
+            <li class="" style="text-transform: uppercase; margin-left: -15px;">
+                <h5 class="heading">[`Categories`]</h5>
+            </li>
+            <ul class="menu-v with-icons collapsible stack" id="h-faq-categories">
+                {foreach $categories as $c}
+                    {category_li category=$c}
+                {foreachelse}
+                    <div class="align-center hint h-faq-categories-message" style="padding: 10px;">[`Categories help you to arrange questions and answers by themes to simplify navigation and search, e.g.: Common questions, How to.., and etc.`]</div>
+                {/foreach}
+
+                {if $none_category}
+                    {category_li category=$none_category}
+                {/if}
+
+                <li class="h-new-template" style="display:none;">
+                    <span class="count">0</span>
+                    <a href="javascript:void(0);">
+                        <i class="icon16 folder"></i><span class="name"></span>
+                    </a>
+                </li>
+
+                <li class="small h-add-faq-category-li">
+                    <a href="#/faq/category/new" class="h-add-faq-category"><i class="icon10 add"></i>[`New category`]</a>
+                </li>
+            </ul>
+        </ul>
+    </div>
+</div>
+
+<div class="content left200px bordered-left blank h-faq-content" id="h-faq-content">
+</div>
+
+<div class="clear"></div>
+
+<div class="h-faq-content-no-categories-template" style="display:none;">
+    <div class="block large-hint double-padded">[`Please <a href="#/faq/category/new">create a category</a> first, to start adding questions and answers.`]</div>
+    <div class="clear"></div>
+</div>
+
+<script>
+    $(function() {
+
+        $('.h-faq-search').keydown(function(e) {
+            if (e.keyCode === 13) {
+                $.wa.setHash('#/faq/search/' + encodeURIComponent($(this).val()));
+            }
+        });
+
+        $.helpdesk_faq.initFaqCategoriesDroppable();
+
+        $('#h-faq-categories').sortable({
+            distance: 5,
+            opacity: 0.75,
+            items: 'li.h-category:not(.h-faq-none)',
+            axis: 'y',
+            update: function(event, ui) {
+                var id = $(ui.item).data('categoryId');
+                var before_id = $(ui.item).next().data('categoryId');
+                var self = $(this);
+                $.post('?module=faq&action=categoryMove', { id: id, before_id: before_id }, function(r) {
+                    if (r.status !== 'ok') {
+                        self.sortable('cancel');
+                    }
+                }, 'json');
+            }
+        });
+
+        {if count($categories) <= 0}
+            {if $faq_count <= 0}
+                $.wa.helpdesk_controller.setHash('#/faq/new/');
+            {else}
+                $.wa.helpdesk_controller.setHash('#/faq/category/none/');
+            {/if}
+        {/if}
+
+    });
+</script>

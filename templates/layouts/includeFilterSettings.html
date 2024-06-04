@@ -1,41 +1,52 @@
 {literal}
-    <script id="h-template-filter-settings" type="text/html">
+<script id="h-template-filter-settings-dialog" type="text/html">
+    <div class="dialog">
+        <div class="dialog-background"></div>
+        <form class="dialog-body h-filter-settings">
             {% var f = o.f; %}
-            <form class="h-filter-settings">
-                <div class="fields w100 width100px">
-                    <input type="hidden" name="id" value="{%#f.id%}">
-                    <input type="hidden" name="filters" value="{%=f.hash%}">
+            <div class="dialog-content fields">
+                <input type="hidden" name="id" value="{%#f.id%}">
+                <input type="hidden" name="filters" value="{%=f.hash%}">
 
-                    <div class="field" style="position:relative;">
-                        <input type="text" class="h-name large w80" id="{%#o.uniqid%}" name="name" value="{%#f.name%}">
+                <div class="flexbox h-header-flexible" style="position:relative;">
+                    <div class="wide">
+                        <input type="text" class="h-name bold largest width-100" id="{%#o.uniqid%}" name="name" value="{%#f.name%}">
                         <i class="icon16 loading h-header-loading" style="display:none; position: absolute; top: 13px; margin-left: 10px;"></i>
                     </div>
-                    {% if (!$.isEmptyObject(o.icons)) { %}
-                        <div class="field">
-                            <div class="name" style="width: 100px;">[`Icon`]</div>
-                            <div class="value" style="margin-left: 120px;">
-                                <ul class="menu-h h-filter-settings-icons">
-                                {% for (var  i = 0; i < o.icons.length; i += 1) { %}
-                                    <li data-icon="{%#o.icons[i]%}" {% if (o.icons[i] === f.icon) { %}class="selected"{% } %}>
-                                        <a href="javascript:void(0)"><i class="icon16 {%#o.icons[i]%}"></i></a>
-                                    </li>
-                                {% } %}
-                                </ul>
-                            </div>
+                </div>
+                {% if (!$.isEmptyObject(o.icons)) { %}
+                    <div class="field">
+                        <div class="name">[`Icon`]</div>
+                        <div class="value">
+                            <ul class="chips h-filter-settings-icons">
+                            {% for (var key in o.icons) { %}
+                                <li data-icon="{%#key%}" {% if (key === f.icon) { %}class="selected"{% } %}>
+                                    <a href="javascript:void(0)"><span class="icon"><i class="{%#o.icons[key]%}"></i></span></a>
+                                </li>
+                            {% } %}
+                            </ul>
                         </div>
-                    {% } %}
+                    </div>
+                {% } %}
 
-                    {% if (o.admin) { %}
-                        <div class="field">
-                            <div class="name">[`Access`]</div>
-                            <div class="value">
-                                <label class="radio">
-                                    <input type="radio" name="shared" value="" {% if (f.shared <= 0) { %}checked="checked"{% } %}>
+                {% if (o.admin) { %}
+                    <div class="field">
+                        <div class="name">[`Access`]</div>
+                        <div class="value">
+                            <div class="flexbox vertical space-8">
+                                <label>
+                                    <span class="wa-radio">
+                                        <input type="radio" name="shared" value="" {% if (f.shared <= 0) { %}checked="checked"{% } %}>
+                                        <span></span>
+                                    </span>
                                     [`Personal`]<br>
                                     <span class="hint">[`Will appear in the sidebar in MY FILTERS section and will be available to me only`]</span>
                                 </label>
-                                <label class="radio">
-                                    <input type="radio" name="shared" value="1" {% if (f.shared > 0) { %}checked="checked"{% } %}>
+                                <label>
+                                    <span class="wa-radio">
+                                        <input type="radio" name="shared" value="1" {% if (f.shared > 0) { %}checked="checked"{% } %}>
+                                        <span></span>
+                                    </span>
                                     [`Public`]<br>
                                     <span class="hint">[`Will appear in the main section in sidebar and will be available to all users`]</span>
                                 </label>
@@ -44,42 +55,55 @@
                     </div>
                 {% } %}
 
-                <div class="buttons">
-                    <input type="submit" class="button green" value="[`Save`]">
-                    [`or`]
-                    <a href="javascript:void(0)" class="cancel">[`cancel`]</a>
-                    {% if (f.id) { %}
-                        <a href="javascript:void(0);" class="no-underline h-delete float-right small h-filter-delete">[`Delete filter`]</a>
-                    {% } %}
+            </div>
+
+            <footer class="dialog-footer">
+                <div class="flexbox middle space-4">
+                    <div class="buttons">
+                        <button type="submit" class="button green">[`Save`]</button>
+                        <button type="button" class="button light-gray cancel js-close-dialog">[`Close`]</button>
+                    </div>
+                    <div class="custom-ml-auto">
+                        {% if (f.id) { %}
+                            <button type="button" class="h-filter-delete button light-gray small">
+                                <span class="text-red"><i class="fas fa-trash-alt"></i></span>
+                                <span class="desktop-and-tablet-only">[`Delete filter`]</span>
+                            </button>
+                        {% } %}
+                    </div>
                 </div>
 
                 {% if (f.id) { %}
-                    <div class="field" style="margin-top: 10px;">
-                        <p class="small">
-                            [`This list is the search result:`]
-                            <a href="#/requests/search/{%#f.hash%}">{%#o.collection_header%}</a>
-                            {% if (f.creator && f.creator.name) { %}
-                                <br>[`Created by`] {%=f.creator.name%}, {%#f.create_datetime_str%}
-                            {% } %}
-                        </p>
-                    </div>
+                <div class="custom-mt-12">
+                    <p class="hint">
+                        [`This list is the search result:`]
+                        <a href="#/requests/search/{%#f.hash%}">{%#o.collection_header%}</a>
+                        {% if (f.creator && f.creator.name) { %}
+                            <br>[`Created by`] {%=f.creator.name%}, {%#f.create_datetime_str%}
+                        {% } %}
+                    </p>
+                </div>
                 {% } %}
-            </form>
-    </script>
+            </footer>
+
+        </form>
+    </div>
+
+</script>
 {/literal}
 
 {literal}
-    <script id="h-template-all-records-filter-settings" type="text/html">
-            {% var f = o.f; %}
-            <form class="h-filter-settings" style="margin-top: 10px;">
-                <div class="fields w100 width100px">
-                    <input type="hidden" name="id" value="{%#f.id%}">
-                    <p>[`This filter displays all requests regardless of their status or assignment. If you do not usually need this full list for your work, simply hide it. Once you need it again, you can turn it on anytime using the “Add filter” option in the left-hand sidebar.`]</p>
-                    <div class="buttons">
-                        <a href="javascript:void(0);" class="no-underline h-delete float-right small h-filter-delete">[`Hide “All requests” filter`]</a>
-                    </div>
-                </div>
-            </form>
-    </script>
+<script id="h-template-all-records-filter-settings" type="text/html">
+    {% var f = o.f; %}
+    <form class="h-filter-settings fields">
+        <div class="fields-group">
+            <input type="hidden" name="id" value="{%#f.id%}">
+            <p class="custom-m-0">[`This filter displays all requests regardless of their status or assignment. If you do not usually need this full list for your work, simply hide it. Once you need it again, you can turn it on anytime using the “Add filter” option in the left-hand sidebar.`]</p>
+            <div class="buttons custom-mt-16 nowrap">
+                <button class="h-filter-delete button gray smaller" type="submit" title="[`Hide “All requests” filter`]">[`Hide filter`]</button>
+                <button class="cancel button light-gray smaller" type="button">[`Cancel`]</button>
+            </div>
+        </div>
+    </form>
+</script>
 {/literal}
-

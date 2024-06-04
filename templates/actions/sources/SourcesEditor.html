@@ -1,17 +1,22 @@
-<div class="block h-back">
+<div class="content height-100 not-blank">
+<div class="article">
+<div class="article-body">
+<div class="h-back">
     <a {if $wf}
             href="#/settings/workflow/{$wf->getId()}"
        {else}
             href="javascript:void(0)" onclick="$.wa.back()"
        {/if}
-    class="no-underline">
-        <i class="icon10 larr"></i>[`Back to workflow customizing page`]
+       class="back flexbox middle space-8">
+       <span class="icon size-24"><i class="fas fa-arrow-circle-left"></i></span>
+       <div class="h-paging-top-title text-gray">[`Back to workflow customizing page`]</div>
+       <i class="spinner h-header-loading custom-mt-4" style="display:none;"></i>
     </a>
 </div>
 
-<div class="block h-header" style="background:#f7f7f7;border-top:1px solid #ccc;">
-    <h1>
-        <img src="{$icon_url}" width="64" style="vertical-align:-75%;">
+<div class="h-header custom-mt-16">
+    <h1 class="break-words">
+        <i class="{$icon_url}"></i>
         {if $source && $source.id}
             {$source->name}
         {else}
@@ -21,12 +26,11 @@
 </div>
 
 <div class="tab-content">
-    <div class="block double-padded">
+    <div class="custom-mt-32">
         {if $last_error}
-            <div class="errormsg" style="margin:0 0 10px 0;">
-                <span class="error indicator inline">!</span>
-                {$last_error|escape}
-                <a href="?module=sources&action=log" class="nowrap">[`Download error log`]</a>
+            <div class="alert outlined danger small custom-mb-16">
+                <span class="state-error indicator"><i class="fas fa-exclamation-triangle"></i> {$last_error|escape}</span>
+                <a href="?module=sources&action=log" class="nowrap custom-ml-4"><i class="fas fa-file-download"></i> [`Download error log`]</a>
             </div>
         {/if}
 
@@ -35,25 +39,12 @@
         </div>
     </div>
 
-
-    <div class="float-left" style="width:100%">
-        <div class="block">
-            <div id="sticky-bottom-buttons" style="background:white">
-                <div class="block">
-                    {if $source && $source.id && !in_array($source.type, ['backend'])}
-                        <div class="float-right left-spaced top-spaced hint">
-                            <a href="javascript:void(0)" class="hd-source-editor-delete">[`Delete this source`]</a>
-                        </div>
-                    {/if}
-
-                    <input id="hd-source-editor-save" type="submit" class="button green" value="[`Save`]">
-                    <i class="icon16 loading" style="display:none"></i>
-                </div>
-            </div>
-        </div>
+    <div id="sticky-bottom-buttons" class="{if !$wa->get('ignore_sticky')}bottombar h-fixed-bottombar sticky{/if} flexbox middle custom-px-12 custom-mt-24">
+        <button id="hd-source-editor-save" type="submit" class="button green">[`Save`]</button>
+        {if $source && $source.id && !in_array($source.type, ['backend'])}
+        <button type="button" class="hd-source-editor-delete light-gray small custom-ml-auto"><i class="fas fa-trash-alt text-red"></i> <span class="desktop-and-tablet-only">[`Delete this source`]</span></button>
+        {/if}
     </div>
-
-    <div class="clear-left"></div>
 </div>
 
 <script>(function() { "use strict";
@@ -64,18 +55,25 @@
     {if $source && $source.id}
         // Delete
         form_wrapper.closest('.tab-content').on('click', '.hd-source-editor-delete', function() {
-            if (!confirm("[`Are you sure?`]")) {
-                return false;
-            }
-
-            form_wrapper.find('.loading').show();
-            $.post('?module=sources&action=delete', { id:{$source.id} }, function() {
-                $.wa.helpdesk_controller.reloadSidebar();
-                {if $wf}
-                    window.location.hash = "#/settings/workflow/{$wf->getId()}";
-                {else}
-                    $.wa.back();
-                {/if}
+            $.waDialog.confirm({
+                title: "[`Are you sure?`]",
+                success_button_title: $_('Delete'),
+                success_button_class: 'danger',
+                cancel_button_title: $_('Cancel'),
+                cancel_button_class: 'light-gray',
+                onSuccess: function(d) {
+                    const submit_loading = $.wa.helpers.createLoadingSubmit(d.$body.find('.js-success-action')).show();
+                    form_wrapper.find('.loading').show();
+                    $.post('?module=sources&action=delete', { id:{$source.id} }, function() {
+                        submit_loading.hide();
+                        $.wa.helpdesk_controller.reloadSidebar();
+                        {if $wf}
+                            window.location.hash = "#/settings/workflow/{$wf->getId()}";
+                        {else}
+                            $.wa.back();
+                        {/if}
+                    });
+                }
             });
             return false;
         });
@@ -86,11 +84,11 @@
         if (typeof checkForm == 'function' && !checkForm()) {
             return false;
         }
-        var loading = $(this).siblings('.loading').show();
+        const loading = $.wa.helpers.createLoadingSubmit($(this)).show();
         form_wrapper.find('input, select, textarea').trigger('beforesubmit');
         $.post('?module=sources&action=editor', form_wrapper.find("form").serialize(), function(r) {
             loading.hide();
-            var container = form_wrapper.closest('.tab-content').parent();
+            var container = form_wrapper.closest('.content');
             container.html(r);
             $.wa.helpdesk_controller.reloadSidebar();
             {if !$source.id}
@@ -103,7 +101,7 @@
         return false;
     });
 
-    if (form_wrapper.find('.error,.errormsg').length) {
+    if (form_wrapper.find('.state-error,.state-error-hint').length) {
         form_wrapper.addClass('modified');
         button.removeClass('green').addClass('yellow');
     } else {
@@ -126,11 +124,9 @@
 
         {if waRequest::post()}
             // 'Saved' hint
-            button.parent().append(
-                $('<span><i class="icon16 yes after-button"></i> '+"[`Saved`]"+'</span>').animate({ opacity: 0 }, 1000, function() {
-                    $(this).remove();
-                })
-            );
+            $('<span><i class="fas fa-check-circle text-green"></i> '+"[`Saved`]"+'</span>').animate({ opacity: 0 }, 1000, function() {
+                $(this).remove();
+            }).insertAfter(button);
         {/if}
     }
 
@@ -146,22 +142,8 @@
         }
     );
 
-    {if !$wa->get('ignore_sticky')}
-        $('#sticky-bottom-buttons').sticky({
-            fixed_css: { bottom: 0, 'z-index': 101 },
-            fixed_class: 'sticky-bottom-shadow',
-            showFixed: function(e) {
-                e.element.css('min-height', e.element.height());
-                e.fixed_clone.empty().append(e.element.children());
-            },
-            hideFixed: function(e) {
-                e.fixed_clone.children().appendTo(e.element);
-            },
-            updateFixed: function(e, o) {
-                this.width(e.element.width());
-            }
-        });
-    {/if}
-
     $.wa.helpdesk_controller.updateWorkflowErrors({json_encode($workflows_errors)}, {json_encode($sources_errors)});
 })();</script>
+</div>
+</div>
+</div>

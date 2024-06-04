@@ -1,32 +1,22 @@
-<style>
-    .error-text { color: red; font-weight: bold; }
-</style>
 <form method="post" action="?module=constructor&action=fieldDelete">
-<div class="dialog-background"></div>
-<div class="dialog-window">
-    <div class="dialog-content">
-        <div class="dialog-content-indent">
-            <h1>[`Delete field`]</h1><br>
+    <div class="dialog-background"></div>
+    <div class="dialog-body">
+        <header class="dialog-header"><h1>[`Delete field`]</h1></header>
+        <div class="dialog-content break-word">
             {if !$count}
                 <p>[`No data in the field`] <strong>{$name}</strong>.</p>
-                <p>[`Deleting this field will not cause a loss of any data.`]</p>
+                <p class="gray">[`Deleting this field will not cause a loss of any data.`]</p>
             {else}
                 <p>{_w('%d request have data in the field:', '%d requests have data in the field:', $count)} <strong>{$name}</strong></p>
-                <p class="error-text">[`Deleting this field will cause a loss of these data.`]</p>
+                <p class="state-caution">[`Deleting this field will cause a loss of these data.`]</p>
             {/if}
-            <em class="errormsg"></em>
+            <div class="state-error-hint common-errors"></div>
             {$wa->csrf()}
             <input type="hidden" name="id" value="{$id}">
         </div>
+        <footer class="dialog-footer">
+            <button type="submit" class="button red">[`Delete field`]</button>
+            <button type="button" class="button light-gray js-close-dialog">[`Cancel`]</button>
+        </footer>
     </div>
-    <div class="dialog-buttons">
-        <div class="dialog-buttons-gradient">
-            <input class="button red" type="submit" value="[`Delete field`]">
-            <i class="icon16 loading" style="display:none;"></i> [`or`] <a class="cancel" href="javascript:void(0);">[`cancel`]</a>
-        </div>
-    </div>
-</div>
 </form>
-<script>
-    $.wa.waCenterDialog();
-</script>

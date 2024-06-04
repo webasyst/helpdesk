@@ -1,0 +1,110 @@
+<div class="dialog width650px height400px h-edit-field-dialog" style="display:none;">
+    <div class="dialog-background"></div>
+    <div class="dialog-window">
+        <div class="dialog-content">
+            <div class="dialog-content-indent">
+                <h1>[`Field settings`]</h1>
+                <div class="block fields">
+                    <div class="field h-field-id">
+                        <div class="name">[`Field`]</div>
+                        <div class="value"></div>
+                    </div>
+                    <div class="field h-field-caption">
+                        <div class="name">[`Label`]</div>
+                        <div class="value">
+                            <input type="text" name="params[caption]" value="">
+                        </div>
+                    </div>
+                    <div class="field h-field-captionplace">
+                        <div class="name">[`Label placement`]</div>
+                        <div class="value">
+                            <label><input type="radio" name="params[captionplace]" value="left" checked=""> [`Left aligned`]</label><br>
+                            <label><input type="radio" name="params[captionplace]" value="above"> [`Top aligned`]</label><br>
+                            <label><input type="radio" name="params[captionplace]" value="none"> [`Do not show`]</label><br>
+                        </div>
+                    </div>
+                    <div class="field h-field-redactor" style="display:none;">
+                        <div class="name">[`View`]</div>
+                        <div class="value">
+                            <table style="width: 302px;">
+                                <tr>
+                                    <td>
+                                        <label>
+                                            <input type="radio" name="params[redactor]" value="" checked="checked" disabled="disabled"> [`Plain text`]
+                                            <img src="{$wa_app_static_url}img/plain-text-icon.png" class="h-radio-img">
+                                        </label><br>
+                                    </td>
+                                    <td>
+                                        <label>
+                                            <input type="radio" name="params[redactor]" value="1" disabled="disabled"> [`Redactor`]
+                                            <img src="{$wa_app_static_url}img/redaktor-icon.png" class="h-radio-img">
+                                        </label>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="field h-field-view" style="display:none;">
+                        <div class="name">[`View`]</div>
+                        <div class="value">
+                            <table style="width: 302px;">
+                                <tr>
+                                    <td>
+                                        <label>
+                                            <input type="radio" name="params[view]" value="" checked="checked" disabled="disabled"> [`Drop down`]
+                                            <img src="{$wa_app_static_url}img/drop-down-icon.png" class="h-radio-img">
+                                        </label>
+                                    </td>
+                                    <td>
+                                        <label>
+                                            <input type="radio" name="params[view]" value="radio" disabled="disabled"> [`Radio buttons`]
+                                            <img src="{$wa_app_static_url}img/radio-buttons-icon.png" class="h-radio-img">
+                                        </label><br>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="field h-field-subfields_captionplace" style="display:none;">
+                        <div class="name">[`Address labels placement`]</div>
+                        <div class="value">
+                            <label><input type="radio" name="params[subfields_captionplace]" value="left" checked=""> [`Left aligned`]</label><br>
+                            <label><input type="radio" name="params[subfields_captionplace]" value="above"> [`Top aligned`]</label><br>
+                            <label><input type="radio" name="params[subfields_captionplace]" value="placeholder"> [`As a placeholder inside of field input`]</label><br>
+                        </div>
+                    </div>
+                    <div class="field h-field-placeholder">
+                        <div class="name">[`Placeholder`]</div>
+                        <div class="value">
+                            <input type="text" name="params[placeholder]" value="">
+                        </div>
+                    </div>
+                    <div class="field h-field-required">
+                        <div class="name">
+                            <label for="fc-field-param-required">[`Required`]</label>
+                        </div>
+                        <div class="value">
+                            <label><input type="checkbox" id="fc-field-param-required" name="params[required]"> </label>
+                        </div>
+                    </div>
+                    <div class="field h-field-identification" style="display:none;">
+                        <div class="name">
+                            <label for="fc-field-param-required">[`Identification`]</label>
+                        </div>
+                        <div class="value">
+                            <label><input type="checkbox" id="fc-field-param-required" name="params[identification]"></label><br>
+                            <span class="small">[`If enabled we shall search for an existing contact with the same phone number and associate request sent via this form with the contact found.`]</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="dialog-buttons">
+            <div class="dialog-buttons-gradient">
+                {$wa->csrf()}
+                <input class="button green" type="button" value="[`Apply`]">
+                <i class="icon16 loading" style="display:none;"></i> [`or`] <a class="cancel" href="javascript:void(0);">[`cancel`]</a>
+            </div>
+        </div>
+    </div>
+</div>

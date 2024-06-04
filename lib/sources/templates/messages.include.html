@@ -1,0 +1,114 @@
+
+<div class="messages-wrapper">
+    {if !empty($messages)}
+    {foreach $messages as $i => $m}
+        <div class="one-message email-template-editor"><div class="h-fields fields">
+            <div class="field-group expandable expanded">
+                <label class="expandable-legend">
+                    <input type="checkbox" class="remove-message-checkbox" checked>
+                    [`Send an email message`]
+                </label>
+                <div class="editor-wrapper" data-i="{$i}">
+                    {include file="templates/actions/editor/email_template_editor.html"
+                        input_name="params[messages][{$i}][tmpl]"
+                        variables=$receipt_template_vars
+                        template=ifset($m.tmpl)
+                        to_name="params[messages][{$i}][to]"
+                        to_value=ifset($m.to)
+                        sourcefrom_name="params[messages][{$i}][sourcefrom]"
+                        sourcefrom_set=ifset($m.sourcefrom)
+                        add_attachments_name="params[messages][{$i}][add_attachments]"
+                        add_attachments_set=ifempty($m.add_attachments, 0)
+                    }
+                </div>
+            </div>
+        </div></div>
+    {/foreach}
+    {/if}
+
+    <div class="one-message hidden template email-template-editor">
+    <div class="h-fields fields">
+        <div class="field-group expandable expanded">
+            <label class="expandable-legend">
+                <input type="checkbox" class="remove-message-checkbox" checked>
+                [`Send an email message`]
+            </label>
+            <div class="editor-wrapper custom-pt-20">
+                <div class="box align-center"><i class="spinner custom-p-4"></i></div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <div class="h-fields fields">
+    <div class="field">
+        <label>
+            <input type="checkbox" class="add-message-checkbox">
+            <span class="when-no-messages">
+                [`Send an email message`]
+            </span>
+            <span class="when-messages">
+                [`Send another email message`]
+            </span>
+        </label>
+    </div>
+    </div>
+</div>
+<script>
+    // Controller for email messages editor
+    (function() {
+        var wrapper = $('.source-settings-form');
+        var add_message_checkbox = wrapper.find('.add-message-checkbox');
+        var messages_wrapper = add_message_checkbox.closest('.messages-wrapper');
+
+        // Add another email editor block when user clicks "Send another email message" checkbox
+        add_message_checkbox.change(function() {
+            var fields = messages_wrapper.children('.hidden.template').clone().insertBefore(add_message_checkbox.closest('.h-fields'));
+            fields.removeClass('template').removeClass('hidden');
+            add_message_checkbox.prop('disabled', true);
+
+            var last_i = messages_wrapper.find('.editor-wrapper[data-i]').last().data('i');
+            if (last_i) {
+                last_i = parseInt(last_i+'', 10);
+            } else if (last_i !== 0) {
+                last_i = -1;
+            }
+            var i = last_i + 1;
+            fields.find('.editor-wrapper').data('i', ''+i).attr('data-i', ''+i);
+
+            $.post('?module=editor&action=emailTemplate&tpl=source&source_id={$source.id}', {
+                input_name: 'params[messages]['+i+'][tmpl]',
+                variables: {json_encode($receipt_template_vars)},
+                to_name: 'params[messages]['+i+'][to]',
+                sourcefrom_name: 'params[messages]['+i+'][sourcefrom]',
+                add_attachments_name: 'params[messages]['+i+'][add_attachments]'
+            }, function(r) {
+                fields.find('.editor-wrapper').html(r);
+                add_message_checkbox.prop({ disabled: false, checked: false });
+            });
+
+            updateAddCheckbox();
+        });
+
+        // Hide email editor block when user unchecks "Send email message" checkbox
+        wrapper.on('change', '.remove-message-checkbox', function() {
+            $(this).closest('.h-fields').parent().slideUp(200, function() {
+                $(this).remove();
+                updateAddCheckbox();
+            });
+        });
+
+        updateAddCheckbox();
+
+        function updateAddCheckbox() {
+            var label = add_message_checkbox.parent();
+            if (messages_wrapper.find('.one-message:not(.template)').length > 0) {
+                label.find('.when-no-messages').hide();
+                label.find('.when-messages').show();
+            } else {
+                label.find('.when-no-messages').show();
+                label.find('.when-messages').hide();
+            }
+        }
+    })();
+</script>

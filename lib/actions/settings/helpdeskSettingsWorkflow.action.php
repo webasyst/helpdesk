@@ -109,11 +109,11 @@ class helpdeskSettingsWorkflowAction extends helpdeskViewAction
             $can_remove = $can_remove && $source->type !== 'backend';
         }
         unset($s);
-        
+
         if ($this->getRights('backend') > 1) {
             $can_remove = true;
         }
-        
+
         $sources = helpdeskGraphPositionModel::sortSources($wf->getId(), $sources);
 
         list($workflows_errors, $sources_errors) = helpdeskHelper::getWorkflowsErrors();
@@ -186,4 +186,3 @@ class helpdeskSettingsWorkflowAction extends helpdeskViewAction
         );
     }
 }
-

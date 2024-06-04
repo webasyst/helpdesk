@@ -1,123 +1,124 @@
-<div class="h-contact-search-block h-form-top-wrapper">
-    {* Autocompletion field to look for existing contacts *}
-    <input type="hidden" name="contact_id" value="">
-    <div class="contact-search">
-        <div class="field">
-            <div class="name">[`From`]</div>
-            <div class="value">
-                <input type="text" class="autocomplete-contact" placeholder="[`find by name, email, of phone number`]">
-            </div>
-        </div>
-    </div>
-</div>
-
 <form id="{$uniqid}" class="backend-new-request-form" action="{$action_url}" target="{$uniqid}-target" method="post" enctype="multipart/form-data" autocomplete="off">
-    <div class="wa-form">
-
-        <div class="sidebar right150px">
-            <div class="hidden block">
-                <a href="javascript:void(0)" class="inline-link another-contact-link"><b><i>[`Another contact`]</i></b></a>
-            </div>
-        </div>
-
-        <div class="content right150px">
-            <input type="hidden" name="source_id" value="{$source.id}">
-            <input type="hidden" name="charset" class="charset" value="">
-            <input type="hidden" name="form_url" value="">
-            {$wa->csrf()}
-
-            {* Wrapper for data of existing contact selected via autocomplete *}
-            <div class="hidden double-padded contact-existing contacts-data">{* Populated via XHR *}</div>
-
-
-            {foreach $contact_fields as $f_id => $field}
-                {if !empty($field.always_visible)}
-                    <div class="field fldc_{$f_id}">
-                        <div class="name">{$field.name}</div>
-                        <div class="value">{$field.html}</div>
-                    </div>
-                {else if empty($field.excl)}
-                    {if !empty($source.params['fldc_'|cat:$f_id])}
-                        {$fld = $source.params['fldc_'|cat:$f_id]}
-                        <div class="field {if isset($fld.captionplace)}{$fld.captionplace}{/if} fldc_{$f_id}">
-                            <div class="name">
-                                {if isset($fld.caption)}{$fld.caption|escape}{else}[`Text`]{/if}
-                                {if !empty($fld.required)} *{/if}
-                            </div>
-                            <div class="value {if $f_id === 'address' && isset($fld.subfields_captionplace)}subfields-{$fld.subfields_captionplace}{/if}">
-                                {if !empty($field.html)}
-                                    {$field.html}
-                                {/if}
-                            </div>
-                        </div>
-                    {/if}
-                {else}
-                    {if $field.type === '!hrule'}
-                        <div class="field fldc_{$f_id}">
-                            <hr style="width: 100%;">
-                        </div>
-                    {else if $field.type === '!paragraph'}
-                        <div class="field fldc_{$f_id}">
-                            <p>{$field.text|default:''|escape}</p>
-                        </div>
-                    {/if}
-                {/if}
-            {/foreach}
-
-            {foreach $fields as $f_id => $field}
-                {if empty($field.excl)}
-                    {if !empty($source.params[helpdeskRequestLogParamsModel::PREFIX_REQUEST|cat:$f_id])}
-                        {$fld = $source.params[helpdeskRequestLogParamsModel::PREFIX_REQUEST|cat:$f_id]}
-                        <div class="field {if isset($fld.captionplace)}{$fld.captionplace}{/if} fld_{$f_id} {if !empty($field.type)}fld_type_{$field.type|lower}{/if}">
-                            <div class="name">
-                                {if $f_id !== 'captcha'}
-                                    {if isset($fld.caption)}{$fld.caption|escape}{else}[`Text`]{/if}
-                                    {if !empty($fld.required)} *{/if}
-                                {else}
-                                    {if isset($fld.caption)}{$fld.caption|escape}{/if}
-                                {/if}
-                            </div>
-                            <div class="value">
-                                {if $f_id === 'captcha'}
-                                    {$wa->captcha(null, true, "[`Reload image`]")}
-                                {else if $f_id === 'text'}
-                                    <textarea id="h-text-textarea" name="fld_data[text]" placeholder="{$fld.placeholder|escape}" autocomplete="off" {if !empty($fld.redactor)}style="display:none;"{/if}></textarea>
-                                    {if !empty($fld.redactor)}
-                                        <div id="h-text-redactor"></div>
-                                    {/if}
-                                {else if $f_id === 'attachments'}
-                                    <div id="h-file-attachments"></div>
-                                {else if !empty($field.html)}
-                                    {$field.html}
-                                {else}
-                                    <input type="text" name="fld_data[{$f_id}]" placeholder="{$fld.placeholder|escape}" autocomplete="off">
-                                {/if}
-                            </div>
-                        </div>
-                    {/if}
-                {else}
-                    {if $field.type === '!hrule'}
-                        <div class="field fld_{$f_id}">
-                            <hr style="width: 100%;">
-                        </div>
-                    {else if $field.type === '!paragraph'}
-                        <div class="field fld_{$f_id}">
-                            {$field.text|default:''}
-                        </div>
-                    {/if}
-                {/if}
-            {/foreach}
-
+    <div class="h-contact-search-block h-form-top-wrapper fields-group blank">
+        {* Autocompletion field to look for existing contacts *}
+        <input type="hidden" name="contact_id" value="">
+        <div class="contact-search">
             <div class="field">
-                <div class="value buttons">
-                    <input type="submit" value="{if isset($source.params.button_caption)}{$source.params.button_caption|escape}{else}[`Sign up`]{/if}">
-                    <i class="icon16 loading" style="display:none"></i>
+                <div class="name">[`From`]</div>
+                <div class="value">
+                    <div class="flexbox middle space-4">
+                        <div class="state-with-inner-icon left width-100-mobile">
+                            <span class="icon"><i class="fas fa-search"></i></span>
+                            <input type="text" class="autocomplete-contact" placeholder="[`find by name, email, of phone number`]">
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
+
+        <div class="flexbox space-8">
+            {* Wrapper for data of existing contact selected via autocomplete *}
+            <div class="contact-existing contacts-data" style="display: none;">{* Populated via XHR *}</div>
+
+            <div class="custom-ml-auto" style="display: none;">
+                <button type="button" class="another-contact-link button nowrap light-gray smaller">
+                    <i class="fas fa-exchange-alt text-blue"></i> <span class="desktop-and-tablet-only">[`Another contact`]</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="content fields-group blank">
+        <input type="hidden" name="source_id" value="{$source.id}">
+        <input type="hidden" name="charset" class="charset" value="">
+        <input type="hidden" name="form_url" value="">
+        {$wa->csrf()}
+
+        {foreach $contact_fields as $f_id => $field}
+            {if !empty($field.always_visible)}
+                <div class="field fldc_{$f_id}">
+                    <div class="name">{$field.name}</div>
+                    <div class="value">{$field.html}</div>
+                </div>
+            {else if empty($field.excl)}
+                {if !empty($source.params['fldc_'|cat:$f_id])}
+                    {$fld = $source.params['fldc_'|cat:$f_id]}
+                    <div class="field {if isset($fld.captionplace)}{$fld.captionplace}{/if} fldc_{$f_id}">
+                        <div class="name">
+                            {if isset($fld.caption)}{$fld.caption|escape}{else}[`Text`]{/if}
+                            {if !empty($fld.required)} *{/if}
+                        </div>
+                        <div class="value {if $f_id === 'address' && isset($fld.subfields_captionplace)}subfields-{$fld.subfields_captionplace}{/if}">
+                            {if !empty($field.html)}
+                                {$field.html}
+                            {/if}
+                        </div>
+                    </div>
+                {/if}
+            {else}
+                {if $field.type === '!hrule'}
+                    <div class="field fldc_{$f_id}">
+                        <hr>
+                    </div>
+                {else if $field.type === '!paragraph'}
+                    <div class="field fldc_{$f_id}">
+                        <p>{$field.text|default:''|escape}</p>
+                    </div>
+                {/if}
+            {/if}
+        {/foreach}
+
+        {foreach $fields as $f_id => $field}
+            {if empty($field.excl)}
+                {if !empty($source.params[helpdeskRequestLogParamsModel::PREFIX_REQUEST|cat:$f_id])}
+                    {$fld = $source.params[helpdeskRequestLogParamsModel::PREFIX_REQUEST|cat:$f_id]}
+                    <div class="field {if isset($fld.captionplace)}{$fld.captionplace}{/if} fld_{$f_id} {if !empty($field.type)}fld_type_{$field.type|lower}{/if}">
+                        <div class="name">
+                            {if $f_id !== 'captcha'}
+                                {if isset($fld.caption)}{$fld.caption|escape}{else}[`Text`]{/if}
+                                {if !empty($fld.required)} *{/if}
+                            {else}
+                                {if isset($fld.caption)}{$fld.caption|escape}{/if}
+                            {/if}
+                        </div>
+                        <div class="value">
+                            {if $f_id === 'captcha'}
+                                {$wa->captcha(null, true, "[`Reload image`]")}
+                            {else if $f_id === 'text'}
+                                <textarea id="h-text-textarea" name="fld_data[text]" placeholder="{$fld.placeholder|escape}" autocomplete="off" {if !empty($fld.redactor)}style="display:none;"{/if}></textarea>
+                                {if !empty($fld.redactor)}
+                                    <div id="h-text-redactor"></div>
+                                {/if}
+                            {else if $f_id === 'attachments'}
+                                <div id="h-file-attachments"></div>
+                            {else if !empty($field.html)}
+                                {$field.html}
+                            {else}
+                                <input type="text" name="fld_data[{$f_id}]" placeholder="{$fld.placeholder|escape}" autocomplete="off">
+                            {/if}
+                        </div>
+                    </div>
+                {/if}
+            {else}
+                <div class="field fld_{$f_id}">
+                {if $field.type === '!hrule'}
+                    <hr>
+                {else if $field.type === '!paragraph'}
+                    {$field.text|default:''}
+                {/if}
+                </div>
+            {/if}
+        {/foreach}
+
+        <div class="field custom-mt-40">
+            <div class="value submit">
+                <button type="submit" class="button green">[`Save`]</button>
+            </div>
+        </div>
+
     </div>
 </form>
-<iframe src="javascript:true" name="{$uniqid}-target" id="{$uniqid}-target" style="width:0;height:0;border:0px solid #fff;"></iframe>
+<iframe src="javascript:true" frameborder="0" name="{$uniqid}-target" id="{$uniqid}-target" style="width:0;height:0;"></iframe>
 
 {if !empty($source.params.fld_text.redactor)}
     <link type="text/css" rel="stylesheet" href="{$wa_url}wa-content/js/redactor/2/redactor.css?v{time()}">
@@ -132,7 +133,7 @@
         .redactor-toolbar li a { padding: 8px; width: auto; height: auto; }
         .redactor-toolbar li a.re-button-icon { padding: 8px; }
         .redactor-toolbar:after { display: none; }
-        .redactor-in { border: 1px solid #e9e9e9; border-top: 0; min-height: 200px; padding: 10px; }
+        .redactor-in { border: 1px solid var(--border-color-soft); border-top: 0; min-height: 200px; padding: 10px; }
     </style>
 {/if}
 
@@ -153,12 +154,13 @@
     form.find('input[name="form_url"]').val(loc);
 
     // Clear validation errors when user changes corresponding field
-    form.on('change keyup', '.error', function() {
-        $(this).removeClass('error').siblings('.errormsg').remove();
+    form.on('change keyup', '.state-error', function() {
+        $(this).removeClass('state-error').siblings('.state-error-hint').remove();
     });
 
     var redactor = $('#h-text-redactor');
     {if !empty($source.params.fld_text.redactor)}
+        $.Redactor.opts.regexps.linkyoutube = null;
         redactor.redactor({
             minHeight: 250,
             maxHeight: 250,
@@ -181,8 +183,8 @@
     // Save
     var rand;
     form.submit(function() {
-        form.find('.loading').show();
-        form.find(':submit').attr('disabled', true);
+        const $submit = form.find(':submit');
+        const loadingSubmit = $.wa.helpers.createLoadingSubmit($submit).show();
 
         {if !empty($source.params.fld_text.redactor)}
             $('#h-text-textarea').val(redactor.redactor('code.get'));
@@ -193,13 +195,13 @@
         iframe.one('load', function() {
             setTimeout(function() {
                 if (r != rand) {
+                    loadingSubmit.hide();
                     return;
                 }
 
-                form.find('.error').removeClass('error');
-                form.find('.errormsg').remove();
-                form.find(':submit').attr('disabled', false);
-
+                form.find('.state-error').removeClass('state-error');
+                form.find('.state-error-hint').remove();
+                loadingSubmit.hide();
                 try {
                     var json = iframe.contents().find("body").html();
                     if (json) {
@@ -211,14 +213,15 @@
                                     if (fld_name) {
                                         var el = form.find('[name="'+fld_name+'"]');
                                         if (el.length) {
-                                            el.addClass('error').parent().append($('<em class="errormsg"></em>').text(json.errors[fld_name]));
+                                            el.addClass('state-error').closest('.value').append($('<div class="state-error-hint"></div>').text(json.errors[fld_name]));
+                                            $.wa.helpers.scrollToElement(el);
                                             continue;
                                         }
                                     }
-                                    form.find(':submit').parent().append($('<em class="errormsg"></em>').text(json.errors[fld_name]));
+                                    $submit.parent().append($('<div class="state-error-hint custom-mt-8"></div>').text(json.errors[fld_name]));
                                 }
                             }
-                            form.find('.loading').hide();
+                            loadingSubmit.hide();
 
                             {if !empty($source.params.fld_captcha)}
                                 // Clear captcha field and reload image
@@ -237,7 +240,7 @@
                 } catch (e) {
                     // Security exception: attempt to access data from foreign domain.
                     // Can't do anything about it except this notice. Hopefully everything is OK there.
-                    console && console.log && console.log('Notice: unable to read response from server.', e);
+                    console && console.log && console.warn('Notice: unable to read response from server.', e);
                 }
 
                 if (json.data && json.data.request_id) {
@@ -252,26 +255,7 @@
         return true;
     });
 
-    if ($('#h-file-attachments').length) {
-        // Adds new file input field for attachments
-        var addNewField = function() {
-            $('#h-file-attachments').append('<div class="value attach"><input type="file" name="fld_attachments[]"></div>');
-        };
-        addNewField();
-
-        // when user selects an attachment, add another field
-        $('.value:last-child :file', $('#h-file-attachments')).die('change').live('change', function() {
-            $(this).parent().append('<a href="javascript:void(0)" class="small inline-link remove-attach"><i>'+"[`remove`]"+'</i></a>');
-            addNewField();
-        });
-
-        // attachment removal
-        $('a.remove-attach', $('#h-file-attachments')).die('click').live('click', function() {
-            $(this).parents('.value.attach').remove();
-            return false;
-        });
-    }
-
+    $.wa.helpdesk_controller.initAttachments('#h-file-attachments', 'fld_attachments[]');
 
     (function() {
         var search_field = $('.autocomplete-contact');
@@ -291,10 +275,8 @@
                     if (name) {
                         if (
                             (input.is(':radio') || input.is(':checkbox')) && !input.is(':checked')
-                                ||
-                            (input.is('select') && !input.is(':selected'))
-                                ||
-                                !input.val()
+                            || (input.is('select') && !input.is(':selected'))
+                            || !input.val()
                         )
                         {
                             if (['birthday[value][day]', 'birthday[value][month]', 'birthday[value][year]'].indexOf(name) !== -1) {
@@ -308,13 +290,13 @@
                 $.post('?action=contactInfo', { id: ui.item.id }, function(html) {
                     $('.contact-search').hide();
                     form.find('.contacts-data').hide().html(html).slideDown(200);
-                    form.find('.another-contact-link').closest('.block').show();
+                    form.find('.another-contact-link').parent().show();
                 });
 
                 form.find('.another-contact-link').click(function() {
                     $('.contact-search').show().find('input').val('');
                     form.find('.contacts-data').hide();
-                    form.find('.another-contact-link').closest('.block').hide();
+                    form.find('.another-contact-link').parent().hide();
                     form.find('[name=contact_id]').val('');
                     form.find(':input[name^=fldc_data]').val('');
                 });
@@ -365,7 +347,7 @@
                             }
                             if (!prev_values[name]) {
                                 if ((item.is(':radio') || item.is(':checkbox')) && item.val() == contact_field_val) {
-                                    item.attr('checked', true);
+                                    item.prop('checked', true);
                                 } else {
                                     item.val(contact_field_val);
                                 }
@@ -382,4 +364,3 @@
 
 }).call({});
 </script>
-

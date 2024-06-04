@@ -93,6 +93,7 @@ class helpdeskBackendContactAutocompleteController extends waController
 
         $result = array();
         $term_safe = htmlspecialchars($term);
+        $is_legacy = helpdeskHelper::isLegacyUi();
         foreach($sqls as $sql) {
             $limit = 5 - count($result);
             if ($limit <= 0) {
@@ -103,9 +104,12 @@ class helpdeskBackendContactAutocompleteController extends waController
                 $name = $this->prepare($c['name'], $term_safe);
                 $email = $this->prepare(ifset($c['email'], ''), $term_safe);
                 $phone = $this->prepare(ifset($c['phone'], ''), $term_safe);
-                $phone && $phone = '<i class="icon16 phone"></i>'.$phone;
-                $email && $email = '<i class="icon16 email"></i>'.$email;
-                !empty($c['is_user']) && $name = '<i class="icon16 user" title="'._ws('User').'"></i>'.$name;
+                $phone && $phone = '<i class="'.($is_legacy ? 'icon16 phone' : 'fas fa-mobile-alt custom-mr-4 text-light-gray').'"></i> '.$phone;
+                $email && $email = '<i class="'.($is_legacy ? 'icon16 email' : 'fas fa-envelope custom-mr-4 text-light-gray').'"></i> '.$email;
+                !empty($c['is_user']) && $name = '<i class="'.($is_legacy ? 'icon16 user' : 'fas fa-user custom-mr-4 text-light-gray').'" title="'._ws('User').'"></i> '.$name;
+                if (!$is_legacy && empty($c['is_user'])) {
+                    $name = '<i class="fas fa-address-book custom-mr-4 text-light-gray" title="'._ws('Contact').'"></i> '.$name;
+                }
 
                 $result[$c['id']] = array(
                     'id' => $c['id'],
@@ -126,4 +130,3 @@ class helpdeskBackendContactAutocompleteController extends waController
         return preg_replace('~('.preg_quote($term_safe, '~').')~ui', '<span class="bold h-highlighted">\1</span>', htmlspecialchars($str));
     }
 }
-

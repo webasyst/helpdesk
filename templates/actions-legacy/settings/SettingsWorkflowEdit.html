@@ -1,0 +1,27 @@
+<div class="dialog width450px height150px" id="h-edit-workflow-dialog">
+    <form method="post" action="?module=settings&action=workflowSave&id={$id}">
+    <div class="dialog-background"></div>
+    <div class="dialog-window">
+        <div class="dialog-content">
+            <div class="dialog-content-indent">
+                <h1 class="title">{if !$id}[`New workflow`]{else}[`Edit workflow`]{/if}</h1>
+                <div class="fields">
+                    <div class="field">
+                        <div class="name">[`Workflow name`]</div>
+                        <div class="value">
+                            <input type="text" name="data[name]" value="{if !$id}[`Workflow`] {$last_id + 1}{/if}">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="dialog-buttons">
+                <div class="dialog-buttons-gradient">
+                    <input type="submit" value="[`Save`]" class="button green"> [`or`]
+                    <a class="cancel" href="javascript:void(0);">[`cancel`]</a>
+                </div>
+            </div>
+            {$wa->csrf()}
+        </div>
+    </div>
+    </form>
+</div>

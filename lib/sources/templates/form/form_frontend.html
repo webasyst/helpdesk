@@ -1,7 +1,7 @@
 <style>{$css}</style>
 
 <form id="{$uniqid}" class="wa-hd-frontend-form" action="{$action_url}" target="{$uniqid}-target" method="post" enctype="multipart/form-data" autocomplete="off">
-    <div class="wa-form">
+    <div class="wa-form blank box rounded">
 
         {$extra_html.top|default:''}
 
@@ -95,14 +95,14 @@
         <div class="wa-field">
             <div class="wa-value buttons">
                 <input class="button" type="submit" value="{if isset($source.params.button_caption)}{$source.params.button_caption|escape}{else}[`Send`]{/if}">
-                <i class="icon16 loading" style="margin: 9px; 0 0 10px; display:none"></i>
+                <i class="fas fa-spinner fa-spin loading" style="margin: 9px; 0 0 10px; display:none"></i>
             </div>
         </div>
 
     </div>
 </form>
 
-<iframe src="javascript:true" name="{$uniqid}-target" id="{$uniqid}-target" style="width:0;height:0;border:0px solid #fff;"></iframe>
+<iframe src="javascript:true" frameborder="0" name="{$uniqid}-target" id="{$uniqid}-target" style="width:0;height:0;"></iframe>
 
 {if !empty($source.params.fld_text.redactor)}
     <link type="text/css" rel="stylesheet" href="{$wa_url}wa-content/js/redactor/2/redactor.css?v{time()}">
@@ -138,11 +138,12 @@
     form.find('input[name="form_url"]').val(loc);
 
     // Clear validation errors when user changes corresponding field
-    form.on('change keyup', '.error', function() {
-        $(this).removeClass('error').siblings('.errormsg').remove();
+    form.on('change keyup', '.state-error', function() {
+        $(this).removeClass('state-error').siblings('.state-error-hint').remove();
     });
     var redactor = $('.h-text-textarea', form);
     {if !empty($source.params.fld_text.redactor)}
+        $.Redactor.opts.regexps.linkyoutube = null;
         redactor.redactor({
             lang: '{substr($wa->locale(), 0, 2)}',
             buttons: ['format', 'bold', 'italic', 'underline', 'deleted', 'lists', 'link', 'image', 'horizontalrule'],
@@ -171,7 +172,7 @@
     var rand;
     form.submit(function() {
         form.find('.loading').show();
-        form.find(':submit').attr('disabled', true);
+        form.find(':submit').prop('disabled', true);
 
         {if !empty($source.params.fld_text.redactor)}
         $('.h-text-textarea', form).val(redactor.redactor('code.get'));
@@ -185,9 +186,9 @@
                     return;
                 }
 
-                form.find('.error').removeClass('error');
-                form.find('.errormsg').remove();
-                form.find(':submit').attr('disabled', false);
+                form.find('.state-error').removeClass('state-error');
+                form.find('.state-error-hint').remove();
+                form.find(':submit').prop('disabled', false);
 
                 try {
                     var agreement_checkbox_prefix = 'fld_data[!agreement_checkbox_',
@@ -195,7 +196,7 @@
                         json = iframe.contents().find("body").html();
                     if (json) {
                         json = $.parseJSON(json);
-                        if (json.status != 'ok') {
+                        if (json.status !== 'ok') {
                             // Highlight validation errors
                             for (var fld_name in json.errors) {
                                 if (json.errors.hasOwnProperty(fld_name)) {
@@ -209,15 +210,15 @@
                                                 el = el.last();        // for example radio buttons
                                             }
                                             if (fld_name.slice(0, agreement_checkbox_prefix_len) === agreement_checkbox_prefix) {
-                                                el.closest('.h-agreement-checkbox-wrapper').addClass('error');
+                                                el.closest('.h-agreement-checkbox-wrapper').addClass('state-error');
                                             } else {
-                                                el.addClass('error');
+                                                el.addClass('state-error');
                                             }
-                                            el.parent().append($('<em class="errormsg"></em>').text(json.errors[fld_name]));
+                                            el.parent().append($('<div class="state-error-hint"></div>').text(json.errors[fld_name]));
                                             continue;
                                         }
                                     }
-                                    form.find(':submit').parent().append($('<em class="errormsg"></em>').text(json.errors[fld_name]));
+                                    form.find(':submit').parent().append($('<div class="state-error-hint"></div>').text(json.errors[fld_name]));
                                 }
                             }
                             form.find('.loading').hide();

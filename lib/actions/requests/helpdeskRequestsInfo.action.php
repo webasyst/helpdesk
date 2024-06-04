@@ -126,6 +126,13 @@ class helpdeskRequestsInfoAction extends helpdeskViewAction
             $this->source_class = helpdeskHelper::getSourceClass($this->source, $this->request_info);
         }
 
+        if (!empty($this->request_info['assigned_contact_id']) && $this->request_info['assigned_contact_id'] > 0) {
+            $contact = new waContact($this->request_info['assigned_contact_id']);
+            if ($contact) {
+                $this->request_info['assigned_contact_photo'] = $contact->getPhoto(20);
+            }
+        }
+
         $this->is_admin = wa()->getUser()->getRights('helpdesk', 'backend') > 1;
         $this->request_log = $this->getLogs($this->request);
 
@@ -162,6 +169,7 @@ class helpdeskRequestsInfoAction extends helpdeskViewAction
         $this->view->assign('unread_count', $this->unread_count);
         $this->view->assign('source_name', $this->source_name);
         $this->view->assign('source_class', $this->source_class);
+        $this->view->assign('source_bg', helpdeskHelper::getSourceBgClass($this->source));
         $this->view->assign('is_unread', $this->is_unread);
         $this->view->assign('request', $this->request_info);
         $this->view->assign('log', $this->request_log);
@@ -222,4 +230,3 @@ class helpdeskRequestsInfoAction extends helpdeskViewAction
     }
 
 }
-

@@ -1,45 +1,68 @@
 {literal}
-    <script id="h-template-requests-menu" type="text/html">
-            <ul class="float-left menu-h dropdown menu-above-list">
-                <li>
-                    <input type="checkbox" class="h-select-all-checkbox" style="margin-left: 3px;">
-                </li>
-                <li style="min-width:220px; margin-left: -15px;">
-                    <a href="javascript:void(0);" class="inline-link h-action-with-selected-link"><b><i>[`Actions with selected`] (<span class="selected-count">0</span>)</i></b> <i class="icon10 darr-tiny"></i></a>
-                    <ul class="menu-v">
+    <script id="h-requests-menu-template" type="text/html">
 
-                        {% if (o.filters_hash === 'unread') { %}
-                            <li><a href="javascript:void(0)" class="requests-operation mass-mark-as-read"><i class="icon16 checkbox"></i>[`Mark as read`]</a></li>
-                        {% } else { %}
-                            <li><a href="javascript:void(0)" class="requests-operation mass-mark-as-unread"><i class="icon16 mark-unread"></i>[`Mark as unread`]</a></li>
-                        {% } %}
+        <div id="h-requests-actions" class="flexbox middle space-4 hidden">
+            <button type="button" class="button light-gray nowrap small h-topic-actions-enable js-bulk-toggle js-topic-control{% if (o.view !== 'split') { %} circle{% } %}">
+                <i class="far fa-check-square"></i>
+            </button>
 
-                        {% if (o.filters_hash === 'follow') { %}
-                            <li><a href="javascript:void(0)" class="requests-operation mass-unmark-as-follow"><i class="icon16 checkbox"></i>[`Unmark as “Follow”`]</a></li>
-                        {% } else { %}
-                            <li><a href="javascript:void(0)" class="requests-operation mass-mark-as-follow"><i class="icon16 checkbox"></i>[`Mark as “Follow”`]</a></li>
-                        {% } %}
+            <div class="js-topic-actions wide flexbox middle space-12 hidden">
 
-                        {% if (o.admin) { %}
-                            <li><a href="javascript:void(0)" class="requests-operation mass-change-status"><i class="icon16 export"></i>[`Change status`]</a></li>
-                            <li><a href="javascript:void(0)" class="requests-operation mass-change-assignment"><i class="icon16 user"></i>[`Change assignment`]</a></li>
+                <div class="dropdown small" id="h-requests-action-dropdown">
+                    <button class="dropdown-toggle h-action-with-selected-link button light-gray{% if (o.view !== 'split') { %} rounded{% } %}" type="button">
+                        <div class="h-topics-selected nowrap">
+                            <span class="icon size-16"><i class="fas fa-bars"></i></span><span class="custom-mx-8">[`Selected`]</span><span class="badge gray js-selected-count">0</span>
+                        </div>
+                    </button>
+                    <div class="dropdown-body right" style="min-width:270px;">
+                        <ul class="menu">
+                            <li><a href="javascript:void(0)" class="js-select-all-item">
+                                <span class="icon"><input type="checkbox" class="js-select-all-checkbox custom-m-0"></span>
+                                <span>[`Select all`]</span>
+                            </a></li>
                             <li class="hr"></li>
-                            <li><a href="javascript:void(0)" class="requests-operation mass-delete-requests"><i class="icon16 delete"></i>[`Delete`]</a></li>
-                        {% } %}
-                    </ul>
-                </li>
-            </ul>
+                            {% if (o.filters_hash === 'unread') { %}
+                                <li><a href="javascript:void(0)" class="requests-operation mass-mark-as-read"><span class="icon"><i class="fas fa-circle text-orange"></i></span><span>[`Mark as viewed`]</span></a></li>
+                            {% } else { %}
+                                <li><a href="javascript:void(0)" class="requests-operation mass-mark-as-unread"><span class="icon"><i class="fas fa-dot-circle text-orange"></i></span><span>[`Mark as unviewed`]</span></a></li>
+                            {% } %}
 
-            <ul class="float-left menu-h dropdown h-sorting-menu smart-dropdown" style="margin-top: 4px;">
-                [`Sorting:`]
-                <li style="min-width:220px">
-                    <a href="javascript:void(0);" class="inline-link h-choose-sorting"><b><i><span class="h-name">[`newest on top`]</span></i></b></a>
-                    <ul class="menu-v">
-                        <li><a href="javascript:void(0)" class="h-sort-link" data-order="!id">[`newest on top`]</a></li>
-                        <li><a href="javascript:void(0)" class="h-sort-link" data-order="id">[`oldest on top`]</a></li>
-                        <li><a href="javascript:void(0)" class="h-sort-link" data-order="!updated">[`recently updated on top`]</a></li>
+                            {% if (o.filters_hash === 'follow') { %}
+                                <li><a href="javascript:void(0)" class="requests-operation mass-unmark-as-follow"><span class="icon"><i class="fas fa-binoculars"></i></span><span>[`Unmark as “Follow”`]</span></a></li>
+                            {% } else { %}
+                                <li><a href="javascript:void(0)" class="requests-operation mass-mark-as-follow"><span class="icon"><i class="fas fa-binoculars text-dark-gray"></i></span><span>[`Mark as “Follow”`]</span></a></li>
+                            {% } %}
+
+                            {% if (o.admin) { %}
+                                <li><a href="javascript:void(0)" class="requests-operation mass-change-status"><span class="icon"><i class="fas fa-exchange-alt text-green"></i></span><span>[`Change status`]</span></a></li>
+                                <li><a href="javascript:void(0)" class="requests-operation mass-change-assignment"><span class="icon"><i class="fas fa-user-circle text-blue"></i></span><span>[`Change assignment`]</span></a></li>
+                                <li class="hr"></li>
+                                <li><a href="javascript:void(0)" class="requests-operation mass-delete-requests"><span class="icon"><i class="fas fa-trash-alt text-red"></i></span><span>[`Delete`]</span></a></li>
+                            {% } %}
+                        </ul>
+
+                    </div>
+                </div>
+
+                <button type="button" class="js-bulk-toggle h-topics-actions-disable button light-gray smaller{% if (o.view !== 'split') { %} circle{% } %}" title="[`cancel`]">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+
+        <div class="h-sorting-menu js-topic-control">
+            <div class="dropdown" id="h-requests-sort-dropdown">
+                <button class="dropdown-toggle h-choose-sorting button light-gray small" type="button"><i class="fas fa-spinner fa-spin fa-sm"></i> <span>[`Loading...`]</span></button>
+                <div class="dropdown-body">
+
+                    <ul class="menu">
+                        <li><a href="javascript:void(0)" class="h-sort-link" data-order="!id"><i class="fas fa-sort-amount-down"></i> <span>[`newest on top`]</span></a></li>
+                        <li><a href="javascript:void(0)" class="h-sort-link" data-order="id"><i class="fas fa-sort-amount-up"></i> <span>[`oldest on top`]</span></a></li>
+                        <li><a href="javascript:void(0)" class="h-sort-link" data-order="!updated"><i class="fas fa-sort-amount-down"></i> <span>[`recently updated on top`]</span></a></li>
                     </ul>
-                </li>
-            </ul>
+
+                </div>
+            </div>
+        </div>
     </script>
 {/literal}

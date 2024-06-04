@@ -1,0 +1,279 @@
+<div class="block">
+
+    <div class="block">
+        <h1>[`Settings`]</h1>
+    </div>
+
+    {* Helper to display settings checkboxes *}
+    {function cb n=''}
+        <input type="checkbox" name="{$n}" value="1"{if !empty($settings[$n])} checked{/if}>
+    {/function}
+    {function radio n='' v=''}
+        <input type="radio" name="{$n}" value="{$v}"{if ifempty($settings[$n], '') == $v} checked{/if}>
+    {/function}
+
+    <style>
+    span.special-filter-styled { text-transform:uppercase;color:#888;font-weight:bold; }
+    .add-filter-menu span.special-filter-styled { color: inherit !important; }
+    .disabled span.special-filter-styled .icon10 { opacity: .4; }
+    .add-filter-menu .special-filter-styled .icon10 { display: none; }
+    .add-filter-menu ul li { padding: 4px 6px; }
+    .filter-edit .hide-when-edit { display: none !important; }
+    .filter-no-edit .hide-when-no-edit { display: none !important; }
+    </style>
+
+    <div class="block">
+        <div class="fields w100p">
+
+            {function style_name id=null n=null}{strip}
+                {if in_array(ifset($specials_hash_by_id[$id], $id), ['@by_assignment', '@by_sources', '@by_states', '@by_tags'])}
+                    <span class="special-filter-styled"><i class="icon10 rarr"></i>{$n|escape}</span>
+                {else}
+                    {$n|escape}
+                {/if}
+            {/strip}{/function}
+
+            {* Helper to draw draggable items *}
+            {function filter_lidrag n=null id=null}
+                <li data-id="{$id}"{if !empty($specials_hash_by_id[$id])} data-special="1"{/if} class="filter-no-edit">
+                    <i class="icon16 sort drag"></i>
+
+                    <span class="filter-name hide-when-edit">{style_name id=$id n=$n}</span>
+
+                    {if empty($specials_hash_by_id[$id])}
+                        <input type="text" value="{$n|escape}" class="hide-when-no-edit filter-name-edit">
+                        <a href="javascript:void(0)" class="edit hide-when-edit" title="[`Rename`]" style="display:inline;margin-left:3px;"><i class="icon10 edit"></i></a>
+                    {/if}
+
+                    <a href="javascript:void(0)" class="delete" title="[`delete`]" style="display:inline;margin-left:3px;"><i class="icon10 no"></i></a>
+                </li>
+            {/function}
+
+            <div class="top-padded field">
+                <div class="name">[`Navigation pane`]</div>
+                <div class="value no-shift">
+                    <div id="{$uniqid}-sidebar-editor" style="max-width:800px">
+
+                        {if $admin}
+                            <div class="clear-right">
+                                <div class="content right300px position-relative">
+                                    <h6 class="heading">
+                                        [`Common filters`]
+                                        <a href="javascript:void(0)" class="add-filter-link inline-link small" style="margin-left:2em"><b><i>[`Add`]</i></b><i class="icon10 darr-tiny"></i></a>
+                                    </h5>
+                                    <ul class="menu-v droppable" id="section-common" style="margin-bottom:20px;">
+                                        {foreach $common_filters as $id => $f}
+                                            {filter_lidrag n=$f.name id=$id}
+                                        {/foreach}
+                                    </ul>
+                                </div>
+                            </div>
+                        {/if}
+
+                        <div class="clear-right">
+                            <div class="content right300px position-relative">
+                                <h6 class="heading">
+                                    [`My filters`]
+                                    <a href="javascript:void(0)" class="add-filter-link inline-link small" style="margin-left:2em"><b><i>[`Add`]</i></b><i class="icon10 darr-tiny"></i></a>
+                                </h5>
+                                <ul class="menu-v droppable" id="section-my" style="min-height:150px;">
+                                    {foreach $my_filters as $id => $f}
+                                        {filter_lidrag n=$f.name id=$id}
+                                    {/foreach}
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div class="hidden shadowed add-filter-menu" style="position:absolute;background:white;z-index:99;margin:0">
+                            <ul class="menu-v">
+                                {foreach $all_specials as $id => $name}
+                                    <li data-id="{$id}"{if empty($specials[$id])} class="disabled"{/if}><a href="javascript:void(0)">
+                                        {style_name id=$id n=$name}
+                                    </a></li>
+                                {/foreach}
+                                <li class="hr"></li>
+                                <li><a href="#/requests/search/">[`New filter`]</a></li>
+                            </ul>
+                        </div>
+
+                        <ul class="hidden special-stubs">
+                            {foreach $specials as $id => $name}
+                                {filter_lidrag n=$name id=$id}
+                            {/foreach}
+                        </ul>
+
+                        <div class="clear-right"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<div id="sticky-bottom-buttons" class="block" style="background:white;max-width:800px">
+    <input type="submit" class="button green" value="[`Save`]">
+</div>
+
+
+<script>(function() { "use strict";
+
+    var form = $('#{$uniqid}');
+    var wrapper = $('#{$uniqid}-sidebar-editor');
+    var containers = wrapper.find('.droppable');
+    var submit = $('#sticky-bottom-buttons').find(':submit');
+    var special_stubs = wrapper.find('.special-stubs');
+    var add_filter_menu = wrapper.find('.add-filter-menu');
+
+    // Controller for settings form
+    window.setTimeout(function() {
+        form.on('change', function() {
+            submit.removeClass('green').addClass('yellow');
+        });
+    }, 0);
+    dependency(form.find('[name="count_assigned"]'), form.find('[name="count_assigned_logs"]'));
+    dependency(form.find('[name="count_assigned_group"]'), form.find('[name="count_assigned_group_logs"]'));
+    function dependency(parent, child) {
+        parent.on('change', function() {
+            if (parent.is(':checked')) {
+                child.prop({ disabled: false });
+            } else {
+                child.prop({
+                    checked: false,
+                    disabled: true
+                });
+            }
+        }).change();
+    }
+
+    // Drag-and-drop between sections
+    containers.sortable({
+        placeholder: 'drag-newparent',
+        axis: 'y',
+        distance: 5,
+        items: 'li',
+        opacity: 0.7,
+        revert: 300,
+        tolerance: 'pointer',
+        connectWith: containers,
+        change: function() {
+            submit.removeClass('green').addClass('yellow');
+        }
+    });
+
+    // Links to delete items
+    wrapper.on('click', '.droppable li .delete', function() {
+        var li = $(this).closest('li');
+        var id = li.data('id');
+        if (li.data('special')) {
+            li.appendTo(special_stubs);
+            add_filter_menu.find('[data-id="'+id+'"]').removeClass('disabled');
+        } else {
+            li.remove();
+        }
+    });
+
+    // Links to edit items
+    wrapper.on('click', 'li i.edit', function() {
+        var li = $(this).closest('li');
+        li.removeClass('filter-no-edit').addClass('filter-edit');;
+    });
+
+    // Esc in filter name editors cancels the edit
+    wrapper.on('keyup', '.filter-name-edit', function(e) {
+        if (e.which == 27) {
+            var input = $(this);
+            var li = $(this).closest('li');
+            li.addClass('filter-no-edit').removeClass('filter-edit');;
+            input.val(li.find('.filter-name').text());
+        }
+    })
+
+    // Click on 'add' link opens drop-down menu
+    wrapper.on('click', '.add-filter-link', function() {
+        var a = $(this);
+        if (a.closest('.disabled').length) {
+            return false;
+        }
+        if (add_filter_menu.is(':visible') && add_filter_menu.parent().is(a.offsetParent())) {
+            $(document).click();
+            return false;
+        }
+        var pos = a.position();
+        add_filter_menu.appendTo(a.offsetParent()).css({
+            top: pos.top + a.height() + 1,
+            left: pos.left + (a.css('margin-left').replace('px', '') - 3)
+        }).slideDown(200);
+        $(document).one('click', function() {
+            add_filter_menu.slideUp(200);
+        });
+        return false;
+    });
+
+    // Click on a link in menu adds the item in appropriate list
+    add_filter_menu.on('click', 'li', function() {
+        var li = $(this);
+        if (li.hasClass('disabled')) {
+            return false;
+        }
+
+        var id = li.data('id');
+        var filter_li = special_stubs.find('li[data-id="'+id+'"]').appendTo(li.closest('.content').find('ul.droppable'));
+        li.addClass('disabled');
+    });
+
+    // Submit button
+    submit.click(function() {
+        var data = { common: [], my: [], settings: {}, filter_names: {} };
+        $('#section-common li').each(function() {
+            var li = $(this);
+            var id = li.data('id');
+            data.common.push(id);
+            if (li.hasClass('filter-edit')) {
+                data.filter_names[id] = li.find('input:text').val();
+            }
+        });
+        $('#section-my li').each(function() {
+            var li = $(this);
+            var id = li.data('id');
+            data.my.push(li.data('id'));
+            if (li.hasClass('filter-edit')) {
+                data.filter_names[id] = li.find('input:text').val();
+            }
+        });
+        $.each(form.serializeArray(), function(i, v) {
+            data.settings[v.name] = v.value;
+        });
+
+        submit.parent().append('<i class="icon16 loading"></i>');
+        $.post('?module=settings&action=sidebar', data, function(r) {
+            $.wa.helpdesk_controller.reloadSidebar();
+            $('#c-core-content').html(r);
+        });
+
+        return false;
+    });
+
+    {if waRequest::post()}
+        // 'Saved' hint
+        submit.parent().append(
+            $('<span><i class="icon16 yes after-button"></i> '+"[`Saved`]"+'</span>').animate({ opacity: 0 }, 1000, function() {
+                $(this).remove();
+            })
+        );
+    {/if}
+
+    $('#sticky-bottom-buttons').sticky({
+        fixed_css: { bottom: 0 },
+        fixed_class: 'sticky-bottom-shadow',
+        showFixed: function(e) {
+            e.element.css('min-height', e.element.height());
+            e.fixed_clone.empty().append(e.element.children());
+        },
+        hideFixed: function(e) {
+            e.fixed_clone.children().appendTo(e.element);
+        }
+    });
+})();</script>
+

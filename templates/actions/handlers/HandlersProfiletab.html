@@ -1,6 +1,6 @@
 <style>
-table.zebra.wa-tr-hover tr td { border-bottom:solid 1px #fff;}
-table.zebra.wa-tr-hover tr:hover td { background: #ffffe5!important; cursor: pointer; border-bottom: dashed 1px #ddd;}
+table.zebra.wa-tr-hover tr td { border-bottom:solid 1px var(--border-color-soft);}
+table.zebra.wa-tr-hover tr:hover td { background: #fea; cursor: pointer; border-bottom: dashed 1px #ddd;}
 </style>
 
 <table id="helpdesk-requests-table" class="zebra full-width bottom-bordered requests-table wa-tr-hover">
@@ -26,13 +26,13 @@ table.zebra.wa-tr-hover tr:hover td { background: #ffffe5!important; cursor: poi
 
 {if isset($pages_count) && $pages_count > 1}
     <div class="paging-wrap">
-        <div class="paging">{wa_pagination total=$pages_count attrs=['class'=>'menu-h float-left']}</div>
+        {wa_pagination total=$pages_count attrs=['class'=>'menu h-paginator-menu']}
     </div>
 {/if}
 
 <script>
 $(function(){
-    $('.paging a').unbind('click').click(function() {
+    $('.paging-wrap a').unbind('click').click(function() {
         $('#helpdesk-requests-table').parent().load($(this).attr('href'));
         return false;
     });

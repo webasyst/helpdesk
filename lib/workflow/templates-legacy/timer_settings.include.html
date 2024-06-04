@@ -1,0 +1,49 @@
+{$day = $options.timeout.day|default:0}
+{$hour = $options.timeout.hour|default:0}
+{$minute = $options.timeout.minute|default:0}
+
+<div class="field" style="margin-top: 10px;">
+    <p>
+        [`This action will be triggered automatically (by time-out) if no other actions are performed with request during a certain period of time.`]
+    </p>
+</div>
+
+<div class="h-action-timer-settings-block" {if $hidden|default:false}style="display: none;"{/if}>
+    <ul class="menu-h">
+        <li><span>[`Time-out`]:</span></li>
+        <li>
+            <select name="options[timeout][day]" class="h-action-timer-day">
+                {foreach range(0, 31) as $val}
+                    <option value="{$val}" {if $val == $day}selected="selected"{/if}>{$val}</option>
+                {/foreach}
+            </select> [`days`]
+        </li>
+        <li>
+            <select name="options[timeout][hour]" class="h-action-timer-hour">
+                {foreach range(0, 23) as $val}
+                    <option value="{$val}" {if $val == $hour}selected="selected"{/if}>{$val}</option>
+                {/foreach}
+            </select> [`hours`]
+        </li>
+    </ul>
+</div>
+
+<script>
+    $(function () {
+        var container = $('#{$container_id}');
+
+        var day_select = $('.h-action-timer-day', container);
+        var hour_select = $('.h-action-timer-hour', container);
+
+        var handler = function() {
+            if (!parseInt(day_select.val(), 10) &&
+                    !parseInt(hour_select.val(), 10))
+            {
+                hour_select.val(1);
+            }
+        };
+
+        day_select.change(handler).trigger('change');
+        hour_select.change(handler).trigger('change');
+    });
+</script>

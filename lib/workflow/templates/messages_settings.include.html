@@ -1,0 +1,135 @@
+{$is_auto_action = !empty($is_auto_action)}
+<div class="fields-group blank">
+    <div class="field">
+        <div class="name h-section">[`Messages`]</div>
+
+        <div class="value messages-wrapper">
+            {if !empty($options.messages) && is_array($options.messages)}
+                {foreach $options.messages as $i => $m}
+                    <div class="one-message email-template-editor"><div class="h-fields fields">
+                        <div class="field-group expandable expanded">
+                            <label class="expandable-legend">
+                                <input type="checkbox" class="remove-message-checkbox" checked>
+                                [`Send an email message`]
+                            </label>
+
+                            <div class="editor-wrapper" data-i="{$i}">
+                                {if $is_auto_action}
+                                    {include file="templates/actions/editor/email_template_editor.html"
+                                        tpl='auto_action'
+                                        input_name="options[messages][{$i}][tmpl]"
+                                        variables=$message_vars
+                                        template=ifset($m.tmpl)
+                                        to_name="options[messages][{$i}][to]"
+                                        to_value=ifset($m.to)
+                                        sourcefrom_name="options[messages][{$i}][sourcefrom]"
+                                        sourcefrom_set=ifset($m.sourcefrom)
+                                    }
+                                {else}
+                                    {include file="templates/actions/editor/email_template_editor.html"
+                                        input_name="options[messages][{$i}][tmpl]"
+                                        variables=$message_vars
+                                        template=ifset($m.tmpl)
+                                        to_name="options[messages][{$i}][to]"
+                                        to_value=ifset($m.to)
+                                        sourcefrom_name="options[messages][{$i}][sourcefrom]"
+                                        sourcefrom_set=ifset($m.sourcefrom)
+                                        add_attachments_name="options[messages][{$i}][add_attachments]"
+                                        add_attachments_set=ifempty($m.add_attachments, 0)
+                                        oneclick_feedback_fields=$oneclick_feedback_fields|default:[]
+                                    }
+                                {/if}
+                            </div>
+                        </div>
+                    </div></div>
+                {/foreach}
+            {/if}
+
+            <div class="one-message hidden template email-template-editor"><div class="h-fields fields">
+                <div class="field-group expandable expanded">
+                    <label class="expandable-legend">
+                        <input type="checkbox" class="remove-message-checkbox" checked>
+                        [`Send an email message`]
+                    </label>
+                    <div class="editor-wrapper custom-pt-20">
+                        <div class="box align-center"><i class="spinner custom-p-4"></i></div>
+                    </div>
+                </div>
+            </div></div>
+
+            <div class="h-fields fields">
+                <div class="field">
+                    <label>
+                        <input type="checkbox" class="add-message-checkbox">
+                        <span class="when-no-messages">
+                            [`Send an email message`]
+                        </span>
+                        <span class="when-messages">
+                            [`Send another email message`]
+                        </span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script id="messages-settings">
+// Controller for email messages editor
+$(function() {
+    var container = $('#{$container_id}');
+    var add_message_checkbox = container.find('.add-message-checkbox');
+    var messages_wrapper = add_message_checkbox.closest('.messages-wrapper');
+
+    // Add another email editor block when user clicks "Send another email message" checkbox
+    add_message_checkbox.change(function() {
+        var fields = messages_wrapper.children('.hidden.template').clone().insertBefore(add_message_checkbox.closest('.h-fields'));
+        fields.removeClass('template').removeClass('hidden');
+        add_message_checkbox.prop('disabled', true);
+
+        var last_i = messages_wrapper.find('.editor-wrapper[data-i]').last().data('i');
+        if (last_i) {
+            last_i = parseInt(last_i+'', 10);
+        } else if (last_i !== 0) {
+            last_i = -1;
+        }
+        var i = last_i + 1;
+        fields.find('.editor-wrapper').data('i', ''+i).attr('data-i', ''+i);
+
+        $.post('?module=editor&action=emailTemplate&tpl=action', {
+            input_name: 'options[messages]['+i+'][tmpl]',
+            variables: {json_encode($message_vars)},
+            workflow_id: {$workflow_id},
+            to_name: 'options[messages]['+i+'][to]',
+            sourcefrom_name: 'options[messages]['+i+'][sourcefrom]'
+            {if !$is_auto_action},add_attachments_name: 'options[messages]['+i+'][add_attachments]'{/if}
+        }, function(r) {
+            fields.find('.editor-wrapper').html(r);
+            add_message_checkbox.prop({ disabled: false, checked: false });
+        });
+
+        updateAddCheckbox();
+    });
+
+    // Hide email editor block when user unchecks "Send email message" checkbox
+    container.on('change', '.remove-message-checkbox', function() {
+        $(this).closest('.h-fields').parent().slideUp(200, function() {
+            $(this).remove();
+            updateAddCheckbox();
+        });
+    });
+
+    updateAddCheckbox();
+
+    function updateAddCheckbox() {
+        var label = add_message_checkbox.parent();
+        if (messages_wrapper.find('.one-message:not(.template)').length > 0) {
+            label.find('.when-no-messages').hide();
+            label.find('.when-messages').show();
+        } else {
+            label.find('.when-no-messages').show();
+            label.find('.when-messages').hide();
+        }
+    }
+})
+</script>

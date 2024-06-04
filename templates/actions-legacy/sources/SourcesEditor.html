@@ -1,0 +1,167 @@
+<div class="block h-back">
+    <a {if $wf}
+            href="#/settings/workflow/{$wf->getId()}"
+       {else}
+            href="javascript:void(0)" onclick="$.wa.back()"
+       {/if}
+    class="no-underline">
+        <i class="icon10 larr"></i>[`Back to workflow customizing page`]
+    </a>
+</div>
+
+<div class="block h-header" style="background:#f7f7f7;border-top:1px solid #ccc;">
+    <h1>
+        <img src="{$icon_url}" width="64" style="vertical-align:-75%;">
+        {if $source && $source.id}
+            {$source->name}
+        {else}
+            [`New source`] ({$st->getName()})
+        {/if}
+    </h1>
+</div>
+
+<div class="tab-content">
+    <div class="block double-padded">
+        {if $last_error}
+            <div class="errormsg" style="margin:0 0 10px 0;">
+                <span class="error indicator inline">!</span>
+                {$last_error|escape}
+                <a href="?module=sources&action=log" class="nowrap">[`Download error log`]</a>
+            </div>
+        {/if}
+
+        <div id="hd-source-editor-form">
+            {$form_html}
+        </div>
+    </div>
+
+
+    <div class="float-left" style="width:100%">
+        <div class="block">
+            <div id="sticky-bottom-buttons" style="background:white">
+                <div class="block">
+                    {if $source && $source.id && !in_array($source.type, ['backend'])}
+                        <div class="float-right left-spaced top-spaced hint">
+                            <a href="javascript:void(0)" class="hd-source-editor-delete">[`Delete this source`]</a>
+                        </div>
+                    {/if}
+
+                    <input id="hd-source-editor-save" type="submit" class="button green" value="[`Save`]">
+                    <i class="icon16 loading" style="display:none"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="clear-left"></div>
+</div>
+
+<script>(function() { "use strict";
+
+    var form_wrapper = $("#hd-source-editor-form");
+    var button = $('#hd-source-editor-save');
+
+    {if $source && $source.id}
+        // Delete
+        form_wrapper.closest('.tab-content').on('click', '.hd-source-editor-delete', function() {
+            if (!confirm("[`Are you sure?`]")) {
+                return false;
+            }
+
+            form_wrapper.find('.loading').show();
+            $.post('?module=sources&action=delete', { id:{$source.id} }, function() {
+                $.wa.helpdesk_controller.reloadSidebar();
+                {if $wf}
+                    window.location.hash = "#/settings/workflow/{$wf->getId()}";
+                {else}
+                    $.wa.back();
+                {/if}
+            });
+            return false;
+        });
+    {/if}
+
+    // Save
+    button.click(function() {
+        if (typeof checkForm == 'function' && !checkForm()) {
+            return false;
+        }
+        var loading = $(this).siblings('.loading').show();
+        form_wrapper.find('input, select, textarea').trigger('beforesubmit');
+        $.post('?module=sources&action=editor', form_wrapper.find("form").serialize(), function(r) {
+            loading.hide();
+            var container = form_wrapper.closest('.tab-content').parent();
+            container.html(r);
+            $.wa.helpdesk_controller.reloadSidebar();
+            {if !$source.id}
+                var source_id = container.find('input[name=id]').val();
+                if (source_id) {
+                    $.wa.helpdesk_controller.setHash('#/sources/edit/' + source_id + '/{$wf->getId()}');
+                }
+            {/if}
+        });
+        return false;
+    });
+
+    if (form_wrapper.find('.error,.errormsg').length) {
+        form_wrapper.addClass('modified');
+        button.removeClass('green').addClass('yellow');
+    } else {
+        // Change button color when user modifies something on the page.
+        // Delayed because form fires events during initialization and we don't care about those.
+        setTimeout(function() {
+            form_wrapper.on('change', 'input,textarea,select', function() {
+                if (button.hasClass('green')) {
+                    form_wrapper.addClass('modified');
+                    button.removeClass('green').addClass('yellow');
+                }
+            });
+            form_wrapper.on('keyup', 'input:text,textarea', function() {
+                if (button.hasClass('green')) {
+                    form_wrapper.addClass('modified');
+                    button.removeClass('green').addClass('yellow');
+                }
+            });
+        }, 0);
+
+        {if waRequest::post()}
+            // 'Saved' hint
+            button.parent().append(
+                $('<span><i class="icon16 yes after-button"></i> '+"[`Saved`]"+'</span>').animate({ opacity: 0 }, 1000, function() {
+                    $(this).remove();
+                })
+            );
+        {/if}
+    }
+
+    // Confirmation before user leaves the page
+    $.wa.helpdesk_controller.confirmLeave(
+        function() {
+            return $("#hd-source-editor-form").hasClass('modified');
+        },
+        "[`Unsaved changes will be lost if you leave this page now.`]",
+        "[`Are you sure?`]",
+        function() {
+            return !$("#hd-source-editor-form").length;
+        }
+    );
+
+    {if !$wa->get('ignore_sticky')}
+        $('#sticky-bottom-buttons').sticky({
+            fixed_css: { bottom: 0, 'z-index': 101 },
+            fixed_class: 'sticky-bottom-shadow',
+            showFixed: function(e) {
+                e.element.css('min-height', e.element.height());
+                e.fixed_clone.empty().append(e.element.children());
+            },
+            hideFixed: function(e) {
+                e.fixed_clone.children().appendTo(e.element);
+            },
+            updateFixed: function(e, o) {
+                this.width(e.element.width());
+            }
+        });
+    {/if}
+
+    $.wa.helpdesk_controller.updateWorkflowErrors({json_encode($workflows_errors)}, {json_encode($sources_errors)});
+})();</script>

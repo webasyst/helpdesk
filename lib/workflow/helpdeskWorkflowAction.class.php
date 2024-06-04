@@ -205,10 +205,25 @@ class helpdeskWorkflowAction extends waWorkflowAction
         // Buttin for backend
         if ($this->getOption('user_triggerable') && wa()->getEnv() == 'backend') {
             $attrs = '';
-            if ($this->getOption('user_button_border_color')) {
-                $attrs = ' style="border-color:'.htmlspecialchars($this->getOption('user_button_border_color')).'"';
+            $border_color = $this->getOption('user_button_border_color') ? htmlspecialchars($this->getOption('user_button_border_color')) : '';
+            if ($border_color) {
+                $attrs = ' style="border-color:'.$border_color.'"';
             }
-            return '<input class="button '.$this->getOption('user_button_css_class').'" type="submit" name="'.$this->getId().'" value="'.htmlspecialchars(waLocale::fromArray($this->getOption('user_button_value'))).'"'.$attrs.'>';
+
+            $button_name = htmlspecialchars(waLocale::fromArray($this->getOption('user_button_value')));
+
+            // fallback ui 1.3
+            if (wa('helpdesk')->whichUI() === '1.3') {
+                return '<input class="button'.$this->getOption('user_button_css_class').'" type="submit" name="'.$this->getId().'" value="'.$button_name.'"'.$attrs.'>';
+            }
+
+            return <<<HTML
+<button class="wf-action button rounded white {$this->getOption('user_button_css_class')}" type="submit" name="{$this->getId()}" title="{$button_name}">
+    <i class="fas fa-circle" style="color: {$border_color}"></i>
+    {$button_name}
+</button>
+HTML;
+
         }
 
         // Button for customer portal
@@ -260,7 +275,13 @@ class helpdeskWorkflowAction extends waWorkflowAction
     public function getPerformsActionString($action_db_row=null)
     {
         // Reasonable default for debugging only. Should be overriden in subclasses.
-        return _w('performs action').' <span style="color:'.$this->getOption('user_button_border_color', '#000').'">'.htmlspecialchars($this->getName()).'</span>';
+        if (helpdeskHelper::isLegacyUi()) {
+            return _w('performs action').' <span style="color:'.$this->getOption('user_button_border_color', '#000').'">'.htmlspecialchars($this->getName()).'</span>';
+        }
+
+        $default_color = '#000';
+        $button_color = $this->getOption('user_button_border_color', $default_color);
+        return _w('performs action').' <span class="action"><span class="icon size-10 rounded baseline" style="background:'.($button_color ? $button_color : $default_color).'"></span><span class="action-name">'.htmlspecialchars($this->getName()).'</span></span>';
     }
 
     /**
@@ -327,7 +348,7 @@ class helpdeskWorkflowAction extends waWorkflowAction
      */
     protected function getTemplateDir()
     {
-        return dirname(waAutoload::getInstance()->get(get_class($this))).'/templates/';
+        return dirname(waAutoload::getInstance()->get(get_class($this))).'/templates'.(helpdeskHelper::isLegacyUi() ? '-legacy' : '').'/';
     }
 
     /**
@@ -427,4 +448,3 @@ class helpdeskWorkflowAction extends waWorkflowAction
     }
 
 }
-

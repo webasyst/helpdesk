@@ -1,0 +1,53 @@
+<div class="block">
+
+    <div class="block">
+        <h1>[`Cron Job`]</h1>
+    </div>
+
+    <div class="block">
+
+        {if empty($cron_ok)}
+            <div>
+                <p>
+                    [`No <tt>cron</tt> job required for automated email capture and execution of auto actions in your workflow is set up for your account.`]
+                </p>
+
+                <p class="red bold">
+                    <i class="icon16 exclamation"></i> [`Without a <tt>cron</tt> job set up, new mail is captured and new requests are received only as long as you keep Helpdesk open in your browser. Auto actions in your workflow are not triggered in this case.`]
+                </p>
+
+                <p>{sprintf_wp(
+                    'Please set up a <tt>cron</tt> job (<a href="%s" target="_blank">view instructions</a>) using the command specified below in your web-hosting control panel:',
+                    _w('https://developers.webasyst.com/installation/tips/cron/')
+                )}</p>
+
+
+
+                <p class="bold"><code>{$cron_command}</code></p>
+
+                {if $last_cron_time}
+                    <p>[`Last execution time:`] {$last_cron_time|wa_date:'datetime'}</p>
+                {/if}
+            </div>
+        {else}
+            <div>
+                <p>
+                    <i class="icon16 yes"></i>
+                    [`<tt>cron</tt> job is set up properly.`]
+                    [`Last execution time:`]
+                    {$last_cron_time|wa_date:'datetime'}
+                </p>
+
+                <p>{sprintf_wp(
+                    'The following <tt>cron</tt> job command is currently in use (%ssetting up a cron job%s):',
+                    sprintf('<a href="%s" target="_blank">', _w('https://developers.webasyst.com/installation/tips/cron/')),
+                    '</a>'
+                )}</p>
+
+                <p class="bold"><code>{$cron_command}</code></p>
+            </div>
+        {/if}
+
+    </div>
+
+</div>

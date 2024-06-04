@@ -1,19 +1,25 @@
-<div class="block not-padded">
+<div class="h-workflow height-100 not-blank">
+<div class="box">
 
     {* Header *}
-    <div class="topmost-grid-wrapper" style="border-bottom: 1px solid #ccc">
-        <a class="float-right h-workflow-settings-toggle" href="javascript:void(0);"><i class="icon16 settings"></i></a>
-        <div class="block h-workflow-name-block">
-            <h1 class="h-workflow-name">{$wf->getName()|escape}</h1>
+    <div class="topmost-grid-wrapper">
+
+
+        <div class="h-workflow-name-block flexbox">
+            <h1 class="h-workflow-name custom-pl-20 custom-pr-4 custom-pt-16">{$wf->getName()|escape}</h1>
+            <div>
+                <a class="h-workflow-settings-toggle button nobutton circle" href="javascript:void(0);"><i class="fas fa-edit"></i></a>
+            </div>
         </div>
 
-        <div class="h-workflow-settings block hidden">
+        <div class="h-workflow-settings" style="display: none;">
             <form action="?module=settings&action=workflowSave&id={$wf->getId()}">
                 <input type="text" class="h-workflow-settings-name" name="data[name]" value="{$wf->getName()|escape}">
-                <div class="field buttons">
-                    <input type="submit" class="button green" value="[`Save`]"> [`or`] <a class="cancel" href="javascript:void(0);">[`cancel`]</a>
+                <div class="custom-mt-8 flexbox middle small">
+                    <button type="submit" class="button green">[`Save`]</button>
+                    <button type="button" class="cancel button light-gray">[`Cancel`]</button>
                     {if $can_remove}
-                        <a href="javascript:void(0);" class="h-delete-workflow h-delete float-right no-underline small" data-workflow-id="{$wf->getId()}">[`Delete workflow`]</a>
+                        <button type="button" class="h-delete-workflow h-delete button light-gray custom-ml-auto" data-workflow-id="{$wf->getId()}"><i class="fas fa-trash-alt text-red"></i> <span class="desktop-and-tablet-only">[`Delete workflow`]</span></button>
                     {/if}
                 </div>
             </form>
@@ -21,61 +27,59 @@
     </div>
 
     {* Content *}
-    <div class="block" style="position:relative">
+    <div class="h-workflow-graph-wrapper custom-mt-32">
+    <div class="content">
 
         {* Sources *}
         <div id="hd-sources-above-wf-graph">
 
-            {* New source button *}
-            <ul class="dropdown menu-h float-right" style="margin-top:32px;min-height:63px;">
-                <li>
-                    <a href="javascript:void(0)" class="no-underline">
-                        <i class="icon16 add"></i><strong>[`New source`]</strong>{if count($source_types)}<i class="icon10 darr-tiny"></i>{/if}
+            {* New state button *}
+            <div style="position:absolute;bottom:0;right:25px;">
+                <div style="position:relative;top:30px;right:-10px;">
+                    <a href="javascript:void(0)" id="hd-graph-new-state" class="small semibold box gray-link">
+                        <i class="fas fa-plus-circle text-green"></i> [`New state`]
                     </a>
-                    <ul class="menu-h" id="new-source">
+                </div>
+            </div>
+
+            {foreach $sources as $s}
+                {if $s.type !== 'backend'}
+                    <div class="hd-source js-sort" id="hd-source-{$s.id}">
+                        {if !empty($s.params.error_datetime)}
+                            <span class="error badge indicator graph-source">!</span>
+                        {/if}
+                        <a href="#/sources/edit/{$s.id}/{$wf->getId()}" class="black-link" title="{$s.name|escape}">
+                            <span class="largest">
+                                <div class="js-icon"><i class="{$s.icon_url}"></i></div>
+                            </span>
+                            <div class="name">
+                                {$s.name|escape}
+                            </div>
+                        </a>
+                    </div>
+                {/if}
+            {/foreach}
+
+            {* New source button *}
+            <div class="dropdown" id="hd-new-source-dropdown">
+                <a href="javascript:void(0)" class="dropdown-toggle button nobutton largest circle without-arrow" title="[`New source`]">
+                    <i class="fas fa-plus-circle text-green"></i>
+                </a>
+                <div class="dropdown-body">
+                    <ul class="menu" id="new-source">
                         {foreach $source_types as $tid => $tname}
                             <li class="new-source-type-{$tid}"><a href="#/sources/create/{$tid}/{$wf->getId()}">
                                 {$tname|escape}
                             </a></li>
                         {/foreach}
                     </ul>
-                </li>
-            </ul>
-
-            {* New state button *}
-            <div style="position:absolute;bottom:0;right:25px;display:inline-block;">
-                <div style="position:relative;top:37px;display:inline-block;right:-20px;">
-                    <ul class="menu-h with-icons">
-                        <li>
-                            <a href="javascript:void(0)" id="hd-graph-new-state" class="no-underline">
-                                <i class="icon16 add"></i><strong>[`New state`]</strong>
-                            </a>
-                        </li>
-                    </ul>
                 </div>
             </div>
-
-            {foreach $sources as $s}
-                {if $s.type !== 'backend'}
-                    <div class="hd-source" id="hd-source-{$s.id}">
-                        {if !empty($s.params.error_datetime)}
-                            <span class="error indicator graph-source">!</span>
-                        {/if}
-                        <a href="#/sources/edit/{$s.id}/{$wf->getId()}">
-                            <img src="{$s.icon_url}" title="{$s.name|escape}">
-                        </a>
-                        <div class="name">
-                            <a href="#/sources/edit/{$s.id}/{$wf->getId()}" title="{$s.name|escape}">
-                                {$s.name|escape}
-                            </a>
-                        </div>
-                    </div>
-                {/if}
-            {/foreach}
         </div>
 
         {* Graph canvas *}
         <div id="hd-raph-canvas"></div>
+    </div>
     </div>
 
 </div>
@@ -83,33 +87,84 @@
 <script>
 $(function() { "use strict";
 
+    $('#hd-new-source-dropdown').waDropdown({ hover: false });
+
+    {literal}
+    // dialogs // TODO: move to Workflow
+    $.wa.dialogHide = function () {
+        $('[data-global-close]').each(function () {
+            const dialog_instance = $(this).data('dialog');
+            if (dialog_instance && typeof dialog_instance.close === 'function') {
+                dialog_instance.close();
+            }
+        });
+    };
+    $.wa.dialogCreate = function (dialog_id, options) {
+        options = options || {};
+        if (!options.url) {
+            throw new Error('no url');
+        }
+
+        const dfd = $.Deferred();
+        $.get(options.url, function (_html) {
+            if (!_html || !_html.trim()) {
+                return;
+            }
+
+            _html = _html.trim();
+            const pattern_header = '(?<header><h1>\.+</h1>)';
+
+            const { header } = _html.match(new RegExp(pattern_header)).groups;
+            const content = _html.replace(new RegExp(pattern_header), '').trim();
+            const html = `
+            <div class="dialog" id="${dialog_id}" data-global-close>
+                <div class="dialog-background"></div>
+                <div class="dialog-body">
+                    <header class="dialog-header">${header}</header>
+                    <div class="dialog-content">${content}</div>
+                    <footer class="dialog-footer">
+                        ${options.buttons ? options.buttons : `<button class="js-close-dialog button light-gray">${$_('Close')}</button>` }
+                    </footer>
+                </div>
+            </div>`;
+            $.waDialog({ html });
+            dfd.resolve();
+        });
+
+        return dfd.promise();
+    };
+    {/literal}
+
     var sources_above_graph = $('#hd-sources-above-wf-graph');
 
     // Drag-and-drop for sources list
-    sources_above_graph.sortable({
-        distance: 5,
-        opacity: 0.8,
-        tolerance: 'pointer',
-        sort: function(e, ui) {
-            drawArrows();
-        },
-        stop: function(e, ui) {
-            drawArrows();
+    $.wa.helpers.loadSortableJS().then(() => {
+        sources_above_graph.sortable({
+            handle: '.js-sort',
+            onEnd: function(evt) {
+                const $item = $(evt.item);
+                var sources = [];
+                sources_above_graph.find('.hd-source').each(function() {
+                    sources.push($(this).attr('id').substr(10)); // hd-source-
+                });
 
-            var sources = [];
-            sources_above_graph.find('.hd-source').each(function() {
-                sources.push($(this).attr('id').substr(10)); // hd-source-
-            });
-
-            // save new positions to persistent storage
-            $.post('?module=settings&action=graphpos', {
+                const $icon = $item.find('.js-icon').addClass('hidden');
+                const $loading = $('<div class="js-loading"><i class="fas fa-spinner h-text-green wa-animation-spin"></i></div>')
+                $loading.insertAfter($icon);
+                // save new positions to persistent storage
+                $.post('?module=settings&action=graphpos', {
                     wf: {$wf->getId()},
                     type: 'sources',
                     sources: sources.join(',')
-                }, function() {
-                }
-            );
-        }
+                }, function(r) {
+                    if (r.status === 'ok') {
+                        $icon.removeClass('hidden');
+                        $loading.remove();
+                        drawArrows();
+                    }
+                });
+            }
+        });
     });
 
     // Redraw arrows on resize
@@ -168,20 +223,18 @@ $(function() { "use strict";
 
     // New state button dialog
     $('#hd-graph-new-state').click(function() {
+        const loading = $.wa.helpers.createLoadingSubmit($(this), { mr: 0 }).show();
         $.wa.dialogCreate('hd-e-graph-dialog', {
-            url: '?module=editor&action=state&wid={$wf->getId()}',
-            small: false
+            url: '?module=editor&action=state&wid={$wf->getId()}'
+        }).then(() => {
+            loading.hide();
         });
     });
 
     // Helper to open dialogs to add new actions to states
     var newAction = function(state_data) {
-        var c = $('#hd-e-graph-new-action');
-        if (!c.length) {
-            c = $('<div id="hd-e-graph-new-action"></div>').appendTo('body');
-        }
         $.get('?module=editor&action=newaction&wid={$wf->getId()}&state_id='+(state_data.id), function(html) {
-            c.html(html);
+            $('body').append(html);
         });
     };
 
@@ -191,6 +244,8 @@ $(function() { "use strict";
     var dragger = function () {
         this.ox = 0;
         this.oy = 0;
+        this.setElem.toFrontRect();
+        drawArrows();
     };
     var move = function (dx, dy) {
         // Stick to initial position if not dragged far enough
@@ -221,6 +276,8 @@ $(function() { "use strict";
             x: (bbox.x || 1),
             y: (bbox.y || 1) + 90 - sources_above_graph_height
         });
+        fixIntersectionRect();
+        drawArrows();
     };
     var click = function(e, dialog_url) {
         if ($(this).data('preventClick')) {
@@ -238,7 +295,6 @@ $(function() { "use strict";
                         if (form.size() <= 0) {
                             return;
                         }
-                        $(this).parent().append('<i class="icon16 loading"></i>');
                         $.post(form.attr('action'), form.serialize(), function() {
                             $.wa.helpdesk_controller.redispatch();
                             $.wa.dialogHide();
@@ -248,8 +304,7 @@ $(function() { "use strict";
                 .append(" [`or`] ")
                 .append($('<a href="javascript:void(0)">'+"[`cancel`]"+'</a>').click(function() {
                     $.wa.dialogHide();
-                })),
-            small: false
+                }))
         });
     }
 
@@ -301,14 +356,16 @@ $(function() { "use strict";
         // path curve
         var path = ["M", pf.x.toFixed(3), pf.y.toFixed(3), "C", p2.x.toFixed(3), p2.y.toFixed(3), p3.x.toFixed(3), p3.y.toFixed(3), pt.x.toFixed(3), pt.y.toFixed(3)].join(",");
 
+        var arrow_stroke_width = 2;
         // update existing path...
         if (o.line) {
+            o.line.toFront();
             o.line.attr({ path: path });
             o.bg && o.bg.attr({ path: path });
         }
         // ...or create new path
         else {
-            o.color = o.color || "#777";
+            o.color = o.color || '#777';
             return {
                 bg: o.bg && this.path(path).attr({
                     stroke: o.bg.split("|")[0],
@@ -319,9 +376,10 @@ $(function() { "use strict";
                 line: this.path(path).attr({
                     stroke: o.color.split("|")[0],
                     fill: "none",
+                    // stroke: '#17a208',
                     'arrow-end': 'classic-wide-long',
                     //'stroke-dasharray': o.dashed || '',
-                    'stroke-width': o.color.split("|")[1] || 2
+                    'stroke-width': o.color.split("|")[1] || arrow_stroke_width
                 }),
                 from: o.from,
                 to: o.to
@@ -329,6 +387,18 @@ $(function() { "use strict";
         }
     };
 
+    var toFrontRect = function () {
+        this.border_rect.toFront();
+        this.header_divider.toFront();
+        for (let i = 0; i < this.items.length; i++) {
+            const el = this.items[i];
+            if (el.type === 'text' || el.type === 'set') {
+                el.toFront();
+            }
+        }
+        this.handle.toFront();
+        this.settings_button.toFront();
+    }
     // state shape
     // actions = { id: action_id, transitions: [state_id, state_id, ...] }
     // returns raphael set with additional keys:
@@ -347,14 +417,14 @@ $(function() { "use strict";
             fill: d[0].style.color || "#000",
             'stroke-width': 0,
             'font-family': "'Lucida Grande', Helvetica, Arial, sans-serif",
-            'font-size': '13px',
+            'font-size': '15px',
             'font-weight': 'bold',
             'text-anchor': 'start'
         });
 
         var header_bbox = jQuery.extend({ }, state.name.getBBox());
         if (!state_data.foreign) {
-            header_bbox.width += 16; // space for settings icon
+            header_bbox.width += 20; // space for settings icon
         }
         var bbox = header_bbox;
         var x = tlx;
@@ -364,6 +434,7 @@ $(function() { "use strict";
         height += 10;
 
         // actions
+        var space_y_actions = 10;
         if (state_data.actions.length) {
 
             state.actions = { };
@@ -383,7 +454,7 @@ $(function() { "use strict";
                 if (!action_data) {
                     continue;
                 }
-                height += 5;
+                height += space_y_actions;
                 var a = state.actions[state_data.actions[i]] = r.action(action_data, x+10, y+height);
                 bbox = jQuery.extend({ }, a.getBBox());
                 height += bbox.height;
@@ -397,10 +468,10 @@ $(function() { "use strict";
 
         // Button to add new action
         if (!state_data.foreign) {
-            height += 3;
+            height += space_y_actions - 3;
             state.new_action_button = r.text(x + 14, y + height, "[`Add action`]").attr({
                 stroke: "none",
-                fill: "#02a",
+                // fill: "#1a9afe", // see class .link
                 'stroke-width': 0,
                 'font-family': "'Lucida Grande', Helvetica, Arial, sans-serif",
                 'font-size': '11px',
@@ -409,6 +480,8 @@ $(function() { "use strict";
             }).click(function() {
                 newAction(state_data);
             });
+            state.new_action_button.node.setAttribute("class", "link");
+
             state.push(state.new_action_button);
             bbox = jQuery.extend({ }, state.new_action_button.getBBox());
             height += bbox.height;
@@ -468,7 +541,15 @@ $(function() { "use strict";
 
         // surrounding rect
         state.border_rect = r.rect(x, y, width, height, 10);
-        state.border_rect.attr({ stroke: state_data.foreign ? "#aaa" : "#000", "fill-opacity": 0, "stroke-width": 2 });
+        state.border_rect.attr({
+            stroke: (state_data.foreign ? "#aaa" : "#000"),
+            "fill-opacity": 1,
+            "stroke-width": 1
+        });
+
+        state.border_rect.node.setAttribute("filter", "url(#rectFilter)");
+        state.border_rect.node.setAttribute("style", "stroke:var(--border-color-hard);stroke-opacity:0.3;fill:var(--background-color-blank);");
+        state.border_rect.toBack();
         state.border_rect.setElem = state;
 
         // Header background for foreign states
@@ -488,7 +569,6 @@ $(function() { "use strict";
             state.header_bg2.setElem = state;
             state.push(state.header_bg2);
             state.name.toFront();
-            state.border_rect.toFront();
         }
 
         // line at the bottom of name dividing it from actions
@@ -497,6 +577,7 @@ $(function() { "use strict";
             "fill-opacity": 0,
             "stroke-width": 1
         });
+        state.header_divider.node.setAttribute("style", "stroke:var(--bricks-glyph-color)");
         state.header_divider.setElem = state;
 
         // rect around state header drag-and-drop handle
@@ -508,6 +589,13 @@ $(function() { "use strict";
         $(state.handle.node).css('pointer-events', 'all');
         state.handle.setElem = state;
 
+        // line at the bottom of name dividing it from actions
+        // state.bottom_divider =  r.path(['M', x, ' ', y + state.border_rect.getBBox().height - 20, 'l', width, ' ', 0].join('')).attr({
+        //     stroke: state_data.foreign ? "#aaa" : "#444",
+        //     "fill-opacity": 0,
+        //     "stroke-width": 1
+        // });
+
         // cog to open settings dialog
         state.settings_button = r.set();
         state.settings_button.setElem = state;
@@ -516,6 +604,7 @@ $(function() { "use strict";
             state.settings_button.push(r.circle(16, 16, 5, 5).attr({ 'fill-opacity': 0, "stroke-width": 0 }));
             state.settings_button.transform(['T', x + width - 30, ',', y - 3, 'S', 0.5, ',', 0.5].join(''));
             state.settings_button.attr({ cursor: "pointer", 'fill': '#555' });
+            state.settings_button[0].node.setAttribute("class", "settings-button");
         }
 
         // timeout labels
@@ -561,10 +650,12 @@ $(function() { "use strict";
         };
 
         state.push(state.header_divider);
+        // state.push(state.bottom_divider);
         state.push(state.border_rect);
         state.push(state.name);
         state.push(state.handle);
         state.settings_button.length && state.push(state.settings_button);
+        state.toFrontRect = toFrontRect;
 
         return state;
     };
@@ -587,12 +678,12 @@ $(function() { "use strict";
                 'font-family': "'Lucida Grande', Helvetica, Arial, sans-serif",
                 'text-anchor': 'start'
             };
-            return r.text(tlx+4, tly+1, action_data.name)
+            return r.text(tlx+20, tly+1, action_data.name)
                 .attr(jQuery.extend(
                     common_attrs,
                     !action_data.auto ? {
                         'font-weight': 'bold',
-                        fill: color || common_attrs.fill
+                        // fill: color || common_attrs.fill
                         } : { }
                 ));
         };
@@ -603,10 +694,11 @@ $(function() { "use strict";
         text.remove();
 
         var result = r.set();
-        result.border_rect = r.rect(bbox.x-4, bbox.y-1, bbox.width+8, bbox.height+2).attr({ 'stroke-width': 0, 'fill': '#fff' });
+        result.border_rect = r.rect(bbox.x-20, bbox.y-1, bbox.width+8, bbox.height+5).attr({ 'stroke-width': 0, r: 5 });
+        result.border_rect.node.setAttribute("class", "wf-action");
         result.push(result.border_rect);
-        result.push(makeActionTextElement());
 
+        var action_text = makeActionTextElement();
         if (!action_data.auto) {
             if (action_data.states && action_data.states.length) {
                 var state_present = false;
@@ -626,7 +718,18 @@ $(function() { "use strict";
                 'stroke': '#999',
                 fill: '#ddd'
             });
+            result.border_rect.node.setAttribute("class", "fill-light-gray stroke-light-gray");
         }
+
+        var circle_state = r.circle(bbox.x-9, bbox.y+8, 5).attr({
+            "fill": color || '#000',
+            "stroke-width": "1"
+        });
+
+        circle_state.node.setAttribute("class", "stroke-border-soft");
+        result.push(circle_state);
+        action_text.node.setAttribute("class", "wf-action-text fill-text");
+        result.push(action_text);
 
         result.attr('cursor', 'pointer');
         result.color = color || '#000';
@@ -635,16 +738,16 @@ $(function() { "use strict";
 
     Raphael.fn.timeout = function(timeout, x, y) {
         var txt = timeout.day + '[`d`] ';
-        var shift = 7;
+        var shift = 10;
         if (timeout.hour > 0) {
             txt += timeout.hour + '[`h`]';
-            shift = 2;
+            shift = 5;
         }
         var attrs = {
             stroke: 'none',
             'stroke-width': 0,
             fill: '#aaa',
-            'font-size': '9px',
+            'font-size': '10px',
             'font-weight': 'bold',
             'font-family': "'Lucida Grande', Helvetica, Arial, sans-serif",
             'text-anchor': 'left'
@@ -652,7 +755,7 @@ $(function() { "use strict";
         var text = r.text(x, y, txt).attr(attrs);
         var bbox = jQuery.extend({ }, text.getBBox());
         text.remove();
-        text = r.text(x - bbox.width - shift, y, txt).attr(attrs);
+        text = r.text(x - bbox.width - shift, y + 1, txt).attr(attrs);
         text.attr('cursor', 'pointer');
         return text;
     };
@@ -706,6 +809,61 @@ $(function() { "use strict";
     var actions_data = {json_encode($actions_data)};
     var position_data = {json_encode($position_data)};
 
+    var $rect_filter = $(`<svg><filter id="rectFilter">
+                            <feDropShadow dx="-2" dy="1" stdDeviation="8" flood-color="rgba(0,0,0,0.1)" />
+                            <feDropShadow dx="2" dy="1" stdDeviation="4" flood-color="rgba(0,0,0,0.1)" />
+                        </filter></svg>`).children();
+
+    $(r.defs).append($rect_filter);
+
+    var fixIntersectionRect = () => {
+        var states_arr = Object.values(states);
+        if (states_arr.length < 2) {
+            return;
+        }
+
+        var rects = [];
+        for (let i = 0; i < states_arr.length; i++) {
+            const state = states_arr[i];
+            const current_rect = state.border_rect[0];
+            rects.push({
+                state,
+                x: state.border_rect.attrs.x + state.border_rect.matrix.e,
+                y: state.border_rect.attrs.y + state.border_rect.matrix.f,
+                width: Math.ceil(current_rect.getAttribute('width')) - 10,
+                height: Math.ceil(current_rect.getAttribute('height')) - 10
+            });
+        }
+
+        // define of intersection
+        var rects_length = rects.length;
+        var toFrontSmallRects = (rectA, rectB) => {
+            /*Math.abs(rectA.x - rectB.x) < (Math.abs(rectA.width + rectB.width) / 2)
+              && (Math.abs(rectA.y - rectB.y) < (Math.abs(rectA.height + rectB.height) / 2))*/
+            if (!(
+                rectA.x > (rectB.x + rectB.width)  ||
+                (rectA.x + rectA.width) < rectB.x  ||
+                rectA.y > (rectB.y + rectB.height) ||
+                (rectA.y + rectA.height) < rectB.y
+            )) {
+                var needRect = (rectA.height < rectB.height ? rectA : rectB);
+                if (rectA.height === rectB.height) {
+                    needRect = (rectA.width < rectB.width ? rectA : rectB)
+                }
+                needRect.state.toFrontRect();
+            }
+        }
+
+        const sortedRects = [...rects].sort((a, b) => b.height - a.height);
+        for (let i = 0; i < rects_length; i++) {
+            const rectA = sortedRects[i];
+            for (let j = 0; j < i; j++) {
+                const rectB = sortedRects[j];
+                toFrontSmallRects(rectA, rectB);
+            }
+        }
+    };
+
     // Create state nodes
     (function() {
         var tlx, tly;
@@ -724,6 +882,7 @@ $(function() { "use strict";
             }
 
             states[id] = r.state(states_data[id], tlx, tly);
+
             r.ensureCanvasSize(states[id]);
             states[id].handle.drag(move, dragger, up);
             (function() {
@@ -774,6 +933,7 @@ $(function() { "use strict";
             }
         }
 
+        fixIntersectionRect();
     })();
 
     // create connections from actions
@@ -842,12 +1002,14 @@ $(function() { "use strict";
     $.wa.helpdesk_controller.updateWorkflowErrors({json_encode($workflows_errors)}, {json_encode($sources_errors)});
 
     // workflow settings editor
-
     (function() {
+        const $form_workflow_settings = $('.h-workflow-settings form');
+        let changeForm;
 
         var openBlock = function() {
             $('.h-workflow-settings').show();
             $('.h-workflow-name-block').hide();
+            changeForm = $.wa.helpers.watchChangeForm($form_workflow_settings);
         };
 
         var closeBlock = function() {
@@ -857,33 +1019,48 @@ $(function() { "use strict";
 
         {if $can_remove}
             $('.h-delete-workflow').click(function() {
-                if (confirm('[`Are you sure?`]')) {
-                    $.post('?module=settings&action=workflowDelete', {
-                        id: $(this).data('workflowId')
-                    }, function(r) {
-                        if (r.status === 'ok') {
-                            $('#h-sidebar-workflow-list').find('li[data-workflow-id="' + r.data.id + '"]').remove();
-                            $.wa.setHash('#/');
-                        }
-                    }, 'json');
+                const id = $(this).data('workflowId');
+                if (!id) {
+                    return false;
                 }
+
+                $.waDialog.confirm({
+                    title: "[`Are you sure?`]",
+                    success_button_title: $_('Delete'),
+                    success_button_class: 'danger',
+                    cancel_button_title: $_('Cancel'),
+                    cancel_button_class: 'light-gray',
+                    onSuccess: function(d) {
+                        const submit_loading = $.wa.helpers.createLoadingSubmit(d.$body.find('.js-success-action')).show();
+                        $.post('?module=settings&action=workflowDelete', { id }, function(r) {
+                            submit_loading.hide();
+                            if (r.status === 'ok') {
+                                $('#h-sidebar-workflow-list').find('li[data-workflow-id="' + r.data.id + '"]').remove();
+                                $.wa.setHash('#/');
+                            }
+                        }, 'json');
+                    }
+                });
                 return false;
             });
         {/if}
 
-        $('.h-workflow-settings')
-            .find('form').submit(function(e) {
-                var form = $(this);
+        $form_workflow_settings.submit(function(e) {
+                const form = $(this);
+                const loadingSubmit = $.wa.helpers.createLoadingSubmit(form.find(':submit')).show();
+
                 $.post(form.attr('action'), form.serialize(), function(r) {
+                    loadingSubmit.hide();
                     if (r.status === 'ok') {
+                        changeForm.reset();
                         $('.h-workflow-name').text(r.data.workflow.name);
                         $('#h-sidebar-workflow-list li[data-workflow-id="' + r.data.workflow.id + '"] .h-name').text(r.data.workflow.name);
                         closeBlock();
                     }
                 }, 'json');
                 return false;
-            }).end()
-            .find('.cancel').click(function() {
+            })
+            .end().find('.cancel').click(function() {
                 closeBlock();
             });
         $('.h-workflow-settings-toggle').click(function() {
@@ -896,9 +1073,8 @@ $(function() { "use strict";
         });
     })();
 
-
     $.wa.helpdesk_controller.confirmLeaveStop('h-action-settings');
 
 });
 </script>
-
+</div>

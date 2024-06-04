@@ -30,55 +30,94 @@
         <div class="field">
             <div class="name">[`To`]</div>
             <div class="value">
-                <ul class="menu-v checklist no-click-close" data-field-name="{$to_name|escape}" style="margin-top: 0px;">
-                    <li style="min-width: 400px;">
-                        <i class="icon10 darr"></i>
-                        <span class="selected-items" style="cursor:pointer;">[`Select`]</span>
-                        {if $to_value && !is_array($to_value)}
-                            {$to_value = [$to_value => 1]}
-                        {elseif !$to_value}
-                            {$to_value = []}
-                        {/if}
-                        <ul class="menu-v hidden shadowed no-mouseleave" style="padding:5px;position:absolute;z-index:200;">
-                            <li><label>
-                                <input type="checkbox" name="{$to_name|escape}[client]" value="1"{if !empty($to_value.client)} checked{/if}>
-                                [`Client (request originator)`]
+
+                <div class="dropdown" id="{$uniqid}-to_name-dropdown">
+                    <a href="javascript:void(0)" class="dropdown-toggle without-arrow black-link semibold flexbox space-4 small">
+                        <span class="icon custom-mt-4"><i class="fas fa-caret-down"></i></span>
+                        <span class="selected-items" data-initial-text="[`Select`]">[`Select`]</span>
+                    </a>
+                    <div class="dropdown-body" style="min-width: 300px;max-width: 300px;">
+                        <ul class="menu checklist" data-field-name="{$to_name|escape}">
+                            <li><label class="item">
+                                <span class="wa-checkbox">
+                                    <input type="checkbox" name="{$to_name|escape}[client]" value="1"{if !empty($to_value.client)} checked{/if}>
+                                    <span>
+                                        <span class="icon">
+                                            <i class="fas fa-check"></i>
+                                        </span>
+                                    </span>
+                                    [`Client (request originator)`]
+                                </span>
                             </label></li>
-                            <li><label>
-                                <input type="checkbox" name="{$to_name|escape}[assignee]" value="1"{if !empty($to_value.assignee)} checked{/if}>
-                                [`Assigned user`]
+                            <li><label class="item">
+                                <span class="wa-checkbox">
+                                    <input type="checkbox" name="{$to_name|escape}[assignee]" value="1"{if !empty($to_value.assignee)} checked{/if}>
+                                    <span>
+                                        <span class="icon">
+                                            <i class="fas fa-check"></i>
+                                        </span>
+                                    </span>
+                                    [`Assigned user`]
+                                </span>
                             </label></li>
-                            <li><label>
-                                <input type="checkbox" name="{$to_name|escape}[assigned_group]" value="1"{if !empty($to_value.assigned_group)} checked{/if}>
-                                [`All group members (for group assignment)`]
+                            <li><label class="item">
+                                <span class="wa-checkbox">
+                                    <input type="checkbox" name="{$to_name|escape}[assigned_group]" value="1"{if !empty($to_value.assigned_group)} checked{/if}>
+                                    <span>
+                                        <span class="icon">
+                                            <i class="fas fa-check"></i>
+                                        </span>
+                                    </span>
+                                    [`All group members (for group assignment)`]
+                                </span>
                             </label></li>
 
                             <li class="hr show-if-custom" style="display:none;"></li>
 
+                            {if $to_value && !is_array($to_value)}
+                                {$to_value = [$to_value => 1]}
+                            {elseif !$to_value}
+                                {$to_value = []}
+                            {/if}
                             {if $to_value}
                                 {foreach $to_value as $val => $name}
                                     {if !in_array($val, ['client', 'assignee', 'assigned_group'])}
-                                        <li><label>
-                                            <input type="checkbox" name="{$to_name|escape}[{$val|escape}]" value="1" checked>
-                                            {$name|escape}
+                                        <li><label class="item">
+                                            <span class="wa-checkbox">
+                                                <input type="checkbox" name="{$to_name|escape}[{$val|escape}]" value="1" checked>
+                                                <span>
+                                                    <span class="icon">
+                                                        <i class="fas fa-check"></i>
+                                                    </span>
+                                                </span>
+                                                {$name|escape}
+                                            </span>
                                         </label></li>
                                     {/if}
                                 {/foreach}
                             {/if}
 
-                            <li class="hidden template"><label>
-                                <input type="checkbox" name="{$to_name|escape}[%VALUE%]" value="1" checked disabled>
-                                <span class="val"></span>
+                            <li class="hidden template"><label class="item">
+                                <span class="wa-checkbox">
+                                    <input type="checkbox" name="{$to_name|escape}[%VALUE%]" value="1" checked disabled>
+                                    <span>
+                                        <span class="icon">
+                                            <i class="fas fa-check"></i>
+                                        </span>
+                                    </span>
+                                    <span class="val"></span>
+                                </span>
                             </label></li>
 
                             <li class="hr"></li>
-                            <li>
-                                <input type="text" placeholder="[`Add another recipient`]" style="width:100%;">
-                                <div class="clear-left hint">[`All messages will be sent as blind copies (BCC).`]</div>
+                            <li class="box">
+                                <input type="text" placeholder="[`Add another recipient`]" style="min-width:100%;">
+                                <div class="hint">[`All messages will be sent as blind copies (BCC).`]</div>
                             </li>
                         </ul>
-                    </li>
-                </ul>
+                    </div>
+                </div>
+
             </div>
         </div>
     {/if}
@@ -86,7 +125,7 @@
     <div class="field template-subfield">
         <div class="name">[`From`]</div>
         <div class="value combined-selector">
-            <select class="from-select"{if !empty($sourcefrom_name)} name="{$sourcefrom_name|escape}"{/if}>
+            <select class="from-select custom-mb-4"{if !empty($sourcefrom_name)} name="{$sourcefrom_name|escape}"{/if}>
                 <option value="default">{sprintf_wp('System default (%s)', key(waMail::getDefaultFrom()))|escape}</option>
                 {if !empty($source) && !empty($source.params.email)}
                     <option value="sourcefrom"{if !empty($sourcefrom_set) && $sourcefrom_set == 'sourcefrom'} selected{/if}>
@@ -94,22 +133,19 @@
                     </option>
                 {/if}
                 <option value=""{if !empty($from)} selected{/if}>[`Specified`]</option>
-            </select><br>
-            <input type="text" value="{$from|escape}" class="hidden from-input" style="margin:10px 0 0 0;">
-            <div class="hint equal-width" style="margin-top:4px;">
+            </select>
+            <input type="text" value="{$from|escape}" class="hidden from-input">
+            <div class="hint" style="margin-top:4px;">
                 [`It is recommended to specify an existing email address which you do not check for new mail as the sender's address for such notifications; e.g., noreply@yourdomain.com. This will help minimize the number of redundant requests.`]
             </div>
+            {if empty($source) && !empty($sourcefrom_name)}
+                <div class="small"><label>
+                    <input type="checkbox" name="{$sourcefrom_name|escape}" value="sourcefrom"{if !empty($sourcefrom_set) && $sourcefrom_set == 'sourcefrom'} checked{/if}>
+                    [`Use source email address`]
+                </label></div>
+            {/if}
         </div>
     </div>
-
-    {if empty($source) && !empty($sourcefrom_name)}
-        <div class="field">
-            <div class="value" style="font-size:11px;"><label>
-                <input type="checkbox" name="{$sourcefrom_name|escape}" value="sourcefrom"{if !empty($sourcefrom_set) && $sourcefrom_set == 'sourcefrom'} checked{/if}>
-                [`Use source email address`]
-            </label></div>
-        </div>
-    {/if}
 
     <div class="field template-subfield">
         <div class="name">[`Subject`]</div>
@@ -118,13 +154,13 @@
         </div>
     </div>
 
-    <div class="field template-subfield" style="margin-top: 40px;">
+    <div class="field template-subfield vertical custom-mt-40">
         <div class="name">[`Text`]</div>
         <div class="value">
-            <div class="variables-link-wrapper equal-width" style="border: 1px solid #ccc;">
+            <div class="variables-link-wrapper">
 
-                <div class="wa-editor-core-wrapper">
-                    <ul class="h-editor-toggle wa-editor-wysiwyg-html-toggle">
+                <div class="wa-editor-core-wrapper bordered-bottom">
+                    <ul class="h-editor-toggle overflow-dropdown small tabs wa-editor-wysiwyg-html-toggle custom-ml-8">
                         <li class="selected">
                             <a href="#" class="wysiwyg">[`WYSIWYG`]</a>
                         </li>
@@ -138,7 +174,9 @@
                 </div>
 
                 {if !empty($variables)}
-                    <a href="javascript:void(0)" class="variables-link inline-link" style="font-size:.8em;"><b><i>[`Variables`]</i></b></a>
+                    <div class="align-right">
+                        <a href="javascript:void(0)" class="variables-link custom-mt-8 custom-mr-4 bold smaller">{literal}{$}{/literal} [`Variables`]</a>
+                    </div>
                 {/if}
 
             </div>
@@ -146,17 +184,19 @@
     </div>
 
     {if !empty($variables)}
-        <div class="field variables-wrapper">
-            <div class="fields shadowed equal-width">
+        <div class="variables-wrapper">
+            <div class="fields">
                 {foreach $variables|default:[] as $category_id => $category}
                     {if !empty($category.vars)}
-                        <div class="block">
-                            <h3>{$category.name|default:''|escape}</h3>
+                        <div class="custom-mb-24">
+                            <h5>{$category.name|default:''|escape}</h5>
                             {foreach $category.vars as $k => $v}
                                 <div class="field">
-                                    <div class="name"><a href="javascript:void(0)" class="inline-link{if strlen($k) > 35} small{/if}"><b><i>{$k|escape}</i></b></a></div>
+                                    <div class="name"><a href="javascript:void(0)" class="inline-link semibold {if strlen($k) > 35}smaller{else}small{/if}">{$k|escape}</a></div>
                                     {if $v}
-                                        <div class="value hint">{$v|escape}</div>
+                                        <div class="value">
+                                            <div class="dark-hint break-word">{$v|escape}</div>
+                                        </div>
                                     {/if}
                                 </div>
                             {/foreach}
@@ -164,22 +204,23 @@
                     {/if}
                 {/foreach}
 
-                <div class="block">
-                    <div class="field">
-                        <h3>[`1-Click Feedback`]</h3>
-                        <p class="small">
+                <div class="hr custom-mx-0 custom-my-16"></div>
+                <div>
+                    <div class="field vertical">
+                        <h5 class="custom-mb-8">[`1-Click Feedback`]</h5>
+                        <div class="small">
                             [`Add a snippet in your email template that will allow recipient with just one click to select a value for pull down or checkbox field. This field must exist in your Helpdesk app (refer to the Field constructor section) and be available for clients in their customer portals. Recipients will be redirected to their customer portals. This option can be used for quick evaluation of the request reply by your customers.`]
-                        </p>
+                        </div>
                     </div>
 
                     {if !empty($oneclick_feedback_fields)}
                         {foreach $oneclick_feedback_fields as $field_id => $info}
                             <div class="field">
                                 <div class="name">
-                                    <a href="javascript:void(0)" class="inline-link"><b><i>{$field_id}</i></b></a>
+                                    <a href="javascript:void(0)" class="semibold small">{$field_id}</a>
                                 </div>
-                                <div class="value hint">
-                                    {$info.description}
+                                <div class="value">
+                                    <div class="dark-hint break-word">{$info.description}</div>
                                 </div>
                                 <span class="h-html hidden">{$info.html}</span>
                             </div>
@@ -189,16 +230,14 @@
                             <div class="name">[`There are no appropriate fields`]</div>
                         </div>
                     {/if}
-
                 </div>
 
             </div>
-            <div class="clear-left"></div>
         </div>
     {/if}
 
     {if !empty($add_attachments_name)}
-        <div class="field top-padded">
+        <div class="field custom-mt-32">
             <div class="value">
                 <label>
                     <input type="checkbox" name="{$add_attachments_name|escape}" value="1"{if !empty($add_attachments_set)} checked{/if}>
@@ -224,14 +263,20 @@
     var body_textarea = wrapper.find('.body-textarea:first');
     var variables_link = wrapper.find('.variables-link:first');
     var variables_wrapper = wrapper.find('.variables-wrapper');
-
     var delay = 0; // we want controls to show and hide with animation, but only after initialization is finished
-        
+
+    var changeForm = () => {
+        if ('watchNewRequestForm' in $.wa.helpdesk_controller) {
+            $.wa.helpdesk_controller.watchNewRequestForm.change();
+        }
+    };
+
     var initEditor = function(el) {
         el = $(el);
         el.waEditor({
             focus: false,
             buttons: ['format', 'bold', 'italic', 'underline', 'deleted', 'lists', 'link', 'image', 'horizontalrule'],
+            toolbarFixed: false,
             keydownCallback: function(event) { }, // without this waEditor intercents Ctrl+S event in Redaktor
             callbacks: {
                 change: function () {
@@ -301,19 +346,53 @@
         result += '{literal}{SEPARATOR}{/literal}';
         result += body_textarea.val();
         hidden_input.val(result);
+        changeForm();
     };
 
     // When something changes in form, update value in hidden input
     wrapper.on('beforesubmit change', '.template-subfield input, .template-subfield select, .template-subfield textarea', onChangeHandler);
 
+
+    // from wa.controller.js
+    /** Create a checklist dropdown from ul.menu.dropdown (optionally .no-click-close) */
+    var updateTogglerText = function(checklist) {
+        // Element to show list of currently selected items
+        var selected_items_span = checklist.closest('.dropdown').find('.selected-items');
+
+        // initial text, usually something like "Please select"
+        var initial_text = selected_items_span.data('initial-text');
+
+        // Dropdown checkbox change changes the visible description in selected_items_span
+        $('input:checkbox', checklist[0]).on('change', function() {
+            changeForm();
+            var str = [];
+            checklist.find('input:checkbox').each(function() {
+                var cb = $(this);
+                if (cb.is(':checked:not(:disabled)')) {
+                    cb.parent().addClass('bold');
+                    str.push($.trim($(this).parent().text()));
+                } else {
+                    cb.parent().removeClass('bold');
+                }
+            });
+            if (str.length > 0) {
+                selected_items_span.html(str.map((t) => '<div>'+t+';</div>').join(''));
+            } else {
+                selected_items_span.text(initial_text);
+            }
+            return false;
+        }).change();
+    };
+
+
     {if !empty($to_name)}
         // Checklist for To: selector
         (function() {
             var checklist = wrapper.find('.checklist');
-            var menu = checklist.find('.menu-v');
+            var menu = checklist;
             var search_field = checklist.find('input:text');
 
-            $.wa.helpdesk_controller.animateChecklist(checklist);
+            updateTogglerText(checklist);
 
             // Autocomplete for contact search
             search_field.autocomplete({
@@ -345,15 +424,19 @@
                 }
             });
 
-            // Close dropdown on click anywhere
-            var h;
-            $(document).on('click', h = function(e) {
-                if (!wrapper.closest('html').length) {
-                    $(document).off('click', h);
-                    return;
-                }
-                if (!$(e.target).closest(checklist.add(search_field.autocomplete('widget'))).length) {
-                    menu.hide();
+            $("#{$uniqid}-to_name-dropdown").waDropdown({
+                hover: false,
+                open: function (d) {
+                    d.hide = function () { };
+                    // Close dropdown on click anywhere
+                    var h;
+                    $(document).on('click', h = function(e) {
+                        const $target = $(e.target);
+                        if (!$target.closest(search_field.autocomplete('widget')).length && !$target.closest(d.$wrapper).length) {
+                            d.toggleMenu(false);
+                            $(document).off('click', h);
+                        }
+                    });
                 }
             });
 
@@ -370,6 +453,7 @@
                     var li = tmpl.clone().removeClass('hidden template').insertBefore(tmpl);
                     li.find('.val').text(name);
                     li.find(':checkbox').prop('disabled', false).attr('name', attr_name).change();
+                    updateTogglerText(checklist);
                     updateState();
                 }
             }

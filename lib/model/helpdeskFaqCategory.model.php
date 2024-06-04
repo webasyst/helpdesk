@@ -159,13 +159,17 @@ class helpdeskFaqCategoryModel extends waModel
         if (!$item) {
             return false;
         }
+
+        $getIcon = function ($icon) {
+            return (helpdeskHelper::isLegacyUi() ? $icon : ifset(helpdeskHelper::getIcons()[$icon]));
+        };
         if (is_array($id)) {
             foreach ($item as &$i) {
-                $i['icon'] = $i['icon'] ? $i['icon'] : 'folder';
+                $i['icon'] = $getIcon($i['icon'] ? $i['icon'] : 'folder');
             }
             unset($i);
         } else {
-            $item['icon'] = $item['icon'] ? $item['icon'] : 'folder';
+            $item['icon'] = $getIcon($item['icon'] ? $item['icon'] : 'folder');
         }
         $this->setMarks($item);
         return $item;
@@ -258,7 +262,8 @@ class helpdeskFaqCategoryModel extends waModel
         $sql = "SELECT * FROM " . $this->table . $condition . " ORDER BY sort";
         $items = $this->query($sql)->fetchAll($key, $normalize);
         foreach ($items as &$el) {
-            $el['icon'] = $el['icon'] ? $el['icon'] : 'folder';
+            $icon_class = $el['icon'] ? $el['icon'] : 'folder';
+            $el['icon'] = ifset(helpdeskHelper::getIcons()[$icon_class], $icon_class);
         }
         unset($el);
         $this->setMarks($items, true);
@@ -313,4 +318,3 @@ class helpdeskFaqCategoryModel extends waModel
         return self::VIEW_TYPE_COLLECTIVE;
     }
 }
-

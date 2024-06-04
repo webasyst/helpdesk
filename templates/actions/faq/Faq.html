@@ -1,22 +1,25 @@
-<div class="block not-padded">
-    <form class="h-faq-question-settings" action="?module=faq&action=save">
-
-        <div class="block h-header-block h-h1-inline" style="border-bottom: 1px solid #aaa;">
-            <a href="javascript:void(0);" class="h-prev">&larr; <i class="icon16 loading"></i></a>
-            <i class="icon16 loading h-header-loading" style="display:none;"></i>
+<form class="h-faq-question-settings article wide" action="?module=faq&action=save">
+    <div class="article-body custom-pb-0">
+        <div class="h-header-block h-h1-inline desktop-and-tablet-only">
+            <a href="javascript:void(0);" class="h-prev back flexbox middle space-8 js-mobile-back">
+                <span class="icon size-24"><i class="fas fa-arrow-circle-left"></i></span>
+                <div class="h-prev-text text-gray"></div>
+                <i class="spinner loading h-header-loading" style="display:none;"></i>
+            </a>
         </div>
 
-        <div class="block not-padded">
+        <div class="height-100 custom-mt-20">
 
-            <div class="fields w100 width200px">
+            <div class="fields custom-mb-40">
 
-                <div class="block" style="background: #eee; padding-bottom: 30px;">
+                <div class="--field">
+                    <span class="js-mobile-back back mobile-only largest"><i class="fas fa-arrow-circle-left"></i></span>
+                    <input type="text" name="question" class="h-name largest bold width-100" value="{$faq.question|escape}" placeholder="[`New question`]">
+                </div>
 
-                    <div class="field">
-                        <input type="text" name="question" class="h-name large w80" value="{$faq.question|escape}" placeholder="[`New question`]">
-                    </div>
+                <div class="fields-group blank">
 
-                    <div class="field" style="margin-top: 10px">
+                    <div class="field custom-mt-8">
                         <div class="name">
                             [`Category`]
                         </div>
@@ -36,56 +39,55 @@
                         <div class="value">
                             <label>
                                 <input type="checkbox" name="is_backend" value="1" {if $faq.is_backend}checked="checked"{/if}>
-                                [`Backend`]<br/>
-                                <span class="hint">[`Users can see this question and answer when they reply to client requests`]</span>
+                                [`Backend`]
+                                <div class="hint">[`Users can see this question and answer when they reply to client requests`]</div>
                             </label>
-                        </div>
-                    </div>
-                    <div class="field h-faq-comment" {if !$faq.is_backend}style="display:none;"{/if}>
-                        <div class="value">
-                            [`Comment for users`]<br>
-                            <textarea name="comment"
-                                                placeholder="[`Write a brief instruction here that may help users to select this answer when they work on a client's request.`]">{strip}
-                                    {if $faq.comment}{$faq.comment}{/if}
-                            {/strip}</textarea>
-                        </div>
-                    </div>
-                    {if $category.id > 0}
-                        <div class="field h-faq-site-visibility">
-                            <div class="value">
-                                <label>
-                                    <input type="checkbox" name="is_public" value="1" {if $faq.is_public}checked="checked"{/if}>
-                                    [`Site`]<br/>
-                                    <span class="hint">[`Visible in the public category`]</span>
-                                </label>
-                            </div>
-                        </div>
-
-                        <div class="field h-frontend-url {if !$faq.is_public}hidden{/if}">
-                            <div class="name">
-                                [`Page URL`]
-                            </div>
-                            <div class="value">
-                                <div>
-                                    <span class="h-frontend-root-url">{$wa->getUrl('/', true)}faq/{$category.url}/</span><input style="min-width: 140px" type="text" name="faq_url" value="{$faq.url|default:''}">/
-                                    {if $faq.id > 0}
-                                        <a class="small h-faq-url-link" target="_blank" href="{$wa->getUrl('/', true)}faq/{$category.url}/{$faq.url|default:''}/">[`Preview`] <i class="icon10 new-window" style="margin-top: 7px;"></i></a>
-                                    {/if}
+                            <div class="h-faq-comment custom-mt-12" {if !$faq.is_backend}style="display:none;"{/if}>
+                                <div class="value custom-mb-32">
+                                    <div class="dark-hint custom-pb-4">[`Comment for users`]</div>
+                                    <textarea name="comment"
+                                        placeholder="[`Write a brief instruction here that may help users to select this answer when they work on a client's request.`]">{strip}
+                                            {if $faq.comment}{$faq.comment}{/if}
+                                    {/strip}</textarea>
                                 </div>
                             </div>
+                            {if $category.id > 0}
+                                <div class="h-faq-site-visibility custom-my-12">
+                                    <div class="value">
+                                        <label>
+                                            <input type="checkbox" name="is_public" value="1" {if $faq.is_public}checked="checked"{/if}>
+                                            [`Site`]
+                                            <div class="hint">[`Visible in the public category`]</div>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="h-frontend-url" {if !$faq.is_public}style="display:none"{/if}">
+                                    <div class="name dark-hint">
+                                        [`Page URL`]
+                                    </div>
+                                    <div class="value">
+                                        <div>
+                                            <span class="h-frontend-root-url break-word">{$wa->getUrl('/', true)}faq/{$category.url}/</span>
+                                            <input class="small" style="min-width: 140px" type="text" name="faq_url" value="{$faq.url|default:''}">/
+                                            {if $faq.id > 0}
+                                                <a class="nowrap button nobutton circle small h-faq-url-link" target="_blank" href="{$wa->getUrl('/', true)}faq/{$category.url}/{$faq.url|default:''}/" title="[`Preview`]"><i class="fas fa-external-link-alt"></i></a>
+                                            {/if}
+                                        </div>
+                                    </div>
+                                </div>
+                            {/if}
                         </div>
-                    {/if}
-
+                    </div>
                 </div>
 
-                <div class="field h-editor-wrapper" style="margin-bottom: 40px;">
+                <div class="field h-editor-wrapper">
                     <div class="wa-editor-core-wrapper">
-                        <ul class="h-editor-toggle wa-editor-wysiwyg-html-toggle">
+                        <ul class="h-editor-toggle overflow-dropdown small tabs wa-editor-wysiwyg-html-toggle custom-ml-8">
                             <li class="selected">
-                                <a href="#" class="wysiwyg">[`WYSIWYG`]</a>
+                                <a href="javascript:void(0)" class="wysiwyg">[`WYSIWYG`]</a>
                             </li>
                             <li>
-                                <a href="#" class="html">HTML</a>
+                                <a href="javascript:void(0)" class="html">HTML</a>
                             </li>
                         </ul>
                         <div class="h-editor-wrapper">
@@ -96,21 +98,17 @@
 
             </div>
 
-            <div id="h-sticky-bottoms" style="background: #eee; padding: 10px; border-top: 1px solid #ccc;">
-                <a href="javascript:void(0);" class="no-underline h-delete float-right small h-delete-faq-question" style="{if !$faq.id}display:none;{/if} margin-top: 10px; margin-right: 25px;">[`Delete this question & answer`]</a>
-                <input id="hd-source-editor-save" type="submit" class="button green" value="[`Save`]">
-                <i class="icon16 loading h-save-loading" style="display:none;"></i>
+            <div class="bottombar h-fixed-bottombar sticky flexbox middle space-16 box bordered-top rounded">
+                <button type="submit" id="hd-source-editor-save" class="button green">[`Save`]</button>
+                <button type="button" class="button light-gray red h-delete small h-delete-faq-question custom-ml-auto" style="{if !$faq.id}display:none;{/if}"><i class="fas fa-trash-alt text-red"></i><span class="desktop-and-tablet-only"> [`Delete this question & answer`]</span></button>
             </div>
 
             {$wa->csrf()}
             <input type="hidden" name="id" value="{$faq.id}">
 
-            <div class="clear"></div>
-
         </div>
-
-    </form>
-</div>
+    </div>
+</form>
 
 <script>
 
@@ -123,13 +121,18 @@
             return;
         {/if}
 
-        var button = $(':submit');
+        const $form = $('form.h-faq-question-settings');
+        const $submit = $form.find(':submit');
+        const submitState = Object.assign(
+            $.wa.helpers.createLoadingSubmit($submit),
+            $.wa.helpers.createChangingSubmit($submit)
+        );
         var updateBackLink = function(href, name) {
-            $('.h-faq-question-settings .h-header-block').show();
-            $('.h-faq-question-settings .h-prev').attr('href', href).html('&larr; ' + name);
+            $form.find('.h-header-block').show();
+            $form.find('.h-prev').attr('href', href).find('.h-prev-text').html(name);
         };
         var hideBackLink = function() {
-            $('.h-faq-question-settings .h-header-block').hide();
+            $form.find('.h-header-block').hide();
         };
 
         {if $faq.id}
@@ -161,34 +164,34 @@
 
         $.wa.helpdesk_controller.confirmLeave(
             function() {
-                return $('.h-faq-question-settings').find(':submit').hasClass('yellow');
+                return $form.find(':submit').hasClass('yellow');
             },
             '[`Unsaved changes will be lost if you leave this page now.`]',
             '[`Are you sure?`]',
             function() {
-                return !$('.h-faq-question-settings').is(':visible');
+                return !$form.is(':visible');
             },
             'h-faq'
         );
 
-        $('.h-faq-question-settings').submit(function() {
+        $form.submit(function() {
+            submitState.show();
             var form = $(this);
             form.find('.h-answer').waEditor('sync');
-            form.find('.h-save-loading').show();
-            form.find('span.error').remove();
-            form.find('.error').removeClass('error');
+            form.find('.state-error-hint').remove();
+            form.find('.state-error').removeClass('state-error');
             form.find('.h-after-save-animation').remove();
+            $submit.removeClass('wa-animation-swing');
             $.post(form.attr('action'), form.serialize(), function(r) {
-                $.helpdesk_faq.changeButton(button, true);
+                submitState.reset();
+                submitState.hide();
                 if (r.status === 'ok') {
-                    form.find(':submit').parent().each(function() {
-                        $('<span class="h-after-save-animation"><i class="icon16 yes after-button"></i> '+"[`Saved`]"+'</span>').animate({ opacity: 0 }, 1000, function() {
-                            $(this).remove();
-                        }).appendTo($(this));
-                    });
-                    $('.h-delete-faq-question').show();
-                    $('.h-faq-question-settings').find('[name="id"]').val(r.data.faq.id);
-                    $('.h-faq-question-settings .h-faq-url-link').removeClass('h-disabled');
+                    $('<span class="h-after-save-animation custom-mr-8"><i class="fas fa-check-circle"></i></span>').animate({ opacity: 0 }, 1000, function() {
+                        $(this).remove();
+                    }).prependTo($submit);
+
+                    form.find('[name="id"]').val(r.data.faq.id);
+                    form.find('.h-faq-url-link').removeClass('h-disabled');
                     $.helpdesk_faq.updateCounters(r.data.counters);
                     $('.h-faq-url-link').attr('href', "{$wa->getUrl('/', true)}faq/{$category.url}/" + r.data.faq.url + "/");
                     {if !$faq.id}
@@ -196,38 +199,49 @@
                     {/if}
 
                 } else {
+                    $submit.addClass('wa-animation-swing');
                     $.each(r.errors, function(i, er) {
-                        $('input[name="' + er[1] + '"]').addClass('error').parent().append(' <span class="error">' + er[0] + '</span>');
+                        $('input[name="' + er[1] + '"]').addClass('state-error').parent().append(' <div class="state-error-hint">' + er[0] + '</div>');
                     });
                 }
-                form.find('.h-save-loading').hide();
             }, 'json');
             return false;
         });
 
-        $('.h-faq-question-settings').on('click', '.h-faq-url-link', function (e) {
+        $form.on('click', '.h-faq-url-link', function (e) {
             $(this).hasClass('h-disabled') && e.preventDefault();
         });
 
-        $('.h-delete-faq-question').off('click').click(function() {
-            var id = $('.h-faq-question-settings').find('[name="id"]').val();
-            if (id && confirm('[`Are you sure?`]')) {
-                $.post('?module=faq&action=delete', {
-                    id: id
-                }, function(r) {
-                    $.wa.setHash('#/faq/category/{if $category.id > 0}{$category.id}{else}none{/if}/');
-                    $.wa.helpdesk_controller.redispatch();
-                    $.helpdesk_faq.updateCounters(r.data.counters);
-                }, 'json');
-            }
+        $('.h-delete-faq-question').off('click').on('click', function() {
+            var id = $form.find('[name="id"]').val();
+            if (!id) { return false; }
+
+            $.waDialog.confirm({
+                title: "[`Are you sure?`]",
+                success_button_title: $_('Delete'),
+                success_button_class: 'danger',
+                cancel_button_title: $_('Cancel'),
+                cancel_button_class: 'light-gray',
+                onSuccess: function(d) {
+                    const submit_loading = $.wa.helpers.createLoadingSubmit(d.$body.find('.js-success-action')).show();
+                    $.post('?module=faq&action=delete', {
+                        id: id
+                    }, function(r) {
+                        submit_loading.hide();
+                        $.wa.setHash('#/faq/category/{if $category.id > 0}{$category.id}{else}none{/if}/');
+                        $.wa.helpdesk_controller.redispatch();
+                        $.helpdesk_faq.updateCounters(r.data.counters);
+                    }, 'json');
+                }
+            });
         });
 
         $('input[type="checkbox"][name="is_public"]').change(function() {
             if ($(this).is(':checked')) {
-                $('.h-frontend-url').slideDown();
                 if (!$('input[name="faq_url"]').val()) {
-                    $('.h-frontend-url').addClass('h-disabled');
+                    $('.h-faq-url-link').addClass('h-disabled');
                 }
+                $('.h-frontend-url').slideDown();
             } else {
                 $('.h-frontend-url').slideUp();
             }
@@ -258,26 +272,27 @@
                 }
                 $('.h-frontend-root-url').text("{$wa->getUrl('/', true)}faq/" + el.find(':selected').data('url') + '/');
             }
-            $.helpdesk_faq.changeButton(button);
+            submitState.change();
             el.data('prev_val', category_id);
         }).data('prev_val', $('select[name=category_id]').val());
 
-        $('input:checkbox, input:radio').change(function() {
-            $.helpdesk_faq.changeButton(button);
+        $(':checkbox, :radio').change(function() {
+            submitState.change();
         });
-
-        $.helpdesk_faq.onChangeInput($('input[name="faq_url"]'), function() {
-            $.helpdesk_faq.changeButton(button);
+        $.wa.helpers.onChangeInput($('input[name="faq_url"]'), function() {
+            submitState.change();
             $(this).data('edited', true);
-            $('.h-faq-question-settings .h-faq-url-link').addClass('h-disabled');
-
+            $form.find('.h-faq-url-link').addClass('h-disabled');
         });
-        $.helpdesk_faq.onChangeInput($('input[name="question"]'), function() {
-            $.helpdesk_faq.changeButton(button);
+        $.wa.helpers.onChangeInput($('input[name="question"]'), function() {
+            submitState.change();
+        });
+        $.wa.helpers.onChangeInput($('textarea[name="comment"]'), function() {
+            submitState.change();
         });
 
         $.wa.helpdesk_controller.initEditor(
-            $('.h-faq-question-settings').find('.h-answer'), {
+            $form.find('.h-answer'), {
                 buttons: ['format', 'bold', 'italic', 'underline', 'deleted', 'lists', 'link', 'image', 'horizontalrule'],
                 lang: "{substr($wa->locale(), 0, 2)}",
                 saveButton: $('#hd-source-editor-save'),
@@ -290,12 +305,11 @@
                 $('input[name="faq_url"]'),
                 $('input[name="question"]'),
                 function () {
-                    $('.h-faq-question-settings .h-faq-url-link').addClass('h-disabled');
+                    $form.find('.h-faq-url-link').addClass('h-disabled');
                 }
         );
-        $.helpdesk_faq.sticky($('#h-sticky-bottoms'), $('.h-faq-question-settings'));
 
-        var name_input = $('.h-faq-question-settings .h-name');
+        var name_input = $form.find('.h-name');
         if (!name_input.val()) {
             name_input.focus();
         }

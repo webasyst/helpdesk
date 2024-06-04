@@ -27,16 +27,18 @@ class helpdeskFaqCategoryAction extends waViewAction
     public function getCategory($id)
     {
         $fcm = new helpdeskFaqCategoryModel();
-
-        if (is_numeric($id) && $id == '0') {
-            $category = $fcm->getNoneCategory(true);
-        } else if ($id > 0) {
-            $category = $fcm->get($id);
-            $category['url'] = $category['url'] ? $category['url'] : helpdeskHelper::transliterate($category['name']);
-            foreach ($category['questions'] as &$q) {
-                $q['url'] = $q['url'] ? $q['url'] : helpdeskHelper::transliterate($q['question']);
+        $category = null;
+        if (is_numeric($id)) {
+            if ($id == '0') {
+                $category = $fcm->getNoneCategory(true);
+            } else if ($id > 0) {
+                $category = $fcm->get($id);
+                $category['url'] = $category['url'] ? $category['url'] : helpdeskHelper::transliterate($category['name']);
+                foreach ($category['questions'] as &$q) {
+                    $q['url'] = $q['url'] ? $q['url'] : helpdeskHelper::transliterate($q['question']);
+                }
+                unset($q);
             }
-            unset($q);
         } else {
             $category = $fcm->getEmptyRow();
         }

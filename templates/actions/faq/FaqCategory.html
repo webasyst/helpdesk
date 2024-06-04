@@ -1,7 +1,10 @@
-<div class="block not-padded " {if $category.id > 0 && empty($category.questions)}style="background: #eee;"{/if}>
-    <div class="block h-header-block h-h1-inline h-category-name-block">
-
-        <h1 class="h-category-name">
+{$site_link = '<a href="'|cat:$site_url:'#/routing/" target="_blank" style="display:inline;">':_w('Site'):'</a>'}
+<div class="article wide">
+<div class="article-body">
+    {if !is_null($category.id)}
+    <div class="h-header-block h-h1-inline h-category-name-block flexbox space-8">
+        <h1 class="h-category-name h-header-flexible {if $category.id == 0}gray{/if}">
+            <span class="js-mobile-back back mobile-only"><i class="fas fa-arrow-circle-left"></i></span>
             {$category.name|escape}
             {if $category.id}
                 {$category.draft_html}
@@ -10,44 +13,50 @@
                 {$category.backend_and_site_html}
             {/if}
         </h1>
+        <i class="spinner loading h-header-loading custom-mt-12" style="display:none;" {if !$category.id}data-ignore="1"{/if}></i>
 
-        {$site_link = '<a href="'|cat:$site_url:'#/routing/" target="_blank" style="display:inline;">':_w('Site'):'</a>'}
+        {if $category.id}
+            <div class="custom-ml-auto">
+                <a href="javascript:void(0);" class="h-category-settings-toggle back large" style="display: inline;"><i class="fas fa-cog"></i></a>
+            </div>
+        {/if}
+    </div>
+    {/if}
 
+    <form class="h-category-settings fields" {if $category.id !== null}style="display:none{if $category.id > 0 && empty($category.questions)};background:var(--background-color){/if}"{/if} action="?module=faq&action=categorySave{if $category.id}&id={$category.id}{/if}" {if $category.id}data-id="{$category.id}"{/if}>
+        <div class="--field" style="position: relative;">
+            <span class="js-mobile-back back mobile-only largest"><i class="fas fa-arrow-circle-left"></i></span>
+            <input type="text" class="h-name largest" name="name" value="{$category.name|escape}" placeholder="[`New category`]">
+        </div>
 
-        <i class="icon16 loading h-header-loading" style="display:none;" {if !$category.id}data-ignore="1"{/if}></i>
-
-        <form class="h-category-settings {if $category.id !== null}hidden{/if}" action="?module=faq&action=categorySave{if $category.id}&id={$category.id}{/if}" {if $category.id}data-id="{$category.id}"{/if}>
-            <div class="fields w100 width100px">
-                <div class="field" style="position: relative;">
-                    <input type="text" class="h-name large w80" name="name" value="{$category.name|escape}" placeholder="[`New category`]">
+        <div class="fields-group blank custom-mb-40">
+            <div class="field">
+                <div class="name">
+                    [`Icons`]
                 </div>
-                <div class="field">
-                    <div class="name">
-                        [`Icons`]
-                    </div>
-                    <div class="value">
-                        <ul class="menu-h h-category-settings-icons">
-                            {foreach $icons as $icon}
-                                <li data-icon="{$icon}" {if $icon == $category.icon || (!$category.id && $icon === 'folder')}class="selected"{/if}>
-                                    <a href="javascript:void(0);"><i class="icon16 {$icon}"></i></a>
-                                </li>
-                            {/foreach}
-                        </ul>
-                    </div>
+                <div class="value">
+                    <ul class="chips h-category-settings-icons">
+                        {foreach $icons as $icon_key => $icon}
+                            <li data-icon="{$icon_key}" {if $icon_key == $category.icon || (!$category.id && $icon_key === 'folder')}class="selected"{/if}>
+                                <a href="javascript:void(0);"><div class="icon"><i class="{$icon}"></i></div></a>
+                            </li>
+                        {/foreach}
+                    </ul>
                 </div>
+            </div>
 
-                <div class="field">
-                    <div class="name">
-                        [`Visibility`]
-                    </div>
-                    <div class="value">
-                        <label>
-                            <input type="checkbox" name="is_backend" value="1" {if $category.is_backend}checked="checked"{/if}>
-                            [`Backend`]<br/>
-                            <span class="hint">[`Users can see questions and answers from this category when they reply to client requests`]</span>
-                        </label>
-                    </div>
-                    <div class="value">
+            <div class="field">
+                <div class="name">
+                    [`Visibility`]
+                </div>
+                <div class="value">
+                    <label>
+                        <input type="checkbox" name="is_backend" value="1" {if $category.is_backend}checked="checked"{/if}>
+                        [`Backend`]<br/>
+                        <span class="hint">[`Users can see questions and answers from this category when they reply to client requests`]</span>
+                    </label>
+
+                    <div class="custom-mt-16">
                         <label>
                             <input type="checkbox" name="is_public" value="1" {if !$category.routes}disabled="disabled"{/if}
                                 {if $category.is_public}checked="checked"{/if}>
@@ -65,12 +74,14 @@
                         </label>
                     </div>
                 </div>
+            </div>
 
+            <div class="h-public-fields custom-mt-20" {if !$category.is_public}style="display:none;"{/if}>
                 {if $category.routes}
                     <div class="field h-sites-choose-block">
                         <div class="name"></div>
                         <div class="value">
-                            <ul class="menu-v">
+                            <ul class="list">
                                 <li>
                                     <label>
                                         <input type="radio" name="routes_all" value="1" {if $category.routes_all}checked="checked"{/if}>
@@ -81,36 +92,37 @@
                                     <label>
                                         <input type="radio" name="routes_all" value="" {if !$category.routes_all}checked="checked"{/if}>
                                         <span>[`Only selected sites`]</span>
-                                        <div class="h-routes-list-block {if $category.routes_all}hidden{/if}">
-                                            <ul class="menu-v">
-                                                {foreach $category.routes as $route}
-                                                    <li class="h-route-item">
-                                                        <label>
-                                                            <input type="checkbox" name="routes[]" value="{$route.route}" {if $route.checked}checked="checked"{/if}>
-                                                            <span>{$route.route}</span>
-                                                            {if $route.url}
-                                                                <a class="h-preview-link {if !empty($route.route.url_type)}h-disabled{/if}"
-                                                                   target="_blank" href="{$route.url}"
-                                                                   {if !$route.checked  || $category.id <= 0}style="display: none;"{/if}>
-                                                                    <i class="icon10 new-window"></i>
-                                                                </a>
-                                                            {/if}
-                                                        </label>
-                                                    </li>
-                                                {/foreach}
-                                            </ul>
-                                            {if !$all_settled}
-                                                <span class="hint" style="">
-                                                    {* [`Shown above are only sites where Helpdesk app is settled. Use %s app to manage settlements.`] *}
-                                                    {strip}
-                                                        {sprintf(
-                                                            _w('Shown above are only sites where Helpdesk app is settled. Use %s app to manage settlements.'),
-                                                            $site_link
-                                                        )}
-                                                    {/strip}
-                                                <span>
-                                            {/if}
-                                        </label>
+                                    </label>
+                                    <div class="h-routes-list-block" {if $category.routes_all}style="display:none"{/if}">
+                                        <ul class="menu custom-ml-16">
+                                            {foreach $category.routes as $route}
+                                                <li class="h-route-item">
+                                                    <label class="flexible">
+                                                        <input type="checkbox" name="routes[]" value="{$route.route}" {if $route.checked}checked="checked"{/if}>
+                                                        <span>{$route.route}</span>
+                                                        {if $route.url}
+                                                            <a class="h-preview-link button nobutton circle {if !empty($route.route.url_type)}h-disabled{/if}"
+                                                            target="_blank" href="{$route.url}"
+                                                            {if !$route.checked  || $category.id <= 0}style="display: none;"{/if}
+                                                            title="[`Preview`]">
+                                                                <i class="fas fa-external-link-alt"></i>
+                                                            </a>
+                                                        {/if}
+                                                    </label>
+                                                </li>
+                                            {/foreach}
+                                        </ul>
+                                        {if !$all_settled}
+                                            <span class="hint">
+                                                {* [`Shown above are only sites where Helpdesk app is settled. Use %s app to manage settlements.`] *}
+                                                {strip}
+                                                    {sprintf(
+                                                        _w('Shown above are only sites where Helpdesk app is settled. Use %s app to manage settlements.'),
+                                                        $site_link
+                                                    )}
+                                                {/strip}
+                                            <span>
+                                        {/if}
                                     </div>
                                 </li>
                             </ul>
@@ -118,18 +130,18 @@
                     </div>
                 {/if}
 
-                <div class="field h-frontend-url" {if !$category.is_public}style="display:none;"{/if}>
+                <div class="field h-frontend-url">
                     <div class="name">
                         [`Page URL`]
                     </div>
-                    <div class="value">
+                    <div class="value break-word">
                         <div>
-                            http://site.address/<input type="text" name="url" value="{$category.url}">/
+                            http://site.address/ <input class="small" type="text" name="url" value="{$category.url}">/
                         </div>
                     </div>
                 </div>
 
-                <div class="field h-view" {if !$category.is_public}style="display:none;"{/if}>
+                <div class="field h-view">
                     <div class="name">
                         [`View`]
                     </div>
@@ -144,61 +156,71 @@
                         </label>
                     </div>
                 </div>
-
             </div>
-            <div class="buttons">
-                <input type="submit" class="button green" value="[`Save`]">
-                <i class="icon16 loading h-submit-loading" style="display:none;"></i>
-                {if $category.id > 0}
-                    [`or`] <a href="#/faq/" class="cancel">[`cancel`]</a>
-                {/if}
-                <a href="javascript:void(0);" class="no-underline h-delete float-right small h-delete-category" {if !$category.id}style="display:none;"{/if}>[`Delete category`]</a>
-            </div>
-            {$wa->csrf()}
-        </form>
-        {if $category.id}
-            <div class="float-right">
-                <a href="javascript:void(0);" class="float-right h-category-settings-toggle" style="display: inline;"><i class="icon16 settings"></i></a>
-            </div>
-        {/if}
 
-    </div>
+            <div class="field custom-mt-32">
+                <div class="value submit">
+                    {$wa->csrf()}
+                    <div class="flexbox middle space-8">
+                        <button type="submit" class="button green">[`Save`]</button>
+                        {if $category.id > 0}
+                            <button type="button" class="button light-gray cancel">[`Cancel`]</button>
+                        {/if}
+                        <button type="button" class="button light-gray red h-delete small h-delete h-delete-category custom-ml-auto" {if !$category.id}style="display:none;"{/if}><i class="fas fa-trash-alt text-red"></i><span class="desktop-and-tablet-only"> [`Delete category`]</span></button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-    <div class="block h-faq-questions-block" id="h-faq-questions-block">
+    </form>
+
+    <div class="h-faq-questions-block" id="h-faq-questions-block">
         {if !empty($category.questions)}
-            <ul class="h-faq-questions menu-v">
-                <li class="h-question-item-sep"></li>
+            <ul class="h-faq-questions list custom-pr-8">
                 {foreach $category.questions as $q}
                     <li class="h-question-item" data-id="{$q.id}">
-                        <a href="#/faq/{$q.id}/" class="h-show-faq-question">{strip}
-                            <i class="icon16 sort"></i>
-                            <span class="h-question">{$q.question|escape}</span> &nbsp;
-                            {$q.draft_html}
-                            {$q.backend_only_html}
-                            {$q.site_only_html}
-                            {$q.backend_and_site_html}
-                        {/strip}</a>
-                        <div class="h-answer hidden">{$q.answer}</div>
+                        <div class="h-question-item-inner">
+                            <span class="sort sort-indent icon back cursor-move"><i class="fas fa-grip-vertical"></i></span>
+                            <a href="#/faq/{$q.id}/" class="h-show-faq-question">{strip}
+                                <span class="h-question semibold">{$q.question|escape}</span> &nbsp;
+                                {$q.draft_html}
+                                {$q.backend_only_html}
+                                {$q.site_only_html}
+                                {$q.backend_and_site_html}
+                            {/strip}</a>
+                            <button
+                                type="button"
+                                class="button nobutton text-gray smallest back circle h-question-toggle-answer {if empty($q.answer) || empty($q.answer|trim)}hidden{/if}"
+                                data-id="{$q.id}"
+                                title="[`Show answer`]"
+                                ><i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                        <div class="h-answer" style="display: none;"><div class="message-box long code-block custom-ml-24 custom-mt-8">{$q.answer}</div></div>
                         <input type="hidden" class="h-is_public" value="{$q.is_public}">
                         <input type="hidden" class="h-url" value="{$q.url}">
                     </li>
-                    <li class="h-question-item-sep"></li>
                 {/foreach}
             </ul>
-        {else if $category.id > 0}
-            <p class="h-empty-view">[`There are no records in this category.`]</p>
+        {else if $category.id > 0 || $category.id  == '0'}
+            <div class="h-empty-view">
+                <div class="icon size-80 text-light-gray">
+                    <i class="fas fa-clipboard-list"></i>
+                </div>
+                <div>{if $category.id > 0}[`There are no records in this category.`]{else}[`no records`]{/if}</div>
+            </div>
         {/if}
     </div>
-
-    <div class="clear"></div>
-
 </div>
 
 <script>
     $(function() {
-
-        var form = $('.h-category-settings');
-        var button = $(':submit', form);
+        const $form = $('form.h-category-settings');
+        const $submit = $(':submit', $form);
+        const submitState = Object.assign(
+            $.wa.helpers.createLoadingSubmit($submit),
+            $.wa.helpers.createChangingSubmit($submit)
+        );
 
         {if $category.id !== null}
 
@@ -220,7 +242,6 @@
                 $('.h-category-settings').show();
                 $('.h-category-name').hide();
                 $('.h-category-settings-toggle').hide();
-                $('.h-category-settings .h-submit-loading').hide();
                 $('.h-header-loading').appendTo($('.h-name').closest('.field'));
                 $('.h-header-loading').css({
                     position: 'absolute',
@@ -250,97 +271,82 @@
                 closeSettingsBlock();
                 return false;
             });
-            $('.h-category-settings .h-delete-category').off('click').click(function() {
-                if (confirm('[`Are you sure?`]')) {
-                    $.post('?module=faq&action=categoryDelete', {
-                        id: {$category.id}
-                    }, function(r) {
-                        $('#h-faq-categories li[data-category-id="{$category.id}"]').remove();
-                        $.wa.setHash('#/faq/');
-                        var cnt = r.data.none_count || 0;
-                        $('.h-faq-none').find('.count').text(cnt);
-                        if (cnt > 0) {
-                            $('.h-faq-none').show();
-                        } else {
-                            $('.h-faq-none').hide();
-                        }
-                        var li = $('#h-faq-categories li[data-category-id]:first');
-                        if (li.length) {
-                            var category_id = li.data('categoryId') || 'none';
-                            $.wa.helpdesk_controller.setHash('#/faq/category/' + category_id + '/');
-                        } else {
-                            $.wa.helpdesk_controller.redispatch();
-                        }
-                    }, 'json');
-                }
-            });
-
-            $('#h-faq-questions-block .h-question-item').draggable({
-                distance: 5,
-                opacity: 0.75,
-                containment: $('#s-core'),
-                helper: function() {
-                    return $(this).clone().css({
-                        margin: 0,
-                        padding: 0,
-                        height: '1px'
-                    }).find('.sort').remove().end();
-                },
-                stop: function(event, ui) {
-                    $(this).css({
-                        top: 0, left: 0
-                    }).removeClass('.ui-draggable-dragging');
-                }
-            });
-
-            $('#h-faq-questions-block .h-question-item-sep').droppable({
-                over: function(event, ui) {
-                    var dr = $(ui.draggable);
-                    var dr_id = dr.data('id');
-                    var prev = $(this).prev(':not(.ui-draggable-dragging)');
-                    if (prev && prev.length && prev.data('id') == dr_id) {
-                        return;
+            $('.h-category-settings .h-delete-category').off('click').on('click', function() {
+                $.waDialog.confirm({
+                title: "[`Are you sure?`]",
+                success_button_title: $_('Delete'),
+                success_button_class: 'danger',
+                cancel_button_title: $_('Cancel'),
+                cancel_button_class: 'light-gray',
+                    onSuccess: function(d) {
+                        const submit_loading = $.wa.helpers.createLoadingSubmit(d.$body.find('.js-success-action')).show();
+                            $.post('?module=faq&action=categoryDelete', {
+                            id: {$category.id}
+                        }, function(r) {
+                            submit_loading.hide();
+                            $('#h-faq-categories li[data-category-id="{$category.id}"]').remove();
+                            $.wa.setHash('#/faq/');
+                            var cnt = r.data.none_count || 0;
+                            $('.h-faq-none').find('.count').text(cnt);
+                            if (cnt > 0) {
+                                $('.h-faq-none').show();
+                            } else {
+                                $('.h-faq-none').hide();
+                            }
+                            var li = $('#h-faq-categories li[data-category-id]:first');
+                            if (li.length) {
+                                var category_id = li.data('categoryId') || 'none';
+                                $.wa.helpdesk_controller.setHash('#/faq/category/' + category_id + '/');
+                            } else {
+                                $.wa.helpdesk_controller.redispatch();
+                            }
+                        }, 'json');
                     }
-                    var next = $(this).next(':not(.ui-draggable-dragging)');
-                    if (next && next.length && next.data('id') == dr_id) {
-                        return;
-                    }
-                    $(this).addClass('active');
-                },
-                out: function() {
-                    $(this).removeClass('active');
-                },
-                drop: function(event, ui) {
-                    var next = ui.draggable.next();
-                    $(this).after(ui.draggable);
-                    $(this).next().after(next);
-                    $(this).removeClass('active');
-                    var id = $(ui.draggable).data('id');
-                    var before_id = $(ui.draggable).next().next(':not(.ui-draggable-dragging)').data('id');
-                    $(this).removeClass('active');
-                    $.post('?module=faq&action=move', { id: id, before_id: before_id }, 'json');
-                }
+                });
             });
 
+            $.wa.helpers.loadSortableJS().then(() => {
+                $('#h-faq-questions-block .h-faq-questions').sortable({
+                    draggable: '.h-question-item',
+                    handle: '.sort',
+                    onEnd: function(event) {
+                        var $item = $(event.item);
+                        var $next = $item.next();
+
+                        var id = $($item).data('id');
+                        var before_id = $next.data('id');
+
+                        var $sort = $item.find('.sort').addClass('hidden');
+                        var $loading = $('<span class="sort-indent icon text-gray"><i class="fas fa-spinner wa-animation-spin speed-1000" /></span>')
+                            .prependTo($item.find('.h-question-item-inner'));
+
+                        $.post('?module=faq&action=move', { id: id, before_id: before_id }, function (r) {
+                            $loading.remove();
+                            $sort.removeClass('hidden');
+                            if (r.status !== 'ok') {
+                                $.wa.helpers.cancelSortable(event);
+                            }
+                        }, 'json');
+                    }
+                });
+            });
         {else}
 
             $('#h-faq-categories')
-                .find('li.selected').removeClass('selected')
-                .end()
-                .find('.h-add-faq-category-li').addClass('selected');
+                .find('li.selected').removeClass('selected');
 
             $.wa.helpdesk_controller.setBrowserTitle('[`New category`]');
 
         {/if}
 
-        $('.h-category-settings-icons', form).on('click', 'a', function() {
-            $('.h-category-settings-icons', form).find('.selected').removeClass('selected');
+        $('.h-category-settings-icons', $form).on('click', 'a', function() {
+            $('.h-category-settings-icons', $form).find('.selected').removeClass('selected');
             $(this).closest('li').addClass('selected');
-            $.helpdesk_faq.changeButton(button);
+            submitState.change();
             return false;
         });
 
-        form.submit(function() {
+        $form.submit(function() {
             var form = $(this);
             var data = form.serializeArray();
             var icon = $('.h-category-settings .h-category-settings-icons').find('.selected').data('icon');
@@ -348,42 +354,43 @@
                 name: 'icon',
                 value: icon
             });
-            form.find('.h-submit-loading').show();
-            form.find('span.error').remove();
-            form.find('.error').removeClass('error');
+            form.find('div.state-error-hint').remove();
+            form.find('.state-error').removeClass('state-error');
+            submitState.show();
             $.post(form.attr('action'), data, function(r) {
-                button.removeClass('yellow').addClass('green');
+                submitState.reset();
+                submitState.hide();
                 if (r.status === 'ok') {
                     var category = r.data.category;
+                    const updateCategoryItem = ($item) => {
+                        $item.find('a').empty()
+                            .append($('<i class="' + (category.icon ? category.icon : 'fas fa-folder') + '" />'))
+                            .append($('<span class="name" />').text(category.name + ' '))
+                            .append($('<span class="count" />').text(category.count));
 
+                            if (category.backend_and_site && category.backend_and_site_html) {
+                                $item.find('.name')
+                                    .append(category.backend_and_site_html ? category.backend_and_site_html : '')
+                            } else {
+                                $item.find('.name')
+                                    .append(category.draft ? '{helpdeskHelper::getFaqMarkHtml('draft')}' : '')
+                                    .append(category.site_only ? '{helpdeskHelper::getFaqMarkHtml('site_only')}' : '')
+                                    .append(category.backend_only ? '{helpdeskHelper::getFaqMarkHtml('backend_only')}' : '');
+                            }
+                    };
                     {if $category.id}
-                        $('#h-faq-categories li[data-category-id="' + category.id + '"]')
-                            .find('.name').text(category.name)
-                            .end()
-                            .find('.icon16').attr('class', '').addClass('icon16').addClass(category.icon ? category.icon : 'folder')
-                            .end()
-                            .find('.h-faq-draft, .h-faq-site-only, .h-faq-backend-only').remove()
-                            .end()
-                            .find('a')
-                                .append(category.draft ? '{helpdeskHelper::getFaqMarkHtml('draft')}' : '')
-                                .append(category.site_only ? '{helpdeskHelper::getFaqMarkHtml('site_only')}' : '')
-                                .append(category.backend_only ? '{helpdeskHelper::getFaqMarkHtml('backend_only')}' : '');
+                        updateCategoryItem($('#h-faq-categories li[data-category-id="' + category.id + '"]'));
 
                         $.wa.helpdesk_controller.redispatch();
                     {else}
-                        $('#h-faq-categories')
-                            .find('.h-new-template')
-                            .clone()
-                            .removeClass('h-new-template')
-                            .show()
-                            .insertBefore('#h-faq-categories .h-faq-none')
-                            .attr('data-category-id', category.id).data('categoryId', category.id)
-                            .find('.name').text(category.name)
-                            .end()
-                            .find('a').attr('href', '#/faq/category/' + category.id)
-                            .append(category.draft ? '<span class="h-faq-draft">[`draft`]</span>' : '')
-                            .end()
-                            .find('.icon16').attr('class', '').addClass('icon16').addClass(category.icon ? category.icon : 'folder');
+                        {literal}
+                            const $new_li = $(`<li class="h-category" data-category-id="${category.id}">
+                                <a href="#/faq/category/${category.id}"></a>
+                            </li>`);
+                        {/literal}
+
+                        updateCategoryItem($new_li);
+                        $new_li.insertBefore('#h-faq-categories .h-faq-none');
 
                         $.wa.setHash('#/faq/category/' + category.id);
                     {/if}
@@ -391,30 +398,25 @@
                     $.helpdesk_faq.initFaqCategoriesDroppable();
 
                 } else {
-                    form.find('.h-submit-loading').hide();
                     $.each(r.errors, function(i, er) {
-                        $('input[name="' + er[1] + '"]').addClass('error').parent().append(' <span class="error">' + er[0] + '</span>');
+                        $('input[name="' + er[1] + '"]').addClass('state-error').parent().append(' <div class="state-error-hint">' + er[0] + '</div>');
                     });
                 }
             }, 'json');
             return false;
         });
 
-        $('input[type="checkbox"][name="is_public"]', form).change(function() {
+        $('input[type="checkbox"][name="is_public"]', $form).change(function() {
             if ($(this).is(':checked')) {
-                $('.h-frontend-url', form).slideDown();
-                $('.h-view', form).slideDown();
-                $('.h-sites-choose-block').slideDown();
+                $('.h-public-fields', $form).slideDown();
             } else {
-                $('.h-frontend-url').slideUp();
-                $('.h-view', form).slideUp();
-                $('.h-sites-choose-block').slideUp();
+                $('.h-public-fields', $form).slideUp();
             }
-            $('input[name="name"]', form).trigger('keydown'); // for translit
+            $('input[name="name"]', $form).trigger('keydown'); // for translit
         }).change();
 
         // routes block
-        $(':radio[name="routes_all"]', form).change(function() {
+        $(':radio[name="routes_all"]', $form).change(function() {
             if ($(this).val()) {
                 $('.h-routes-list-block').slideUp();
             } else {
@@ -423,7 +425,7 @@
         });
 
 
-        $(':checkbox[name="routes[]"]', form).change(function() {
+        $(':checkbox[name="routes[]"]', $form).change(function() {
             var item = $(this);
             var link = item.closest('.h-route-item').find('.h-preview-link');
             if (item.is(':checked')) {
@@ -434,25 +436,24 @@
         });
 
         // disabled preview link reaction
-        $('.h-preview-link', form).click(function(e) {
+        $('.h-preview-link', $form).click(function(e) {
             $(this).hasClass('h-disabled') && e.preventDefault();
         });
 
-        $('input:checkbox, input:radio', form).change(function() {
-            $.helpdesk_faq.changeButton(button);
+        $('input:checkbox, input:radio', $form).change(function() {
+            submitState.change();
         });
-
-        $.helpdesk_faq.onChangeInput($('input[name="name"]', form), function() {
-            $.helpdesk_faq.changeButton(button);
+        $.wa.helpers.onChangeInput($('input[name="name"]', $form), function() {
+            submitState.change();
         });
-        $.helpdesk_faq.onChangeInput($('input[name="url"]', form), function() {
-            $.helpdesk_faq.changeButton(button);
+        $.wa.helpers.onChangeInput($('input[name="url"]', $form), function() {
+            submitState.change();
             $(':checkbox[name="routes[]"]').closest('.h-route-item').find('.h-preview-link').addClass('h-disabled');
         });
 
         $.helpdesk_faq.translitInput(
-                $('input[name="url"]', form),
-                $('input[name="name"]', form)
+            $('input[name="url"]', $form),
+            $('input[name="name"]', $form)
         );
 
         $.wa.helpdesk_controller.confirmLeave(
@@ -467,11 +468,33 @@
             'h-faq'
         );
 
-        var name_input = $('.h-name', form);
+        var name_input = $('.h-name', $form);
         if (!name_input.val()) {
             name_input.focus();
         }
 
+        $('.h-question-toggle-answer').on('click', function () {
+            const $self = $(this);
+            const id = $self.data('id');
+
+            const $answer = $('li[data-id="'+id+'"] .h-answer');
+            if ($answer.hasClass('hidden')) {
+                return false;
+            }
+
+            const class_button_hide= 'fa-chevron-right';
+            const class_button_show = 'fa-chevron-down';
+            const $icon = $self.find('svg');
+            const is_hidden = $icon.hasClass(class_button_hide);
+            $self.toggleClass('not-hidden', is_hidden);
+            if (is_hidden) {
+                $icon.removeClass(class_button_hide).addClass(class_button_show);
+            } else {
+                $icon.removeClass(class_button_show).addClass(class_button_hide);
+            }
+
+            $answer.slideToggle();
+        });
     });
 </script>
-
+</div>

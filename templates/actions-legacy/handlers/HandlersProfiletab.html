@@ -1,0 +1,52 @@
+<style>
+table.zebra.wa-tr-hover tr td { border-bottom:solid 1px #fff;}
+table.zebra.wa-tr-hover tr:hover td { background: #ffffe5!important; cursor: pointer; border-bottom: dashed 1px #ddd;}
+</style>
+
+<table id="helpdesk-requests-table" class="zebra full-width bottom-bordered requests-table wa-tr-hover">
+<tr>
+    <th class="min-width">[`ID`]</th>
+    <th class="min-width">[`Created`]</th>
+    <th class="min-width">[`Updated`]</th>
+    <th></th>
+    <th class="min-width">[`Status`]</th>
+    <th class="min-width">[`Assigned`]</th>
+</tr>
+{foreach $requests as $r}
+<tr rel="{$r.id}"{if $r.list_row_css} style="{$r.list_row_css}"{/if}>
+    <td>{$r.id}</td>
+    <td class="nowrap">{$r.dt_formatted}</td>
+    <td class="nowrap">{$r.upd_formatted}</td>
+    <td><div class="h-hide-rest">{$r.summary}</div></td>
+    <td class="nowrap">{$r.state}</td>
+    <td class="nowrap">{$r.assigned_name}</td>
+</tr>
+{/foreach}
+</table>
+
+{if isset($pages_count) && $pages_count > 1}
+    <div class="paging-wrap">
+        <div class="paging">{wa_pagination total=$pages_count attrs=['class'=>'menu-h float-left']}</div>
+    </div>
+{/if}
+
+<script>
+$(function(){
+    $('.paging a').unbind('click').click(function() {
+        $('#helpdesk-requests-table').parent().load($(this).attr('href'));
+        return false;
+    });
+});
+setTimeout(function() {
+    /** Initialize <td>s of a table to be clickable (middle-click friendly) */
+    var initTableLinks = function(tds, getUrl) {
+        tds.each(function() {
+            var td = $(this);
+            var a = $('<a style="color:inherit !important"></a>').attr('href', getUrl(td)).html(td.html());
+            td.empty().append(a);
+        });
+    };
+
+    initTableLinks($('#helpdesk-requests-table td'), function(td) { return "{$link_tpl}".replace('%id%', td.parent().attr('rel')); });
+}, 1);
+</script>

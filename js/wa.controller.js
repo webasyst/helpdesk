@@ -30,6 +30,13 @@ $.wa.helpdesk_controller = {
     // last request list view user has visited: {title: "...", hash: "..."}
     lastView: null,
 
+    currentView: null,
+
+    waLoading: null,
+
+    // will be a function to destroy an existing title shadow watcher
+    headerShadowedDestroy: null,
+
     /** Kinda constructor. All the initialization stuff.
       * Called from default layout. */
     init: function (options) {
@@ -41,6 +48,7 @@ $.wa.helpdesk_controller = {
         this.frontend_url = (options && options.url) || '/';
         this.backend_url = (options && options.backend_url) || '/webasyst/';
         this.random = null;
+        this.waLoading = $.waLoading();
 
         // Set up AJAX to never use cache
         $.ajaxSetup({
@@ -48,7 +56,6 @@ $.wa.helpdesk_controller = {
         });
 
         // auto close menus onclick
-        $.wa.dropdownsCloseEnable();
 
         // call dispatch when hash changes
         if (typeof($.History) != "undefined") {
@@ -112,6 +119,10 @@ $.wa.helpdesk_controller = {
             $('.dialog:visible').trigger('close').remove();
         });
 
+        if ($.wa.helpers.isMacintosh()) {
+            document.documentElement.classList.add('is-mac');
+        }
+
         // Auto update current grid view once a minute
         this.gridInterval = setInterval(function() {
             if ($.wa.helpdesk_controller.currentGrid) {
@@ -119,11 +130,7 @@ $.wa.helpdesk_controller = {
             }
         }, 60000);
 
-        // Collapsible sidebar sections
-        var toggleCollapse = function () {
-            $.wa.helpdesk_controller.collapseSidebarSection(this, 'toggle');
-        };
-        $(".collapse-handler", $('#wa-app')).die('click').live('click', toggleCollapse);
+        $.wa.helpdesk_controller.bindToggleCollapseMenuSidebar();
 
         this.restoreCollapsibleStatusInSidebar();
         $.wa.helpdesk_controller.restoreSidebarCounts();
@@ -134,25 +141,17 @@ $.wa.helpdesk_controller = {
         });
         $('#wa-app-helpdesk .indicator').remove();
 
-        // Records per page selector
-        // Since 'change' does not propagate in IE, we cannot use it with live events.
-        // In IE have to use 'click' instead.
-        $('#records-per-page').die($.browser.msie ? 'click' : 'change');
-        $('#records-per-page').live($.browser.msie ? 'click' : 'change', function() {
-            var grid = $.wa.helpdesk_controller.currentGrid;
-            if (!grid || !grid.isActive()) {
-                return;
-            }
-            $.wa.setHash(($.wa.helpdesk_controller.hashBase || '#/') + $(this).val());
-        });
-
         // development hotkeys for redispatch and sidebar reloading
         $(document).keypress(function(e) {
-            if ((e.which == 10 || e.which == 13) && e.shiftKey) {
-                $('#wa-app .sidebar .icon16').first().attr('class', 'icon16 loading');
+            const key = (e.key === 'Enter' || e.key === '\n');
+            if (!key) {
+                return;
+            }
+            if (e.shiftKey) {
+                $.wa.helpdesk_controller.showLoading();
                 $.wa.helpdesk_controller.reloadSidebar();
             }
-            if ((e.which == 10 || e.which == 13) && e.ctrlKey) {
+            if (e.ctrlKey) {
                 $.wa.helpdesk_controller.redispatch();
             }
         });
@@ -163,68 +162,7 @@ $.wa.helpdesk_controller = {
                 $.wa.setHash.call($.wa, hash);
             };
         })();
-
-        // Smart menus
-        this.initSmartDropdowns();
     }, // end of init()
-
-    initSmartDropdowns: function() {
-        // Implement a delay before mouseover and showing menu contents.
-        var recentlyOpened = null;
-        $('#wa-app').on('mouseover', '.smart-dropdown', function() {
-            var menu = $(this);
-            if (animate(menu)) {
-                menu.addClass('disabled').mouseover();
-            }
-        });
-
-        // Open/close menu by mouse click
-        $('#wa-app').on('click', '.smart-dropdown', function(e) {
-            var menu = $(this);
-
-            // do not close menu if it was just opened via mouseover
-            if (recentlyOpened && !menu.hasClass('disabled')) {
-                e.stopPropagation && e.stopPropagation();
-                e.preventDefault && e.preventDefault();
-                return false;
-            }
-
-            // do not count clicks in nested menus
-            if ($(e.target).parents('ul#hd-add-request-btn ul').size() > 0) {
-                return;
-            }
-
-            menu.toggleClass('disabled');
-            if (!animate(menu) && recentlyOpened) {
-                clearTimeout(recentlyOpened);
-                recentlyOpened = null;
-            }
-        });
-
-        function animate(menu) {
-            if (menu.hasClass('animated')) {
-                return false;
-            }
-            menu.addClass('animated');
-            menu.hoverIntent({
-                over: function() {
-                    recentlyOpened = setTimeout(function() {
-                        recentlyOpened = null;
-                    }, 500);
-                    menu.removeClass('disabled');
-                },
-                timeout: 0.3, // out() is called after 0.3 sec after actual mouseout
-                out: function() {
-                    menu.addClass('disabled');
-                    if (recentlyOpened) {
-                        clearTimeout(recentlyOpened);
-                        recentlyOpened = null;
-                    }
-                }
-            });
-            return true;
-        }
-    },
 
     // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
     // *   Dispatch-related
@@ -268,8 +206,10 @@ $.wa.helpdesk_controller = {
         var e = new $.Event('wa_before_dispatched');
         $(window).trigger(e);
         if (e.isDefaultPrevented()) {
-            this.currentHash = old_hash;
-            window.location.hash = old_hash;
+            if (old_hash) {
+                this.currentHash = old_hash;
+                window.location.hash = old_hash;
+            }
             return false;
         }
 
@@ -351,7 +291,7 @@ $.wa.helpdesk_controller = {
     /** Default action to use when no #/hash/ is given. */
     defaultAction: function() {
         setTimeout(function() {
-            var href = $('#hd-main-filters a:visible:first').attr('href');
+            var href = $('.hd-main-filters a:visible:first').attr('href');
             if (!href) {
                 href = $('#hd-common-filters a:visible:first').attr('href');
             }
@@ -394,22 +334,26 @@ $.wa.helpdesk_controller = {
     },
 
     /** All requests with no filtering. */
-    requestsAllAction: function(hash) {
+    requestsAllAction: function(hash, gridOptions, onAfterLoad) {
+        gridOptions = $.isEmptyObject(gridOptions) ? {} : gridOptions;
         this.loadGrid({
+            ...gridOptions,
             hash: hash,
             prehash: '#/requests/all/',
             header: $_('All requests'),
             afterLoad: function(r) {
                 $.wa.helpdesk_controller.initMenuAboveList(r);
                 if (r.admin) {
-                    $('.search-result-header-menu.template').children('div:first').clone()
+                    $($('#h-search-result-header-menu-template').html())
                     .find('.h-search-result-header-menu').remove().end()
-                    .find('.h-filter-settings-toggle').show()
-                        .on('click', function() {
-                                $.wa.helpdesk_controller.filterSettings(r);
-                            })
-                        .end()
-                    .prependTo($('#c-core-content .h-header-block').addClass('h-h1-inline'));
+                    .find('.h-filter-settings-toggle').on('click', function() {
+                        $.wa.helpdesk_controller.filterSettings(r);
+                    })
+                    .insertAfter($('#c-core-content .h-header-block-top h1'));
+                }
+
+                if (typeof onAfterLoad === 'function') {
+                    onAfterLoad.call(this, null);
                 }
             }
         });
@@ -425,8 +369,8 @@ $.wa.helpdesk_controller = {
     },
 
     /** Advanced search */
-    requestsSearchAction: function(hash, env) {
-
+    requestsSearchAction: function(hash, env, gridOptions, onAfterLoad) {
+        gridOptions = $.isEmptyObject(gridOptions) ? {} : gridOptions;
         hash = hash || [];
         var prehash = ['requests', 'search'];
 
@@ -464,49 +408,42 @@ $.wa.helpdesk_controller = {
             });
         } else {
             this.loadGrid({
+                ...gridOptions,
                 hash: hash,
                 prehash: prehash,
                 filters: string,
                 afterLoad: function(r) {
                     $.wa.helpdesk_controller.initMenuAboveList(r, is_search);
                     if (r.filters_hash === 'unread') {
-                        var link = $('.search-result-header-menu.template').find('.h-filter-settings-toggle').clone().show()
-                            .css({
-                                marginTop: 7
-                            })
-                            .click(function() {
+                        var link = $($('#h-search-result-header-menu-template').html())
+                            .find('.h-search-result-header-menu').remove()
+                            .end()
+                            .on('click', function() {
                                 $(this).hide();
                                 $.wa.helpdesk_controller.unreadSettings(r);
                             });
                         link.removeClass('h-filter-settings-toggle').addClass('h-unread-settings-toggle');
-                        link.prependTo($('#c-core-content .h-header-block').addClass('h-h1-inline'));
+                        link.insertAfter($('#c-core-content .h-header-block-top h1'));
                     }
                     if (r.filters_hash === 'follow') {
-                        $('<a href="javascript:void(0)" class="float-right">' + $_('What is this?') + '</a>')
-                            .css({
-                                marginTop: 7
-                            })
-                            .click(function() {
-                                var d = $('<div><h1>' + $_('“Follow” mark') +
-                                        ' <i class="icon16 binocular" style="margin-top:8px;"></i></h1>' +
-                                            '<p>' + $_('After you set the “Follow” mark, the next time someone performs an action with this request it will appear as “Unread” for you and you will receive email notification about this action. So you will be able to follow all further activity related to this request.') +
-                                                '</p></div>')
-                                    .waDialog({
-                                        width: 500,
-                                        height: 220,
-                                        'min-height': 220,
-                                        buttons: $('<div><input type="submit" class="button gray" value="' + $_('OK') + '"></div>'),
-                                        onSubmit: function() {
-                                            d.trigger('close');
-                                            return false;
-                                        }
-                                    });
-                            })
-                            .prependTo($('#c-core-content .h-header-block').addClass('h-h1-inline'));
+                        $(`<span class="back" id="tooltip-what-is-this" data-wa-tooltip-template="#tooltip-template-tooltip-what-is-this" data-title="${$_('What is this?')}">
+                                <i class="fas fa-question-circle"></i>
+                                </span>
+                                <div class="wa-tooltip-template" id="tooltip-template-tooltip-what-is-this">
+                                    <div class="box">
+                                        <h3>${$_('“Follow” mark')} <i class="fas fa-binoculars text-gray" style="font-size:1rem"></i></h3>
+                                        <p>${$_('After you set the “Follow” mark, the next time someone performs an action with this request it will appear as “Unread” for you and you will receive email notification about this action. So you will be able to follow all further activity related to this request.')}</p>
+                                    </div>
+                                </div>
+                            <script>
+                            (function($) {
+                                $("#tooltip-what-is-this").waTooltip({trigger:'click'});
+                            })(jQuery);
+                        </script>`)
+                        .insertAfter($('#c-core-content .h-header-block-top h1'));
                     }
                     if (is_search) {
-                        var menu = $('.search-result-header-menu.template')
-                            .children('div:first').clone()
+                        var menu = $($('#h-search-result-header-menu-template').html())
                             .on('click', '.h-save-as-filter', function() {
                                 $.wa.helpdesk_controller.filterSettings(r);
                             })
@@ -516,8 +453,7 @@ $.wa.helpdesk_controller = {
                             });
                         if (r.f.id) {
                             menu.find('.h-filter-settings-toggle')
-                                .show().on('click', function() {
-                                    $(this).hide();
+                                .on('click', function() {
                                     $.wa.helpdesk_controller.filterSettings(r);
                                 });
                             menu.find('.h-search-result-header-menu').remove();
@@ -528,7 +464,11 @@ $.wa.helpdesk_controller = {
                             menu.find('.h-search-result-header-menu').show();
                             menu.find('.h-filter-settings-toggle').remove();
                         }
-                        menu.prependTo($('#c-core-content .h-header-block').addClass('h-h1-inline'));
+                        menu.insertAfter($('#c-core-content .h-header-block-top h1'));
+                    }
+
+                    if (typeof onAfterLoad === 'function') {
+                        onAfterLoad.call(this, null);
                     }
                 },
                 is_search: is_search
@@ -537,9 +477,9 @@ $.wa.helpdesk_controller = {
     },
 
     designAction: function(params) {
-        if (params) {
+        if (Array.isArray(params) && params.length) {
             if ($('#wa-design-container').length) {
-                waDesignLoad();
+                waDesignLoad()
             } else {
                 this.loadHTML('?module=design', {}, null, function() {
                     waDesignLoad(params.join('&'));
@@ -557,16 +497,8 @@ $.wa.helpdesk_controller = {
         if ($('#wa-page-container').length) {
             waLoadPage(id);
         } else {
-            this.loadHTML('?module=pages');
-        }
-    },
-
-    designThemesAction: function(params) {
-        if ($('#wa-design-container').length) {
-            waDesignLoad();
-        } else {
-            this.loadHTML('?module=design', {}, null, function() {
-                waDesignLoad();
+            this.loadHTML('?module=pages', null, (html) => {
+                return `<div class="flexbox">${html}</div>`;
             });
         }
     },
@@ -659,7 +591,6 @@ $.wa.helpdesk_controller = {
                     type: 'search',
                     query: p[0]
                 };
-                $('i.icon16.loading').remove();
            });
         });
     },
@@ -674,23 +605,29 @@ $.wa.helpdesk_controller = {
         }
     },
 
+    pluginsAction: function() {
+        this.loadHTML('?module=plugins');
+    },
+
     workflowEdit: function(id) {
-        var showDialog = function (d) {
-            d.waDialog({
-                onLoad: function () {
+        var showDialog = function ($wrapper) {
+            $.waDialog({
+                html: $('<div />').append($wrapper).html(),
+                onOpen: function (_, d) {
+                    d.$block.on('submit', function (e) {
+                        e.preventDefault();
+                        const loadingSubmit = $.wa.helpers.createLoadingSubmit($(this).find(':submit')).show();
+                        $.post($(this).attr('action'), $(this).serializeArray(), function(r) {
+                            loadingSubmit.hide();
+                            if (r.status === 'ok') {
+                                var wfid = r.data.workflow.id;
+                                $.wa.setHash('#/settings/workflow/' + wfid);
+                                $.wa.helpdesk_controller.reloadSidebar();
+                                d.close();
+                            }
+                        }, 'json');
+                    })
                 },
-                disableButtonsOnSubmit: true,
-                onSubmit: function () {
-                    $.post($(this).attr('action'), $(this).serializeArray(), function(r) {
-                        if (r.status === 'ok') {
-                            var wfid = r.data.workflow.id;
-                            $.wa.setHash('#/settings/workflow/' + wfid);
-                            $.wa.helpdesk_controller.reloadSidebar();
-                        }
-                        d.trigger('close');
-                    }, 'json');
-                    return false;
-                }
             });
         };
 
@@ -798,19 +735,20 @@ $.wa.helpdesk_controller = {
         if (!action) {
             action = 'collapse';
         }
+
         el = $(el);
-        if(el.size() <= 0) {
+        if(!el.size()) {
             return;
         }
 
-        var arr = el.find('.darr, .rarr');
-        if (arr.size() <= 0) {
-            arr = $('<i class="icon16 darr">');
-            el.prepend(arr);
+        var arrow = el.find('.fa-caret-down, .fa-caret-right');
+        if (!arrow.size()) {
+            arrow = $('<i class="fas fa-caret-right">');
+            el.find('.caret').append(arrow);
         }
         var newStatus;
         var id = el.attr('id') || el.data('collapsibleId');
-        var oldStatus = arr.hasClass('darr') ? 'shown' : 'hidden';
+        var oldStatus = arrow.hasClass('fa-caret-down') ? 'shown' : 'hidden';
 
         var hide = function() {
             var contents = el.nextAll('.collapsible, .collapsible1').first();
@@ -819,7 +757,7 @@ $.wa.helpdesk_controller = {
             } else {
                 contents.slideUp(200);
             }
-            arr.removeClass('darr').addClass('rarr');
+            arrow.removeClass('fa-caret-down').addClass('fa-caret-right');
             newStatus = 'hidden';
         };
         var show = function() {
@@ -829,7 +767,7 @@ $.wa.helpdesk_controller = {
             } else {
                 contents.slideDown(200);
             }
-            arr.removeClass('rarr').addClass('darr');
+            arrow.removeClass('fa-caret-right').addClass('fa-caret-down');
             newStatus = 'shown';
         };
 
@@ -871,64 +809,73 @@ $.wa.helpdesk_controller = {
             return false;
         }
         var block = $('.h-header-block');
-        var status = 'closed';
         var closeSettings = function() {
             $('.h-unread-settings-toggle', block).show();
             $('.h-unread-settings', block).hide();
-            status = 'closed';
         };
         var openSettings = function() {
             $('.h-unread-settings-toggle', block).hide();
             $('.h-unread-settings', block).show();
-            status = 'opened';
         };
         var settings_block = $('.h-unread-settings', block);
         if (settings_block.length && settings_block.data('id') !== data.id) {
             settings_block.remove();
         }
         if (!settings_block.length) {
-            block.append(tmpl('h-template-unread-settings', data));
-            $('.buttons', block)
-                .find('.cancel').click(function() {
-                    closeSettings();
-                });
-            $('.h-unread-settings-toggle').click(function() {
-                if (status === 'opened') {
-                    closeSettings();
-                } else {
-                    openSettings();
-                }
-            });
-            $('.h-unread-settings').submit(function() {
-                $.post("?module=settings&action=unreadSave", $(this).serialize(), function() {
-                    closeSettings();
-                    $.wa.helpdesk_controller.reloadSidebar();
-                    $.wa.helpdesk_controller.redispatch();
-                });
-                return false;
-            });
-            $('.h-unread-settings').find('input[type=checkbox]').change(function() {
-                var el = $(this);
-                var name = el.attr('name').replace('settings[', '').replace(']', '');
-                var children = $('.h-unread-settings').find('input[type=checkbox][data-parent="' + name + '"]');
-                if (children.length) {
-                    if (this.checked) {
-                        children.attr('disabled', false);
-                    } else {
-                        children.attr('disabled', true).attr('checked', false);
+            openSettings();
+
+            const dialog_html = tmpl('h-template-unread-settings-dialog', data);
+            $.waDialog({
+                html: dialog_html,
+                onOpen: function (_, dialog) {
+                    if (!data.admin) {
+                        return;
                     }
+
+                    const $form = dialog.$block;
+                    $.wa.helpers.watchChangeForm($form);
+                    $form.find('input[type=checkbox]').change(function() {
+                        var el = $(this);
+                        var name = el.attr('name').replace('settings[', '').replace(']', '');
+                        var children = $('.h-unread-settings').find('input[type=checkbox][data-parent="' + name + '"]');
+                        if (children.length) {
+                            if (this.checked) {
+                                children.prop('disabled', false);
+                            } else {
+                                children.prop('disabled', true).prop('checked', false);
+                            }
+                        }
+                    });
+                    $form.on('submit', function() {
+                        const submitWithLoading = $.wa.helpers.createLoadingSubmit($(this).find(':submit'));
+                        submitWithLoading.show();
+                        $.post("?module=settings&action=unreadSave", $(this).serialize(), function() {
+                            closeSettings();
+                            submitWithLoading.hide();
+                            $.wa.helpdesk_controller.reloadSidebar();
+                            $.wa.helpdesk_controller.redispatch();
+                            dialog.close();
+                        });
+                        return false;
+                    });
+                    $form.find('.h-clear-all').on('click', function() {
+                        const submitWithLoading = $.wa.helpers.createLoadingSubmit($(this));
+                        submitWithLoading.show();
+                        $.post('?module=requestsRead', {
+                            hash: '@all'
+                        }, function() {
+                            submitWithLoading.hide();
+                            $.wa.helpdesk_controller.redispatch();
+                            dialog.close();
+                        });
+                        return false;
+                    });
+                },
+                onClose: function () {
+                    closeSettings();
                 }
-            });
-            $('.h-unread-settings').find('.h-clear-all').click(function() {
-                $.post('?module=requestsRead', {
-                    hash: '@all'
-                }, function() {
-                    $.wa.helpdesk_controller.redispatch();
-                });
-                return false;
-            });
+            })
         }
-        openSettings();
 
         return false;
     },
@@ -940,22 +887,14 @@ $.wa.helpdesk_controller = {
         }
 
         var block = $('.h-header-block');
-        var status = 'closed';
         var closeSettings = function() {
             $('.h-search-result-header-menu', block).show();
-            $('.h-filter-settings-toggle', block).show();
             block.find('h1').show();
             $('.h-filter-settings', block).hide();
-            status = 'closed';
         };
         var openSettings = function() {
             $('.h-search-result-header-menu', block).hide();
-            if (data.f.hash !== '@all') {
-                block.find('h1').hide();
-                $('.h-filter-settings-toggle', block).hide();
-            }
             $('.h-filter-settings', block).show();
-            status = 'opened';
         };
 
         var settings_block = $('.h-filter-settings', block);
@@ -963,51 +902,81 @@ $.wa.helpdesk_controller = {
             settings_block.remove();
         }
         if (!settings_block.length) {
-            block.append(tmpl(data.f.hash === '@all' ? 'h-template-all-records-filter-settings' : 'h-template-filter-settings', data));
-            $('.buttons', block)
-                .find('.cancel').click(function() {
-                    closeSettings();
-                });
-            $('.h-filter-settings-icons', block).on('click', 'a', function() {
-                $('.h-filter-settings-icons', block).find('.selected').removeClass('selected');
-                $(this).closest('li').addClass('selected');
-                return false;
-            });
-            $('.h-filter-settings').submit(function() {
-                var params = $(this).serializeArray();
-                params.push({
-                    name: 'icon',
-                    value: $('.h-filter-settings-icons', block).find('.selected').closest('li').data('icon')
-                });
-                $.post("?module=filters&action=save", params, function(r) {
-                    closeSettings();
-                    $.wa.helpdesk_controller.reloadSidebar();
-                    if (data.f.id != r.data) {
-                        $.wa.setHash('#/requests/filter/' + r.data);
-                    } else {
-                        $.wa.helpdesk_controller.redispatch();
-                    }
-                }, 'json');
-                return false;
-            });
-            $('.h-filter-delete').click(function() {
-                if (confirm($_('Are you sure?'))) {
-                    $(this).replaceWith('<i class="icon16 loading float-right"></i>');
-                    if (data.f.hash === '@all') {
-                        $.wa.helpdesk_controller.deleteFilter('@all');
+            if (data.f.hash === '@all') {
+                block.append(tmpl('h-template-all-records-filter-settings', data));
+            } else {
+                const dialog_html = tmpl('h-template-filter-settings-dialog', data);
+                $.waDialog({
+                    html: dialog_html,
+                    onOpen: function (_, dialog) {
+                        const $form = dialog.$block;
+                        let formChanger = null;
+                        if ($form.find('input[name="id"]').val()) {
+                            // if exist filter
+                            formChanger = $.wa.helpers.watchChangeForm($form);
+                        }
+
+                        const $filter_icons = $('.h-filter-settings-icons', $form);
+                        $filter_icons.on('click', 'a', function() {
+                            $filter_icons.find('.selected').removeClass('selected');
+                            $(this).closest('li').addClass('selected');
+                            if (formChanger) {
+                                formChanger.change();
+                            }
+                            return false;
+                        });
+                        $form.submit(function() {
+                            const submitWithLoading = $.wa.helpers.createLoadingSubmit($(this).find(':submit'));
+                            submitWithLoading.show();
+                            var params = $(this).serializeArray();
+                            params.push({
+                                name: 'icon',
+                                value: $filter_icons.find('.selected').closest('li').data('icon')
+                            });
+                            $.post("?module=filters&action=save", params, function(r) {
+                                submitWithLoading.hide();
+                                $.wa.helpdesk_controller.reloadSidebar();
+                                if (data.f.id != r.data) {
+                                    $.wa.setHash('#/requests/filter/' + r.data);
+                                } else {
+                                    $.wa.helpdesk_controller.redispatch();
+                                }
+
+                                dialog.close();
+                            }, 'json');
+                            return false;
+                        });
+                    },
+                    onClose: function () {
                         closeSettings();
-                    } else {
-                        $.wa.helpdesk_controller.deleteFilter();
                     }
-                }
-                return false;
+                })
+            }
+
+            $('.buttons', block).find('.cancel').click(function() {
+                closeSettings();
             });
-            $('.h-filter-settings-toggle').click(function() {
-                if (status === 'opened') {
-                    closeSettings();
-                } else {
-                    openSettings();
-                }
+
+            $('.h-filter-delete').click(function() {
+                $.waDialog.confirm({
+                    title: $_('Are you sure?'),
+                    success_button_title: $_('Delete'),
+                    success_button_class: 'danger',
+                    cancel_button_title: $_('Cancel'),
+                    cancel_button_class: 'light-gray',
+                    onSuccess: function(d) {
+                        const submit_loading = $.wa.helpers.createLoadingSubmit(d.$body.find('.js-success-action')).show();
+                        const filter_id = data.f.hash === '@all' ? '@all' : null;
+                        $.wa.helpdesk_controller.deleteFilter(filter_id)
+                            .then(() => {
+                                if (filter_id) {
+                                    closeSettings();
+                                }
+                                submit_loading.hide()
+                            });
+                    }
+                });
+                return false;
             });
         }
 
@@ -1028,10 +997,10 @@ $.wa.helpdesk_controller = {
             var id = hash[2];
         }
 
-        //this.showLoading();
-        $.post('?module=filters&action=delete', { id: id }, function() {
-            $.wa.setHash('#/');
-            $.wa.helpdesk_controller.reloadSidebar();
+        return $.post('?module=filters&action=delete', { id: id }, function() {
+            $.wa.helpdesk_controller.reloadSidebar().then(() => {
+                $.wa.helpdesk_controller.defaultAction();
+            });
         });
     },
 
@@ -1078,6 +1047,9 @@ $.wa.helpdesk_controller = {
                 // too late: user clicked something else.
                 return;
             }
+            if (typeof this.headerShadowedDestroy === 'function') {
+                this.headerShadowedDestroy();
+            }
 
             if (!options.header && result.header) {
                 options.header = result.header;
@@ -1092,28 +1064,55 @@ $.wa.helpdesk_controller = {
                 options.beforeLoad.call(this, result);
             }
 
-            var wrapper = $('<div class="topmost-grid-wrapper"></div>');
+            this.currentView = $.wa.helpdesk_controller.currentGrid.getSettings().view;
+
+            var wrapper = $(`<div class="h-requests topmost-grid-wrapper" data-view="${this.currentView}"></div>`);
             options.targetElement.empty().append(wrapper);
             $('body > .dialog:hidden:not(.persistent)').not(options.targetElement.parents('.dialog')).remove();
 
             // header
-            var header_block = $('<div class="block h-header-block"></div>');
+            var header_block = $(
+                `<div id="hd-requests-header-top"></div>
+                 <div id="hd-requests-header" class="h-header box break-word js-mobile-not-hide-sidebar">
+                    <div class="h-header-block">
+                        <div class="h-header-block-top h-h1-inline" />
+                    </div>
+                </div>`);
             wrapper.append(header_block);
 
             // Title
-            header_block.append($('<h1></h1>').text(options.header));
+            header_block.find('.h-header-block-top').append($('<h1 class="text-ellipsis" />').text(options.header));
             $.wa.helpdesk_controller.setBrowserTitle(options.header);
 
             // table generated by $.wa.Grid
-            wrapper.append($('<div class="support-content"></div>').append(this.currentGrid.getTable()));
+            wrapper.append($('<div id="hd-support-content" class="support-content"></div>').append(this.currentGrid.getTable()));
             $('html,body').animate({scrollTop:0}, 200);
+            if (this.currentView === 'split') {
+                $('#h-request-sidebar').prepend(header_block.detach());
+            }
 
-            // update count in sidebar for current view
+            // is shadowed header
+            setTimeout(() => {
+                const header_top = document.querySelector("#hd-requests-header-top");
+                if (!header_top) {
+                    return;
+                }
+
+                const sticky_observer = new IntersectionObserver(function(entries) {
+                    $("#hd-requests-header").toggleClass("h-shadowed", entries[0].intersectionRatio === 0);
+                }, { threshold: [0, 1] });
+
+                sticky_observer.observe(document.querySelector("#hd-requests-header-top"));
+                this.headerShadowedDestroy = () => sticky_observer.disconnect();
+            });
+
+            // update count in sidebar for current views
             $.wa.helpdesk_controller.highlightSidebar();
 
             if (typeof options.afterLoad == 'function') {
                 options.afterLoad.call(this, result);
             }
+            $.wa.helpdesk_controller.hideLoading();
         });
     },
 
@@ -1124,16 +1123,21 @@ $.wa.helpdesk_controller = {
 
     /** Update link visibility and number of unread messages in sidebar */
     updateUnreadCount: function(new_count) {
-        var el = $('#sb-unread-count').html(new_count).toggleClass('bold highlighted', new_count > 0);
-        if (new_count > 0) {
-            el.closest('li').show(200);
-        }
+        this.updateMainCount('#sb-unread-count', new_count);
     },
 
     updateFollowCount: function(new_count) {
-        var el = $('#sb-follow-count').html(new_count).toggleClass('bold highlighted', new_count > 0);
+        this.updateMainCount('#sb-follow-count', new_count);
+    },
+
+    updateMainCount: function (selector, new_count) {
+        const el = $(selector).html(new_count)
+        const $li = el.closest('li,.brick');
+
         if (new_count > 0) {
-            el.closest('li').show(200);
+            $li.show(200);
+        } else {
+            $li.hide();
         }
     },
 
@@ -1170,17 +1174,66 @@ $.wa.helpdesk_controller = {
     /** Helper to show dropdown menus above request lists */
     initMenuAboveList: function(r, is_search) {
         is_search = is_search && !r.filters;
-        $('#c-core-content .header-above-requests-table').prepend(tmpl('h-template-requests-menu', r));
-        var ul = $('#c-core-content .header-above-requests-table .menu-above-list');
+        const $dropdowns_above_requests = $('#hd-requests-header .h-header-above-requests').prepend(
+            tmpl('h-requests-menu-template', Object.assign(r, { view: this.currentView }))
+        );
+        const $bulk_actions = $dropdowns_above_requests.find('#h-requests-actions');
+
+        if (this.currentView !== 'split') {
+            $('#hd-requests-header .h-header-block-top').append($bulk_actions.detach());
+        }
+        $bulk_actions.removeClass('hidden');
+
+        var $requests_actions = $('#c-core-content #h-requests-actions');
+        const $bulk_toggler = $requests_actions.find('.js-bulk-toggle');
+        const $topic_actions = $('.js-topic-actions');
+        $bulk_toggler.on('click', function (e) {
+            e.preventDefault();
+
+            $topic_actions.add($('.js-topic-control')).toggleClass('hidden');
+            const is_hidden  = $topic_actions.hasClass('hidden');
+            const $table = $('table.requests-table');
+            $table.toggleClass('is-bulk-select', !is_hidden);
+
+            const selection_mode_event_name = 'click.helpdesk_selection_mode';
+            const preventDefaultLinks = function (e) {
+                if ($(e.target).is(':checkbox')) {
+                    return true;
+                }
+                const $checkbox = $(this).find('.checkboxes-col :checkbox');
+                const new_state = !$checkbox.prop('checked');
+                $checkbox.prop('checked', new_state).trigger('change');
+                return false;
+            };
+            $table.find('tr').off(selection_mode_event_name).on(selection_mode_event_name, preventDefaultLinks);
+
+            if (is_hidden) {
+                const $tr = $table.find('tr.selected');
+                if ($tr.length) {
+                    $tr.find('.checkboxes-col :checkbox').prop('checked', false).trigger('change');
+                    $tr.removeClass('selected');
+                }
+                $table.find('tr').off(selection_mode_event_name);
+            }
+        });
+        $(document).off('close_bulk.helpdesk').on('close_bulk.helpdesk', function () {
+            if ($topic_actions.is(':visible')) {
+                $bulk_toggler.last().trigger('click');
+            }
+        });
 
         var topmost_grid_wrapper = getRequestsTable().closest('.topmost-grid-wrapper');
-        topmost_grid_wrapper.on('change', 'td :checkbox, th :checkbox, .header-above-requests-table', function() {
+        topmost_grid_wrapper.on('change', 'td :checkbox, th :checkbox, .h-header-above-requests', function() {
             setTimeout(updateDisabled, 0);
         });
         updateDisabled();
 
+        // init dropdowns
+        $("#h-requests-action-dropdown").waDropdown();
+        $("#h-requests-sort-dropdown").waDropdown();
+
         // Mark read/unread links
-        ul.on('click', '.mass-mark-as-read,.mass-mark-as-unread,.mass-unmark-as-follow,.mass-mark-as-follow', function() {
+        $requests_actions.on('click', '.mass-mark-as-read,.mass-mark-as-unread,.mass-unmark-as-follow,.mass-mark-as-follow', function() {
             var a = $(this);
             if (a.parents('.disabled').length) {
                 return false;
@@ -1221,20 +1274,19 @@ $.wa.helpdesk_controller = {
                     grid.reload(function() {
                         if ($.wa.helpdesk_controller.currentGrid && $.wa.helpdesk_controller.currentGrid === grid) {
                             $.wa.helpdesk_controller.hideLoading();
-                            var block = ul.closest('.block');
-                            block.find('.notice-above-requests-list').remove();
-                            block.append(
-                                $.wa.helpdesk_controller.createClosableNotice('<i class="icon16 yes"></i>'+r.data.message)
-                            );
+                            var $header = $('#hd-requests-header');
+                            $header.find('.notice-above-requests-list').remove();
+                            $header.append($.wa.helpdesk_controller.createClosableNotice(r.data.message, 'success'));
                         }
                     });
                 }
+                $(document).trigger('close_bulk.helpdesk');
             }, 'json');
             return false;
         });
 
         // Bulk operations with multiple requests
-        ul.on('click', '.mass-change-status,.mass-change-assignment,.mass-delete-requests', function() {
+        $requests_actions.on('click', '.mass-change-status,.mass-change-assignment,.mass-delete-requests', function() {
             var a = $(this);
             if (a.parents('.disabled').length) {
                 return false;
@@ -1250,7 +1302,8 @@ $.wa.helpdesk_controller = {
 
             if (action_type) {
                 $.wa.helpdesk_controller.showLoading();
-                var hidden_wrapper = $('<div class="hidden"></div>').insertAfter(getRequestsTable());
+                $('#js-mass-action-sandbox').remove();
+                var hidden_wrapper = $('<script id="js-mass-action-sandbox" type="text/html"></script>').insertAfter(getRequestsTable());
                 $.get('?action=bulk', { action_type: action_type }, function(r) {
                     $.wa.helpdesk_controller.hideLoading();
                     hidden_wrapper.html(r);
@@ -1263,11 +1316,14 @@ $.wa.helpdesk_controller = {
         function updateDisabled() {
             var count_selected = topmost_grid_wrapper.find('td :checkbox:checked').length;
             count_selected = count_selected || 0;
-            ul.find('.selected-count').html(''+count_selected);
+            $requests_actions.find('.js-selected-count')
+                .removeClass('blue gray')
+                .addClass(count_selected > 0 ? 'blue' : 'gray')
+                .text(count_selected);
             if (count_selected > 0) {
-                ul.find('.requests-operation').parent().removeClass('disabled');
+                $requests_actions.find('.requests-operation').parent().removeClass('disabled');
             } else {
-                ul.find('.requests-operation').parent().addClass('disabled');
+                $requests_actions.find('.requests-operation').parent().addClass('disabled');
             }
         }
 
@@ -1279,53 +1335,67 @@ $.wa.helpdesk_controller = {
         }
     },
 
-    /** Helper to show above the requests list results of operation */
-    createClosableNotice: function(content) {
-        var w = $('<div class="notice-above-requests-list"></div>');
+    /**
+     * Helper to show above the requests list results of operation
+     * @param {*} content
+     * @param {String} status info, success, warning, danger
+     */
+    createClosableNotice: function(content, status) {
+        var w = $(`<div class="notice-above-requests-list alert light ${status} flexbox space-4 custom-m-0 small"></div>`);
+
+        var $alert_icon = '';
+        if (status === 'success') {
+            $alert_icon = '<i class="fas fa-check-circle" />'
+        }
+
         if (content) {
-            if (typeof content == 'string') {
+            if (typeof content === 'string') {
                 w.html(content);
             } else {
                 w.append(content);
             }
+
+            if ($alert_icon) {
+                w.prepend($('<span class="custom-mr-8" />').append($alert_icon));
+            }
+
+            w.append('<a href="javascript:void(0)" class="alert-close"><i class="fas fa-times" /></a>').on('click', '.alert-close', function() {
+                w.remove();
+            });
         }
-        w.prepend('<i class="icon16 close float-right" style="cursor:pointer"></i>').on('click', 'i.close', function() {
-            w.remove();
-        });
         return w;
     },
 
     /** When there are errors checking email sources, show message above the layout, and (!) indicators in sidebar. */
     updateWorkflowErrors: function(wf_ids, sources) {
-        $('#wa-app > .sidebar a[href^="#/settings/workflow/"] .error.indicator').remove();
+        $('#wa-app .js-app-sidebar a[href^="#/settings/workflow/"] .error.indicator').remove();
         if (wf_ids) {
             $.each(wf_ids, function(i, v) {
-                $('#wa-app > .sidebar a[href="#/settings/workflow/'+v+'"] b').append('<span class="error indicator inline">!</span>');
+                $('#wa-app .js-app-sidebar a[href="#/settings/workflow/'+v+'"] .no-autorestore').append('<span class="error badge indicator">!</span>');
             });
         }
 
-        if (sources) {
+        if (Array.isArray(sources) && sources.length) {
             var source_names = [];
             $.each(sources, function(source_id, source_name) {
                 source_names.push(source_name);
             });
 
+            $('.content:not(#s-core) > #hd-announcement').remove();
             var ha = $('#hd-announcement').empty();
-            if (!source_names.length) {
-                ha.remove();
-                return;
-            }
-
             if(!ha.size()) {
-                ha = $('<div id="hd-announcement"></div>').prependTo('#wa-app');
+                ha = $('<div id="hd-announcement" class="alert warning custom-m-16 custom-mb-0"></div>').prependTo('#s-core');
+            }
+            if (this.currentHash.includes('/split/')) {
+                ha.hide();
             }
 
-            ha.append($('<a href="javascript:void(0)" class="hd-announcement-close"><i class="icon10 close"></i></a>').click(function() {
+            ha.append($('<a href="#" class="hd-announcement-close alert-close"><i class="fas fa-times"></i></a>').click(function() {
                 ha.remove();
                 $.post("?action=closeError");
             }));
 
-            ha.append($('<p>').text($_('Error delivering messages from:')+' '+source_names.join(', ')));
+            ha.append($('<div/>').text($_('Error delivering messages from:')+' '+source_names.join(', ')));
         }
     },
 
@@ -1339,7 +1409,8 @@ $.wa.helpdesk_controller = {
      * beforeLoadCallback(html), if present, has a chance to modify response before it's shown in elem.
      * */
     loadHTML: function (url, params, beforeLoadCallback, afterLoadCallback) {
-        this.loadHTMLInto("#c-core-content", url, params, beforeLoadCallback, afterLoadCallback);
+        const wrapper_selector = '#c-core-content';
+        this.loadHTMLInto(wrapper_selector, url, params, beforeLoadCallback, afterLoadCallback);
     },
 
     /**
@@ -1375,9 +1446,9 @@ $.wa.helpdesk_controller = {
             }
             var title = '';
             if (elem.find('h1:first .h-header-text').length) {
-                title = elem.find('h1:first .h-header-text').text() || $('#wa-app .sidebar .selected:first').text() || _w('Helpdesk');
+                title = elem.find('h1:first .h-header-text').text() || $('#wa-app .js-app-sidebar .selected:first').text() || _w('Helpdesk');
             } else {
-                title = elem.find('h1:first').text() || $('#wa-app .sidebar .selected:first').text() || _w('Helpdesk');
+                title = elem.find('h1:first').text() || $('#wa-app .js-app-sidebar .selected:first').text() || _w('Helpdesk');
             }
             title = title.trim();
             if (title) {
@@ -1392,39 +1463,44 @@ $.wa.helpdesk_controller = {
 
     /** Show loading indicator in the header */
     showLoading: function() {
-        var heading_loading = $('#c-core-content .h-header-loading');
-        if (heading_loading.length) {
-            if (!heading_loading.data('ignore')) {
-                heading_loading.show();
-            }
-        } else {
-            var h1 = $('h1:visible');
-            if(h1.size() <= 0) {
-                $('#c-core-content .block').first().prepend('<i class="icon16 loading"></i>');
-                return;
-            }
-            h1 = $(h1[0]);
-            if (h1.find('.loading').show().size() > 0) {
-                return;
-            }
-            h1.append('<i class="icon16 loading"></i>');
-        }
+        this.waLoading.show();
+        this.waLoading.animate(10000, 95, false);
     },
-
+    progressLoading: function (xhr_event) {
+        const percent = (xhr_event.loaded / xhr_event.total) * 100;
+        this.waLoading.set(percent);
+    },
     /** Hide all loading indicators in h1 headers */
     hideLoading: function() {
-        $('h1 .loading').hide();
+        this.waLoading.done();
+        $(document).trigger('wa_loaded.helpdesk');
+    },
+    abortLoading: function () {
+        this.waLoading.abort();
     },
 
     /** Gracefully reload sidebar. */
     reloadSidebar: function() {
-        $.get("?module=backend&action=sidebar", null, function (response) {
-            var sb = $("#wa-app > .sidebar");
-            sb.css('height', sb.height()+'px').html(response).css('height', ''); // prevents blinking in some browsers
+        return $.get("?module=backend&action=sidebar", null, function (response) {
+            var $sb = $("#wa-app .js-app-sidebar");
+            $sb.css('height', $sb.height()+'px').html(response).css('height', ''); // prevents blinking in some browsers
             $.wa.helpdesk_controller.highlightSidebar();
             $.wa.helpdesk_controller.restoreSidebarCounts();
             $.wa.helpdesk_controller.restoreCollapsibleStatusInSidebar();
+            $.wa.helpdesk_controller.bindToggleCollapseMenuSidebar();
+            $.wa.helpdesk_controller.hideLoading();
         });
+    },
+
+    /** Collapsible sidebar sections */
+    bindToggleCollapseMenuSidebar: function () {
+        var toggleCollapse = function (e) {
+            if (e.target.closest('.js-ignore-collapse')) {
+                return true;
+            }
+            $.wa.helpdesk_controller.collapseSidebarSection(this, 'toggle');
+        };
+        $(".collapse-handler", $('#wa-app')).off('click').on('click', toggleCollapse);
     },
 
     /** Add .selected css class to li with <a> whose href attribute matches current hash.
@@ -1435,8 +1511,8 @@ $.wa.helpdesk_controller = {
         var partialMatch = false;
         var partialMatchLength = 2;
         var match = false;
-
-        $('#wa-app .sidebar li a').each(function(k, v) {
+        var $sidebar = $('#wa-app .js-app-sidebar');
+        $sidebar.find('li a, .brick').each(function(k, v) {
             v = $(v);
             if (!v.attr('href')) {
                 return;
@@ -1469,7 +1545,7 @@ $.wa.helpdesk_controller = {
         }
 
         // Matching <a> has been found. Remove old selection.
-        $('#wa-app .sidebar .selected').removeClass('selected');
+        $sidebar.find('.selected').removeClass('selected');
 
         // Only highlight items that are outside of dropdown menus
         if (match.closest('ul.dropdown').length > 0) {
@@ -1477,7 +1553,7 @@ $.wa.helpdesk_controller = {
         }
 
         // Highlight matching element
-        var p = match.closest('li').addClass('selected');
+        var p = (match.is('.brick') ? match : match.closest('li')).addClass('selected');
 
         // Update grid count in localStorage and in sidebar
         var skey = 'helpdesk/count/'+$.wa.helpdesk_controller.options.user_id+'/'+p.children('a').attr('href');
@@ -1490,30 +1566,32 @@ $.wa.helpdesk_controller = {
             var count = $.wa.helpdesk_controller.currentGrid.getTotal();
             $.storage.set(skey, count);
 
-            var cnt = p.children('span.count');
-            if (cnt.size() <= 0) {
-                p.prepend('<span class="count">'+count+'</span>');
-            } else if (!cnt.hasClass('no-autoupdate')) {
-                cnt.text(''+count);
-            }
+            var item = p.children('a');
+            this.updateItemCountSidebar(item, count);
         }
     },
 
     /** Restore sidebar counts from local storage */
     restoreSidebarCounts: function() {
-        $('#wa-app .sidebar li a').each(function(k, el) {
-            el = $(el);
-            var skey = 'helpdesk/count/'+$.wa.helpdesk_controller.options.user_id+'/'+el.attr('href');
-            var n = $.storage.get(skey) || '';
-            if (n !== null) {
-                var cnt = el.parent().children('span.count');
-                if (cnt.size() <= 0) {
-                    el.parent().prepend('<span class="count">'+n+'</span>');
-                } else if (!cnt.hasClass('no-autorestore')) {
-                    cnt.text(n);
-                }
+        const self = this;
+        const $sidebar = $('#wa-app .js-app-sidebar');
+        $sidebar.find('li a, .brick').each(function() {
+            var $el = $(this);
+            var skey = 'helpdesk/count/'+$.wa.helpdesk_controller.options.user_id+'/'+$el.attr('href');
+            var n = $.storage.get(skey);
+            if (n !== null && !$el.hasClass('no-count')) {
+                self.updateItemCountSidebar($el, n);
             }
         });
+    },
+
+    updateItemCountSidebar: function ($el, count) {
+        const $cnt = $el.find('.count');
+        if (!$cnt.length) {
+            $el.append('<span class="count">'+count+'</span>');
+        } else if (!$cnt.hasClass('no-autorestore')) {
+            $cnt.text(count);
+        }
     },
 
     /** Turn plain text links in given node into clickable <a> links. */
@@ -1644,22 +1722,6 @@ $.wa.helpdesk_controller = {
         }
     },
 
-    initClickableMenu: function(menu) {
-        var menu_id = menu.attr('id') || ('' + Math.random()).slice(2);
-        menu.find('a:first').unbind('click').bind('click', function() {
-            $(this).closest('.clickable').find('ul').toggle();
-            return false;
-        });
-        $(window).unbind('click.clickable-hide-' + menu_id).bind('click.clickable-hide-' + menu_id, function() {
-            var p = menu.parent();
-            if (p && p.length) {
-                $('.clickable ul').hide();
-            } else {
-                $(this).unbind('.clickable-hide-' + menu_id);
-            }
-        });
-    },
-
     /** Initialize a WYSIWYG editor on top of given textarea. */
     initWYSIWYG: function(textarea, options, csrf) {
         options = $.extend({
@@ -1700,7 +1762,7 @@ $.wa.helpdesk_controller = {
             //keydownCallback: function(event) { }, // without this waEditor intercents Ctrl+S event in Redactor
             callbacks: {
                 change: function () {
-                    $textarea.closest('form').find(':submit').removeClass('green').addClass('yellow');
+                    $textarea.closest('form').find(':submit').addClass('yellow');
                 }
             }
         }));
@@ -1725,56 +1787,53 @@ $.wa.helpdesk_controller = {
         var confirm = typeof options.confirm !== 'undefined' ? options.confirm : true;
         serialize_data = serialize_data || [];
 
-        var buttons = $('<div class="block">');
+        var wrapper = $('#h-action-settings')
+            .html('<form class="fields flexbox vertical space-8">' + html + '</form>');
+        wrapper.prepend(
+            `<a href="javascript:void(0);" class="back flexbox middle space-8" id="hd-last-view">
+                <span class="icon size-24"><i class="fas fa-arrow-circle-left"></i></span>
+                <div class="h-paging-top-title text-gray">${$_('Back to workflow customizing page')}</div>
+                <i class="spinner h-header-loading custom-mt-4" style="display:none;"></i>
+            </a>`
+        );
+        var buttons = $('<div class="bottombar h-fixed-bottombar sticky flexbox middle width-100 custom-px-12 custom-mt-16" />');
         if (are_you_sure) {
             are_you_sure = buttons.html(are_you_sure).text();
             buttons.empty();
         }
+        buttons.append($('<button type="submit" class="button green" id="h-save-action">'+save+'</button>'));
 
         if (action_id) {
-            buttons.append($('<a href="javascript:void(0)" style="float:right;display:inline-block;line-height:30px;color:red;margin-right:12px;">'+(delete_this_action||'')+'</a>').click(function() {
+            buttons.append($('<button type="button" class="light-gray small custom-ml-auto"><i class="fas fa-trash-alt text-red"></i> <span class="desktop-and-tablet-only">'+(delete_this_action||'')+'</span></button>')
+            .click(function() {
                 if (are_you_sure && typeof confirm === 'function' && !confirm(are_you_sure)) {
                     return false;
                 }
-                var self = $(this);
-                self.parent().append('<i class="icon16 loading"></i>').find(':submit').attr('disabled', true);
+                $.wa.helpers.createLoadingSubmit($(this), { mr: 0 }).show();
                 $.post('?module=editor&action=delaction&workflow_id='+workflow_id+'&action_id='+action_id+'&state_id='+state_id, {}, function() {
                     $.wa.helpdesk_controller.redispatch();
                 });
             }));
         }
 
-        buttons.append($('<input type="submit" class="button green" id="h-save-action" value="'+save+'">'));
-        var wrapper = $('#h-action-settings')
-            .html('<form>' + html + '</form>');
-        wrapper.prepend(
-                '<div class="block">' +
-                    '<a class="cancel no-underline" href="javascript:void(0);"><i class="icon10 larr"></i> ' +
-                            $_('Back to workflow customizing page') +
-                    '</a> <i class="icon16 loading h-header-loading" style="display:none;"></i>' +
-                '</div>'
-            );
-
-
-        $('.cancel', wrapper).click(function() {
+        $('.back', wrapper).click(function() {
             $.wa.helpdesk_controller.redispatch();
         });
-        buttons.find(':submit').parent().append('<i class="icon16 loading" style="display:none;"></i>');
 
-        var button = buttons.find(':submit');
         var form = $('form', wrapper);
+        var button = buttons.find(':submit');
         $.each(serialize_data, function(i, item) {
             var name = item.name;
             var value = item.value;
             var el = form.find(':input[name="' + name +'"]');
             if (el.length) {
                 if (el.is(':checkbox')) {
-                    el.attr('checked', true);
+                    el.prop('checked', true);
                 } else if (el.is(':radio')) {
                     el = el.filter('[value="' + value + '"]');
-                    el.attr('checked', true);
+                    el.prop('checked', true);
                 } else if (el.is('select')) {
-                    el.find('option[value="' + value + '"]').attr('selected', true);
+                    el.find('option[value="' + value + '"]').prop('selected', true);
                 } else if (el.is('input')) {
                     el.val(value);
                 }
@@ -1782,42 +1841,30 @@ $.wa.helpdesk_controller = {
             }
         });
 
-        form.append(buttons).submit(function(html) {
-            var form = $(this);
+        form.append(buttons).submit(function() {
             var serialize_data = form.serializeArray();
-            button.siblings('.loading').show();
+            const loadingSubmit = $.wa.helpers.createLoadingSubmit(button).show();
             form.find('input, select, textarea').trigger('beforesubmit');
             $.post(url, form.serialize(), function(html) {
                 wrapper.removeClass('modified');
                 button.removeClass('yellow').addClass('green');
-                button.siblings('.loading').hide();
-                button.parent().append(
-                    $('<span><i class="icon16 yes after-button"></i> ' + $_('Saved') + '</span>').animate({ opacity: 0 }, 1000, function() {
-                        $(this).remove();
-                    })
-                );
-                $.wa.helpdesk_controller.renderActionSettings(
+                loadingSubmit.hide();
+                $('<span><i class="fas fa-check-circle text-green"></i> ' + $_('Saved') + '</span>').animate({ opacity: 0 }, 1000, function() {
+                    $(this).remove();
+                }).insertAfter(button)
+
+                html = String(html).trim();
+                if (html === 'ok') {
+                    $.wa.helpdesk_controller.redispatch();
+                } else if (html) {
+                    $.wa.helpdesk_controller.renderActionSettings(
                         html,
                         $.extend({}, options, { confirm: false }),
                         serialize_data
-                );
+                    );
+                }
             });
             return false;
-        });
-
-        buttons.sticky({
-            fixed_css: { bottom: 0, 'z-index': 101, background: 'white' },
-            fixed_class: 'sticky-bottom-shadow',
-            showFixed: function(e) {
-                e.element.css('min-height', e.element.height());
-                e.fixed_clone.empty().append(e.element.children());
-            },
-            hideFixed: function(e) {
-                e.fixed_clone.children().appendTo(e.element);
-            },
-            updateFixed: function(e, o) {
-                this.width(e.element.width());
-            }
         });
 
         setTimeout(function() {
@@ -1851,11 +1898,12 @@ $.wa.helpdesk_controller = {
         }
     },
 
-    showActionSettings: function(workflow_id, state_id, action_id, action_class, save_text, or, cancel, delete_this_action, are_you_sure, callback) {
+    showActionSettings: function(workflow_id, state_id, action_id, action_class, save_text, or, cancel, delete_this_action, are_you_sure) {
         $('#c-core-content').children().wrapAll('<div id="h-content-above-action-settings"></div>');
-        $('#c-core-content').append('<div id="h-action-settings"></div>');
+        $('#c-core-content').append('<div class="height-100 not-blank"><div class="article"><div id="h-action-settings" class="article-body"></div></div></div>');
         $('#h-content-above-action-settings').hide();
 
+        const dfd = $.Deferred();
         var url = '?module=editor&action=action&wid='+workflow_id+'&action_id='+action_id+'&state_id='+state_id+'&action_class='+action_class;
         $.get(url, function(html) {
             $.wa.helpdesk_controller.renderActionSettings(html, {
@@ -1867,36 +1915,71 @@ $.wa.helpdesk_controller = {
                 workflow_id: workflow_id,
                 delete_this_action: delete_this_action
             });
+            dfd.resolve();
         });
+
+        return dfd.promise();
     },
 
-    /** Helper to initialize iButtons */
-    iButton: function($checkboxes, options) {
-        options = options || {};
-        return $checkboxes.each(function() {
-            var cb = $(this);
-            var id = cb.attr('id');
-            if (!id) {
-                do {
-                    id = 'cb'+Date.now()+'-'+(((1+Math.random())*0x10000)|0).toString(16).substring(1);
-                } while (document.getElementById(id));
-                cb.attr('id', id);
-            }
-            if (!options.inside_labels) {
-                $($.parseHTML(
-                    '<ul class="menu-h ibutton-wrapper">'+
-                        '<li><label class="gray" for="'+id+'">'+(options.labelOff||'')+'</label></li>'+
-                        '<li class="ibutton-li"></li>'+
-                        '<li><label for="'+id+'">'+(options.labelOn||'')+'</label></li>'+
-                    '</ul>'
-                )).insertAfter(cb).find('.ibutton-li').append(cb);
-            }
-        }).iButton($.extend({
-            className: 'mini'
-        }, options, options.inside_labels ? {} : {
-            labelOn : "",
-            labelOff : ""
-        }));
+    /**
+     * Helper to initialize attachments and adds new file input field for attachments
+     *
+     * Made on the basis of waUpload
+     *
+     * @param {String | jQuery} $wrapper
+     */
+    initAttachments: function ($wrapper, input_name) {
+        if (!$wrapper || !input_name) { throw new Error('init files wrapper') }
+
+        if (typeof $wrapper === 'string') {
+            $wrapper = $($wrapper);
+        }
+
+        $wrapper = $wrapper.append('<div class="h-attachments" />').children();
+
+        const addNewFile = () => {
+            $wrapper.append(
+                `<div class="h-attach"><div class="upload">
+                    <label class="link">
+                        <i class="fas fa-file-upload"></i>
+                        <span>${$_('Attach file')}</span>
+                        <input name="${input_name}" type="file" autocomplete="off">
+                    </label>
+                </div></div>`
+            );
+
+            queueMicrotask(() => {
+                const $attach =  $wrapper.find('.h-attach:last-child');
+                $attach.waUpload({ is_uploadbox: true });
+
+                // when user selects an attachment, add another field
+                let h;
+                $attach.on('change drop', h = function(e) {
+                    const $self = $(this);
+                    if (e.type === 'drop') {
+                        $attach.find(':file')[0].files = e.originalEvent.dataTransfer.files;
+                    }
+
+                    $attach
+                        .find('label.link').hide()
+                        .end().find('.filename').removeClass('hint')
+                        .append(`<a href="javascript:void(0)" class="remove-attach back custom-ml-8" title="${$_('remove')}"><i class="icon middle fas fa-times-circle" /></a>`);
+
+                    // attachment removal
+                    $attach.find('a.remove-attach').off('click').on('click', function() {
+                        $self.closest('.h-attach')
+                            .off('change drop', h)
+                            .remove();
+                        return false;
+                    });
+
+                    if ($self.index() === $wrapper.find('.h-attach').length - 1) {
+                        addNewFile();
+                    }
+                });
+            });
+        };
+        addNewFile();
     },
 
     /** Helper to insert text into textarea */
@@ -1921,47 +2004,6 @@ $.wa.helpdesk_controller = {
         }
     },
 
-    /** Create a checklist dropdown from ul.menu-h.dropdown (optionally .no-click-close) */
-    animateChecklist: function(checklist) {
-        // Element to show list of currently selected items
-        var selected_items_span = checklist.find('.selected-items');
-
-        // initial text, usually something like "Please select"
-        var initial_text = selected_items_span.text();
-
-        // Click on a closed checklist closes/opens the checklist dropdown
-        selected_items_span.click(function() {
-            var menu = checklist.find('.hidden.menu-v').toggle();
-            if (!menu.hasClass('no-mouseleave') && menu.is(':visible')) {
-                checklist.mouseleave(function() {
-                    checklist.find('.hidden.menu-v').hide();
-                });
-            }
-        });
-
-        // Dropdown checkbox change changes the visible description in selected_items_span
-        $('input:checkbox', checklist[0]).live('change', function() {
-            var str = [];
-            checklist.find('input:checkbox').each(function() {
-                var cb = $(this);
-                if (cb.is(':checked:not(:disabled)')) {
-                    cb.parent().addClass('bold');
-                    str.push($.trim($(this).parent().text()));
-                } else {
-                    cb.parent().removeClass('bold');
-                }
-            });
-            if (str.length > 0) {
-                selected_items_span.text(str.join(', '));
-            } else {
-                selected_items_span.text(initial_text);
-            }
-            return false;
-        }).change();
-
-        return checklist;
-    },
-
     /** Shows a confirmation dialog when user tries to navigate away from current page or current hash. */
     confirmLeave: function(is_relevant, warning_message, confirm_question, stop_listen, ns) {
         var h, h2, $window = $(window);
@@ -1974,7 +2016,7 @@ $.wa.helpdesk_controller = {
 
         $window.on('beforeunload.' + event_id, h = function(e) {
             if (typeof stop_listen === 'function' && stop_listen()) {
-                $window.off('.' + event_id);
+                $.wa.helpdesk_controller.confirmLeaveStop(event_id);
                 return;
             }
             if (is_relevant()) {
@@ -1991,9 +2033,27 @@ $.wa.helpdesk_controller = {
                 $window.off('wa_before_dispatched', h2);
                 return;
             }
-            if (!confirm(warning_message + " " + confirm_question)) {
-                e.preventDefault();
-            }
+
+            e.preventDefault();
+
+            var current_hash = $.wa.helpdesk_controller.getHash();
+            $.waDialog.confirm({
+                title: warning_message,
+                text: confirm_question,
+                success_button_title: $_('Leave'),
+                success_button_class: 'danger',
+                cancel_button_title: $_('Cancel'),
+                cancel_button_class: 'light-gray',
+                onSuccess () {
+                    $.wa.helpdesk_controller.confirmLeaveStop(event_id);
+                    if (window.location.hash === current_hash) {
+                        $.wa.helpdesk_controller.redispatch();
+                    } else {
+                        $.wa.setHash(current_hash);
+                    }
+
+                }
+            });
         });
 
         return event_id;
@@ -2048,7 +2108,10 @@ $.wa.helpdesk_controller = {
         return hash;
     }
 
-
 };
+// methods for overridde
+$.wa.helpdesk_controller._loadGrid = (() => $.wa.helpdesk_controller.loadGrid)();
+$.wa.helpdesk_controller._requestsAllAction = (() => $.wa.helpdesk_controller.requestsAllAction)();
+$.wa.helpdesk_controller._requestsSearchAction = (() => $.wa.helpdesk_controller.requestsSearchAction)();
 
 })(jQuery);

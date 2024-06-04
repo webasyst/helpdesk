@@ -1,0 +1,304 @@
+<div class="block not-padded">
+    <form class="h-faq-question-settings" action="?module=faq&action=save">
+
+        <div class="block h-header-block h-h1-inline" style="border-bottom: 1px solid #aaa;">
+            <a href="javascript:void(0);" class="h-prev">&larr; <i class="icon16 loading"></i></a>
+            <i class="icon16 loading h-header-loading" style="display:none;"></i>
+        </div>
+
+        <div class="block not-padded">
+
+            <div class="fields w100 width200px">
+
+                <div class="block" style="background: #eee; padding-bottom: 30px;">
+
+                    <div class="field">
+                        <input type="text" name="question" class="h-name large w80" value="{$faq.question|escape}" placeholder="[`New question`]">
+                    </div>
+
+                    <div class="field" style="margin-top: 10px">
+                        <div class="name">
+                            [`Category`]
+                        </div>
+                        <div class="value">
+                            <select name="category_id">
+                                {foreach $categories as $c}
+                                    <option value="{$c.id}" {if $c.id === $category.id}selected="selected"{/if} data-url="{$c.url}">{$c.name|escape}</option>
+                                {/foreach}
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <div class="name">
+                            [`Visibility`]
+                        </div>
+                        <div class="value">
+                            <label>
+                                <input type="checkbox" name="is_backend" value="1" {if $faq.is_backend}checked="checked"{/if}>
+                                [`Backend`]<br/>
+                                <span class="hint">[`Users can see this question and answer when they reply to client requests`]</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="field h-faq-comment" {if !$faq.is_backend}style="display:none;"{/if}>
+                        <div class="value">
+                            [`Comment for users`]<br>
+                            <textarea name="comment"
+                                                placeholder="[`Write a brief instruction here that may help users to select this answer when they work on a client's request.`]">{strip}
+                                    {if $faq.comment}{$faq.comment}{/if}
+                            {/strip}</textarea>
+                        </div>
+                    </div>
+                    {if $category.id > 0}
+                        <div class="field h-faq-site-visibility">
+                            <div class="value">
+                                <label>
+                                    <input type="checkbox" name="is_public" value="1" {if $faq.is_public}checked="checked"{/if}>
+                                    [`Site`]<br/>
+                                    <span class="hint">[`Visible in the public category`]</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="field h-frontend-url {if !$faq.is_public}hidden{/if}">
+                            <div class="name">
+                                [`Page URL`]
+                            </div>
+                            <div class="value">
+                                <div>
+                                    <span class="h-frontend-root-url">{$wa->getUrl('/', true)}faq/{$category.url}/</span><input style="min-width: 140px" type="text" name="faq_url" value="{$faq.url|default:''}">/
+                                    {if $faq.id > 0}
+                                        <a class="small h-faq-url-link" target="_blank" href="{$wa->getUrl('/', true)}faq/{$category.url}/{$faq.url|default:''}/">[`Preview`] <i class="icon10 new-window" style="margin-top: 7px;"></i></a>
+                                    {/if}
+                                </div>
+                            </div>
+                        </div>
+                    {/if}
+
+                </div>
+
+                <div class="field h-editor-wrapper" style="margin-bottom: 40px;">
+                    <div class="wa-editor-core-wrapper">
+                        <ul class="h-editor-toggle wa-editor-wysiwyg-html-toggle">
+                            <li class="selected">
+                                <a href="#" class="wysiwyg">[`WYSIWYG`]</a>
+                            </li>
+                            <li>
+                                <a href="#" class="html">HTML</a>
+                            </li>
+                        </ul>
+                        <div class="h-editor-wrapper">
+                            <textarea class="h-answer" name="answer">{$faq.answer}</textarea>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div id="h-sticky-bottoms" style="background: #eee; padding: 10px; border-top: 1px solid #ccc;">
+                <a href="javascript:void(0);" class="no-underline h-delete float-right small h-delete-faq-question" style="{if !$faq.id}display:none;{/if} margin-top: 10px; margin-right: 25px;">[`Delete this question & answer`]</a>
+                <input id="hd-source-editor-save" type="submit" class="button green" value="[`Save`]">
+                <i class="icon16 loading h-save-loading" style="display:none;"></i>
+            </div>
+
+            {$wa->csrf()}
+            <input type="hidden" name="id" value="{$faq.id}">
+
+            <div class="clear"></div>
+
+        </div>
+
+    </form>
+</div>
+
+<script>
+
+    var wa_url = '{$wa_url}', wa_app = 'helpdesk';
+
+    $(function() {
+
+        {if $id && !$faq.id}
+            $.wa.setHash('#/faq/new/');
+            return;
+        {/if}
+
+        var button = $(':submit');
+        var updateBackLink = function(href, name) {
+            $('.h-faq-question-settings .h-header-block').show();
+            $('.h-faq-question-settings .h-prev').attr('href', href).html('&larr; ' + name);
+        };
+        var hideBackLink = function() {
+            $('.h-faq-question-settings .h-header-block').hide();
+        };
+
+        {if $faq.id}
+            if ($.wa.helpdesk_controller.faq_context && $.wa.helpdesk_controller.faq_context.type === 'search') {
+                var query = $.wa.helpdesk_controller.faq_context.query;
+                updateBackLink('#/faq/search/' + query + '/', query);
+            } else {
+                updateBackLink('#/faq/category/{$category.id}', '{$category.name|escape}');
+            }
+        {else}
+            if ($.wa.helpdesk_controller.faq_context && $.wa.helpdesk_controller.faq_context.type === 'category') {
+                var category_id = $.wa.helpdesk_controller.faq_context.query;
+                var category_li = $('#h-faq-categories li[data-category-id="' + category_id + '"]');
+                if (category_li.length) {
+                    updateBackLink('#/faq/category/' + (category_id || 'none') + '/', category_li.find('.name').html());
+                } else {
+                    hideBackLink();
+
+                }
+            } else {
+                hideBackLink();
+            }
+        {/if}
+
+        $('#h-faq-categories')
+            .find('li.selected').removeClass('selected')
+            .end()
+            .find('li[data-category-id="{$category.id}"]').addClass('selected');
+
+        $.wa.helpdesk_controller.confirmLeave(
+            function() {
+                return $('.h-faq-question-settings').find(':submit').hasClass('yellow');
+            },
+            '[`Unsaved changes will be lost if you leave this page now.`]',
+            '[`Are you sure?`]',
+            function() {
+                return !$('.h-faq-question-settings').is(':visible');
+            },
+            'h-faq'
+        );
+
+        $('.h-faq-question-settings').submit(function() {
+            var form = $(this);
+            form.find('.h-answer').waEditor('sync');
+            form.find('.h-save-loading').show();
+            form.find('span.error').remove();
+            form.find('.error').removeClass('error');
+            form.find('.h-after-save-animation').remove();
+            $.post(form.attr('action'), form.serialize(), function(r) {
+                $.helpdesk_faq.changeButton(button, true);
+                if (r.status === 'ok') {
+                    form.find(':submit').parent().each(function() {
+                        $('<span class="h-after-save-animation"><i class="icon16 yes after-button"></i> '+"[`Saved`]"+'</span>').animate({ opacity: 0 }, 1000, function() {
+                            $(this).remove();
+                        }).appendTo($(this));
+                    });
+                    $('.h-delete-faq-question').show();
+                    $('.h-faq-question-settings').find('[name="id"]').val(r.data.faq.id);
+                    $('.h-faq-question-settings .h-faq-url-link').removeClass('h-disabled');
+                    $.helpdesk_faq.updateCounters(r.data.counters);
+                    $('.h-faq-url-link').attr('href', "{$wa->getUrl('/', true)}faq/{$category.url}/" + r.data.faq.url + "/");
+                    {if !$faq.id}
+                        $.wa.setHash('#/faq/' + r.data.faq.id + '/');
+                    {/if}
+
+                } else {
+                    $.each(r.errors, function(i, er) {
+                        $('input[name="' + er[1] + '"]').addClass('error').parent().append(' <span class="error">' + er[0] + '</span>');
+                    });
+                }
+                form.find('.h-save-loading').hide();
+            }, 'json');
+            return false;
+        });
+
+        $('.h-faq-question-settings').on('click', '.h-faq-url-link', function (e) {
+            $(this).hasClass('h-disabled') && e.preventDefault();
+        });
+
+        $('.h-delete-faq-question').off('click').click(function() {
+            var id = $('.h-faq-question-settings').find('[name="id"]').val();
+            if (id && confirm('[`Are you sure?`]')) {
+                $.post('?module=faq&action=delete', {
+                    id: id
+                }, function(r) {
+                    $.wa.setHash('#/faq/category/{if $category.id > 0}{$category.id}{else}none{/if}/');
+                    $.wa.helpdesk_controller.redispatch();
+                    $.helpdesk_faq.updateCounters(r.data.counters);
+                }, 'json');
+            }
+        });
+
+        $('input[type="checkbox"][name="is_public"]').change(function() {
+            if ($(this).is(':checked')) {
+                $('.h-frontend-url').slideDown();
+                if (!$('input[name="faq_url"]').val()) {
+                    $('.h-frontend-url').addClass('h-disabled');
+                }
+            } else {
+                $('.h-frontend-url').slideUp();
+            }
+            // for translit
+            $('input[name="question"]').trigger('keydown');
+        });
+
+        $('input[type="checkbox"][name="is_backend"]').change(function() {
+            if ($(this).is(':checked')) {
+                $('.h-faq-comment').slideDown();
+            } else {
+                $('.h-faq-comment').slideUp();
+            }
+        });
+
+
+        $('select[name=category_id]').change(function() {
+            var el = $(this);
+            var category_id = el.val();
+            var prev_category_id = el.data('prev_val');
+            if (category_id == '0') {
+                $('.h-faq-site-visibility').hide();
+                $('.h-frontend-url').hide();
+            } else {
+                $('.h-faq-site-visibility').show();
+                if (prev_category_id == '0') {
+                    $('input[type="checkbox"][name="is_public"]').trigger('change');
+                }
+                $('.h-frontend-root-url').text("{$wa->getUrl('/', true)}faq/" + el.find(':selected').data('url') + '/');
+            }
+            $.helpdesk_faq.changeButton(button);
+            el.data('prev_val', category_id);
+        }).data('prev_val', $('select[name=category_id]').val());
+
+        $('input:checkbox, input:radio').change(function() {
+            $.helpdesk_faq.changeButton(button);
+        });
+
+        $.helpdesk_faq.onChangeInput($('input[name="faq_url"]'), function() {
+            $.helpdesk_faq.changeButton(button);
+            $(this).data('edited', true);
+            $('.h-faq-question-settings .h-faq-url-link').addClass('h-disabled');
+
+        });
+        $.helpdesk_faq.onChangeInput($('input[name="question"]'), function() {
+            $.helpdesk_faq.changeButton(button);
+        });
+
+        $.wa.helpdesk_controller.initEditor(
+            $('.h-faq-question-settings').find('.h-answer'), {
+                buttons: ['format', 'bold', 'italic', 'underline', 'deleted', 'lists', 'link', 'image', 'horizontalrule'],
+                lang: "{substr($wa->locale(), 0, 2)}",
+                saveButton: $('#hd-source-editor-save'),
+                placeholder: '[`Write an answer here`]',
+                _csrf: {waRequest::cookie('_csrf', '')|json_encode}
+            }
+        );
+
+        $.helpdesk_faq.translitInput(
+                $('input[name="faq_url"]'),
+                $('input[name="question"]'),
+                function () {
+                    $('.h-faq-question-settings .h-faq-url-link').addClass('h-disabled');
+                }
+        );
+        $.helpdesk_faq.sticky($('#h-sticky-bottoms'), $('.h-faq-question-settings'));
+
+        var name_input = $('.h-faq-question-settings .h-name');
+        if (!name_input.val()) {
+            name_input.focus();
+        }
+
+    });
+</script>

@@ -1,0 +1,904 @@
+<div class="block not-padded">
+
+    {* Header *}
+    <div class="topmost-grid-wrapper" style="border-bottom: 1px solid #ccc">
+        <a class="float-right h-workflow-settings-toggle" href="javascript:void(0);"><i class="icon16 settings"></i></a>
+        <div class="block h-workflow-name-block">
+            <h1 class="h-workflow-name">{$wf->getName()|escape}</h1>
+        </div>
+
+        <div class="h-workflow-settings block hidden">
+            <form action="?module=settings&action=workflowSave&id={$wf->getId()}">
+                <input type="text" class="h-workflow-settings-name" name="data[name]" value="{$wf->getName()|escape}">
+                <div class="field buttons">
+                    <input type="submit" class="button green" value="[`Save`]"> [`or`] <a class="cancel" href="javascript:void(0);">[`cancel`]</a>
+                    {if $can_remove}
+                        <a href="javascript:void(0);" class="h-delete-workflow h-delete float-right no-underline small" data-workflow-id="{$wf->getId()}">[`Delete workflow`]</a>
+                    {/if}
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {* Content *}
+    <div class="block" style="position:relative">
+
+        {* Sources *}
+        <div id="hd-sources-above-wf-graph">
+
+            {* New source button *}
+            <ul class="dropdown menu-h float-right" style="margin-top:32px;min-height:63px;">
+                <li>
+                    <a href="javascript:void(0)" class="no-underline">
+                        <i class="icon16 add"></i><strong>[`New source`]</strong>{if count($source_types)}<i class="icon10 darr-tiny"></i>{/if}
+                    </a>
+                    <ul class="menu-h" id="new-source">
+                        {foreach $source_types as $tid => $tname}
+                            <li class="new-source-type-{$tid}"><a href="#/sources/create/{$tid}/{$wf->getId()}">
+                                {$tname|escape}
+                            </a></li>
+                        {/foreach}
+                    </ul>
+                </li>
+            </ul>
+
+            {* New state button *}
+            <div style="position:absolute;bottom:0;right:25px;display:inline-block;">
+                <div style="position:relative;top:37px;display:inline-block;right:-20px;">
+                    <ul class="menu-h with-icons">
+                        <li>
+                            <a href="javascript:void(0)" id="hd-graph-new-state" class="no-underline">
+                                <i class="icon16 add"></i><strong>[`New state`]</strong>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            {foreach $sources as $s}
+                {if $s.type !== 'backend'}
+                    <div class="hd-source" id="hd-source-{$s.id}">
+                        {if !empty($s.params.error_datetime)}
+                            <span class="error indicator graph-source">!</span>
+                        {/if}
+                        <a href="#/sources/edit/{$s.id}/{$wf->getId()}">
+                            <img src="{$s.icon_url}" title="{$s.name|escape}">
+                        </a>
+                        <div class="name">
+                            <a href="#/sources/edit/{$s.id}/{$wf->getId()}" title="{$s.name|escape}">
+                                {$s.name|escape}
+                            </a>
+                        </div>
+                    </div>
+                {/if}
+            {/foreach}
+        </div>
+
+        {* Graph canvas *}
+        <div id="hd-raph-canvas"></div>
+    </div>
+
+</div>
+
+<script>
+$(function() { "use strict";
+
+    var sources_above_graph = $('#hd-sources-above-wf-graph');
+
+    // Drag-and-drop for sources list
+    sources_above_graph.sortable({
+        distance: 5,
+        opacity: 0.8,
+        tolerance: 'pointer',
+        sort: function(e, ui) {
+            drawArrows();
+        },
+        stop: function(e, ui) {
+            drawArrows();
+
+            var sources = [];
+            sources_above_graph.find('.hd-source').each(function() {
+                sources.push($(this).attr('id').substr(10)); // hd-source-
+            });
+
+            // save new positions to persistent storage
+            $.post('?module=settings&action=graphpos', {
+                    wf: {$wf->getId()},
+                    type: 'sources',
+                    sources: sources.join(',')
+                }, function() {
+                }
+            );
+        }
+    });
+
+    // Redraw arrows on resize
+    var sources_above_graph_height = 90;
+    (function() {
+        var f;
+        $(window).on('resize', f = function() {
+            if (sources_above_graph.closest('body').length) {
+                var new_height = sources_above_graph.height();
+                if (sources_above_graph_height != new_height) {
+                    $.each(states, function(id, state) {
+                        state.transform(['...T', 0, ',', new_height - sources_above_graph_height].join(''));
+                    });
+                    sources_above_graph_height = new_height;
+                }
+                drawArrows();
+            } else {
+                $(window).off('resize', f);
+            }
+
+            var c = $('#hd-raph-canvas');
+            var cp = $('#hd-raph-canvas').parent();
+            r.setSize(cp.width(), r.height);
+            c.width(cp.width());
+        });
+    })();
+
+    // Prevents given raphael object to go beyond top and left borders when dragged.
+    // Increases canvas if object goes beyond bottom or right border.
+    Raphael.fn.ensureCanvasSize = function(obj) {
+        var bbox = jQuery.extend({ }, obj.getBBox());
+        var min_width = Math.max(sources_above_graph.width(), this.width, bbox.x + bbox.width + 3);
+
+        var cp = $('#hd-raph-canvas').parent();
+        min_width = Math.min(min_width, cp.width());
+
+        if (min_width > this.width) {
+            this.setSize(min_width, this.height);
+            $(this.canvas).parent().width(min_width);
+        }
+        if (bbox.y + bbox.height + 30 > this.height) {
+            this.setSize(this.width, bbox.y + bbox.height + 33);
+            $(this.canvas).parent().height(bbox.y + bbox.height + 33);
+        }
+
+        if (bbox.x < 0) {
+            obj.transform(['...T', -bbox.x, ',', 0].join(''));
+        }
+
+        var min_y = 20 + sources_above_graph.height();
+
+        if (bbox.y < min_y) {
+            obj.transform(['...T', 0, ',', min_y-bbox.y].join(''));
+        }
+    };
+
+    // New state button dialog
+    $('#hd-graph-new-state').click(function() {
+        $.wa.dialogCreate('hd-e-graph-dialog', {
+            url: '?module=editor&action=state&wid={$wf->getId()}',
+            small: false
+        });
+    });
+
+    // Helper to open dialogs to add new actions to states
+    var newAction = function(state_data) {
+        var c = $('#hd-e-graph-new-action');
+        if (!c.length) {
+            c = $('<div id="hd-e-graph-new-action"></div>').appendTo('body');
+        }
+        $.get('?module=editor&action=newaction&wid={$wf->getId()}&state_id='+(state_data.id), function(html) {
+            c.html(html);
+        });
+    };
+
+    //
+    // Event handlers for graph objects
+    //
+    var dragger = function () {
+        this.ox = 0;
+        this.oy = 0;
+    };
+    var move = function (dx, dy) {
+        // Stick to initial position if not dragged far enough
+        if (this.ox == 0 && this.oy == 0 && Math.abs(dx) + Math.abs(dy) < 10) {
+            return;
+        }
+
+        (this.setElem || this).transform(['...T', dx-this.ox, ',', dy-this.oy].join(''));
+        $(this.node).data('preventClick', true);
+        this.ox = dx;
+        this.oy = dy;
+        r.ensureCanvasSize(this.setElem || this);
+        drawArrows();
+    };
+    var up = function () {
+        delete this.ox;
+        delete this.oy;
+
+        var bbox = this.getBBox();
+        r.ensureCanvasSize(this.setElem || this);
+
+        // save new positions to persistent storage
+        var self = this;
+        $.post('?module=settings&action=graphpos', {
+            wf: {$wf->getId()},
+            type: this.setElem.entityType,
+            id: this.setElem.entityId,
+            x: (bbox.x || 1),
+            y: (bbox.y || 1) + 90 - sources_above_graph_height
+        });
+    };
+    var click = function(e, dialog_url) {
+        if ($(this).data('preventClick')) {
+            $(this).data('preventClick', false);
+            e.stopPropagation();
+            e.preventDefault();
+            return false;
+        }
+        $.wa.dialogCreate('hd-e-graph-dialog', {
+            url: dialog_url,
+            buttons: $('<div></div>')
+                .append(
+                    $('<input type="submit" class="button green" value="'+"[`Save`]"+'">').click(function() {
+                        var form = $('#hd-e-graph-dialog form');
+                        if (form.size() <= 0) {
+                            return;
+                        }
+                        $(this).parent().append('<i class="icon16 loading"></i>');
+                        $.post(form.attr('action'), form.serialize(), function() {
+                            $.wa.helpdesk_controller.redispatch();
+                            $.wa.dialogHide();
+                        }, 'json');
+                    })
+                )
+                .append(" [`or`] ")
+                .append($('<a href="javascript:void(0)">'+"[`cancel`]"+'</a>').click(function() {
+                    $.wa.dialogHide();
+                })),
+            small: false
+        });
+    }
+
+    // Helper to draw curved arrows.
+    // Returns { x: ..., y: ... } coordinates of intermidiate point near p1.
+    var getInterPoint = function(p1, p2, distance) {
+        if (!distance) {
+            distance = 20;
+        }
+
+        var rad = p1.d * Math.PI / 180;
+        return {
+            x: p1.x + distance*Math.cos(rad),
+            y: p1.y - distance*Math.sin(rad)
+        };
+    };
+
+    // Arrow from one set of points to another set of points
+    // o = options object work keys:
+    // - from, to: functions returning array of { x:..., y:..., d: degrees (0 = east, 90 = north, 180 = west, 270 = south)},
+    // - line, bg: existing path(s) to update,
+    // - color: line color (and possibly width after '|') for new line
+    // - bg: bg color (and possibly width after '|') for new line
+    // - dashed: stroke-dasharray for line // disabled
+    // - dashedbg: stroke-dasharray for bg // disabled
+    // returns an object that can be used later to update the arrow
+    Raphael.fn.arrow = function (o) {
+        // detemine a pair of points from o.from and o.to with minimum distance between them
+        var from = o.from(), to = o.to();
+        var pf, pt;
+        var i, j, dis, min_dis = null, dx, dy;
+        for (i = 0; i < from.length; i++) {
+            for (j = 0; j < to.length; j++) {
+                dx = Math.abs(from[i].x - to[j].x);
+                dy = Math.abs(from[i].y - to[j].y);
+                dis = dx*dx + dy*dy;
+                if (min_dis === null || min_dis > dis) {
+                    min_dis = dis;
+                    pf = from[i];
+                    pt = to[j];
+                }
+            }
+        }
+
+        // compute coordinates of two intermediate points
+        var p2 = getInterPoint(pf, pt, 40);
+        var p3 = getInterPoint(pt, pf, 40);
+
+        // path curve
+        var path = ["M", pf.x.toFixed(3), pf.y.toFixed(3), "C", p2.x.toFixed(3), p2.y.toFixed(3), p3.x.toFixed(3), p3.y.toFixed(3), pt.x.toFixed(3), pt.y.toFixed(3)].join(",");
+
+        // update existing path...
+        if (o.line) {
+            o.line.attr({ path: path });
+            o.bg && o.bg.attr({ path: path });
+        }
+        // ...or create new path
+        else {
+            o.color = o.color || "#777";
+            return {
+                bg: o.bg && this.path(path).attr({
+                    stroke: o.bg.split("|")[0],
+                    fill: "none",
+                    //'stroke-dasharray': o.dashedbg || '',
+                    'stroke-width': o.bg.split("|")[1] || 6
+                }),
+                line: this.path(path).attr({
+                    stroke: o.color.split("|")[0],
+                    fill: "none",
+                    'arrow-end': 'classic-wide-long',
+                    //'stroke-dasharray': o.dashed || '',
+                    'stroke-width': o.color.split("|")[1] || 2
+                }),
+                from: o.from,
+                to: o.to
+            };
+        }
+    };
+
+    // state shape
+    // actions = { id: action_id, transitions: [state_id, state_id, ...] }
+    // returns raphael set with additional keys:
+    //   `actions` = { action_id: shape for connection }
+    //   `handle` = raphael shape to use as drag handle
+    Raphael.fn.state = function (state_data, tlx, tly) {
+
+        // Helper to determine state color
+        var d = $('<div>').attr('style', state_data.list_row_css || '');
+
+        var state = r.set();
+        state.entityType = 'state';
+        state.entityId = state_data.id;
+        state.name = r.text(tlx + 10, tly + 12, state_data.name).attr({
+            stroke: 'none',
+            fill: d[0].style.color || "#000",
+            'stroke-width': 0,
+            'font-family': "'Lucida Grande', Helvetica, Arial, sans-serif",
+            'font-size': '13px',
+            'font-weight': 'bold',
+            'text-anchor': 'start'
+        });
+
+        var header_bbox = jQuery.extend({ }, state.name.getBBox());
+        if (!state_data.foreign) {
+            header_bbox.width += 16; // space for settings icon
+        }
+        var bbox = header_bbox;
+        var x = tlx;
+        var y = tly;
+        var height = bbox.height + 10;
+        var width = bbox.width + 20;
+        height += 10;
+
+        // actions
+        if (state_data.actions.length) {
+
+            state.actions = { };
+
+            // draw shapes and calculate width and height
+            var width_expand = 25;
+            for(var i = 0; i < state_data.actions.length; i++) {
+                var action_data = actions_data[state_data.actions[i]];
+                if (action_data && action_data.auto) {
+                    width_expand = 65;
+                    break;
+                }
+            }
+
+            for(var i = 0; i < state_data.actions.length; i++) {
+                var action_data = actions_data[state_data.actions[i]];
+                if (!action_data) {
+                    continue;
+                }
+                height += 5;
+                var a = state.actions[state_data.actions[i]] = r.action(action_data, x+10, y+height);
+                bbox = jQuery.extend({ }, a.getBBox());
+                height += bbox.height;
+
+                if (bbox.width + width_expand > width) {
+                    width = bbox.width + width_expand;
+                }
+                state.push(a);
+            }
+        }
+
+        // Button to add new action
+        if (!state_data.foreign) {
+            height += 3;
+            state.new_action_button = r.text(x + 14, y + height, "[`Add action`]").attr({
+                stroke: "none",
+                fill: "#02a",
+                'stroke-width': 0,
+                'font-family': "'Lucida Grande', Helvetica, Arial, sans-serif",
+                'font-size': '11px',
+                'text-anchor': 'start',
+                'cursor': 'pointer'
+            }).click(function() {
+                newAction(state_data);
+            });
+            state.push(state.new_action_button);
+            bbox = jQuery.extend({ }, state.new_action_button.getBBox());
+            height += bbox.height;
+            if (bbox.width + 25 > width) {
+                width = bbox.width + 25;
+            }
+        }
+
+        if (state_data.actions.length) {
+            // assign connector points to actions
+            for(var i = 0; i < state_data.actions.length; i++) {
+                if(!state.actions[state_data.actions[i]]) {
+                    continue;
+                }
+                (function() {
+                    var a = state.actions[state_data.actions[i]];
+                    a.border_rect.attr('width', width-20);
+                    a.connectors = function() {
+                        var bbox = jQuery.extend({ }, a.getBBox());
+                        bbox.x -= 10;
+                        bbox.y -= 5;
+                        bbox.height += 10;
+                        return [
+                            { x: bbox.x + width - 10,   y: bbox.y + bbox.height / 2, d: 0 },
+                            { x: bbox.x + 10,           y: bbox.y + bbox.height / 2, d: 180 }
+                        ];
+                    };
+                })();
+            }
+        }
+
+        // State name for foreign workflow states that accept requests
+        if (state_data.foreign && state_data.foreign_state_name) {
+            state.foreign_state_name = r.text(bbox.x, bbox.y + height - 3, state_data.foreign_state_name).attr({
+                cursor: 'pointer',
+                stroke: 'none',
+                fill: d[0].style.color || "#000",
+                'stroke-width': 0,
+                'font-family': "'Lucida Grande', Helvetica, Arial, sans-serif",
+                'font-size': '13px',
+                'font-weight': 'bold',
+                'text-anchor': 'start'
+            });
+            state.foreign_state_name.setElem = state;
+            state.push(state.foreign_state_name);
+
+            state.name.attr('fill', "#000");
+            height += state.foreign_state_name.getBBox().height;
+            if (state.foreign_state_name.getBBox().width + 25 > width) {
+                width = state.foreign_state_name.getBBox().width + 25;
+            }
+
+            state.foreign_state_name.click(function() {
+                window.location.hash = "#/settings/workflow/"+state_data.workflow_id;
+            });
+        }
+
+        // surrounding rect
+        state.border_rect = r.rect(x, y, width, height, 10);
+        state.border_rect.attr({ stroke: state_data.foreign ? "#aaa" : "#000", "fill-opacity": 0, "stroke-width": 2 });
+        state.border_rect.setElem = state;
+
+        // Header background for foreign states
+        if (state_data.foreign) {
+            state.header_bg = r.rect(x, y, width, header_bbox.height + 10, 10).attr({
+                "stroke-width": 0,
+                "fill-opacity": 1,
+                'fill': '#F5EBCC'
+            });
+            state.header_bg.setElem = state;
+            state.push(state.header_bg);
+            state.header_bg2 = r.rect(x, y + header_bbox.height, width, 10).attr({
+                "stroke-width": 0,
+                "fill-opacity": 1,
+                'fill': '#F5EBCC'
+            });
+            state.header_bg2.setElem = state;
+            state.push(state.header_bg2);
+            state.name.toFront();
+            state.border_rect.toFront();
+        }
+
+        // line at the bottom of name dividing it from actions
+        state.header_divider =  r.path(['M', x, ' ', y + state.name.getBBox().height + 10, 'l', width, ' ', 0].join('')).attr({
+            stroke: state_data.foreign ? "#aaa" : "#444",
+            "fill-opacity": 0,
+            "stroke-width": 1
+        });
+        state.header_divider.setElem = state;
+
+        // rect around state header drag-and-drop handle
+        state.handle = r.rect(x, y, width, header_bbox.height + 10, 10).attr({
+            "fill-opacity": 0,
+            "stroke-width": 0,
+            cursor: "move"
+        });
+        $(state.handle.node).css('pointer-events', 'all');
+        state.handle.setElem = state;
+
+        // cog to open settings dialog
+        state.settings_button = r.set();
+        state.settings_button.setElem = state;
+        if (!state_data.foreign) {
+            state.settings_button.push(r.path('M31.229,17.736c0.064-0.571,0.104-1.148,0.104-1.736s-0.04-1.166-0.104-1.737l-4.377-1.557c-0.218-0.716-0.504-1.401-0.851-2.05l1.993-4.192c-0.725-0.91-1.549-1.734-2.458-2.459l-4.193,1.994c-0.647-0.347-1.334-0.632-2.049-0.849l-1.558-4.378C17.165,0.708,16.588,0.667,16,0.667s-1.166,0.041-1.737,0.105L12.707,5.15c-0.716,0.217-1.401,0.502-2.05,0.849L6.464,4.005C5.554,4.73,4.73,5.554,4.005,6.464l1.994,4.192c-0.347,0.648-0.632,1.334-0.849,2.05l-4.378,1.557C0.708,14.834,0.667,15.412,0.667,16s0.041,1.165,0.105,1.736l4.378,1.558c0.217,0.715,0.502,1.401,0.849,2.049l-1.994,4.193c0.725,0.909,1.549,1.733,2.459,2.458l4.192-1.993c0.648,0.347,1.334,0.633,2.05,0.851l1.557,4.377c0.571,0.064,1.148,0.104,1.737,0.104c0.588,0,1.165-0.04,1.736-0.104l1.558-4.377c0.715-0.218,1.399-0.504,2.049-0.851l4.193,1.993c0.909-0.725,1.733-1.549,2.458-2.458l-1.993-4.193c0.347-0.647,0.633-1.334,0.851-2.049L31.229,17.736zM16,20.871c-2.69,0-4.872-2.182-4.872-4.871c0-2.69,2.182-4.872,4.872-4.872c2.689,0,4.871,2.182,4.871,4.872C20.871,18.689,18.689,20.871,16,20.871z').attr({ "fill-opacity": 1, "stroke-width": 0 }));
+            state.settings_button.push(r.circle(16, 16, 5, 5).attr({ 'fill-opacity': 0, "stroke-width": 0 }));
+            state.settings_button.transform(['T', x + width - 30, ',', y - 3, 'S', 0.5, ',', 0.5].join(''));
+            state.settings_button.attr({ cursor: "pointer", 'fill': '#555' });
+        }
+
+        // timeout labels
+        if (state_data.actions.length) {
+            for(var i = 0; i < state_data.actions.length; i++) {
+                var action_data = actions_data[state_data.actions[i]];
+                if (!action_data || !action_data.auto) {
+                    continue;
+                }
+                height += 5;
+                var a = state.actions[state_data.actions[i]];
+                bbox = jQuery.extend({ }, a.getBBox());
+                var t = r.timeout(action_data.timeout, bbox.x + width - 10, bbox.y + 8);
+                a.timeout = t;
+                state.push(t);
+            }
+        }
+
+        // connector points for a state
+        state.connectors = function() {
+            var bbox = jQuery.extend({ }, state.name.getBBox());
+            bbox.x -= 5;
+            bbox.y -= 5;
+            bbox.height += 10;
+            return [
+                //{ x: bbox.x + width,         y: bbox.y + bbox.height / 2, d: 0 },
+                { x: bbox.x + 15,            y: bbox.y, d: 90 },
+                { x: bbox.x + width / 2,     y: bbox.y, d: 90 },
+                { x: bbox.x + width - 15,    y: bbox.y, d: 90 },
+                //{ x: bbox.x,                 y: bbox.y + bbox.height / 2, d: 180 },
+                { x: bbox.x + 15,            y: bbox.y + height + 2, d: 270 },
+                { x: bbox.x + width/2,       y: bbox.y + height + 2, d: 270 },
+                { x: bbox.x + width - 15,    y: bbox.y + height + 2, d: 270 }
+            ];
+        };
+
+        // function to get connector points by action
+        state.getConnectors = function(action) {
+            if (!action) {
+                return state.connectors;
+            }
+            return state.actions[action].connectors;
+        };
+
+        state.push(state.header_divider);
+        state.push(state.border_rect);
+        state.push(state.name);
+        state.push(state.handle);
+        state.settings_button.length && state.push(state.settings_button);
+
+        return state;
+    };
+
+    Raphael.fn.action = function (action_data, tlx, tly) {
+
+        var color = action_data.color;
+        if (!color && action_data.user_button_css_class) {
+            var b = $('<button class="hidden button">').addClass(action_data.user_button_css_class).appendTo('body');
+            action_data.color = color = b.css('border-color') || '#000';
+            b.remove();
+        }
+
+        var makeActionTextElement = function() {
+            var common_attrs = {
+                stroke: 'none',
+                'stroke-width': 0,
+                fill: '#000',
+                'font-size': '13px',
+                'font-family': "'Lucida Grande', Helvetica, Arial, sans-serif",
+                'text-anchor': 'start'
+            };
+            return r.text(tlx+4, tly+1, action_data.name)
+                .attr(jQuery.extend(
+                    common_attrs,
+                    !action_data.auto ? {
+                        'font-weight': 'bold',
+                        fill: color || common_attrs.fill
+                        } : { }
+                ));
+        };
+
+
+        var text = makeActionTextElement();
+        var bbox = jQuery.extend({ }, text.getBBox());
+        text.remove();
+
+        var result = r.set();
+        result.border_rect = r.rect(bbox.x-4, bbox.y-1, bbox.width+8, bbox.height+2).attr({ 'stroke-width': 0, 'fill': '#fff' });
+        result.push(result.border_rect);
+        result.push(makeActionTextElement());
+
+        if (!action_data.auto) {
+            if (action_data.states && action_data.states.length) {
+                var state_present = false;
+                for (var i = 0; i < action_data.states.length; i++) {
+                    state_present = true;
+                }
+                if (state_present) {
+                    result.border_rect.attr({
+                        'stroke-width': 1,
+                        'stroke': color || '#000'
+                    });
+                }
+            }
+        } else {
+            result.border_rect.attr({
+                'stroke-width': 1,
+                'stroke': '#999',
+                fill: '#ddd'
+            });
+        }
+
+        result.attr('cursor', 'pointer');
+        result.color = color || '#000';
+        return result;
+    };
+
+    Raphael.fn.timeout = function(timeout, x, y) {
+        var txt = timeout.day + '[`d`] ';
+        var shift = 7;
+        if (timeout.hour > 0) {
+            txt += timeout.hour + '[`h`]';
+            shift = 2;
+        }
+        var attrs = {
+            stroke: 'none',
+            'stroke-width': 0,
+            fill: '#aaa',
+            'font-size': '9px',
+            'font-weight': 'bold',
+            'font-family': "'Lucida Grande', Helvetica, Arial, sans-serif",
+            'text-anchor': 'left'
+        };
+        var text = r.text(x, y, txt).attr(attrs);
+        var bbox = jQuery.extend({ }, text.getBBox());
+        text.remove();
+        text = r.text(x - bbox.width - shift, y, txt).attr(attrs);
+        text.attr('cursor', 'pointer');
+        return text;
+    };
+
+    Raphael.fn.workflow = function(workflow_data, tlx, tly) {
+
+        // Text
+        var text = r.text(tlx+4, tly+1, workflow_data.name).attr({
+            stroke: 'none',
+            fill: color || '#000',
+            'stroke-width': 0,
+            'font-family': "'Lucida Grande', Helvetica, Arial, sans-serif",
+            'font-size': '13px',
+            'font-weight': 'bold',
+            'text-anchor': 'start'
+        });
+
+        var result = r.set();
+        result.push(text);
+
+        var bbox = jQuery.extend({ }, result.getBBox());
+        result.border_rect = r.rect(bbox.x-4, bbox.y-1, bbox.width+8, bbox.height+2).attr({ 'stroke-width': 0, 'fill-opacity': 0.1, 'fill': '#fff' });
+        result.push(result.border_rect);
+        result.attr('cursor', 'pointer');
+        result.color = '#000';
+
+        return result;
+
+    };
+
+    // Helper to draw or redraw graph arrows
+    var drawArrows = function() {
+        for (var i = connections.length; i--;) {
+            r.arrow(connections[i]);
+        }
+        r.safari();
+    };
+
+    //
+    // Create the graph
+    //
+
+    // Initialize canvas
+    var r = $.wa.helpdesk_controller.last_raph = Raphael("hd-raph-canvas", 640, 480);
+
+    // Graph nodes as raphael set objects with some additional properties
+    var states = { };
+
+    // graph data
+    var states_data = {json_encode($states_data)};
+    var actions_data = {json_encode($actions_data)};
+    var position_data = {json_encode($position_data)};
+
+    // Create state nodes
+    (function() {
+        var tlx, tly;
+        for(var id in states_data) {
+            if (!states_data.hasOwnProperty(id)) {
+                continue;
+            }
+
+            // state shape top left coordinates
+            if (position_data.state && position_data.state[id]) {
+                tlx = position_data.state[id].x;
+                tly = position_data.state[id].y;
+            } else {
+                tlx = Math.random()*600;
+                tly = Math.random()*440;
+            }
+
+            states[id] = r.state(states_data[id], tlx, tly);
+            r.ensureCanvasSize(states[id]);
+            states[id].handle.drag(move, dragger, up);
+            (function() {
+                var url = '?module=editor&action=state&wid={$wf->getId()}&id='+id;
+                states[id].settings_button.click(function(e) {
+                    click.call(this, e, url);
+                });
+            })();
+
+            for (var i in states[id].actions) {
+                if (!states[id].actions.hasOwnProperty(i)) {
+                    continue;
+                }
+                (function() {
+                    var action_id = i, state_id = id;
+                    var handler = function() {
+                        if (states_data[state_id].foreign) {
+                            window.location.hash = "#/settings/workflow/"+states_data[state_id].workflow_id;
+                            return false;
+                        }
+
+                        // Confirmation for action deletion.
+                        // Check if this action is used in another state (confirmation depends on this).
+                        var are_you_sure = null;
+                        for(var sid in states_data) {
+                            if (sid !== state_id && states_data[sid] && states_data[sid].actions) {
+                                for(var ai in states_data[sid].actions) {
+                                    if (states_data[sid].actions[ai] === action_id) {
+                                        are_you_sure = "[`The action will be eliminated only for the state &ldquo;%s&rdquo;. For other states this action will stay available.`]".replace('%s', states_data[state_id].name);
+                                        break;
+                                    }
+                                }
+                                if (are_you_sure) {
+                                    break;
+                                }
+                            }
+                        }
+
+                        $.wa.helpdesk_controller.showActionSettings('{$wf->getId()}', state_id, action_id, '', "[`Save`]", "[`or`]", "[`cancel`]", "[`Delete this action`]", are_you_sure);
+                    };
+
+                    states[id].actions[action_id].click(handler);
+
+                    if (states[id].actions[action_id].timeout) {
+                        states[id].actions[action_id].timeout.click(handler);
+                    }
+                })();
+            }
+        }
+
+    })();
+
+    // create connections from actions
+    var connections = [];
+    (function() {
+        var action_id;
+        for(var state_id in states_data) {
+            if (!states_data.hasOwnProperty(state_id)) {
+                continue;
+            }
+
+            for(var i = 0; i < states_data[state_id].actions.length; i++) {
+                action_id = states_data[state_id].actions[i];
+                if (actions_data[action_id] && actions_data[action_id].states.length) {
+                    for(var j = 0; j < actions_data[action_id].states.length; j++) {
+
+                        // Make sure data is consistent
+                        if(!states[state_id] || !states[actions_data[action_id].states[j]] || !states[actions_data[action_id].states[j]].getConnectors) {
+                            continue;
+                        }
+
+                        // Do not draw arrow from state to itself
+                        // and draw no border around such actions
+                        if (state_id == actions_data[action_id].states[j]) {
+                            states[state_id].actions[action_id].border_rect.attr({
+                                'stroke-width': 0
+                            });
+                            continue;
+                        }
+
+                        connections.push(r.arrow({
+                            from: states[state_id].getConnectors(action_id),
+                            to: states[actions_data[action_id].states[j]].getConnectors(),
+                            color: actions_data[action_id].color
+                        }));
+                    }
+                }
+            }
+        }
+    })();
+
+    // Create connections from sources
+    (function() {
+        {foreach $sources as $s}
+            {if $s.states && is_array($s.states)}
+                {foreach $s.states as $st}
+                    if (states['{$st}']) {
+                        connections.push(r.arrow({
+                            from: function() {
+                                var $source = $('#hd-source-{$s.id}');
+                                return [{
+                                    x: $source.position().left + $source.outerWidth()/2 + 20,
+                                    y: $source.position().top + $source.outerHeight(),
+                                    d: 270
+                                }];
+                            },
+                            to: states['{$st}'].getConnectors(),
+                            color: "{ifset($s.connections_color, '#777')}"
+                        }));
+                    }
+                {/foreach}
+            {/if}
+        {/foreach}
+    })();
+
+    $.wa.helpdesk_controller.updateWorkflowErrors({json_encode($workflows_errors)}, {json_encode($sources_errors)});
+
+    // workflow settings editor
+
+    (function() {
+
+        var openBlock = function() {
+            $('.h-workflow-settings').show();
+            $('.h-workflow-name-block').hide();
+        };
+
+        var closeBlock = function() {
+            $('.h-workflow-settings').hide();
+            $('.h-workflow-name-block').show();
+        };
+
+        {if $can_remove}
+            $('.h-delete-workflow').click(function() {
+                if (confirm('[`Are you sure?`]')) {
+                    $.post('?module=settings&action=workflowDelete', {
+                        id: $(this).data('workflowId')
+                    }, function(r) {
+                        if (r.status === 'ok') {
+                            $('#h-sidebar-workflow-list').find('li[data-workflow-id="' + r.data.id + '"]').remove();
+                            $.wa.setHash('#/');
+                        }
+                    }, 'json');
+                }
+                return false;
+            });
+        {/if}
+
+        $('.h-workflow-settings')
+            .find('form').submit(function(e) {
+                var form = $(this);
+                $.post(form.attr('action'), form.serialize(), function(r) {
+                    if (r.status === 'ok') {
+                        $('.h-workflow-name').text(r.data.workflow.name);
+                        $('#h-sidebar-workflow-list li[data-workflow-id="' + r.data.workflow.id + '"] .h-name').text(r.data.workflow.name);
+                        closeBlock();
+                    }
+                }, 'json');
+                return false;
+            }).end()
+            .find('.cancel').click(function() {
+                closeBlock();
+            });
+        $('.h-workflow-settings-toggle').click(function() {
+            if ($('.h-workflow-settings').is(':visible')) {
+                closeBlock();
+            } else {
+                openBlock();
+            }
+            return false;
+        });
+    })();
+
+
+    $.wa.helpdesk_controller.confirmLeaveStop('h-action-settings');
+
+});
+</script>
+

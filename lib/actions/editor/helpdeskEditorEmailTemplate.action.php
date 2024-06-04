@@ -40,6 +40,6 @@ class helpdeskEditorEmailTemplateAction extends helpdeskViewAction
         }
 
         $this->view->assign($data);
-        $this->setTemplate('templates/actions/editor/email_template_editor.html');
+        $this->setTemplate('templates/actions'.helpdeskHelper::getLegacyPrefix().'/editor/email_template_editor.html');
     }
 }

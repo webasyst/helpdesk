@@ -115,9 +115,11 @@ class helpdeskRequest extends helpdeskRequestRecord
             unset($request['text']);
 
             $request['source_class'] = '';
+            $request['source_bg'] = '';
             $request['source_name'] = '';
             if (!empty($request['source_id']) && !empty($sources[$request['source_id']])) {
                 $request['source_class'] = helpdeskHelper::getSourceClass($sources[$request['source_id']], $request);
+                $request['source_bg'] = helpdeskHelper::getSourceBgClass($sources[$request['source_id']], $request);
                 $request['source_name'] = htmlspecialchars($sources[$request['source_id']]->offsetGet('name'));
             }
 
@@ -140,7 +142,7 @@ class helpdeskRequest extends helpdeskRequestRecord
             helpdeskOneClickFeedback::REQUEST_LOG_ACTION_ID
         )))
         {
-            return _w('performs action').' <span style="color:black">'.$name.'</span>';
+            return _w('performs action').' <span style="color:'.(helpdeskHelper::isLegacyUi() ? 'black' : 'var(--text-color-strong)').'">'.$name.'</span>';
         } else if ($action_id && $action_id[0] == '!') {
             return sprintf_wp('performs bulk operation “%s”', $name);
         } else {
@@ -150,15 +152,16 @@ class helpdeskRequest extends helpdeskRequestRecord
 
     public static function getSpecialActionName($action_id)
     {
+        $ui_legacy = helpdeskHelper::isLegacyUi();
         switch($action_id) {
             case '!bulk_change_assigned_contact_id':
-                return _w('Change assignment');
+                return ($ui_legacy ? '' : '<span class="nowrap"><i class="fas fa-user small --text-blue custom-ml-4"></i> ')._w('Change assignment').($ui_legacy ? '' : '</span>');
             case '!bulk_change_state_id':
-                return _w('Change state');
+                return ($ui_legacy ? '' : '<span class="nowrap"><i class="fas fa-exchange-alt small --text-green custom-ml-4"></i> ')._w('Change state').($ui_legacy ? '' : '</span>');
             case '!one_change_summary':
-                return _w('Edit subject');
+                return ($ui_legacy ? '' : '<span class="nowrap"><i class="fas fa-edit small --text-blue custom-ml-4"></i> ')._w('Edit subject').($ui_legacy ? '' : '</span>');
             case '!email':
-                return _w('Reply by email');
+                return ($ui_legacy ? '' : '<span class="nowrap"><i class="fas fa-reply small --text-dark-gray custom-ml-4"></i> ')._w('Reply by email').($ui_legacy ? '' : '</span>');
             case helpdeskOneClickFeedback::REQUEST_LOG_ACTION_ID:
                 return helpdeskOneClickFeedback::getRequestLogActionName();
             default:

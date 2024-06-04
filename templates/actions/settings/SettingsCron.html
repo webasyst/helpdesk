@@ -1,19 +1,17 @@
-<div class="block">
-
-    <div class="block">
-        <h1>[`Cron Job`]</h1>
-    </div>
-
-    <div class="block">
+<div class="article">
+    <div class="article-body">
+        <div class="custom-mb-32">
+            <h1>[`Cron Job`]</h1>
+        </div>
 
         {if empty($cron_ok)}
-            <div>
+            <div class="box highlighted">
                 <p>
                     [`No <tt>cron</tt> job required for automated email capture and execution of auto actions in your workflow is set up for your account.`]
                 </p>
 
                 <p class="red bold">
-                    <i class="icon16 exclamation"></i> [`Without a <tt>cron</tt> job set up, new mail is captured and new requests are received only as long as you keep Helpdesk open in your browser. Auto actions in your workflow are not triggered in this case.`]
+                    <i class="fas fa-exclamation-triangle text-orange"></i> [`Without a <tt>cron</tt> job set up, new mail is captured and new requests are received only as long as you keep Helpdesk open in your browser. Auto actions in your workflow are not triggered in this case.`]
                 </p>
 
                 <p>{sprintf_wp(
@@ -30,9 +28,9 @@
                 {/if}
             </div>
         {else}
-            <div>
+            <div class="box highlighted green">
                 <p>
-                    <i class="icon16 yes"></i>
+                    <i class="fas fa-check-circle text-green"></i>
                     [`<tt>cron</tt> job is set up properly.`]
                     [`Last execution time:`]
                     {$last_cron_time|wa_date:'datetime'}
@@ -47,7 +45,5 @@
                 <p class="bold"><code>{$cron_command}</code></p>
             </div>
         {/if}
-
     </div>
-
 </div>

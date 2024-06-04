@@ -11,6 +11,9 @@ class helpdeskTagModel extends waModel
 
     public function getCloud($key = null, $limit = 0)
     {
+        $CLOUD_MAX_SIZE = (helpdeskHelper::isLegacyUi() ? self::CLOUD_MAX_SIZE : 100);
+        $CLOUD_MIN_OPACITY = (helpdeskHelper::isLegacyUi() ? self::CLOUD_MIN_OPACITY : 70);
+
         $query = $this->where('count > 0');
         if ($limit) {
             $query->order('count DESC');
@@ -32,15 +35,15 @@ class helpdeskTagModel extends waModel
             }
             $diff = $max_count - $min_count;
             if ($diff > 0) {
-                $step_size = (self::CLOUD_MAX_SIZE - self::CLOUD_MIN_SIZE) / $diff;
-                $step_opacity = (self::CLOUD_MAX_OPACITY - self::CLOUD_MIN_OPACITY) / $diff;
+                $step_size = ($CLOUD_MAX_SIZE - self::CLOUD_MIN_SIZE) / $diff;
+                $step_opacity = (self::CLOUD_MAX_OPACITY - $CLOUD_MIN_OPACITY) / $diff;
             }
             foreach ($tags as &$tag) {
                 if ($diff > 0) {
                     $tag['size'] = ceil(self::CLOUD_MIN_SIZE + ($tag['count'] - $min_count) * $step_size);
-                    $tag['opacity'] = number_format((self::CLOUD_MIN_OPACITY + ($tag['count'] - $min_count) * $step_opacity) / 100, 2, '.', '');
+                    $tag['opacity'] = number_format(($CLOUD_MIN_OPACITY + ($tag['count'] - $min_count) * $step_opacity) / 100, 2, '.', '');
                 } else {
-                    $tag['size'] = ceil((self::CLOUD_MAX_SIZE + self::CLOUD_MIN_SIZE) / 2);
+                    $tag['size'] = ceil(($CLOUD_MAX_SIZE + self::CLOUD_MIN_SIZE) / 2);
                     $tag['opacity'] = number_format(self::CLOUD_MAX_OPACITY, 2, '.', '');
                 }
                 if (strpos($tag['name'], '/') !== false) {
@@ -162,4 +165,3 @@ class helpdeskTagModel extends waModel
     }
 
 }
-

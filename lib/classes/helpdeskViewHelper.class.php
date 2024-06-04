@@ -45,7 +45,7 @@ class helpdeskViewHelper extends waAppViewHelper
                     $extra_html['bottom'] .= "<input type='hidden' name='fld_data[{$field_id}]' value='{$field_val}'>";
                 }
             }
-            
+
             $contact_fields = helpdeskHelper::getFormContactFields($id);
             foreach ($form_params['contact'] as $field_id => $field_val) {
                 if (isset($contact_fields[$field_id])) {
@@ -72,5 +72,35 @@ class helpdeskViewHelper extends waAppViewHelper
         return $fcm->getAll(null, false, true);
     }
 
-}
+    public function convertIcon($icon_class = '') {
+        $icon_map = helpdeskHelper::getIcons();
+        return isset($icon_map[$icon_class]) ? $icon_map[$icon_class] : $icon_class;
+    }
 
+    /**
+     * Returns HTML code of a Webasyst icon.
+     *
+     * @param string $icon Icon type
+     * @param string|null $default Default icon type to be used if $icon is empty.
+     * @param array $params Extra parameters:
+     *     'class' => class name tp be added to icon's HTML code
+     * @return string
+     */
+    public function getIcon($icon, $default = null, $params = array())
+    {
+        if (!$icon && $default) {
+            $icon = $default;
+        }
+        $class = isset($params['class']) ? ' '.htmlentities($params['class'], ENT_QUOTES, 'utf-8') : '';
+
+        if ($icon) {
+            if (preg_match('@[\\/]+@', $icon)) {
+                $icon = "<i class='icon {$class}' style='background-image: url({$icon})'></i>";
+            } else {
+                $icon = "<i class='{$this->convertIcon($icon)} {$class}'></i>";
+            }
+        }
+
+        return $icon;
+    }
+}

@@ -1,0 +1,164 @@
+{$uniqid = uniqid('w')}
+
+<div id="state-dialog-{$uniqid}" class="hidden fix-p">
+    <h2>[`Change state`]</h2>
+    <select>
+        {foreach $states as $state_id => $state_name}
+            <option value="{$state_id|escape}">{$state_name|escape}</option>
+        {/foreach}
+    </select>
+
+    <p>{sprintf("[`Selected state will be set for %s requests.`]", '<span class="cnt">0</span>')}</p>
+
+    <div class="buttons">
+        <button class="button green">[`Change state`]</button>
+        [`or`] <a href="javascript:void(0)">[`cancel`]</a>
+    </div>
+</div>
+
+<div id="assignment-dialog-{$uniqid}" class="hidden fix-p">
+    <h2>[`Change assignment`]</h2>
+    <select>
+        <option value="0"></option>
+        {foreach $assignees as $contact_id => $contact_name}
+            <option value="{$contact_id|escape}">{$contact_name|escape}</option>
+        {/foreach}
+    </select>
+
+    <p>{sprintf("[`Selected assignment will be set for %s requests.`]", '<span class="cnt">0</span>')}</p>
+
+    {helpdeskHelper::rightsToAppMessageParagraph()}
+
+    <div class="buttons">
+        <button class="button green">[`Change assignment`]</button>
+        [`or`] <a href="javascript:void(0)">[`cancel`]</a>
+    </div>
+</div>
+
+<script>(function() { "use strict";
+
+    {if isset($selected_ids)}
+        var grid_wrapper = null;
+        var selected_ids = {json_encode($selected_ids)};
+    {else}
+        var grid_wrapper = $('#c-core-content').find('.requests-table').parent();
+        var selected_ids = grid_wrapper.find('tr.selected').map(function() { return $(this).attr('rel'); }).get();
+    {/if}
+
+    if (!selected_ids || !selected_ids.length) {
+        return;
+    }
+
+    {if $action_type == 'delete'}
+
+        if (!confirm("[`Are you sure?`]")) {
+            return;
+        }
+
+        $.wa.helpdesk_controller.showLoading();
+        $.post('?module=requests&action=delete', { ids: selected_ids.join(',') }, function(r) {
+            if ($.wa.helpdesk_controller.currentGrid) {
+                $.wa.helpdesk_controller.currentGrid.reload(function() {
+                    var block = $('.header-above-requests-table');
+                    block.find('.notice-above-requests-list').remove();
+                    block.append(
+                        $.wa.helpdesk_controller.createClosableNotice('<i class="icon16 yes"></i>'+r.data)
+                    );
+                    $.wa.helpdesk_controller.hideLoading();
+                });
+            } else {
+                $.wa.helpdesk_controller.redispatch();
+            }
+            $.wa.helpdesk_controller.reloadSidebar();
+        }, 'json');
+
+    {else if $action_type == 'state'}
+
+        var dialog_content_wrapper = $('#state-dialog-{$uniqid}');
+        var dialog = dialog_content_wrapper.waDialog({
+            width: '400px',
+            height: '150px',
+            onLoad: function() {
+                var dialog = $(this);
+                if (selected_ids.length > 1) {
+                    dialog.find('p .cnt').html(selected_ids.length);
+                } else {
+                    dialog.find('p .cnt').parent().hide();
+                }
+
+                var dialog_buttons = dialog.find('.dialog-buttons-gradient');
+                var buttons = dialog_content_wrapper.find('.buttons');
+                if (buttons.length) {
+                    dialog_buttons.empty().append(buttons.removeClass('buttons'));
+                    dialog_buttons.on('click', 'a', function() {
+                        dialog.trigger('close');
+                    });
+                    dialog_buttons.on('click', 'button', function() {
+                        dialog_buttons.append('<i class="icon16 loading"></i>');
+                        $.post('?module=requests&action=change', { ids: selected_ids.join(','), field: 'state_id', value: dialog_content_wrapper.find('select').val() }, function(r) {
+                            if ($.wa.helpdesk_controller.currentGrid) {
+                                $.wa.helpdesk_controller.currentGrid.reload(function() {
+                                    dialog_buttons.find('.loading').remove();
+                                    var block = $('.header-above-requests-table');
+                                    block.find('.notice-above-requests-list').remove();
+                                    block.append(
+                                        $.wa.helpdesk_controller.createClosableNotice('<i class="icon16 yes"></i>'+r.data)
+                                    );
+                                    dialog.trigger('close');
+                                });
+                            } else {
+                                $.wa.helpdesk_controller.redispatch();
+                                dialog.trigger('close');
+                            }
+                        }, 'json');
+                    });
+                }
+            }
+        });
+
+    {else if $action_type == 'assignment'}
+
+        $('#assignment-dialog-{$uniqid}').waDialog({
+            width: '400px',
+            height: '250px',
+            onLoad: function() {
+                var dialog = $(this);
+                if (selected_ids.length > 1) {
+                    dialog.find('p .cnt').html(selected_ids.length);
+                } else {
+                    dialog.find('p .cnt').parent().hide();
+                }
+
+                var dialog_buttons = dialog.find('.dialog-buttons-gradient');
+                var buttons = dialog.find('.buttons');
+                if (buttons.length) {
+                    dialog_buttons.empty().append(buttons.removeClass('buttons'));
+                    dialog_buttons.on('click', 'a', function() {
+                        dialog.trigger('close');
+                    });
+                    dialog_buttons.on('click', 'button', function() {
+                        dialog_buttons.append('<i class="icon16 loading"></i>');
+                        $.post('?module=requests&action=change', { ids: selected_ids.join(','), field: 'assigned_contact_id', value: dialog.find('select').val() }, function(r) {
+                            if ($.wa.helpdesk_controller.currentGrid) {
+                                $.wa.helpdesk_controller.currentGrid.reload(function() {
+                                    dialog_buttons.find('.loading').remove();
+                                    var block = $('.header-above-requests-table');
+                                    block.find('.notice-above-requests-list').remove();
+                                    block.append(
+                                        $.wa.helpdesk_controller.createClosableNotice('<i class="icon16 yes"></i>'+r.data)
+                                    );
+                                    dialog.trigger('close');
+                                });
+                            } else {
+                                $.wa.helpdesk_controller.redispatch();
+                                dialog.trigger('close');
+                            }
+                        }, 'json');
+                    });
+                }
+            }
+        });
+
+    {/if}
+
+})();</script>

@@ -1,0 +1,171 @@
+<div class="form-constructor-preview-wrap" data-type="{$type}" id="{$id}">
+
+    <div class="fr-fields" data-fc="enabled-fields">
+
+    {foreach $fields as $field_id => $field}
+        {if empty($field.excl)}
+            <div data-fr-field-wrapper="{$field_id}"
+                            title="[`Edit field settings`]"
+                            data-fr-field="edit"
+                            class="fr-field sortable {if empty($field.choosen)}hidden{/if} {$field.captionplace|default:'left'} {if !empty($field['type'])}fld_type_{$field['type']|lower}{/if}"
+                    >
+                <div class="col field-content">
+                    <div class="col-content">
+                        <div class="col left">
+                            <div class="col-content">
+                                <span class="fr-name caption" data-fc="label">
+                                    <label>
+                                        {if $field_id !== 'captcha'}
+                                            {if isset($field.caption)}{$field.caption|escape}{else}{$field.name|escape}{/if}
+                                            {if !empty($field.required)} *{/if}
+                                        {else}
+                                            {if isset($field.caption)}{$field.caption|escape}{/if}
+                                        {/if}
+                                    </label>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="col right">
+                            <div class="col-content">
+                                <span class="fr-value {if $field_id === 'address' && isset($field.subfields_captionplace)}subfields-{$field.subfields_captionplace}{/if}" data-fc="input">
+                                    {if $field_id === 'captcha'}
+                                        {$field.html|default:''}
+                                    {elseif $field_id === 'text'}
+                                        <textarea disabled="disabled" placeholder="{if !empty($field.placeholder)}{$field.placeholder|escape}{/if}"
+                                                                        style="{if !empty($field.redactor)}display:none;{/if}"></textarea>
+                                        <div class="h-text-editor" style="{if empty($field.redactor)}display:none;{/if}"></div>
+
+                                        <style>
+                                            .redactor-layer, .redactor-editor { background: transparent;border-width: 1px 0 0 0; height: 200px; }
+                                            .redactor-toolbar { z-index: auto; }
+                                            .redactor-toolbar li a { padding: 8px; width: auto; height: auto; }
+                                            .redactor-toolbar li a.re-button-icon { padding: 8px; cursor: default; }
+                                            .redactor-toolbar:after { display: none; }
+                                            .redactor-in { border: 1px solid #e9e9e9; border-top: 0; height: 100px; background-color: #fff; }
+                                        </style>
+                                    {elseif $field_id === 'attachments'}
+                                        <input type="file" value="" disabled="disabled">
+                                    {elseif (!empty($field.html))}
+                                        {$field.html}
+                                    {else}
+                                        <input type="text" value="" disabled="disabled" placeholder="{if !empty($field.placeholder)}{$field.placeholder|escape}{/if}">
+                                    {/if}
+                                    <input type="hidden" class="fc-field-params"
+                                                                name="params[{$prefix}{$field_id}]"
+                                                                value='{json_encode($field)|escape}'
+                                                                {if empty($field.choosen)}disabled{/if}>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="field-edit">
+                            <span data-fr-field="delete" class="h-delete-fr-field" title="[`Remove this field from the form`]"><i class="icon16 delete"></i></span>
+                        </div>
+
+                        <div class="clear-both"></div>
+                    </div>
+                </div>
+
+                <div class="col sorting">
+                    <div class="col-content">
+                        <i class="icon16 sort" data-fr-field="sort"></i>
+                    </div>
+                </div>
+            </div>
+        {elseif !empty($field.choosen)}
+            <div data-fr-field-wrapper="{$field.type}" data-fr-field="edit" class="fr-field sortable" data-special="1">
+                <div class="col field-content">
+                    <div class="col-content">
+                        {if $field.type === '!hrule'}
+                            <hr style="margin-top: 12px;">
+                        {elseif $field.type === '!paragraph'}
+                            <div class="h-text">{$field.text|default:''}</div>
+                        {elseif $field.type === '!agreement_checkbox'}
+                            <div class="fr-value" data-fc="input">
+                                {$field.html}
+                            </div>
+                        {/if}
+                        <input type="hidden" class="fc-field-params" name="params[{$prefix}{$field.type}_?]" value='{json_encode($field)|escape}'>
+                        <div class="field-edit">
+                            <span data-fr-field="delete" class="h-delete-fr-field"><i class="icon16 delete"></i></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col sorting">
+                    <div class="col-content">
+                        <i class="icon16 sort" data-fr-field="sort"></i>
+                    </div>
+                </div>
+            </div>
+        {/if}
+    {/foreach}
+
+    </div>
+
+    <div class="fr-field fr-bottom-fields fr-field-new">
+        {$cnt = 0}
+        {capture assign="available_fields"}
+            {$top_fields = []}
+            {foreach $fields as $field_id => $field}
+                {if !empty($field.top)}
+                    {$top_fields[$field_id] = $field}
+                {/if}
+            {/foreach}
+            {if $top_fields}
+                {foreach $top_fields as $field_id => $field}
+                    {if empty($field.special)}
+                        {if empty($field.choosen)}
+                            {$cnt = $cnt + 1}
+                        {/if}
+                        {$is_choosen = !empty($field.choosen)}
+                        {$is_multi = !empty($field.multi)}
+                        <li data-fr-field="add" class="top" {if $is_choosen && !$is_multi}style="display:none;"{/if}>
+                            <a href="javascript:void(0);" data-fr-field-add-id="{$field.id}" {if $is_multi}data-multi="1"{/if} class="h-choose-fr-field">{$field.name|escape}</a>
+                        </li>
+                    {/if}
+                {/foreach}
+            {/if}
+            {$cnt = 0}
+            {foreach  $fields as $field_id => $field}
+                {if empty($field.top) && empty($field.special)}
+                    {if empty($field.choosen)}
+                        {$cnt = $cnt + 1}
+                    {/if}
+                    {$is_choosen = !empty($field.choosen)}
+                    {$is_multi = !empty($field.multi)}
+                    <li data-fr-field="add" class="middle" {if $is_choosen && !$is_multi}style="display:none;"{/if}>
+                        <a href="javascript:void(0);" data-fr-field-add-id="{$field.id}" {if $is_multi}data-multi="1"{/if} class="h-choose-fr-field">{$field.name|escape}</a>
+                    </li>
+                {/if}
+            {/foreach}
+
+            {* special pseudo fields *}
+            <li>
+                <a href="javascript:void(0);" data-fr-field-add-id="!hrule" data-multi="1" class="h-choose-fr-field">[`Horizontal rule`]</a>
+            </li>
+            <li>
+                <a href="javascript:void(0);" data-fr-field-add-id="!paragraph" data-multi="1" class="h-choose-fr-field">[`Text paragraph`]</a>
+            </li>
+        {/capture}
+
+        <a href="javascript:void(0)" class="inline-link block new-field small no-underline" data-fr-field="new"><i class="icon10 add"></i> {$add_field_text}</a>
+        <ul class="menu-v available-fields" data-fc="available-fields">
+            {$available_fields}
+        </ul>
+    </div>
+
+    {if $with_button_caption|default:false}
+
+        <div class="fr-field fr-bottom-fields fr-field-submit">
+            <div>
+                <span class="editable-wrapper">
+                    <input type="button" class="editable_el editable_button" data-editable-element="true" value="{$source.params.button_caption|escape|default:'[`Send`]'}" title="[`Edit button label`]">
+                    <input type="text" class="hidden" name="params[button_caption]" value="{$source.params.button_caption|escape|default:'[`Send`]'}"/>
+                </span>
+            </div>
+        </div>
+
+    {/if}
+
+</div>

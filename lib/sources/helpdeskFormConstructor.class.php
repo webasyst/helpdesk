@@ -27,7 +27,7 @@ class helpdeskFormConstructor
             'site_url' => $site_url . '#/personal/app/helpdesk/',
         ));
 
-        $dir = dirname(waAutoload::getInstance()->get(get_class($this))).'/templates/form/';
+        $dir = dirname(waAutoload::getInstance()->get(get_class($this))).'/templates'.helpdeskHelper::getLegacyPrefix().'/form/';
 
         $html = $view->fetch($dir . 'form_constructor.html');
 
@@ -293,7 +293,7 @@ class helpdeskFormConstructor
             'img_url' => $img_url,
             'isReCaptcha' => $isReCaptcha
         ));
-        $html = $view->fetch(wa()->getAppPath('lib/sources/templates/form/form_constructor_captcha.html', 'helpdesk'));
+        $html = $view->fetch(wa()->getAppPath('lib/sources/templates'.helpdeskHelper::getLegacyPrefix().'/form/form_constructor_captcha.html', 'helpdesk'));
         $view->assign($old_vars);
         return $html;
 
@@ -471,8 +471,10 @@ class helpdeskFormConstructor
         $lt = '#!ESCAPE_OPEN_BRACKET#!';
         $lts = '#!ESCAPE_OPEN_BRACKET_SLASH#!';
         $gt = '#!ESCAPE_CLOSED_BRACKET#!';
+        $text = str_replace([$lt, $lts, $gt], '', $text);
         foreach (array(
             'b',
+            'blockquote',
             'i',
             'u',
             'em',
@@ -484,9 +486,19 @@ class helpdeskFormConstructor
             'a',
             'img',
             'span',
+            'figure',
+            'pre',
+            'del',
+            'h1',
+            'h2',
+            'h3',
+            'h4',
+            'h5',
+            'h6',
+            'hr',
             'br') as $t)
         {
-            $map["<".$t."(.*?)>"] = $lt.$t."$1".$gt;
+            $map["<".$t."(\s[^>]*?)?>"] = $lt.$t."$1".$gt;
             $map["<\/".$t.">"] = $lts.$t.$gt;
         }
         foreach ($map as $t => $r)  {
@@ -505,6 +517,7 @@ class helpdeskFormConstructor
         $gt = '#!ESCAPE_CLOSED_BRACKET#!';
         foreach (array(
             'b',
+            'blockquote',
             'i',
             'u',
             'em',
@@ -516,6 +529,16 @@ class helpdeskFormConstructor
             'a',
             'img',
             'span',
+            'figure',
+            'pre',
+            'del',
+            'h1',
+            'h2',
+            'h3',
+            'h4',
+            'h5',
+            'h6',
+            'hr',
             'br') as $t)
         {
             $map[$lt.$t."(.*?)".$gt] = "<".$t."$1>";

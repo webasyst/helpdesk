@@ -2,7 +2,7 @@
 
     <div data-fc="preview">
 
-        <div class="shadowed form-constructor-preview" style="{if !empty($source->params['formwidth'])}width: {max(200, min($source->params['formwidth'], 600))}px{else}width: 400px{/if}">
+        <div class="form-constructor-preview small" style="{if !empty($source->params['formwidth'])}width: {max(200, min($source->params['formwidth'], 600))}px{else}width: 400px{/if}">
 
             {include file="./include_form_constructor_preview.html"
                 fields=$contact_fields
@@ -41,13 +41,15 @@
                             {/if}
                             <input type="hidden" class="fc-field-params" name="params[#prefix#{$field_id}_?]" value='{$field_params_str|escape}' disabled="disabled">
                             <div class="field-edit">
-                                <span data-fr-field="delete" class="h-delete-fr-field"><i class="icon16 delete"></i></span>
+                                <span data-fr-field="delete" class="h-delete-fr-field" title="[`Remove this field from the form`]"><i class="fas fa-trash-alt text-red"></i></span>
                             </div>
                         </div>
                     </div>
                     <div class="col sorting">
                         <div class="col-content">
-                            <i class="icon16 sort" data-fr-field="sort"></i>
+                            <div class="sort back" data-fr-field="sort">
+                                <i class="fas fa-grip-vertical"></i>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -57,32 +59,27 @@
         <div class="constructor-width" data-fc="form-width"  style="{if !empty($source->params['formwidth'])}width: {max(200, min($source->params['formwidth'], 600))}px{else}width: 400px{/if}">
             <input type="text" value="{if !empty($source.params.formwidth)}{max(200, min($source->params['formwidth'], 600))}{else}400{/if}" name="params[formwidth]"/>
             <hr/>
-            <div>[`Form width (200-600px)`]</div>
+            <div class="dark-hint">[`Form width (200-600px)`]</div>
         </div>
 
     </div>
 
     {* dialog section *}
-    {include file="./include_edit_paragraph_field_dialog.html" inline}
-    {include file="./include_edit_field_dialog.html" inline}
-    {include file="./include_edit_agreement_checkbox_field_dialog.html" inline}
+    {$_dialog_edit_paragraph = {include file="./include_edit_paragraph_field_dialog.html" inline}|strip}
+    {$_dialog_edit_field = {include file="./include_edit_field_dialog.html" inline}|strip}
+    {$_dialog_edit_agreement_checkbox_field = {include file="./include_edit_agreement_checkbox_field_dialog.html" inline}|strip}
 
 </div>
 
 <script>
     $(function() {
-
-        $.each(['h-edit-paragraph-dialog', 'h-edit-field-dialog', 'h-edit-agreement-checkbox-field-dialog'],
-            function(i, val) {
-                if ($('#' + val).length) {
-                    $('#' + val).remove();
-                }
-                $('#h-form-constructor').find('.' + val).attr('id', val).appendTo($('body'));
-            }
-        );
-
         var button = $('#hd-source-editor-save');
 
+        var changeSubmit = () => {
+            if (button.hasClass('green')) {
+                button.removeClass('green').addClass('yellow');
+            }
+        };
         var fillSubfieldsPlaceholders = function() {
             $('.subfields-placeholder').each(function() {
                 $(this).find('.field').each(function() {
@@ -94,25 +91,18 @@
 
         fillSubfieldsPlaceholders();
 
-        $('#h-form-constructor').find('.form-constructor-preview-wrap').each(function() {
+        $('#h-form-constructor .form-constructor-preview-wrap').each(function() {
             var container = $(this);
             var container_id = $(this).attr('id');
             var type = container.data('type');
             var prefix = type === 'contact' ? 'fldc_' : '{helpdeskRequestLogParamsModel::PREFIX_REQUEST}';
 
-            var newFieldClickHandler = function() {
-                var obj = $(this).closest('.fr-field-new').find('.available-fields').toggle();
-                obj.find('.bordered').removeClass('bordered');
-                obj.parent().parent().find('li.top:visible:last').addClass('bordered');
-                obj.parent().parent().find('li.middle:visible:last').addClass('bordered');
-                return false;
-            };
-
-            container.find('.new-field').click(newFieldClickHandler).end().find('.fr-field-new').click(function() {
-                var link = $(this).find('.new-field');
-                if (link.length) {
-                    newFieldClickHandler.call(link);
-                    return false;
+            $('.available-fields-dropdown', container).waDropdown({
+                hover: false,
+                open: (instance) => {
+                    instance.$menu.find('.bordered-bottom').removeClass('bordered-bottom');
+                    instance.$menu.find('li.top:visible:last').addClass('bordered-bottom');
+                    instance.$menu.find('li.middle:visible:last').addClass('bordered-bottom');
                 }
             });
 
@@ -120,6 +110,11 @@
                 '!hrule': 0,
                 '!paragraph': 0,
                 '!agreement_checkbox': 0
+            };
+
+            var toggleHideField = (field_type, hide = true) => {
+                $('[data-fr-field-add-id="'+field_type+'"]', container)
+                    .closest('li[data-fr-field="add"]').toggleClass('hidden', hide);
             };
 
             $.each(multi_counters, function (field_type, counter) {
@@ -143,10 +138,10 @@
 
                 var addMultiField = function () {
                     if (!multi) {
-                        item.hide();
+                        item.addClass('hidden');
                     }
                     var $templ = $('.fr-field-templates').find('[data-fr-field-wrapper="' + field_type + '"]').clone(),
-                        $params_input = $templ.find('.fc-field-params').attr('disabled', false),
+                        $params_input = $templ.find('.fc-field-params').prop('disabled', false),
                         name = $params_input.attr('name').replace('_?', '_' + multi_counters[field_type]).replace('#prefix#', prefix);
 
                     $params_input.attr('name', name);
@@ -154,8 +149,7 @@
                     var field_params = { };
                     try {
                         field_params = JSON.parse($.trim($params_input.val()));
-                    } catch (e) {
-                    }
+                    } catch (e) { }
                     field_params = field_params || { };
                     field_params.type = field_type;
 
@@ -172,11 +166,16 @@
                 };
 
                 var addField = function () {
-                    $('[data-fr-field-wrapper="'+field_type+'"]').show().find('.fc-field-params').attr('disabled', false);
-                    if (button.hasClass('green')) {
-                        button.removeClass('green').addClass('yellow');
-                    }
-                    if (!available_fields.find('[data-fr-field="add"]:visible').length) {
+                    $('[data-fr-field-wrapper="'+field_type+'"]', container)
+                        .removeClass('hidden')
+                        .find('.fc-field-params')
+                        .prop('disabled', false);
+
+                    toggleHideField(field_type);
+
+                    changeSubmit();
+
+                    if (!available_fields.find('[data-fr-field="add"]:not(.hidden)').length) {
                         container.find('.new-field').hide();
                     }
                 };
@@ -187,44 +186,24 @@
                     addField();
                 }
 
+                // Spam control checkbox
                 $('#h-form-constructor').trigger('add_field', [type, field_type]);
 
-                $(this).parent().parent().find('li.middle:visible:last').addClass('bordered');
-            });
-
-            $('body').unbind('click.' + container_id).bind('click.' + container_id, function(e) {
-                var el = $(e.target);
-                var ul = container.find('.available-fields');
-                var link = container.find('.fr-field-new');
-                var found = false;
-                while (!el.is('body')) {
-                    if (el.get(0) === ul.get(0) || el.get(0) === link.get(0)) {
-                        found = true;
-                        break;
-                    }
-                    el = el.parent();
-                }
-                if (!found) {
-                    ul.hide();
-                }
+                $(this).closest('ul').find('li.middle:visible:last').addClass('bordered-bottom');
             });
 
             container.on('click', '.h-delete-fr-field', function() {
                 var field_type = $(this).closest('.fr-field').data('frFieldWrapper');
-                $(this).closest('.fr-field').hide()
-                    .find('.fc-field-params').attr('disabled', true);
-                if (button.hasClass('green')) {
-                    button.removeClass('green').addClass('yellow');
-                }
+                $(this).closest('.fr-field').addClass('hidden')
+                    .find('.fc-field-params').prop('disabled', true);
+                changeSubmit();
                 var field_type = $(this).closest('.fr-field').data('frFieldWrapper');
-                var available_fields = container.find('.available-fields');
-                available_fields.find('[data-fr-field-add-id="' + field_type + '"]').closest('li').show();
+                toggleHideField(field_type, false);
                 container.find('.new-field').show();
                 multi_counters[field_type] = Math.max(0, multi_counters[field_type] - 1);
                 $('#h-form-constructor').trigger('delete_field', [type, field_type]);
-
             });
- 
+
             if (type === 'request') {
                 var initRedactor = function(el, placeholder) {
                     if (!el.data('redactor')) {
@@ -310,7 +289,7 @@
             };
 
             var editField = function(params_input) {
-                if (params_input.attr('disabled')) {
+                if (params_input.prop('disabled')) {
                     return;
                 }
 
@@ -355,19 +334,19 @@
                     params['identification'] = params['identification'] || '';
                 }
 
-                $('#h-edit-field-dialog').waDialog({
-                    onLoad: function() {
-                        var d = $(this);
+                $.waDialog({
+                    html: {$_dialog_edit_field|json_encode},
+                    onOpen: function($dialog, instance) {
                         $.each(params, function(key, val) {
                             if (key === 'id') {
-                                $('.h-field-id', d).find('.value').text(params.name + ' (ID=' + val + ')');
+                                $('.h-field-id', $dialog).find('.value').text(params.name + ' (ID=' + val + ')');
                             } else if (key !== 'name') {
                                 var name = '.h-field-' + key;
-                                var input = $(name, d).find('.value').find(':input');
+                                var input = $(name, $dialog).find('.value').find(':input');
                                 if (input.is(':checkbox')) {
-                                    input.attr('checked', !!val);
+                                    input.prop('checked', !!val);
                                 } else if (input.is(':radio')) {
-                                    input.filter('[value="' + val + '"]').attr('checked', true);
+                                    input.filter('[value="' + val + '"]').prop('checked', true);
                                 } else {
                                     input.val(val);
                                 }
@@ -375,10 +354,10 @@
                         });
 
                         var disableField = function(field) {
-                            $('.h-field-' + field).hide().find(':input').attr('disabled', true);
+                            $('.h-field-' + field).hide().find(':input').prop('disabled', true);
                         };
                         var enableField = function(field) {
-                            $('.h-field-' + field).show().find(':input').attr('disabled', false);
+                            $('.h-field-' + field).show().find(':input').prop('disabled', false);
                         };
 
 
@@ -437,18 +416,18 @@
                             disableField('view');
                         }
 
-                        var captionplace_radio = d.find('.h-field-captionplace input[type=radio]').unbind('click');
-                        var subfields_radio = d.find('.h-field-subfields_captionplace input[type=radio]');
+                        var captionplace_radio = $dialog.find('.h-field-captionplace input[type=radio]').unbind('click');
+                        var subfields_radio = $dialog.find('.h-field-subfields_captionplace input[type=radio]');
 
                         if (type === 'contact' && f_name === 'address') {
                             var disableSubfieldLeftRadio = function() {
-                                subfields_radio.filter('[value=left]').attr('disabled', true);
+                                subfields_radio.filter('[value=left]').prop('disabled', true);
                                 if (subfields_radio.filter('[value=left]').is(':checked')) {
-                                    subfields_radio.filter('[value=above]').attr('checked', true);
+                                    subfields_radio.filter('[value=above]').prop('checked', true);
                                 }
                             };
                             var enableSubfieldLeftRadio = function() {
-                                subfields_radio.filter('[value=left]').attr('disabled', false);
+                                subfields_radio.filter('[value=left]').prop('disabled', false);
                             };
                             captionplace_radio.bind('click', function() {
                                 var el = $(this);
@@ -464,29 +443,16 @@
                                 disableSubfieldLeftRadio();
                             }
                         } else {
-                            subfields_radio.filter('[value=left]').attr('disabled', false);
+                            subfields_radio.filter('[value=left]').prop('disabled', false);
                         }
 
-                        if (params.type === 'Checkbox') {
-                            d.find('.dialog-window').css({
-                                height: 300,
-                                minHeight: 300
-                            });
-                        } else {
-                            d.find('.dialog-window').css({
-                                height: '',
-                                minHeight: ''
-                            });
-                        }
-
-
-                        d.find('input[type=button]').unbind('click').bind('click', function() {
-                            d.find(':input[name*=params]:not(:disabled)').each(function() {
+                        $dialog.find(':submit').unbind('click').bind('click', function() {
+                            $dialog.find(':input[name*=params]:not(:disabled)').each(function() {
                                 var item = $(this);
                                 var name = item.attr('name').replace('params[', '').replace(']', '');
                                 var value = item.val();
                                 if (item.is(':checkbox')) {
-                                    params[name] = item.attr('checked') ? true : false;
+                                    params[name] = item.prop('checked') ? true : false;
                                 } else if (item.is(':radio')) {
                                     if (item.is(':checked')) {
                                         params[name] = value;
@@ -496,9 +462,7 @@
                                 }
                             });
                             params_input.val(JSON.stringify(params));
-                            if (button.hasClass('green')) {
-                                button.removeClass('green').addClass('yellow');
-                            }
+                            changeSubmit();
 
                             var fr_field = params_input.closest('.fr-field');
                             fr_field.find('.fr-name').html(
@@ -536,10 +500,7 @@
                                 }
                             }
 
-                            d.trigger('close');
-                        });
-                        d.find('.cancel').click(function() {
-                            d.trigger('close');
+                            instance.close();
                         });
                     }
                 });
@@ -548,9 +509,9 @@
             var editParagraphField = function ($params_input) {
                 var params = $.parseJSON($params_input.val()) || { };
 
-                $('#h-edit-paragraph-dialog').waDialog({
-                    onLoad: function() {
-                        var $dialog = $(this);
+                $.waDialog({
+                    html: {$_dialog_edit_paragraph|json_encode},
+                    onOpen: function($dialog, instance) {
                         $.wa.helpdesk_controller.initWYSIWYG($dialog.find('textarea'), {
                             focus: true,
                             plugins: ['fontcolor', 'fontsize', 'fontfamily'],
@@ -560,21 +521,19 @@
                         $dialog.find('textarea').redactor('code.set', params['text'] || '');
                         var beforeClose = function() {
                             $('.redactor-dropdown').remove();
+                            instance.close();
                         };
-                        $dialog.find('input[type=button]').unbind('click').bind('click', function() {
+                        $dialog.find(':submit').unbind('click').bind('click', function() {
                             params['text'] = $dialog.find('textarea').val() || '';
                             $params_input.val(JSON.stringify(params));
-                            if (button.hasClass('green')) {
-                                button.removeClass('green').addClass('yellow');
-                            }
+                            changeSubmit();
                             var fr_field = $params_input.closest('.fr-field');
                             fr_field.find('.h-text').html(params['text']);
                             beforeClose();
-                            $dialog.trigger('close');
+
                         });
-                        $dialog.find('.cancel').click(function() {
+                        $dialog.find('.js-close-dialog').one('click', function() {
                             beforeClose();
-                            $dialog.trigger('close');
                         });
                     }
                 });
@@ -583,15 +542,14 @@
             var editAgreementCheckboxField = function ($params_input) {
                 var params = $.parseJSON($params_input.val()) || { };
 
-                $('#h-edit-agreement-checkbox-field-dialog').waDialog({
-                    onLoad: function() {
-                        var $dialog = $(this);
-
+                $.waDialog({
+                    html: {$_dialog_edit_agreement_checkbox_field|json_encode},
+                    onOpen: function($dialog, instance) {
                         $dialog.find('.h-field-id .value').text(params.name + ' (ID=' + params.id + ')');
                         $dialog.find('.h-field-html-label [name="params[html_label]"]').val(params.html_label);
-                        $dialog.find('.h-field-checked-by-default [name="params[default_checked]"]').attr('checked', !!params.default_checked);
+                        $dialog.find('.h-field-checked-by-default [name="params[default_checked]"]').prop('checked', !!params.default_checked);
 
-                        $dialog.find('input[type=button]').unbind('click').bind('click', function() {
+                        $dialog.find(':submit').unbind('click').bind('click', function() {
 
                             var param_html_label = $.trim($dialog.find('.h-field-html-label [name="params[html_label]"]').val()),
                                 param_default_checked = $dialog.find('.h-field-checked-by-default [name="params[default_checked]"]').is(':checked') ? 1 : 0,
@@ -607,28 +565,22 @@
                             }
 
                             if (!changed) {
-                                $dialog.trigger('close');
+                                instance.close();
                                 return;
                             }
 
                             $params_input.val(JSON.stringify(params));
 
-                            if (button.hasClass('green')) {
-                                button.removeClass('green').addClass('yellow');
-                            }
+                            changeSubmit();
 
                             var $fr_field = $params_input.closest('.fr-field'),
                                 html_label = params.html_label;
 
                             html_label = html_label.replace(params.html_label_default_href_placeholder, 'javascript:void(0);');
                             $fr_field.find('.h-agreement-checkbox-html-label').html(html_label);
-                            $fr_field.find(':checkbox').attr('checked', !!params.default_checked);
+                            $fr_field.find(':checkbox').prop('checked', !!params.default_checked);
 
-                            $dialog.trigger('close');
-                        });
-
-                        $dialog.find('.cancel').click(function() {
-                            $dialog.trigger('close');
+                            instance.close();
                         });
                     }
                 });
@@ -651,19 +603,15 @@
                 $('.constructor-width').width(width);
             });
 
-            container.sortable({
-                    distance: 5,
-                    opacity: 0.75,
-                    items: '.fr-field.sortable',
+            $.wa.helpers.loadSortableJS().then(() => {
+                container.find('[data-fc="enabled-fields"]').sortable({
+                    draggable: '.fr-field.sortable',
                     handle: '.sort',
-                    axis: 'y',
-                    update: function(event, ui) {
-                        if (button.hasClass('green')) {
-                            button.removeClass('green').addClass('yellow');
-                        }
+                    onEnd: function(event, ui) {
+                        changeSubmit();
                     }
-            });
-
+                });
+            })
         });
     });
 </script>

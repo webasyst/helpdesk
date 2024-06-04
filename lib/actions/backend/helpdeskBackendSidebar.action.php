@@ -6,6 +6,7 @@ class helpdeskBackendSidebarAction extends helpdeskViewAction
 {
     // Data for 'sidebar' hook
     public $unread_count;
+    public $all_count;
     public $wf_create;
     public $wf_view;
     public $history;
@@ -46,6 +47,9 @@ class helpdeskBackendSidebarAction extends helpdeskViewAction
             $this->unread_count = $um->countByContact();
         }
 
+        $c = helpdeskRequestsCollection::create();
+        $this->all_count = $c->count();
+
         $this->follow_count = null;
         $fm = new helpdeskFollowModel();
         $this->follow_count = $fm->countByContact();
@@ -70,6 +74,7 @@ class helpdeskBackendSidebarAction extends helpdeskViewAction
         $this->view->assign('common_filters', $this->common_filters);
         $this->view->assign('personal_filters', $this->personal_filters);
         $this->view->assign('unread_count', $this->unread_count);
+        $this->view->assign('all_count', $this->all_count);
         $this->view->assign('follow_count', $this->follow_count);
         $this->view->assign('workflows', $this->workflows);
         $this->view->assign('history', $this->history);
@@ -86,12 +91,13 @@ class helpdeskBackendSidebarAction extends helpdeskViewAction
     {
         $specials = helpdeskHelper::getSpecials();
         $arrs = array(&$this->personal_filters, &$this->common_filters);
+        $ui_legacy = helpdeskHelper::isLegacyUi();
         foreach($arrs as &$arr) {
             foreach($arr as $id => &$f) {
                 switch($f['hash']) {
                     case '@by_assignment':
 
-                        $photos = array();
+                        $photo = array();
                         foreach(wao(new waContactsCollection('id/'.implode(',', array_keys($this->assignments))))->getContacts('id,photo') as $row) {
                             $photo[$row['id']] = $row['photo'];
                         }
@@ -104,18 +110,27 @@ class helpdeskBackendSidebarAction extends helpdeskViewAction
                                 'href' => "#/requests/assigned:".$contact_id,
                             );
                             if ($contact_id < 0) {
-                                $ff['icon_class'] = 'contact';
+                                if ($ui_legacy) {
+                                    $ff['icon_class'] = 'contact';
+                                } else {
+                                    $ff['icon_url'] = wa()->getRootUrl()."wa-content/img/userpic.svg";
+                                }
+
                             } else if (!empty($photo[$contact_id])) {
                                 $ff['icon_url'] = waContact::getPhotoUrl($contact_id, $photo[$contact_id], 20, 20);
                             } else {
-                                $ff['icon_class'] = 'user';
+                                if ($ui_legacy) {
+                                    $ff['icon_class'] = 'user';
+                                } else {
+                                    $ff['icon_url'] = wa()->getRootUrl()."wa-content/img/userpic.svg";
+                                }
                             }
                             $f['children'][] = $ff;
                         }
                         $f['children'][] = array(
                             'name' => '',
                             'href' => "#/requests/assigned:0",
-                            'icon_class' => 'user-undefined',
+                            'icon_class' => ($ui_legacy ? 'user-undefined' : 'userpic fas fa-user-slash'),
                         );
                         break;
                     case '@by_sources':
@@ -127,13 +142,13 @@ class helpdeskBackendSidebarAction extends helpdeskViewAction
                                 $f['children'][] = array(
                                     'name' => $s['name'],
                                     'href' => "#/requests/source:".$source_id,
-                                    'icon_class' => 'source-'.$s['source_class'],
+                                    'icon_class' => ($ui_legacy ? 'source-' : '').$s['source_class'],
                                 );
                             } else {
                                 $deleted_sources[] = array(
                                     'name' => $s['name'],
                                     'href' => "#/requests/source:".$source_id,
-                                    'icon_class' => 'source-'.$s['source_class'],
+                                    'icon_class' => ($ui_legacy ? 'source-' : '').$s['source_class'],
                                 );
                             }
                         }
@@ -161,7 +176,7 @@ class helpdeskBackendSidebarAction extends helpdeskViewAction
                                     $child['children'][] = array(
                                         'name' => $state['name'] ? $state['name'] : _w('no status'),
                                         'href' => '#/requests/state:' . $workflow['id'] . '@' . $state['id'],
-                                        'css' => !$state['deleted'] ? $state['css'] : 'font-style: italic;'
+                                        'css' => !$state['deleted'] ? $state['css'] : ($ui_legacy ? 'font-style: italic;' : 'font-style: italic;color:var(--gray);')
                                     );
                                 }
                                 $f['children'][] = $child;
@@ -182,7 +197,9 @@ class helpdeskBackendSidebarAction extends helpdeskViewAction
                         break;
 
                     default:
-                        $f['icon_class'] = $f['icon'] ? $f['icon'] : 'search';
+                        $f['icon_class'] = $ui_legacy
+                            ? ifempty($f['icon'], 'search')
+                            : ifset(helpdeskHelper::getIcons()[$f['icon']], 'fas fa-filter');
                         break;
                 }
 
@@ -301,7 +318,7 @@ class helpdeskBackendSidebarAction extends helpdeskViewAction
         uasort($allowed_sources, array($this, 'nameCmp'));
 
         return array(
-            'workflow_source_errors', $workflow_source_errors,
+            'workflow_source_errors' => $workflow_source_errors,
             'forms_new_request' => $forms_new_request,
             'allowed_sources' => $allowed_sources,
             'backend_default_form' => helpdeskSourceHelper::isBackendSourceAvailable()
@@ -314,4 +331,3 @@ class helpdeskBackendSidebarAction extends helpdeskViewAction
         return strcmp($a['name'], $b['name']);
     }
 }
-

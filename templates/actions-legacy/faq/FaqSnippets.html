@@ -1,0 +1,81 @@
+<style>
+    .h-faq-snippets .h-faq-item { cursor: pointer; margin: 0; padding-left: 10px; -webkit-transition: background .2s ease,color .2s ease; -o-transition: background .2s ease,color .2s ease; transition: background .2s ease,color .2s ease; }
+    .h-faq-snippets .h-faq-item:hover { background-color: #ffe; }
+    .h-faq-snippets .h-category { margin: 0; }
+    .h-faq-snippets .h-category a { margin: 0 10px 0 0; }
+    .h-truncated-text { font-size: 0.8em; }
+    .h-truncated-text .h-more { display:inline; }
+</style>
+
+<div class="h-faq-snippets">
+    <div class="sidebar left200px h-faq-snippets-sidebar">
+        <div class="h-inner-sidebar">
+            <ul class="menu-v">
+                <li style="margin:5px; padding:0;">
+                    <form class="h-faq-search-form">
+                        <input type="search" placeholder="[`search`]" class="h-faq-search" {if $query}value="{$query}"{/if}>
+                    </form>
+                </li>
+                {foreach $categories as $c}
+                    {if $c.is_backend}
+                        <li data-id="{$c.id}" class="h-category {if !empty($category) && $c.id === $category.id}selected{/if}">
+                            <a href="javascript:void(0)" data-category-id="{$c.id}">{$c.name|escape}</a>
+                        </li>
+                    {/if}
+                {/foreach}
+            </ul>
+        </div>
+    </div>
+    <div class="content left200px {if !empty($faq_list)}bordered-left{/if} blank h-faq-snippets-content">
+        <ul class="menu-v h-faq-list">
+            {foreach $faq_list as $q}
+                {if $q.is_backend}
+                    <li class="h-faq-item" data-id="{$q.id}">
+                        {if $query}
+                            <h3 class="h-faq-item-name">{$q.question_highlighted|default:""}</h3>
+                        {else}
+                            <h3 class="h-faq-item-name">{$q.question|default:""}</h3>
+                        {/if}
+                        <span class="hint h-comment">{$q.comment|escape}</span>
+                        <div class="h-truncated-text">
+                            {if !$q.comment}
+                                {if $query}
+                                    {if !empty($q.fragments)}
+                                        {$q.fragments|default:[]|implode:" "|truncate:200:"... <a class='h-more' href='javascript:void(0);'>[`show all`]</a>"}
+                                    {else}
+                                        {$q.answer|strip_tags|truncate:200:"... <a class='h-more' href='javascript:void(0);'>[`more`]</a>"}
+                                    {/if}
+                                {else}
+                                    {$q.answer|strip_tags|truncate:200:"... <a class='h-more' href='javascript:void(0);'>[`more`]</a>"}
+                                {/if}
+                            {else}
+                                {if $query}
+                                    {if !empty($q.fragments)}
+                                        {$q.fragments|default:[]|implode:" "|truncate:200:"..."} <a class='h-more' href='javascript:void(0);'>[`show all`]</a>
+                                    {else}
+                                        {$q.answer|strip_tags|truncate:200:"... <a class='h-more' href='javascript:void(0);'>[`more`]</a>"}
+                                    {/if}
+                                {else}
+                                    {$q.answer|strip_tags|truncate:200:"... <a class='h-more' href='javascript:void(0);'>[`more`]</a>"}
+                                {/if}
+                            {/if}
+                        </div>
+                        <div class="h-full-text" style="display:none;">
+                            {if $query}
+                                {$q.answer_highlighted|default:''}
+                            {else}
+                                {$q.answer}
+                            {/if}
+                        </div>
+                    </li>
+                {/if}
+            {foreachelse}
+                {if $query}
+                    <li>[`No search results.`]</li>
+                {else if $category}
+                    <li>[`No questions in this category.`]</li>
+                {/if}
+            {/foreach}
+        </ul>
+    </div>
+</div>

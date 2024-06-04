@@ -88,7 +88,10 @@ class helpdeskEditorStateAction extends helpdeskViewAction
                 $cfg['workflows'][$workflow_id]['states'][$state_id] = $state_cfg;
                 helpdeskWorkflow::saveWorkflowsConfig($cfg);
 
-                echo '<script>(function() { "use strict"; $("#c-core-content .tab-content:first").html(\'<div class="triple-padded block"><i class="icon16 loading"></i></div>\'); $.wa.helpdesk_controller.redispatch(); $.wa.dialogHide(); })();</script>';
+                echo (helpdeskHelper::isLegacyUi()
+                    ? '<script>(function() { "use strict"; $("#c-core-content .tab-content:first").html(\'<div class="triple-padded block"><i class="icon16 loading"></i></div>\'); $.wa.helpdesk_controller.redispatch(); $.wa.dialogHide(); })();</script>'
+                    : 'ok'
+                );
                 exit;
             }
         } else {
@@ -131,4 +134,3 @@ class helpdeskEditorStateAction extends helpdeskViewAction
         $this->view->assign('available_actions', $wf->getActions($state_id));
     }
 }
-

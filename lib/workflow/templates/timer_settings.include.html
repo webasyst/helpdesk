@@ -2,14 +2,8 @@
 {$hour = $options.timeout.hour|default:0}
 {$minute = $options.timeout.minute|default:0}
 
-<div class="field" style="margin-top: 10px;">
-    <p>
-        [`This action will be triggered automatically (by time-out) if no other actions are performed with request during a certain period of time.`]
-    </p>
-</div>
-
 <div class="h-action-timer-settings-block" {if $hidden|default:false}style="display: none;"{/if}>
-    <ul class="menu-h">
+    <ul class="chips space-16 custom-mt-0">
         <li><span>[`Time-out`]:</span></li>
         <li>
             <select name="options[timeout][day]" class="h-action-timer-day">
@@ -26,6 +20,11 @@
             </select> [`hours`]
         </li>
     </ul>
+</div>
+<div class="field">
+    <p class="dark-hint">
+        [`This action will be triggered automatically (by time-out) if no other actions are performed with request during a certain period of time.`]
+    </p>
 </div>
 
 <script>

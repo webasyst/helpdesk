@@ -1,0 +1,43 @@
+<div class="block not-padded">
+    <div class="block h-header-block h-h1-inline h-category-name-block">
+
+        <h1 class="h-category-name">{$query|escape}</h1>
+    </div>
+
+</div>
+
+<div class="block h-faq-questions-block" id="h-faq-questions-block">
+    {if !empty($faq_list)}
+        <ul class="h-faq-questions menu-v">
+            {foreach $faq_list as $q}
+                <li class="h-question-item" data-id="{$q.id}">
+                    <a href="#/faq/{$q.id}/" class="h-show-faq-question">{strip}
+                        <span class="h-question">{$q.question_highlighted|default:""}</span> &nbsp;
+                        {$q.draft_html}
+                        {$q.backend_only_html}
+                        {$q.site_only_html}
+                        {$q.backend_and_site_html}
+                    {/strip}</a>
+                    {if !empty($q.fragments)}
+                        <div class="h-faq-fragments"><p>{$q.fragments|implode:" "}</p></div>
+                    {else}
+                        <div class="h-faq-answer"><p>{$q.answer|strip_tags|truncate:200:'...'}</p></div>
+                    {/if}
+                    <input type="hidden" class="h-is_public" value="{$q.is_public}">
+                </li>
+            {/foreach}
+        </ul>
+    {else}
+        <p>[`No search results`]</p>
+    {/if}
+
+</div>
+
+<div class="clear-both"></div>
+
+
+<script>
+    $(function() {
+        $('#h-faq-sidebar .h-faq-search').val('{$query}');
+    });
+</script>

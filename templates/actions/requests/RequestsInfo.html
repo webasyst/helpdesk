@@ -1,214 +1,313 @@
-<style>
-.ui-autocomplete .ui-menu-item { font-size: 0.9em; }
-</style>
-<div class="hidden block">
-    <div class="hidden paging float-right nowrap">
-        <a class="hidden prev"><i class="icon10 larr"></i> [`prev`]</a>
-        <span class="custom hint">
-            <span class="index-current"></span>
-            [`of`]
-            <span class="index-total"></span>
-        </span>
-        <a class="hidden next">[`next`] <i class="icon10 rarr"></i></a>
-    </div>
-    <a href="javascript:void(0)" class="hidden no-underline hd-last-view"><i class="icon10 larr"></i><span></span></a>
-</div>
-
 {function field_item field_id=null default_field_params=[] class=''}
-    <div class="{$class}">
-        {if $field_id === 'status'}
-            <p>
-                <span class="gray">
-                    [`Status`]:
-                    <span class="state-marker" style="{$request.status_css}">
-                        {$request.status}
-                    </span>
-                </span>
-            </p>
-        {else if $field_id === 'assigned'}
-            <p>
-                <span class="grey">[`Assigned:`]</span>
-                <span class="bold">
-                    {if $request.assigned_contact_id > 0}
-                         {$request.assigned_name|escape}
-                    {elseif $request.assigned_contact_id < 0}
-                        {$request.assigned_name|escape} <span style="color:#999">([`group`])</span>
-                    {else}
-                        <span style="color:#999"></span>
-                    {/if}
-                </span>
-            </p>
-        {else if $field_id === 'tags'}
-            <input type="text" id="h-request-tags-input" value="{implode(',', $tags)}">
-        {else if helpdeskRequestPageConstructor::getType($field_id) === helpdeskRequestPageConstructor::TYPE_CUSTOM}
+{if $field_id !== 'tags'}
+    <div class="field{if $class} {$class}{/if}">{strip}
+        {if helpdeskRequestPageConstructor::getType($field_id) === helpdeskRequestPageConstructor::TYPE_CUSTOM}
             {$fld_id = helpdeskRequestPageConstructor::cutOffPrefix($field_id)}
             {if isset($fields[$fld_id])}
-                <p>
-                    <span class="gray">{$fields[$fld_id].name|escape}:</span>
-                    <span class="bold">{$fields[$fld_id].value}</span>
-                </p>
+                <div class="name">{$fields[$fld_id].name|escape}</div>
+                <div class="value small">{$fields[$fld_id].value}</div>
             {else}
-                <p>
-                    <span class="gray">{$default_field_params.name|default:''|escape}:</span>
-                </p>
+                <div class="name">{$default_field_params.name|default:''|escape}</div>
+                <div class="value"><span class="hint">[`not specified`]</span></div>
             {/if}
         {/if}
-    </div>
+    {/strip}</div>
+{/if}
 {/function}
 
-<div class="support-content">
-    <div class="s-request" id="ticket">
+{function comment_state state_css='' state_name=''}
+{if $state_name}
+    <span
+        class="badge state-name"
+        style="{if !empty($state_css)}{str_replace('color:','background:',$state_css|escape)}{else}background:var(--light-gray);font-style:italic;{/if}"
+    >{$state_name|escape}</span>
+{/if}
+{/function}
 
+{capture name="has_follow"}
+<span class="h-has-follow" style="{if !$has_follow}display:none;{else}display:inline-block{/if};" data-visible="{$has_follow}">
+    <i class="fas fa-binoculars text-dark-gray"></i>
+</span>
+{/capture}
 
+{capture name=source_label}
+<span class="source-label">
+    <span class="age-label custom-mx-4">
+        <span class="hint">{$request.age} [`ago`]</span>
+    </span>
+    {if $source_class}
+    <span class="hint normal">[`via`]</span>
+    <span class="source-label">
+        <span class="source-badge {$source_bg} custom-mx-2">
+            <i class="{$source_class}"></i>
+        </span>
+        <span class="source-name normal">
+            {$source_name|escape}
+        </span>
+    </span>
+    {/if}
+</span>
+{/capture}
 
-    <div id="h-request-top-block">
+{$can_edit = $is_admin || count($allowed_actions) > 0}
+{capture name="title_h1"}
+<h1{if $can_edit} data="edit"{/if} class="h-request-header-title{if $is_unread} highlighted{/if}{if $can_edit} editable{/if} break-word custom-p-0 custom-mb-20"{if $can_edit} title="[`Click to edit subject`]"{/if}>
+    <span>{$request.summary}</span>
+    <span class="h-request-header-icons">
+        {if $request.status && !empty($right_fields.status) || !empty($left_fields.status)}
+            {if $request.status}
+                <span class="state-marker badge"
+                    style="{if !empty($request.status_css)}{str_replace('color:', 'background:', $request.status_css)}{else}background:var(--light-gray);font-style:italic;{/if}">
+                    {$request.status}
+                </span>
+            {/if}
+        {/if}
+    </span>
+</h1>
+{/capture}
 
+{capture name="header_h1"}
+{if $can_edit}
+    <form data-edit-request-subject class="subject-edit">
+        <div class="list-edit-name" data="editable">
+            {$smarty.capture.title_h1}
+        </div>
+        <div class="list-edit-buttons small" data="inputs">
+            <input type="text" name="theme" value="{$request.summary}" autocomplete="off" class="input-h1">
+            <input type="hidden" value="{$request.id}" name="id"/>
+            <div class="custom-my-4">
+                <button type="submit" class="button" data="save">[`Save`]</button>
+                <button type="button" class="button light-gray" data="cancel">[`Cancel`]</button>
+            </div>
+        </div>
+    </form>
+{else}
+    {$smarty.capture.title_h1}
+{/if}
+{/capture}
+
+<style>
+    .c-core-content { background-color: var(--background-color); }
+</style>
+<div class="article wide" data-request-id="{ifset($request.id, '')}">
+    <div class="s-request article-body custom-pb-24 custom-pt-4" id="ticket">
+
+    <div id="h-request-top-block" class="custom-mb-40">
+
+        <div class="h-paging-top-wrapper hidden">
+            <a href="javascript:void(0)" class="back flexbox middle space-8" id="hd-last-view">
+                <span class="icon size-24"><i class="fas fa-arrow-alt-circle-left"></i></span>
+                <div class="h-paging-top-title semibold text-gray"></div>
+            </a>
+            <div class="h-paging-top nowrap">
+                <a class="prev button light-gray circle smallest hidden" title="[`prev`]"><span class="icon"><i class="fas fa-angle-left"></i></span></a>
+                <span class="custom-mx-8 text-gray">
+                    <span class="index-current"></span>
+                    [`of`]
+                    <span class="index-total"></span>
+                </span>
+                <a class="next button light-gray circle smallest hidden" title="[`next`]"><span class="icon"><i class="fas fa-angle-right"></i></span></a>
+            </div>
+        </div>
+
+        <!-- TODO: temporary solution before fix -->
+        <link rel="stylesheet" type="text/css" href="{$wa_url}wa-content/js/jquery-plugins/ibutton/jquery.ibutton.min.css" />
+        <script src="{$wa_url}wa-content/js/jquery-plugins/ibutton/jquery.ibutton.min.js"></script>
         <div class="shadowed" id="h-contact-info"></div>
 
-        {*
-         * Request header
-         *}
-        <div class="block double-padded" style="padding-top: 10px;">
-            <div class="request-status" id="h-request-status-block-wrapper">
-                <div class="request-basic-info-block">
-                    <div id="h-request-status-block">
-                        <span class="request-id">{sprintf_wp('#<strong>%s</strong>', $request.id)}</span>
-                        <span>
-                            <i class="icon16 binocular h-has-follow" style="{if !$has_follow}display:none;{else}display:inline-block{/if};"></i>
-                        </span>
-                        <ul class="menu-h dropdown smart-dropdown float-right" id="h-request-operations" style="display: inline-block; margin-top: -4px;">
-                            <li>
-                                <a href="javascript:void(0);" class="inline-link"><i class="icon16 ui-menu"></i><i class="icon10 darr-tiny"></i></a>
-                                <ul class="menu-v" style="width: 230px; margin-left: -186px;">
-                                    <li><a href="javascript:void(0)" class="mark-as-read"><i class="icon16 checkbox"></i>[`Mark as read`]</a></li>
-                                    <li><a href="javascript:void(0)" class="mark-as-unread"><i class="icon16 mark-unread"></i>[`Mark as unread`]</a></li>
-                                    <li><a href="javascript:void(0)" class="set-follow"><i class="icon16 binocular-small"></i>[`Follow`]</a></li>
-                                    <li><a href="javascript:void(0)" class="unset-follow"><i class="icon16 binocular-small"></i>[`Follow`] <span class="small">([`unmark`])</span></a></li>
+        <span class="js-mobile-back back mobile-only largest hidden"><i class="fas fa-arrow-circle-left"></i></span>
 
-                                    {if $is_admin}
-                                        <li><a href="javascript:void(0)" class="change-status"><i class="icon16 export"></i>[`Change status`]</a></li>
-                                        <li><a href="javascript:void(0)" class="change-assignment"><i class="icon16 user"></i>[`Change assignment`]</a></li>
-                                        <li class="hr"></li>
-                                        <li><a href="javascript:void(0)" class="delete-request"><i class="icon16 delete"></i>[`Delete`]</a></li>
-                                    {/if}
+        <div class="h-request-inner flexbox vertical-mobile space-16 custom-pt-16">
+            <div class="wide flexbox vertical space-16">
+                {*
+                * Request header
+                *}
+                <div class="request-header">
+                    <div class="request-status" id="h-request-status-block-wrapper">
+                        <div class="request-basic-info-block">
+                            <div class="flexbox middle space-16 custom-mb-20" id="h-request-status-block">
+                                <div class="dropdown" id="h-request-operations-dropdown">
+                                    <button class="dropdown-toggle button light-gray nowrap small"><i class="fas fa-bars"></i> [`Actions`]</button>
+                                    <div class="dropdown-body" id="h-request-operations" style="min-width:270px;">
+                                        <ul class="menu">
+                                            <li><a href="javascript:void(0)" class="mark-as-read"><span class="icon"><i class="fas fa-circle text-orange"></i></span>[`Mark as viewed`]</a></li>
+                                            <li><a href="javascript:void(0)" class="mark-as-unread"><span class="icon"><i class="fas fa-dot-circle text-orange"></i></span>[`Mark as unviewed`]</a></li>
+                                            <li><a href="javascript:void(0)" class="set-follow"><span class="icon"><i class="fas fa-binoculars text-dark-gray"></i></span>[`Follow`]</a></li>
+                                            <li><a href="javascript:void(0)" class="unset-follow"><span class="icon"><i class="fas fa-binoculars text-light-gray"></i></span>[`Follow`]<span class="small custom-ml-4">([`unmark`])</span></a></li>
 
-                                </ul>
-                            </li>
-                        </ul>
-                        <div class="clear-both"></div>
+                                            {if $is_admin}
+                                                <li><a href="javascript:void(0)" class="change-status"><span class="icon"><i class="fas fa-exchange-alt text-green"></i></span>[`Change status`]</a></li>
+                                                <li><a href="javascript:void(0)" class="change-assignment"><span class="icon"><i class="fas fa-user-circle text-blue"></i></span>[`Change assignment`]</a></li>
+                                                <li class="hr"></li>
+                                                <li><a href="javascript:void(0)" class="delete-request"><span class="icon"><i class="fas fa-trash-alt text-red"></i></span>[`Delete`]</a></li>
+                                            {/if}
+
+                                        </ul>
+                                    </div>
+                                </div>
+                                <script>
+                                    ( function($) {
+                                        $("#h-request-operations-dropdown").waDropdown();
+                                    })(jQuery);
+                                </script>
+                                <span class="request-id nowrap semibold"># {$request.id}</span>
+                                <span>{$smarty.capture.has_follow}</span>
+                            </div>
+
+                        </div>
                     </div>
+                    {if $client}
+                        {capture name=contact_link}
+                            <a href="{$wa_backend_url}contacts/#/contact/{$client.id}/" data-contact-id="{$client->getId()}">{strip}
+                                {if $client->getName()}
+                                    {$client->getName()|escape}
+                                {else}
+                                    {"[`<no name>`]"|escape}
+                                {/if}
+                            {/strip}</a>
+                        {/capture}
 
+                        {$smarty.capture.header_h1}
+                        <div class="profile">
+                            <div class="details">
+                                <h2 class="flexbox space-8 break-word custom-m-0">
+                                    <a href="{$wa_backend_url}contacts/#/contact/{$client.id}/" data-contact-id="{$client.id}">
+                                        <div class="image">
+                                            {if $client.photo}
+                                                <img class="userpic userpic-20" src="{$client->getPhoto(20)}">
+                                            {else}
+                                                <img class="userpic userpic-20" src="{helpdeskHelper::getGravatar($client->get('email', 'default'))}">
+                                            {/if}
+                                        </div>
+                                    </a>
+                                    <div>
+                                        {$smarty.capture.contact_link}
+                                        {$smarty.capture.source_label}
+                                    </div>
+                                </h2>
+                                {$client_contact_tabs_html}
+                            </div>
+                        </div>
+
+                    {else}
+                        {$smarty.capture.header_h1}
+                        <h2>
+                            <a href="javascript:void(0)" class="gray">
+                                <strong>{strip}{ifempty($name_from_data, _w('Anonymous'))|escape}{/strip}</strong>
+                            </a>
+                            <span class="wa-tooltip-box icon" data-wa-tooltip-content="[`no link to contact`]">
+                                <i class="fas fa-exclamation-circle text-orange"></i>
+                            </span>
+                            {$smarty.capture.source_label}
+                        </h2>
+                    {/if}
+
+                    {* Assigned *}
+                    {if $request.assigned_contact_id && !empty($right_fields.assigned) || !empty($right_fields.assigned) && $request.assigned_contact_id}
+                        <div class="h-request-assigned custom-mt-16 flexbox middle space-8">
+                            {if !empty($request.assigned_contact_photo)}
+                                <img class="userpic userpic-20" src="{$request.assigned_contact_photo}">
+                            {/if}
+                            {$request.assigned_name|escape}
+                            <span class="hint">[`Assigned contact`]</span>
+                            {* old logic
+                            <p>
+                                <span class="gray">[`Assigned:`]</span>
+                                <span class="bold">
+                                    {if $request.assigned_contact_id > 0}
+                                         {$request.assigned_name|escape}
+                                    {elseif $request.assigned_contact_id < 0}
+                                        {$request.assigned_name|escape} <span class="gray">([`group`])</span>
+                                    {else}
+                                        <span class="gray"></span>
+                                    {/if}
+                                </span>
+                            </p>*}
+                        </div>
+                    {/if}
+
+                    {* Tags *}
+                    {if !empty($right_fields.tags) || !empty($left_fields.tags)}
+                        <div class="h-tags-wrapper custom-mt-12">
+                            <ul id="h-tag-list" class="chips smaller custom-my-0">
+                                {if !empty($tags)}
+                                    {foreach $tags as $id => $tag}
+                                        <li class="tag h-tag-item">
+                                            <a href="#/requests/tag_id:{$id}">
+                                                <i class="fas fa-hashtag"></i>
+                                                <span class="js-tag-text">{$tag|escape}</span>
+                                                <span class="h-remove-tag"><i class="fas fa-times-circle"></i></span>
+                                            </a>
+                                        </li>
+                                    {/foreach}
+                                {/if}
+
+                                <li class="transparent h-tag-add">
+                                    <div class="dropdown" id="h-all-tags-dropdown">
+                                        <a href="javascript:void(0)" class="dropdown-toggle without-arrow semibold large text-gray"><i class="fas fa-plus text-gray"></i> [`Add tag`]</a>
+                                        <form class="dropdown-body custom-p-8 custom-pt-0" style="min-width:286px;">
+                                            {if $all_tags}
+                                                <div>[`Popular tags`]</div>
+                                                <ul class="chips tags custom-mt-0">
+                                                    {foreach $all_tags as $tag}
+                                                        <li data-id="{$tag.id}"><span class="chip">
+                                                            <i class="fas fa-hashtag"></i>
+                                                            <span class="js-tag-text">{$tag.name|escape}</span>
+                                                        </span></li>
+                                                    {/foreach}
+                                                </ul>
+                                            {/if}
+                                            {if $can_create_tag}
+                                                <div class="custom-mt-16">
+                                                    <input type="text" placeholder="[`Create new tag`]" class="js-new-tag-input width-100-mobile" style="min-width:285px;">
+                                                </div>
+                                            {/if}
+                                        </form>
+                                    </div>
+                                </li>
+
+                            </ul>
+                        </div>
+                    {/if}
+
+                </div>
+
+                {if $right_fields}
+                <div class="h-request-right-fields fields">{strip}
                     {foreach $right_fields as $field_id => $field_opt}
+                        {if $field_id === 'status' || $field_id === 'assigned'}
+                            {continue}
+                        {/if}
                         {if $field_opt@index < 2}
                             {field_item field_id=$field_id default_field_params=$field_opt class="h-request-right-field"}
                         {else}
                             {field_item field_id=$field_id default_field_params=$field_opt class="h-request-right-field"}
                         {/if}
-                    {/foreach}
-
-                </div>
-            </div>
-
-            <div class="request-header">
-
-                {capture name=source_label}
-                    <span class="age-label">
-                        <span class="hint">{$request.age} [`ago`]</span>
-                    </span>
-                    <span class="source-label">
-                        <span class="hint">[`via`]</span>
-                        <span class="source-name">
-                            {if $source_class}<i class="icon16 source-{$source_class}"></i>{/if}{$source_name|escape}
-                        </span>
-                    </span>
-                {/capture}
-                {capture name="header_h1"}
-                    {if $is_admin || count($allowed_actions) > 0}
-                        <form data-edit-request-subject class="subject-edit" style="">
-                            <div class="list-edit-name" data="editable">
-                                <h1 data="edit" style="display:inline;" class="{if $is_unread} highlighted{/if}"  title="[`Click to edit subject`]">
-                                    <span class="hidden">{sprintf_wp('#%s', $request.id)} </span>
-                                    {$request.summary}
-                                </h1>
-                            </div>
-                            <div class="list-edit-buttons" data="inputs">
-                                <input type="text" name="theme" value="{$request.summary}" autocomplete="off" class="input-h1">
-                                <input type="hidden" value="{$request.id}" name="id"/>
-                                <br/>
-                                <input type="submit" value="[`Save`]" data="save"/>
-                                [`or`] <a href="javascript:void(0)" data="cancel">[`cancel`]</a>
-                            </div>
-                        </form>
-                    {else}
-                        <h1 style="display:inline;">
-                            {$request.summary}
-                        </h1>
-                    {/if}
-                {/capture}
-
-                {if $client}
-                    {capture name=contact_link}
-                        <a href="{$wa_backend_url}contacts/#/contact/{$client.id}/" data-contact-id="{$client->getId()}">{strip}
-                            {if $client->getName()}
-                                {$client->getName()|escape}
-                            {else}
-                                {"[`<no name>`]"|escape}
-                            {/if}
-                        {/strip}</a>
-                    {/capture}
-
-                    {$smarty.capture.header_h1}
-                    <div class="profile image50px">
-                        <div class="image">
-                            <a href="{$wa_backend_url}contacts/#/contact/{$client.id}/" data-contact-id="{$client.id}">
-                                {if $client.photo}
-                                    <img class="userpic" src="{$client->getPhoto(50)}">
-                                {else}
-                                    <img class="userpic" src="{helpdeskHelper::getGravatar($client->get('email', 'default'))}">
-                                {/if}
-                            </a>
-                        </div>
-                        <div class="details">
-                            <h3>
-                                {$smarty.capture.contact_link}
-                                {$smarty.capture.source_label}
-                            </h3>
-                            {$client_contact_tabs_html}
-                        </div>
-                    </div>
-
-                {else}
-                    {$smarty.capture.header_h1}
-                    <h3>
-                        <a href="javascript:void(0)" class="inline-link" onclick="$(this).parent().next().toggle(200);"><b><i style="font-weight:bold;">{strip}
-                            {ifempty($name_from_data, _w('Anonymous'))|escape}
-                        {/strip}</i></b></a>
-                        {$smarty.capture.source_label}
-                    </h3>
-                    <p class="hidden">[`no link to contact`]</p>
+                    {/foreach}{/strip}</div>
                 {/if}
-            </div>
 
-            {*
-             * Buttons for available actions
-             *}
-            <div class="block not-padded top-padded"{if $is_admin} style="min-height:20px;"{/if}>
-                <div class="h-request-left-fields">
+                {if $left_fields}
+                <div class="h-request-left-fields fields">{strip}
                     {foreach $left_fields as $field_id => $field_opt}
                         {field_item field_id=$field_id default_field_params=$field_opt}
-                    {/foreach}
-                </div>
-                <div id="action-form-wrapper" style="display:none; padding-top:80px;"></div>
-                <div class="buttons ticket-buttons">
-                    <ul class="menu-h">
-                        {foreach $buttons as $html}
-                            <li>{$html}</li>
-                        {/foreach}
-                    </ul>
-                </div>
-            </div>
+                    {/foreach}{/strip}</div>
+                {/if}
 
-            <div class="clear-both"></div>
+                <div class="h-request-answer"{if $is_admin} style="min-height:20px;"{/if}>
+                    <div id="action-form-wrapper" class="custom-mt-32" style="display:none;"></div>
+                    {*
+                    * Buttons for available actions
+                    *}
+                    <div class="buttons ticket-buttons">
+                        <ul class="menu flexbox space-12 wrap custom-mb-8 large">
+                            {foreach $buttons as $html}
+                                <li>{$html}</li>
+                            {/foreach}
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
         </div>
 
     </div>
@@ -216,48 +315,50 @@
     {*
      * Request log
      *}
-    <ul class="s-comments" id="request-and-log">
+    <ul class="s-comments custom-mt-24" id="request-and-log">
         {foreach $log as $action}
             <li class="{if $action.visible_to_client}shadowed visible-to-client{else}not-visible-to-client{/if} h-log-item" data-id="{$action.id}">
-                <div class="profile {if $action.visible_to_client}image50px{else}image32px{/if}">
+                <div class="profile">
                     <div class="image">
                         {if $action.visible_to_client}
                             {if $action.upic}
-                                <img class="float-left userpic" width="50" src="{$action.upic}" alt="">
+                                <img class="userpic userpic-24" src="{$action.upic}" alt="">
                             {else}
-                                <img class="float-left userpic" src="{$wa_url}wa-content/img/userpic50.jpg">
+                                <img class="userpic userpic-24" src="{$wa_url}wa-content/img/userpic24.jpg">
                             {/if}
                         {else}
                             {if $action.upic}
-                                <img class="float-left userpic" width="32" src="{$action.upic}" alt="">
+                                <img class="userpic userpic-24" src="{$action.upic}" alt="">
                             {else}
-                                <img class="float-left userpic" src="{$wa_url}wa-content/img/userpic32.jpg">
+                                <img class="userpic userpic-24" src="{$wa_url}wa-content/img/userpic24.jpg">
                             {/if}
                         {/if}
                     </div>
                     <div class="details">
-                        <span class="float-right gray align-right">
-                            {$action.datetime|wa_datetime:"humandatetime"}<br>
-                            <span class="hint float-right">+ {$action.delay}</span>
-                            {if $action.original_email}
-                                <br>
-                                <a href="{$action.original_email}" class="same-tab hint">
-                                    [`Download original email`]
-                                </a>
-                            {/if}
-                        </span>
-                        <div class="s-username">
-                            <b>{$action.contact_name|escape}</b> {$action.performs_action_string}
-
-                            {if $action.before_state_id != $action.after_state_id}
-                                <span style="margin-left:30px;font-size:90%;">
-                                    (<span style="{$action.before_state_css|escape}">{$action.before_state_name}</span>
-                                    →
-                                    <span style="{$action.after_state_css|escape}">{$action.after_state_name|escape}</span>)
+                        <header class="flexbox full-width space-8">
+                            <div class="s-username">
+                                <strong>{$action.contact_name|escape}</strong>
+                                <span class="custom-mr-8">{$action.performs_action_string}</span>
+                                {if $action.before_state_id != $action.after_state_id}
+                                    <span class="h-status-details small">
+                                        {comment_state state_css=$action.before_state_css state_name=$action.before_state_name}
+                                        <span class="custom-mx-4">→</span>
+                                        {comment_state state_css=$action.after_state_css state_name=$action.after_state_name}
+                                    </span>
+                                {/if}
+                            </div>
+                            <div class="h-comment-top-actions">
+                                <span class="h-log-item-datatime gray">
+                                    {$action.datetime|wa_datetime:"humandatetime"}
+                                    <div class="hint"> + {$action.delay}</div>
+                                    {if $action.original_email}
+                                        <a href="{$action.original_email}" class="same-tab small">
+                                            <i class="fas fa-cloud-download-alt"></i> [`Download original email`]
+                                        </a>
+                                    {/if}
                                 </span>
-                            {/if}
-
-                        </div>
+                            </div>
+                        </header>
 
                         <div class="text">
                             {$action.text}
@@ -276,46 +377,50 @@
                         {/if}
 
                         {if !empty($action.params.old_summary)}
-                            <span class="hint">[`Old subject`]:</span>
+                            <span class="small gray">[`Old subject`]:</span>
                             <span class="small">{$action.params.old_summary|escape}</span>
                             <br>
                         {/if}
                         {if !empty($action.params.new_summary)}
-                            <span class="hint">[`New subject`]:</span>
+                            <span class="small gray">[`New subject`]:</span>
                             <span class="small">{$action.params.new_summary|escape}</span>
                             <br>
                         {/if}
 
                         {if !empty($action.old_workflow)}
-                            <span class="hint">[`Old workflow`]:</span>
+                            <span class="small gray">[`Old workflow`]:</span>
                             <span class="small">{$action.old_workflow}</span>
                             <br>
                         {/if}
                         {if !empty($action.new_workflow)}
-                            <span class="hint">[`New workflow`]:</span>
+                            <span class="small gray">[`New workflow`]:</span>
                             <span class="small">{$action.new_workflow}</span>
                             <br>
                         {/if}
 
                         {if $action.attachment}
                             <div class="attachment">
-                                <i class="icon16 download"></i>
+                                <i class="fas fa-file-download text-blue"></i>
                                 {foreach $action.attachment as $a}
                                     <a href="{$a.link}" class="same-tab">{$a.orig_name|escape}</a>
-                                    <span class="hint">{$a.size|wa_format_file_size}</span>{if !$a@last},{/if}
+                                    <span class="gray-hint">{$a.size|wa_format_file_size}</span>{if !$a@last}, {/if}
                                 {/foreach}
                             </div>
                         {/if}
 
                         {* Custom fields *}
                         {if !empty($action.fields)}
-                            {foreach $action.fields as $field_id => $field}
-                                <span class="hint">{$field.name|escape}:</span> <span class="small">{$field.value}</span><br>
-                            {/foreach}
+                            <div class="s-fields">
+                                {foreach $action.fields as $field_id => $field}
+                                    <div>
+                                        <span class="small gray">{$field.name|escape}:</span> <span class="small">{$field.value}</span><br>
+                                    </div>
+                                {/foreach}
+                            </div>
                         {/if}
 
                         {if $action.assigned_contact_id !== null}
-                            <span class="hint">[`Assigned:`]</span>
+                            <span class="small gray">[`Assigned:`]</span>
                             <span class="small">
                                 {if $action.assigned_contact_id > 0}
                                      {$action.assigned_name|escape}
@@ -327,7 +432,7 @@
                         {/if}
 
                         {if $action.recipients}
-                            <span class="hint">[`Message sent:`]</span>
+                            <span class="small gray">[`Message sent:`]</span>
                             <span class="small">
                                 {foreach $action.recipients as $r}
                                     <span title="{$r.email|escape}">{$r.name|escape}</span>{if !$r@last},{/if}
@@ -338,7 +443,6 @@
 
                     </div>
                 </div>
-                <div class="clear"></div>
             </li>
         {/foreach}
 
@@ -347,35 +451,36 @@
          *}
         <li class="shadowed h-request-item" data-id="{$request.id}">
             <div class="details">
-                <span class="float-right gray align-right">
-                    {$request.created|wa_datetime:"humandatetime"}
-                    {if $request.original_email}
-                        <br>
-                        <a href="{$request.original_email}" class="hint">
-                            [`Download original email`]
-                        </a>
-                    {/if}
-                </span>
-
-                <div class="profile image50px">
+                <div class="profile">
                     <div class="image">
                         {if $creator}
-                            <img class="userpic" src="{$creator['photo_url_50']}">
+                            <img class="userpic userpic-24" src="{$creator['photo_url_50']}">
                         {else}
-                            <img class="userpic" src="{helpdeskHelper::getGravatar('', 50)}">
+                            <img class="userpic userpic-24" src="{helpdeskHelper::getGravatar('', 24)}">
                         {/if}
                     </div>
 
                     <div class="details">
-                        <div class="s-username">
-                            {if $creator}
-                                <b>{$creator->getName()|escape}</b>
-                            {elseif !empty($name_from_data)}
-                                <b>{$name_from_data|escape}</b>
-                            {/if}
-                            [`creates request`]
-                        </div>
-
+                        <header class="flexbox full-width space-8">
+                            <div class="s-username">
+                                {if $creator}
+                                    <strong>{$creator->getName()|escape}</strong>
+                                {elseif !empty($name_from_data)}
+                                    <strong>{$name_from_data|escape}</strong>
+                                {/if}
+                                [`creates request`]
+                            </div>
+                            <div class="h-comment-top-actions">
+                                <span class="h-log-item-datatime gray">
+                                    {$request.created|wa_datetime:"humandatetime"}
+                                    {if $request.original_email}
+                                        <a href="{$request.original_email}" class="small gray">
+                                            <i class="fas fa-cloud-download-alt"></i> [`Download original email`]
+                                        </a>
+                                    {/if}
+                                </span>
+                            </div>
+                        </header>
 
                         {if $request.text}
                             <div class="text">{$request.text}</div>
@@ -387,20 +492,22 @@
 
 
                         {if $original_fields}
-                            {foreach $original_fields as $field}
-                                <span class="hint">{$field.name|escape}:</span>
-                                <span class="small">{$field.value}</span>
-                                <br>
-                            {/foreach}
+                            <div class="s-fields">
+                                {foreach $original_fields as $field}
+                                    <div>
+                                        <span class="small gray">{$field.name|escape}:</span> <span class="small">{$field.value}</span>
+                                    </div>
+                                {/foreach}
+                            </div>
                         {/if}
 
 
                         {if $request.attachments}
                             <div class="attachment">
-                                <i class="icon16 download"></i>
+                                <i class="fas fa-file-download text-blue"></i>
                                 {foreach $request.attachments as $a}
                                     <a href="{$a.link}" class="same-tab">{$a.orig_name|escape}</a>
-                                    <span class="hint">{$a.size|wa_format_file_size}</span>{if !$a@last},{/if}
+                                    <span class="gray-hint">{$a.size|wa_format_file_size}</span>{if !$a@last},{/if}
                                 {/foreach}
                             </div>
                         {/if}
@@ -409,55 +516,27 @@
                 </div>
 
             </div>
-            <div class="clear"></div>
         </li>
     </ul>
     </div>
-    <div class="clear-left"></div>
+
 </div>
 
-<div id="request-changed-alert" style="display:none;position:fixed;width:30%;bottom:20px;right:20px;background-color:#FEF49C;border: 2px solid #DDD;padding:20px">
-    <h1>[`Request has been changed`]</h1>
+
+<div id="request-changed-alert" class="alert success alert-fixed-box bottom" style="display:none;">
+    <div class="flexbox middle space-8">
+        <i class="fas fa-check-circle"></i>
+        <h3 class="custom-m-0">[`Request has been changed`]</h3>
+    </div>
     <p class="reload-the-page" style="margin:0;padding:0">[`Please <a>reload the page</a>.`]</p>
 </div>
 
 <div id="hidden-wrapper" class="hidden"></div>
-
-{* dialog section *}
-
-{if $all_tags}
-    <div class="dialog width650px height350px" id="h-all-tags-dialog" style="display:none;">
-        <form>
-            <div class="dialog-background"></div>
-            <div class="dialog-window">
-                <div class="dialog-content">
-                    <div class="dialog-content-indent">
-                        <h1>[`All tags`]</h1>
-                        <div class="hint hidden" style="display: block;">[`Select tags for this request`]</div>
-                        <ul class="menu-v">
-                            {foreach $all_tags as $tag}
-                                <li><label>
-                                    <input type="checkbox" name="tag" value="{$tag.name}" {if $tag.checked|default:false}checked="checked"{/if}> {$tag.name|escape}
-                                </label></li>
-                            {/foreach}
-                        </ul>
-                    </div>
-                </div>
-                <div class="dialog-buttons">
-                    <div class="dialog-buttons-gradient">
-                        {$wa->csrf()}
-                        <input class="button green" type="submit" value="[`Save`]">
-                        <i class="icon16 loading" style="display:none;"></i> [`or`] <a class="cancel" href="javascript:void(0);">[`cancel`]</a>
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
-{/if}
-
 <script>
 
 (function() { "use strict";
+
+    $("[data-wa-tooltip-content]").waTooltip();
 
     // Helper to tell if current page has been changed.
     // $.wa.helpdesk_controller.random is changed every page load by .loadHTML() and .loadGrid()
@@ -466,225 +545,32 @@
         return wa_controller_page_random != $.wa.helpdesk_controller.random;
     }
 
-    if ($.wa.helpdesk_controller.lastView) {
-        var hblock = $('.hd-last-view').closest('.block').show();
-        hblock.data('left', hblock.offset().left);
-    }
-
     $('#h-contact-info').data('left', $('#h-request-top-block').offset().left);
 
-    var makeFixableRequestHeader = function() {
-
-        if ($.wa.helpdesk_controller.lastView) {
-            var hblock = $('.hd-last-view').closest('.block');
-            if (!hblock.length) {
-                return;
-            }
-            hblock.fixedBlock()
-                .bind('fixed', function() {
-                    var self = $(this);
-                    var width = self.width();
-                    self.css({
-                        top: 0,
-                        background: 'white',
-                        zIndex: 101,
-                        height: 28,
-                        left: hblock.data('left') - 10,
-                        width: width,
-                        padding: '10px 20px'
-                    });
-                    var block = $('#h-request-top-block .request-header');
-                    fixRequestHeader(24, 50);
-                    var wrapper = block.parent();
-                    wrapper.css({
-                        paddingLeft: 30,
-                        width: wrapper.width() + 5
-                    });
-
-                    $(window).unbind('.fix_request_header').bind('resize.fix_request_header', function() {
-                        var width = $('#h-request-top-block').width();
-                        wrapper.css({
-                            width: width - 11
-                        });
-                        self.css({
-                            width: width - 20
-                        })
-                    });
-
-                })
-                .bind('unfixed', function() {
-                    unfixRequestHeader();
-                    var self = $(this);
-                    self.css({
-                        top: '',
-                        background: '',
-                        zIndex: '',
-                        width: '',
-                        left: '',
-                        padding: ''
-                    });
-                });
-        } else {
-
-            var block = $('#h-request-top-block .request-header');
-            if (!block.length) {
-                return;
-            }
-            $('#h-request-top-block .request-header').fixedBlock( { css: { top: 0 } } )
-                    .bind('fixed', function () {
-                        fixRequestHeader();
-                    })
-                    .bind('unfixed', function () {
-                        unfixRequestHeader();
-                    });
-        }
-    };
-
-    var unmakeFixableRequestHeader = function() {
-        if ($.wa.helpdesk_controller.lastView) {
-            var hblock = $('.hd-last-view').closest('.block');
-            hblock.length && hblock.fixedBlock('destroy');
-        } else {
-            var block = $('#h-request-top-block .request-header');
-            block && block.fixedBlock('destroy');
-        }
-    };
-
-    var makeFixableContactInfo = function() {
-        $('#h-contact-info').fixedBlock({
-                css: {
-                    top: 0,
-                    margin: 0,
-                    left: $('#h-contact-info').data('left') - 20,
-                    right: 0
-                }
-            })
-            .bind('unfixed', function() {
-                $(this).css({
-                    margin: ''
-                });
-            });
-    };
-
-    var unmakeFixableContactInfo = function() {
-        $('#h-contact-info').fixedBlock('destroy');
-    };
-
-    var fixRequestHeader = function(top_offset_wrapper, top_offset_block) {
-
-        // header for fixing
-        var header = $('#h-request-top-block .request-header');
-        if (header.parent().hasClass('h-tmp-wrap')) {
-            return;
-        }
-
-        // some offsets
-        top_offset_wrapper = top_offset_wrapper || 0;
-        top_offset_block = top_offset_block || 0;
-
-        // width, cause we will stretch header to width of top-block
-        var width = $('#h-request-top-block').width();
-        // height of header
-        var height = header.height();
-
-        // wrapper of header, we will work with it not with header, for easy reset (unfix) and
-        // for compose with status block (see below)
-        header.wrap('<div class="h-tmp-wrap"></div>');
-
-        var wrapper = header.parent();
-        var offset = wrapper.offset();
-        wrapper.css({
-            position: 'fixed',
-            top: top_offset_wrapper,
-            width: width - 16,
-            left: offset.left - 46,
-            paddingLeft: 35,
-            marginTop: top_offset_wrapper,
-            height: height,
-            background: '#f3f3ee',
-            zIndex: 101
-        });
-        wrapper.addClass('shadowed');
-        header.css({
-            position: 'fixed',
-            top: top_offset_block
-        });
-
-        // status block on the left, its content inserted to wrapper
-        var status_block = $('#h-request-status-block-wrapper');
-        var clone_status_block = status_block.clone();
-        clone_status_block.attr('id', 'h-request-status-block-wrapper-clone');
-        status_block.after(clone_status_block);
-        status_block.css({
-            position: 'fixed',
-            top: top_offset_block,
-            right: 41,
-            width: '200px',
-            maxWidth: '400px',
-            background: '#f3f3ee',
-            height: height
-        }).find('.h-request-right-field').hide();
-        wrapper.append(status_block);
-
-        $(window).bind('resize.fix_request_header', function() {
-            wrapper.css({
-                width: $('#h-request-top-block').width() - 16
-            });
-        });
-    };
-
-    var unfixRequestHeader = function() {
-        // that header
-        var header = $('#h-request-top-block .request-header');
-        if (header.parent().hasClass('h-tmp-wrap')) {
-            $('#h-request-status-block-wrapper-clone').replaceWith(
-                $('#h-request-status-block-wrapper').css({
-                    position: '',
-                    top: '',
-                    right: '',
-                    width: '',
-                    maxWidth: '',
-                    background: '',
-                    height: ''
-                }).find('.h-request-right-field').show().end()
-            );
-            header.unwrap();
-            header.css({
-                position: '',
-                top: '',
-                width: ''
-            });
-        }
-        $(window).unbind('.fix_request_header');
-    };
-
-    setTimeout(function () {
-        makeFixableRequestHeader();
-    }, 500);
-
     // 'Back to', 'prev' and 'next' links
-    (function() {
-        if ($.wa.helpdesk_controller.lastView) {
+    if ($.wa.helpdesk_controller.lastView && $.wa.helpdesk_controller.currentView !== 'split') {
+        (function() {
+            var hpaging = $('#hd-last-view').closest('.h-paging-top-wrapper');
+            hpaging.data('left', hpaging.offset().left);
+            hpaging.removeClass('hidden');
 
-            var link = $('.hd-last-view');
-            var hblock = link.closest('.block');
+            var link = $('#hd-last-view');
+            var hpaging = link.closest('.h-paging-top-wrapper');
 
             if ($.wa.helpdesk_controller.lastView.title) {
-                link.removeClass('hidden').attr('href', $.wa.helpdesk_controller.lastView.hash || '#/');
-                link.children('span').text($.wa.helpdesk_controller.lastView.title);
-                hblock.show();
+                link.attr('href', $.wa.helpdesk_controller.lastView.hash || '#/');
+                link.find('.h-paging-top-title').text($.wa.helpdesk_controller.lastView.title);
             }
 
             if ($.wa.helpdesk_controller.lastView.ids) {
                 var ids = $.wa.helpdesk_controller.lastView.ids;
                 var i = $.inArray('{$request.id}', ids);
                 if (i >= 0) {
-                    var paging = hblock.find('.paging').show();
-                    ids[i-1] && paging.find('.prev').show().attr('href', '#/request/'+ids[i-1]);
-                    ids[i+1] && paging.find('.next').show().attr('href', '#/request/'+ids[i+1]);
+                    var paging = hpaging.find('.h-paging-top').show();
+                    ids[i-1] && paging.find('.prev').removeClass('hidden').attr('href', '#/request/'+ids[i-1]);
+                    ids[i+1] && paging.find('.next').removeClass('hidden').attr('href', '#/request/'+ids[i+1]);
                     paging.find('.index-total').text($.wa.helpdesk_controller.lastView.count);
                     paging.find('.index-current').text($.wa.helpdesk_controller.lastView.offset + i + 1);
-                    hblock.show();
 
                     var h;
                     $(document).on('keyup', h = function(e) {
@@ -711,8 +597,8 @@
                     });
                 }
             }
-        }
-    })();
+        })();
+    }
 
     // Ignore backspace on this page if action form is open.
     // Going back to previous page by accidently clicking backspace is a common misclick
@@ -731,25 +617,27 @@
     })();*/
 
     // action buttons click handler
-    $('.ticket-buttons input').click(function() {
+    $('.ticket-buttons :submit').on('click', function() {
         var self = $(this);
-        self.after('<i class="icon16 loading"></i>');
+        var submitWithSpinner = $.wa.helpers.createLoadingSubmit(self);
+        submitWithSpinner.show();
         $.get('?module=backend&action=actionForm', { wfa: self.attr('name'), id: {$request.id}}, function(response) {
-            self.parent().find('.loading').remove();
             $('.ticket-buttons').hide();
             $('#action-form-wrapper').empty().html(response).show();
+            submitWithSpinner.hide();
             //$.scrollTo('#action-form-wrapper');
         });
     });
 
     // show/hide blockquotes
-    var toggle_quote = $('<div class="show-quote">- [`Display original message`] -</div>').click(function () {
+    var toggle_quote_show = '<i class="fas fa-angle-right"></i> [`Display original message`]';
+    var toggle_quote = $('<div class="show-quote">'+toggle_quote_show+'</div>').click(function () {
         if ($(this).hasClass('open')) {
             $(this).next().hide();
-            $(this).html('- [`Display original message`] -').removeClass('open');
+            $(this).html('<i class="fas fa-angle-right"></i> [`Display original message`]').removeClass('open');
         } else {
             $(this).next().show();
-            $(this).html('- [`Hide original message`] -').addClass('open');
+            $(this).html('<i class="fas fa-angle-down"></i> [`Hide original message`]').addClass('open');
         }
     });
     $("#ticket .text blockquote").each(function () {
@@ -759,15 +647,15 @@
 
     // Disable action buttons for several seconds when action is performed
     // to prevent accidental double submit.
-    $('.button', $('#action-form-wrapper').parent()[0]).live('click', function() {
+    $('.button', $('#action-form-wrapper').parent()[0]).on('click', function() {
         var button = $(this);
         setTimeout(function() {
             if (button.is(':disabled')) {
                 return;
             }
-            button.attr('disabled', true);
+            button.prop('disabled', true);
             setTimeout(function() {
-                button.attr('disabled', false);
+                button.prop('disabled', false);
             }, 3000);
         }, 1);
     });
@@ -798,7 +686,7 @@
                     find('.reload-the-page a').attr('href', 'javascript:void(0)').click(function() { $.wa.helpdesk_controller.redispatch(); return false; });
 
                 // Disable request buttons
-                $('.ticket-buttons input.button').attr('disabled', true);
+                $('.ticket-buttons .button').prop('disabled', true);
 
                 return;
             }
@@ -824,6 +712,7 @@
         // Mark as read/unread
         ul.find('.mark-as-read, .mark-as-unread').click(function() {
             var is_unread = $(this).hasClass('mark-as-unread');
+            $.wa.helpdesk_controller.showLoading();
             $.post('?module=requests&action=unread', {
                 ids: {$request.id},
                 status: is_unread ? '1' : ''
@@ -832,41 +721,51 @@
                 $.wa.helpdesk_controller.updateUnreadCount(r.data.unread_count || 0);
                 request_name.toggleClass('highlighted', !!is_unread);
                 updateVisibility();
+                $.wa.helpdesk_controller.hideLoading();
             }, 'json');
         });
 
         // Follow/unfollow
         ul.find('.set-follow, .unset-follow').click(function() {
             var post = function() {
-                var status = follow_icon.is(':visible') ? 0 : 1;
+                $.wa.helpdesk_controller.showLoading();
+                var status = follow_icon.data('visible') ? 0 : 1;
                 $.post('?module=requests&action=follow', {
                     ids: {$request.id},
                     status: status,
                     follow_not_show_message: follow_not_show_message
                 }, function(r) {
-                    $.wa.helpdesk_controller.updateFollowCount(r.data.follow_count || 0);
-                    if (status) {
-                        follow_icon.show();
+                    if (r.status === 'ok') {
+                        $.wa.helpdesk_controller.updateFollowCount(r.data.follow_count || 0);
+                        if (status) {
+                            follow_icon
+                            .data('visible', '1')
+                            .show();
+                        } else {
+                            follow_icon
+                            .data('visible', '')
+                            .hide();
+                        }
+                        updateVisibility();
+                        $.wa.helpdesk_controller.hideLoading();
                     } else {
-                        follow_icon.hide();
+                        $.wa.helpdesk_controller.abortLoading();
                     }
-                    updateVisibility();
                 }, 'json');
             };
             if ($(this).hasClass('set-follow') && !follow_not_show_message) {
-                var d = $('<div><h1>[`“Follow” mark`] <i class="icon16 binocular" style="margin-top:8px;"></i></h1><p>[`After you set the “Follow” mark, the next time someone performs an action with this request it will appear as “Unread” for you and you will receive email notification about this action. So you will be able to follow all further activity related to this request.`]</p>' +
-                        '<p><label><input type="checkbox"> ' + "[`Don't show this message anymore`]" + '</label></p>' +
-            '</div>').waDialog({
-                    width: 500,
-                    height: 250,
-                    'min-height': 230,
-                    buttons: $('<div><input type="submit" class="button green" value="[`Set mark`]"> [`or`] <a href="javascript:void(0);" class="cancel">[`cancel`]</a></div>'),
-                    onSubmit: function() {
-                        var form = $(this);
-                        follow_not_show_message = form.find('input[type=checkbox]').attr('checked');
-                        post();
-                        d.trigger('close');
-                        return false;
+                $.waDialog({
+                    header: $('<h1 />').html('[`“Follow” mark`] <i class="fas fa-binoculars text-dark-gray"></i>'),
+                    content: $('<div />').html('<p>[`After you set the “Follow” mark, the next time someone performs an action with this request it will appear as “Unread” for you and you will receive email notification about this action. So you will be able to follow all further activity related to this request.`]</p>' +
+                                '<p><label><input type="checkbox"> ' + "[`Don't show this message anymore`]" + '</label></p>'),
+                    footer: $('<input type="submit" class="button" value="[`Set mark`]"><button type="button" class="button light-gray js-close-dialog">[`Cancel`]</button>'),
+                    onOpen: function ($d, instance) {
+                        $d.on('click', ':submit', function () {
+                            follow_not_show_message = $d.find('input[type=checkbox]').prop('checked');
+                            post();
+                            instance.close();
+                            return false;
+                        })
                     }
                 });
             } else {
@@ -885,7 +784,7 @@
                 ul.find('.mark-as-read').parent().hide();
                 ul.find('.mark-as-unread').parent().show();
             }
-            if (follow_icon.is(':visible')) {
+            if (follow_icon.data('visible')) {
                 ul.find('.unset-follow').parent().show();
                 ul.find('.set-follow').parent().hide();
             } else {
@@ -897,14 +796,21 @@
         {if $is_admin}
             // Deletion
             ul.find('.delete-request').click(function() {
-                if (!confirm("[`Are you sure to remove this request from database completely?`]")) {
-                    return;
-                }
-
-                $.wa.helpdesk_controller.showLoading();
-                $.post('?module=requests&action=delete', { ids: "{$request.id}" }, function(r) {
-                    window.location.hash = '';
-                }, 'json');
+                $.waDialog.confirm({
+                    title: "[`Are you sure to remove this request from database completely?`]",
+                    success_button_title: $_('Delete'),
+                    success_button_class: 'danger',
+                    cancel_button_title: $_('Cancel'),
+                    cancel_button_class: 'light-gray',
+                    onSuccess: function(d) {
+                        const submit_loading = $.wa.helpers.createLoadingSubmit(d.$body.find('.js-success-action')).show();
+                        $.post('?module=requests&action=delete', { ids: "{$request.id}" }, function(r) {
+                            submit_loading.hide();
+                            window.location.hash = '';
+                            $.wa.helpdesk_controller.reloadSidebar();
+                        }, 'json');
+                    }
+                });
             });
 
             // Non-workflow assignment
@@ -943,7 +849,6 @@
         (function() {
             var $contact_container = $('#h-contact-info'),
                 $image = $('.request-header .image'),
-                $loading = $('<i class="icon16 loading" style="margin: 0 5px;"></i>'),
                 $details_contact_name = $('.request-header .profile .details a[data-contact-id]'),
                 $contact_tabs = $('.request-header .profile .contact-tabs'),
                 $details = $('.request-header .profile .details');
@@ -966,8 +871,11 @@
                     return;
                 }
 
-                $this.after($loading);
-                $.get('{$wa_backend_url}contacts/?module=contacts&action=info', {
+                $.ajax({
+                    type: 'GET',
+                    url: '{$wa_backend_url}contacts/?module=contacts&new_ui=1&action=info',
+                    cache: false,
+                    data: {
                         id: contact_id,
                         no_backlink: 1,
                         no_switchtab: 1,
@@ -976,11 +884,11 @@
                         no_delete: 1,
                         tab: tab_id || ''
                     },
-                    function(html) {
+                    success: function(html) {
                         $contact_container.html(
-                                '<a class="killer" href="javascript:void(0);">' +
-                                '<i class="icon16 close"></i>' +
-                                '</a>'
+                            '<a class="killer button large light-gray circle" href="javascript:void(0);">' +
+                                '<i class="fas fa-times large"></i>' +
+                            '</a>'
                         );
                         $contact_container.off('click', '.killer').on('click', '.killer', function() {
                             hideContactInfo(contact_id);
@@ -993,7 +901,7 @@
 
                         showContactInfo(contact_id);
                     }
-                );
+                });
 
                 return false;
             });
@@ -1013,17 +921,6 @@
                     left: 0,
                     right: 0
                 }).slideDown(delay, function() {
-                    $loading.remove();
-
-                    // there some bugs without set-timeout.
-                    // It is javascript indeed, so relax
-                    setTimeout(function () {
-                        unmakeFixableRequestHeader();
-                        setTimeout(function() {
-                            makeFixableContactInfo();
-                        }, 100);
-                    }, 0);
-
                     $(window).bind('keydown.helpdesk-contact-info', function(e) {
                         if (e.keyCode == 27) {    // Ecs
                             hideContactInfo();
@@ -1039,7 +936,11 @@
                 $contact_tabs.fadeIn(delay);
 
                 if (contact_id) {
-                    $('.contact-tabs').load('?action=contactTabs&id=' + contact_id);
+                    $.get('?action=contactTabs&id=' + contact_id, function (r) {
+                        if (r) {
+                            $('.contact-tabs').replaceWith(r);
+                        }
+                    });
                 }
 
                 $(window).unbind('keydown.helpdesk-contact-info');
@@ -1053,15 +954,6 @@
                         $details.css({
                             marginLeft: ''
                         });
-
-                        // there some bugs without set-timeout.
-                        // It is javascript indeed, so relax
-                        setTimeout(function () {
-                            unmakeFixableContactInfo();
-                            setTimeout(function () {
-                                makeFixableRequestHeader();
-                            }, 100)
-                        }, 0);
                     });
             }
         })();
@@ -1078,11 +970,19 @@
             old_name = $input_name.val(),
             dialog = null;
 
+        $.wa.helpers.watchChangeForm($form);
         var save = function() {
+            if (!$save.hasClass('yellow')) {
+                $inputs.hide();
+                $editable.show();
+                return;
+            }
+            const loading = $.wa.helpers.createLoadingSubmit($save).show();
             $.post('?module=requests&action=changeSummary', {
                 'id': '{$request.id}',
                 'summary': $form.find('[name="theme"]').val(),
-            }, function(data){
+            }, function(data) {
+                loading.hide();
                 if (data.status === 'ok') {
                     $.wa.helpdesk_controller.redispatch();
                 }
@@ -1092,7 +992,7 @@
         var setname = function(name) {
             $input_name.val(name);
             $inputs.hide();
-            $editable.show(); // .find('h1').html(name + '<i class="icon16 edit" data="edit"></i>');
+            $editable.show();
         };
 
         var discard = function() {
@@ -1144,77 +1044,116 @@
         });
     });
 
-    {if $all_tags}
-        var openAllTagsDialog = function() {
-            var tagsinput = $('#h-request-tags-input');
-            $('#h-all-tags-dialog').waDialog({
-                onSubmit: function(d) {
-                    var tags = $(this).find('input[name="tag"]:checked').map(function() {
-                        return $(this).val();
-                    }).toArray();
-                    tagsinput.importTags(tags.join(','));
-                    $.post('?module=requests&action=tagSave&set=1', {
-                        tag: tags,
-                        request_id: {$request.id}
-                    });
-                    d.trigger('close');
-                    return false;
-                }
-            });
-        };
-    {/if}
+    var $request_tags_list = $('#h-tag-list');
 
-    $('#h-request-tags-input').tagsInput({
-        height: 80,
-        width: 190,
+    $request_tags_list.on('click', '.h-remove-tag', function (e) {
+        e.preventDefault();
+        var $item = $(this).closest('.h-tag-item');
 
-        {if $can_create_tag}
-            autocomplete_url: '?module=requests&action=tagsAutocomplete',
-            defaultText: '[`Add tag`]',
-            onAddTag: function(tag) {
-                $.post('?module=requests&action=tagSave', {
-                    tag: tag,
-                    request_id: {$request.id}
-                });
-                $('#h-request-tags-input_tag').autocomplete('close');
-                $.wa.helpdesk_controller.reloadSidebar();
-            },
-            onRemoveTag: function(tag) {
-                $.post('?module=requests&action=tagDelete', {
-                    tag: tag,
-                    request_id: {$request.id}
-                });
-                $.wa.helpdesk_controller.reloadSidebar();
-            },
-            interactive: true
-        {else}
-            onRemoveTag: function(tag) {
-                $.post('?module=requests&action=tagDelete', {
-                    tag: tag,
-                    request_id: {$request.id}
-                });
-                $.wa.helpdesk_controller.reloadSidebar();
-            },
-            interactive: false
-        {/if}
-
+        $.post('?module=requests&action=tagDelete', {
+            tag: $item.find('.js-tag-text').text(),
+            request_id: {$request.id}
+        }, refreshSidebarAfterChangeTags).done(() => {
+            $item.remove();
+        })
     });
 
-    {if !$can_create_tag && $all_tags}
-        $('#h-request-tags-input_tagsinput').click(function() {
-            openAllTagsDialog();
-        });
-    {/if}
+    $('#h-all-tags-dropdown').waDropdown({
+        hover: false,
+        hide: false,
+        open: function(dropdown) {
+            var $form = dropdown.$menu;
+            var $tags_menu = $form.find('ul.tags > li');
 
-    {if $can_create_tag && $all_tags}
-        $('#h-request-tags-input_tagsinput').wrap('<div class="block not-padded tagsinput-wrapper" id="h-request-tags-input_tagsinput-wrapper" style="padding-bottom: 20px; width: 200px;"></div>');
-        $('#h-request-tags-input_tagsinput-wrapper').append(
-            $('<a class="h-all-tags-open small float-right no-underline hidden" href="javascript:void(0)" style="padding-top: 5px; padding-right: 2px;">[`All tags`]</a>')
-                .click(function() {
-                    openAllTagsDialog();
-                })
-        );
-    {/if}
+            var $request_tags_text = $request_tags_list.find('.h-tag-item .js-tag-text');
+            var exist_tags = Array.from($request_tags_text).map(t => t.innerText);
+            if (exist_tags.length) {
+                $tags_menu.each(function () {
+                    var $li = $(this);
+                    var tag = $li.find('.js-tag-text').text();
+                    if (exist_tags.includes(tag)) {
+                        $li.addClass('hidden');
+                    } else {
+                        $li.removeClass('hidden');
+                    }
+                });
+            }
+
+            $tags_menu.off('click').on('click', function () {
+                var $selected_li = $(this);
+                var tag = $selected_li.find('.js-tag-text').text();
+                var $new_tag = renderTag(tag, true);
+
+                var tags = $request_tags_list.find('.h-tag-item .js-tag-text').map(function() {
+                    return $(this).text();
+                }).toArray();
+                $.post('?module=requests&action=tagSave&set=1', {
+                    tag: tags,
+                    request_id: {$request.id}
+                }, refreshSidebarAfterChangeTags).done(() => {
+                    $selected_li.addClass('hidden');
+                    $new_tag.find('a').attr('href', '#/requests/tag_id:' + $selected_li.data('id'));
+                    $new_tag.removeClass('hidden');
+                }).fail(() => {
+                    $new_tag.remove();
+                });
+            });
+
+            {if $can_create_tag}
+            var $new_tag_input = $('.js-new-tag-input').val('');
+            $form.off("submit").on("submit", function(e) {
+                e.preventDefault();
+
+                var new_tag = $new_tag_input.val().trim();
+                if (new_tag && !exist_tags.includes(new_tag)) {
+                    $.post('?module=requests&action=tagSave', {
+                        tag: new_tag,
+                        request_id: {$request.id}
+                    }, refreshSidebarAfterChangeTags).done(() => {
+                        renderTag(new_tag);
+                        dropdown.hide();
+                    });
+                } else {
+                    dropdown.hide();
+                }
+            });
+            {/if}
+
+        }
+    });
+
+    function renderTag (value, hidden = false) {
+        var has_match = false;
+        $request_tags_list.find('.h-tag-item .js-tag-text').each(function () {
+            if (value.trim() === this.innerText.trim()) {
+                has_match = true;
+                return false;
+            }
+        });
+        if (has_match) {
+            return;
+        }
+
+        var $new_li = $(`
+            <li class="tag h-tag-item${ hidden ? ' hidden' : '' }" data-value="${ value }">
+                <a href="javascript:void(0)">
+                    <i class="fas fa-hashtag"></i>
+                    <span class="js-tag-text"></span>
+                    <span class="h-remove-tag"><i class="fas fa-times-circle"></i></span>
+                </a>
+            </li>
+        `);
+        $new_li.find('.js-tag-text').text(value);
+
+        var $last_tag = $request_tags_list.find('.h-tag-item:last');
+        if ($last_tag.length) {
+            $new_li.insertAfter($last_tag);
+        } else {
+            $request_tags_list.prepend($new_li);
+        }
+
+        return $new_li;
+    }
 
 
     $('.h-request-attachment-image').each(function() {
@@ -1222,10 +1161,10 @@
         var p = img.parent().attr('style', 'position: relative !important');
         p.append(
             $('<div>').attr('style', 'position: absolute !important').css({
-                right: 0,
-                top: '-18px'
-            }).append('<a href="javascript:void(0)" class="h-image-rotate" style="margin-right: 5px" data-direction="left" title="[`Rotate left`]"><i class="icon32 rotate-left"></i></a>')
-            .append('<a href="javascript:void(0)" class="h-image-rotate" data-direction="right" title="[`Rotate right`]"><i class="icon32 rotate-right"></i></a>')
+                right: '5px',
+                top: '-20px'
+            }).append('<a href="javascript:void(0)" class="h-image-rotate button circle" style="margin-right: 5px" data-direction="left" title="[`Rotate left`]"><i class="fas fa-undo-alt"></i></a>')
+            .append('<a href="javascript:void(0)" class="h-image-rotate button circle" data-direction="right" title="[`Rotate right`]"><i class="fas fa-redo-alt"></i></a>')
         );
     });
 
@@ -1245,5 +1184,10 @@
         }, 'json');
     });
 
+    function refreshSidebarAfterChangeTags (r) {
+        if (!$.isEmptyObject(r) && r.status === 'ok') {
+            $.wa.helpdesk_controller.reloadSidebar();
+        }
+    }
 
 })();</script>

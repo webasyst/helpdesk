@@ -1,0 +1,11 @@
+{if $fields}
+    <div class="field">
+        <div class="value"><h3>[`Additional request parameters:`]</h3></div>
+    </div>
+    {foreach $fields as $id => $name}
+        <div class="field">
+            <div class="name">{$name}</div>
+            <div class="value"><input type="text" name="{$id}"></div>
+        </div>
+    {/foreach}
+{/if}

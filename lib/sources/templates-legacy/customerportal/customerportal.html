@@ -1,0 +1,145 @@
+<style>
+input.error, textarea.error, select.error { border: 2px solid red; color: red; }
+.errormsg { display: block; font-size: 0.9em; font-weight: bold; font-style: italic; color: red; }
+.wa-form .wa-field .wa-value input[type="text"].large { min-width: 400px; }
+.wa-form .wa-field .wa-value textarea.large { min-width: 500px; min-height: 140px; }
+</style>
+
+<form id="{$uniqid}" action="{$action_url}" target="{$uniqid}-target" method="post" enctype="multipart/form-data" autocomplete="off">
+
+    <div class="wa-form request-form" style="width:100%;max-width:900px;">
+        <input type="hidden" name="source_id" value="{$source.id}">
+        {$wa->csrf()}
+
+        <div class="wa-field">
+            <div class="wa-name">[`Subject`]</div>
+            <div class="wa-value">
+                <input type="text" class="large" name="subject" value="" autocomplete="off">
+            </div>
+        </div>
+        <div class="wa-field">
+            <div class="wa-name">[`Text`]</div>
+            <div class="wa-value">
+                <textarea class="large" name="text"></textarea>
+            </div>
+        </div>
+        <div class="wa-field" id="attachments">
+            <div class="wa-name">
+                [`Attach:`]
+            </div>
+        </div>
+
+        <div class="wa-field">
+            <div class="wa-value">
+                <input type="submit" class="button green" value="[`Send`]">
+                <i class="icon16 loading" style="display:none"></i>
+            </div>
+        </div>
+    </div>
+
+</form>
+<iframe src="javascript:true" id="{$uniqid}-target" name="{$uniqid}-target" style="width:0;height:0;border:0px solid #fff;"></iframe>
+
+<script>
+(function() {
+    var form = $('#{$uniqid}');
+
+    // Submit controller
+    var rand;
+    form.submit(function() {
+
+        form.find('.loading').show();
+        form.find(':submit').prop('disabled', true);
+
+        // catch iframe load event when uploading finishes
+        var r = rand = Math.random();
+        $('iframe[name="{$uniqid}-target"]').one('load', function() {
+            if (r != rand) {
+                return;
+            }
+
+            // Make sure we'll show something even when bad things happen and we don't have any JSON.
+            var timeout = setTimeout(function() {
+                form.find('.loading').hide();
+                form.find('.error').removeClass('error');
+                form.find('.errormsg').remove();
+                var div = form.find(':submit').prop('disabled', false).parent().append(
+                    $('<em class="errormsg"></em>')
+                        .html("[`An error occurred while processing your request. Please try again later.`]")
+                );
+            }, 200);
+
+            // Delay with setTimeout() because iframe contents
+            // are not ready right away in some browsers.
+            var iframe = $(this);
+            setTimeout(function() {
+                if (r != rand) {
+                    return;
+                }
+                var json = iframe.contents().find("body").html();
+                if (json) {
+                    if (JSON && JSON.parse) {
+                        json = JSON.parse(json);
+                    } else {
+                        eval('json = ('+json+')');
+                    }
+                    if (json && json.errors) {
+                        form.find(':submit').prop('disabled', false);
+                        form.find('.loading').hide();
+                        for (var fld_name in json.errors) {
+                            if (json.errors.hasOwnProperty(fld_name)) {
+                                if (fld_name) {
+                                    var el = form.find('[name="'+fld_name+'"]');
+                                    if (el.length) {
+                                        el.addClass('error').parent().append($('<em class="errormsg"></em>').html(json.errors[fld_name]));
+                                        continue;
+                                    }
+                                }
+                                form.find(':submit').parent().append($('<em class="errormsg"></em>').html(json.errors[fld_name]));
+                            }
+                        }
+                    } else if (json && json.data) {
+                        window.location = "{$wa->getUrl('helpdesk/frontend/myRequest', ['id' => '%ID%'], true)}".replace('%ID%', json.data);
+                    }
+                    clearTimeout(timeout);
+                }
+            }, 100);
+        });
+
+        // allow form to submit via its target iframe
+        return true;
+    });
+
+    // Attachments controller
+    (function() {
+
+        addNewField();
+
+        // when user selects an attachment, add another field
+        $('.wa-value:last-child :file', $('#attachments')).die('change').live('change', function() {
+            $(this).parent().append('<a href="javascript:void(0)" class="small inline-link remove-attach"><i>'+"[`remove`]"+'</i></a>');
+            addNewField();
+        });
+
+        // attachment removal
+        $('a.remove-attach', $('#attachments')).die('click').live('click', function() {
+            $(this).parents('.wa-value.attach').remove();
+            return false;
+        });
+
+        // Adds new file input field for attachments
+        function addNewField() {
+            $('#attachments').append('<div class="wa-value attach"><input type="file" name="attachment[]"></div>');
+        }
+
+    })();
+
+    form.on('keyup change', '.error', function() {
+        $(this).removeClass('error').siblings('.errormsg').remove();
+    });
+
+    form.find('input:visible,textarea,select').focus();
+
+}).call({});
+</script>
+

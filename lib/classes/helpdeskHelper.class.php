@@ -148,12 +148,16 @@ class helpdeskHelper
 
     public static function getSourceIconUrl($source, $request = null)
     {
-        return wa()->getAppStaticUrl().'img/source-'.self::getSourceClass($source, $request).'.png';
+        $source_class = self::getSourceClass($source, $request);
+        return (helpdeskHelper::isLegacyUi()
+            ? wa()->getAppStaticUrl().'img/source-'.$source_class.'.png'
+            : $source_class
+        );
     }
 
     public static function getSourceIconColor($source, $request = null)
     {
-        switch(self::getSourceClass($source, $request)) {
+        switch(self::getSourceClass($source, $request, true)) {
             case 'email':
                 return '#3784d3';
             case 'backend':
@@ -167,21 +171,45 @@ class helpdeskHelper
         }
     }
 
-    public static function getSourceClass($source, $request = null)
+    public static function getSourceClass($source, $request = null, $force_legacy = false)
     {
+        $ui_legacy = wa('helpdesk')->whichUI() === '1.3' || $force_legacy;
         if ($source->type == 'email') {
-            return 'email';
+            return ($ui_legacy ? 'email' : 'fas fa-envelope text-blue');
         } elseif ($source->type == 'backend') {
-            return 'backend';
+            return ($ui_legacy ? 'backend' : 'fas fa-headset text-dark-gray');
         } elseif ($source->type == 'form') {
             if (ifset($request['creator_type']) == 'auth') {
-                return 'my';
+                return ($ui_legacy ? 'my' : 'fas fa-key text-yellow');
             } elseif (ifset($request['creator_type']) == 'backend') {
-                return 'backend';
+                return ($ui_legacy ? 'backend' : 'fas fa-headset text-dark-gray');
             }
-            return 'form'; // $request['creator_type'] == 'public' and other
+            // $request['creator_type'] == 'public' and other
+            return ($ui_legacy ? 'form' : 'fas fa-money-check h-text-green'); // or 'fas fa-list-alt' | 'fas fa-digital-tachograph'
         }
         return 'unknown';
+    }
+
+    public static function getSourceBgClass($source, $request = null)
+    {
+        if (!$source) {
+            return '';
+        }
+
+        if ($source->type == 'email') {
+            return 'bg-blue';
+        } elseif ($source->type == 'backend') {
+            return 'bg-dark-gray';
+        } elseif ($source->type == 'form') {
+            if (ifset($request['creator_type']) == 'auth') {
+                return  'bg-yellow';
+            } elseif (ifset($request['creator_type']) == 'backend') {
+                return 'bg-dark-gray';
+            }
+
+            return 'bg-green';
+        }
+        return 'bg-gray';
     }
 
     /**
@@ -669,7 +697,7 @@ class helpdeskHelper
 
     public static function getIcons()
     {
-        return array(
+        $keys = array(
             'folder',
             'notebook',
             'lock',
@@ -713,6 +741,56 @@ class helpdeskHelper
             'lifebuoy',
             'screen',
         );
+        if (self::isLegacyUi()) {
+            return $keys;
+        }
+
+        $values = array(
+            'fas fa-folder',
+            'fas fa-file-alt',
+            'fas fa-lock',
+            'fas fa-lock-open',
+            'fas fa-broom',
+            'fas fa-star',
+            'fas fa-rss', // fas fa-rss-square ||fas fa-rss : livejournal
+            'fas fa-address-card',
+            'fas fa-bolt',
+            'fas fa-lightbulb',
+            'fas fa-images',
+            'fas fa-chart-area',
+            'fas fa-book',
+            'fas fa-map-marker-alt',
+            'fas fa-camera',
+            'fas fa-bell',
+            'fas fa-paw',
+            'fas fa-anchor',
+            'fas fa-seedling',
+            'fas fa-car',
+            'fas fa-save',
+            'fas fa-cookie-bite',
+            'fas fa-radiation',
+            'fas fa-film',
+            'fas fa-bug',
+            'fas fa-clock',
+            'fas fa-coffee',
+            'fas fa-home',
+            'fab fa-apple',
+            'fas fa-suitcase',
+            'fas fa-guitar',
+            'far fa-smile',
+            'fas fa-futbol',
+            'fas fa-bullseye',
+            'fas fa-medal',
+            'fas fa-mobile-alt',
+            'fas fa-filter',
+            'fas fa-store',
+            'fas fa-basketball-ball',
+            'fas fa-pencil-alt',
+            'far fa-life-ring', // fas fa-life-ring || far fa-life-ring
+            'fas fa-clipboard-list', // fas fa-window-maximize || fas fa-clipboard-list
+        );
+
+        return array_combine($keys, $values);
     }
 
     /**
@@ -1117,5 +1195,21 @@ class helpdeskHelper
         return $res;
     }
 
-}
+    /**
+     * Is this UI version 1.3?
+     *
+     * @return boolean
+     */
+    public static function isLegacyUi()
+    {
+        return wa('helpdesk')->whichUI() === '1.3';
+    }
 
+    /**
+     * @return string '-legacy' or empty string
+     */
+    public static function getLegacyPrefix()
+    {
+        return (self::isLegacyUi() ? '-legacy' : '');
+    }
+}

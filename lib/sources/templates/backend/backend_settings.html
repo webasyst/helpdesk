@@ -1,6 +1,5 @@
 <form class="source-settings-form">
-    <p>[`Specify default values for new request.`]</p>
-    <div class="fields" style="width:100%;">
+    <div class="fields">
         <input type="hidden" name="id" value="{$source.id}">
         <input type="hidden" name="st" value="{$source.type}">
         <input type="hidden" name="workflow_id" value="{if $wf}{$wf->getId()}{/if}">
@@ -10,7 +9,7 @@
             <div class="field-group">
                 <div class="field">
                     <div class="value">
-                        <em class="errormsg">{$submit_errors['']|escape}</em>
+                        <div class="state-error-hint">{$submit_errors['']|escape}</div>
                     </div>
                 </div>
             </div>
@@ -19,7 +18,7 @@
         <div class="field">
             <div class="name">[`Assign to`]</div>
             <div class="value">
-                <select name="params[new_request_assign_contact_id]" class="equal-width">
+                <select name="params[new_request_assign_contact_id]">
                     <option value="0"></option>
                     {foreach $assignees as $contact_id => $name}
                         <option value="{$contact_id|escape}"{if $contact_id == $source->params->ifset('new_request_assign_contact_id')} selected{/if}>{$name|escape}</option>
@@ -37,8 +36,8 @@
                         {foreach $workflow_info['states'] as $state_info}
                             {$full_state_id = $workflow_info.id|cat:'@':$state_info.id}
                             <option value="{$full_state_id}" data-customer-portal="{if $state_info.customer_portal_name|default:''}1{else}0{/if}"
-                                                 {if !empty($source->params->new_request_state_id) && $source->params->new_request_state_id == $full_state_id}selected="selected"{/if}
-                                             >
+                                {if !empty($source->params->new_request_state_id) && $source->params->new_request_state_id == $full_state_id}selected="selected"{/if}
+                            >
                                 {if $all_states_count > 1}{$workflow_info.name|escape}&mdash;{/if}{$state_info.name|escape}
                             </option>
                         {/foreach}
@@ -50,49 +49,47 @@
         <div class="field">
             <div class="name h-section">[`Messages`]</div>
 
-            <div class="value messages-wrapper" style="margin-top: 10px">
+            <div class="value messages-wrapper">
 
                 {if !empty($messages)}
-
                     {foreach $messages as $i => $m}
-
-                        <div class="one-message email-template-editor"><div class="fields width100px">
-                            <div class="expandable expanded">
-                                <label class="expandable-legend">
-                                    <input type="checkbox" class="remove-message-checkbox" checked>
-                                    [`Send an email message`]
-                                </label>
-                                <div class="editor-wrapper" data-i="{$i}">
-                                    {include file="templates/actions/editor/email_template_editor.html"
-                                        input_name="params[messages][{$i}][tmpl]"
-                                        variables=$receipt_template_vars
-                                        template=ifset($m.tmpl)
-                                        to_name="params[messages][{$i}][to]"
-                                        to_value=ifset($m.to)
-                                        sourcefrom_name="params[messages][{$i}][sourcefrom]"
-                                        sourcefrom_set=ifset($m.sourcefrom)}
+                        <div class="one-message email-template-editor">
+                            <div class="fields">
+                                <div class="field-group expandable expanded">
+                                    <label class="expandable-legend">
+                                        <input type="checkbox" class="remove-message-checkbox" checked>
+                                        [`Send an email message`]
+                                    </label>
+                                    <div class="editor-wrapper custom-pt-20" data-i="{$i}">
+                                        {include file="templates/actions/editor/email_template_editor.html"
+                                            input_name="params[messages][{$i}][tmpl]"
+                                            variables=$receipt_template_vars
+                                            template=ifset($m.tmpl)
+                                            to_name="params[messages][{$i}][to]"
+                                            to_value=ifset($m.to)
+                                            sourcefrom_name="params[messages][{$i}][sourcefrom]"
+                                            sourcefrom_set=ifset($m.sourcefrom)}
+                                    </div>
                                 </div>
                             </div>
-                        </div><div class="clear-left"></div></div>
-
+                        </div>
                     {/foreach}
-
                 {/if}
 
-                <div class="one-message hidden template email-template-editor"><div class="fields width100px">
+                <div class="one-message hidden template email-template-editor"><div class="fields">
                     <div class="field-group expandable expanded">
                         <label class="expandable-legend">
                             <input type="checkbox" class="remove-message-checkbox" checked>
                             [`Send an email message`]
                         </label>
-                        <div class="editor-wrapper" style="min-width:530px;">
-                            <div class="block"><i class="icon16 loading"></i></div>
+                        <div class="editor-wrapper custom-pt-20" style="min-width:530px;">
+                            <div class="box align-center"><i class="spinner custom-p-4"></i></div>
                         </div>
                     </div>
-                </div><div class="clear-left"></div></div>
+                </div></div>
 
-                <div class="fields width100px">
-                    <div class="field" style="margin-top: -5px; margin-left: -3px;">
+                <div class="fields">
+                    <div class="field">
                         <label>
                             <input type="checkbox" class="add-message-checkbox">
                             <span class="when-no-messages">
@@ -116,7 +113,7 @@
     {* Validation errors *}
     {foreach $submit_errors as $field_name => $e}
         {if $field_name !== ''}
-            form.find('[name="{$field_name}"]').addClass('error').parent().append($('<em class="errormsg"></em>').text("{$e}"));
+            form.find('[name="{$field_name}"]').addClass('state-error').parent().append($('<div class="state-error-hint"></div>').text("{$e}"));
         {/if}
     {/foreach}
 
@@ -176,4 +173,3 @@
     })();
 
 })();</script>
-
