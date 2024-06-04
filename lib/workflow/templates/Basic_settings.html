@@ -127,22 +127,22 @@
                 <label class="radio">
                     <input type="radio" name="customer_portal" value=""{if empty($options.client_visible)} checked{/if}>
                     [`Not available`]
-                    <br><span class="hint">[`Clients do not see any information associated with this action in their Customer Portal`]</span>
+                    <br><span class="hint">[`Clients cannot see any information associated with this action in their Customer Portal.`]</span>
                 </label>
                 <label class="radio">
                     <input type="radio" name="customer_portal" value="visible_all"{if !empty($options.client_visible) && empty($options.client_triggerable)} checked{/if}>
                     [`Available for viewing only`]
-                    <br><span class="hint">[`Clients can see this action record and it's description (except assignments info) in their Customer Portal`]</span>
+                    <br><span class="hint">[`Clients can see information about this action in their Customer Portal, except for names of assigned users.`]</span>
                 </label>
                 <label class="radio">
                     <input type="radio" name="customer_portal" value="triggerable_visible_own"{if ifempty($options.client_visible) != 'all' && !empty($options.client_triggerable)} checked{/if}>
                     [`Available for execution only`]
-                    <br><span class="hint">[`Customer can perform the action but cannot see the same actions performed by other users`]</span>
+                    <br><span class="hint">[`A client can perform this action but cannot see actions of this type performed by other clients.`]</span>
                 </label>
                 <label class="radio">
                     <input type="radio" name="customer_portal" value="triggerable_visible_all"{if ifempty($options.client_visible) == 'all' && !empty($options.client_triggerable)} checked{/if}>
                     [`Available for viewing and execution`]
-                    <br><span class="hint">[`Clients can perform this action from their Customer Portal (except assignments if they are set up for the action)`]</span>
+                    <br><span class="hint">[`Clients can perform this action in their Customer Portal but cannot assign users even if it is permitted by action setup.`]</span>
                 </label>
             </div>
         </div>
@@ -188,7 +188,7 @@
                                 <div class="expandable expanded">
                                     <label class="expandable-legend">
                                         <input type="checkbox" class="remove-message-checkbox" checked>
-                                        [`Send email message`]
+                                        [`Send an email message`]
                                     </label>
 
                                     <div class="editor-wrapper" data-i="{$i}">
@@ -214,7 +214,7 @@
                         <div class="field-group expandable expanded">
                             <label class="expandable-legend">
                                 <input type="checkbox" class="remove-message-checkbox" checked>
-                                [`Send email message`]
+                                [`Send an email message`]
                             </label>
                             <div class="editor-wrapper" style="min-width:530px;">
                                 <div class="block"><i class="icon16 loading"></i></div>
@@ -227,7 +227,7 @@
                             <label>
                                 <input type="checkbox" class="add-message-checkbox">
                                 <span class="when-no-messages">
-                                    [`Send email message`]
+                                    [`Send an email message`]
                                 </span>
                                 <span class="when-messages">
                                     [`Send another email message`]

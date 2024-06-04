@@ -21,7 +21,7 @@
 
         {foreach $allowed_fields_order as $field_name}
             {if $field_name === 'show_textarea'}
-                <div class="wa-field">
+                <div class="wa-field custom-mb-8">
                     <textarea id="{$action_id}-comment" name="comment">{$textarea_default_text|escape}</textarea>
                 </div>
             {else if $field_name === 'allow_attachments'}
@@ -114,16 +114,16 @@
 
         <div class="wa-field">
             {if empty($errors.state_changed)}
-                <div class="top-spaced wa-value buttons" style="margin-left: 0px;">
+                <div class="top-spaced wa-value buttons flexbox middle" style="margin-left: 0px;">
                     {$action->getButton()}
                     [`or`] <a href="#" class="cancel-btn">[`cancel`]</a>
                 </div>
                 {if $wa->getEnv() == 'backend'}
                     <div class="top-spaced wa-value" style="margin-left: 0px;">
                         {if $action->getOption('client_visible') == 'all'}
-                            <i class="icon16 exclamation"></i><span class="hint">[`Clients can see this action record and it's description (except assignments info) in their Customer Portal`]</span>
+                            <i class="icon16 exclamation"></i><span class="hint">[`Clients can see information about this action in their Customer Portal, except for names of assigned users.`]</span>
                         {else}
-                            <span class="hint">[`Clients do not see any information associated with this action in their Customer Portal`]</span>
+                            <span class="hint">[`Clients cannot see any information associated with this action in their Customer Portal.`]</span>
                         {/if}
                     </div>
                 {/if}
@@ -293,9 +293,14 @@
     {/if}
 
     {if $action->getOption('allow_attachments')}
+        const is_wa2 = $('html').hasClass('wa2');
         // Adds new file input field for attachments
         var addNewField = function() {
-            $('#{$action_id}-attachments').append('<div class="wa-value attach"><input type="file" name="attachment[]"></div>');
+            if (is_wa2) {
+                $('#{$action_id}-attachments').append('<div class="wa-value attach upload custom-mt-8" style="width:auto;"><label class="link"><i class="fas fa-file-upload custom-mr-4"></i><span>[`Upload`]</span><input type="file" name="attachment[]"></label></div>');
+            }else{
+                $('#{$action_id}-attachments').append('<div class="wa-value attach"><input type="file" name="attachment[]"></div>');
+            }
         };
         addNewField();
 
@@ -327,4 +332,3 @@
     {/if}
 
 }, 1);</script>
-

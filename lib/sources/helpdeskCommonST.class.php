@@ -793,22 +793,21 @@ abstract class helpdeskCommonST extends helpdeskSourceType
             case 'antispam_mail_template':
                 if (wa()->getLocale() == 'ru_RU') {
                     return
-                        'Пожалуйста, подтвердите отправку запроса'.
+                        'Подтвердите отправку сообщения'.
                         "{SEPARATOR}".
-                        "<p>Пожалуйста, подтвердите ваш запрос. Для этого просто перейдите по ссылке:<br>".
+                        "<p>Пожалуйста, подтвердите отправку вашего сообщения. Для этого просто перейдите по ссылке:<br>".
                         '<a href="{REQUEST_CONFIRM_URL}">{REQUEST_CONFIRM_URL}</a></p>'.
-                        "<p>ВНИМАНИЕ: Ваш запрос будет принят к обработке только после подтверждения.<br>".
-                        'Подтверждение необходимо в связи с большим количеством спама, приходящим на наш адрес. После того, как вы подтвердите запрос, ваш электронный адрес будет добавлен в нашу базу данных и все последующие запросы с этого адреса будут автоматически приниматься к обработке.</p>'.
+                        "<p>ВНИМАНИЕ: ваше сообщение будет принято к обработке только после подтверждения с помощью ссылки выше.</p>".
+                        '<p><em>Подтверждение необходимо для защиты от спама, потому что вы не были авторизованы в личном кабинете клиента во время отправки сообщения.</em></p>'.
                         "<p>Спасибо!</p>";
                 } else {
                     return
-                        'Please confirm your request'.
+                        'Please confirm your message'.
                         "{SEPARATOR}".
-                        '<p>We have just received a request from your email address.</p>'.
-                        "<p>To confirm your request, please follow this link:<br>".
+                        "<p>Please confirm the sending of your message. To do so, simply follow this link:<br>".
                         '<a href="{REQUEST_CONFIRM_URL}">{REQUEST_CONFIRM_URL}</a></p>'.
-                        "<p>NOTE: Your request will be accepted only after confirmation.<br>".
-                        'Confirmation is required due to high volume of SPAM we receive. This is one-time action. After you confirm, we will add your email address to our contact database, and all future requests from you will be automatically accepted and queued into our customer support tracking system.</p>'.
+                        "<p>NOTE: your message will be accepted for processing only after the confirmation via the above link.</p>".
+                        '<p><em>The confirmation is required for the protection against SPAM because you were not signed into your customer account when sending us a message.</em></p>'.
                         "<p>Thank you!</p>";
                 }
         }

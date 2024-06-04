@@ -53,7 +53,7 @@ select { min-width: 80px; }
 
         <div class="field">
             <p>
-                [`This source enables you to receive new requests via a web form published in the frontend of any Webasyst app or anywhere on the Internet. Also this form can be used to add requests directly from your backend ("New request" button), or from your clients customer portals.`]
+                [`This source enables you to receive new requests via a web form published in the frontend of any Webasyst app or anywhere on the Internet. Also this form can be used to add requests directly from your backend (“New request” button), or from your clients customer portals.`]
             </p>
             <p>
                 [`Set up the appearance of the web form as it should be displayed on your website.`]
@@ -111,7 +111,7 @@ select { min-width: 80px; }
                                 <input type="hidden" name="params[force_auth]" value="">
                                 <input type="checkbox" name="params[force_auth]" value="1"{if !empty($source->params->force_auth)} checked{/if}>
                                 <span>[`Require customers to be logged in to use this form.`]</span>
-                                <br><span class="hint">[`Form will only be usable on your domains with Helpdesk customer portal set up.`]</span>
+                                <br><span class="hint">[`The form should be used only on websites with the Helpdesk customer portal set up.`]</span>
                             </label>
                         </div>
                         <div class="field large-hint top-padded js-publish-on-external-site-field">
@@ -257,7 +257,7 @@ select { min-width: 80px; }
                             <div class="expandable expanded">
                                 <label class="expandable-legend">
                                     <input type="checkbox" class="remove-message-checkbox" checked>
-                                    [`Send email message`]
+                                    [`Send an email message`]
                                 </label>
                                 <div class="editor-wrapper" data-i="{$i}">
                                     {include file="templates/actions/editor/email_template_editor.html"
@@ -284,7 +284,7 @@ select { min-width: 80px; }
                         <div class="field-group expandable expanded">
                             <label class="expandable-legend">
                                 <input type="checkbox" class="remove-message-checkbox" checked>
-                                [`Send email message`]
+                                [`Send an email message`]
                             </label>
                             <div class="editor-wrapper" style="min-width:530px;">
                                 <div class="block"><i class="icon16 loading"></i></div>
@@ -299,7 +299,7 @@ select { min-width: 80px; }
                         <label>
                             <input type="checkbox" class="add-message-checkbox">
                             <span class="when-no-messages">
-                                [`Send email message`]
+                                [`Send an email message`]
                             </span>
                             <span class="when-messages">
                                 [`Send another email message`]

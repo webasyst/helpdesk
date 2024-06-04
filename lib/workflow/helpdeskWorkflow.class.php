@@ -611,7 +611,7 @@ class helpdeskWorkflow extends waWorkflow
             $id = '@{' . $field_id . '}';
             if ($with_html) {
                 $html = "<p>{$field_info['name']}:<br>";
-                
+
                 $elems = array();
                 if ($field_info['type'] === 'Select') {
                     foreach ($field_info['options'] as $val => $name) {
@@ -627,7 +627,7 @@ class helpdeskWorkflow extends waWorkflow
                 $res[$id]['name'] = $field_name;
                 $res[$id]['html'] = $html;
                 $res[$id]['field_id'] = $field_id;
-                $res[$id]['description'] = sprintf(_w('Available values for "%s"'), $field_name);
+                $res[$id]['description'] = sprintf(_w('Available values for “%s” field'), $field_name);
             } else {
                 $res[$id] = $field_name;
             }

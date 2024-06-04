@@ -458,7 +458,7 @@
 <script>
 
 (function() { "use strict";
-    
+
     // Helper to tell if current page has been changed.
     // $.wa.helpdesk_controller.random is changed every page load by .loadHTML() and .loadGrid()
     var wa_controller_page_random = $.wa.helpdesk_controller.random;
@@ -854,7 +854,7 @@
                 }, 'json');
             };
             if ($(this).hasClass('set-follow') && !follow_not_show_message) {
-                var d = $('<div><h1>[`Follow mark`] <i class="icon16 binocular" style="margin-top:8px;"></i></h1><p>[`After you set "Follow" mark, next time someone performs an action with this request it will appear as "Unread" for you and you will receive email notification about this action. So you will be able to follow all further activity related to this request.`]</p>' +
+                var d = $('<div><h1>[`“Follow” mark`] <i class="icon16 binocular" style="margin-top:8px;"></i></h1><p>[`After you set the “Follow” mark, the next time someone performs an action with this request it will appear as “Unread” for you and you will receive email notification about this action. So you will be able to follow all further activity related to this request.`]</p>' +
                         '<p><label><input type="checkbox"> ' + "[`Don't show this message anymore`]" + '</label></p>' +
             '</div>').waDialog({
                     width: 500,
@@ -988,7 +988,7 @@
                         try {
                             $contact_container.append(html);
                         } catch (e) {
-                            
+
                         }
 
                         showContactInfo(contact_id);

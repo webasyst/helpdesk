@@ -1,7 +1,7 @@
 <div class="block">
 
     <div class="block">
-        <h1>[`Customer portal`]</h1>
+        <h1>[`Customer Portal`]</h1>
     </div>
 
     <div class="block">
@@ -124,8 +124,8 @@
                                                             options=[
                                                                 '' => "[`Not available`]",
                                                                 'triggerable_visible_own' => "[`Only personal`]",
-                                                                'visible_all' => "[`All available for read only`]",
-                                                                'triggerable_visible_all' => "[`All available for read and action`]"
+                                                                'visible_all' => "[`Read-only`]",
+                                                                'triggerable_visible_all' => "[`Available for viewing and execution by clients`]"
                                                             ]
                                                             selected="{if $a->getOption('client_triggerable')}{if $a->getOption('client_visible') == 'all'}triggerable_visible_all{else}triggerable_visible_own{/if}{else if $a->getOption('client_visible')}visible_all{/if}"
                                                         }
@@ -137,10 +137,10 @@
                                 </tbody>
                             </table>
                             <div style="margin: 17px 0 0 420px;min-width:250px;background:white;">
-                                <p class="hint" style="margin-bottom:1em !important;"><strong>[`Not available`]</strong> — [`Clients do not see any information associated with this action in their Customer Portal`]</p>
-                                <p class="hint" style="margin-bottom:1em !important;"><strong>[`Only personal`]</strong> — [`Customer can perform the action but cannot see the same actions performed by other users`]</p>
-                                <p class="hint" style="margin-bottom:1em !important;"><strong>[`All available for read only`]</strong> — [`Clients can see this action record and it's description (except assignments info) in their Customer Portal`]</p>
-                                <p class="hint" style="margin-bottom:1em !important;"><strong>[`All available for read and action`]</strong> — [`Clients can perform this action from their Customer Portal (except assignments if they are set up for the action)`]</p>
+                                <p class="hint" style="margin-bottom:1em !important;"><strong>[`Not available`]</strong> — [`Clients cannot see any information associated with this action in their Customer Portal.`]</p>
+                                <p class="hint" style="margin-bottom:1em !important;"><strong>[`Only personal`]</strong> — [`A client can perform this action but cannot see actions of this type performed by other clients.`]</p>
+                                <p class="hint" style="margin-bottom:1em !important;"><strong>[`Read-only`]</strong> — [`Clients can see information about this action in their Customer Portal, except for names of assigned users.`]</p>
+                                <p class="hint" style="margin-bottom:1em !important;"><strong>[`Available for viewing and execution by clients`]</strong> — [`Clients can perform this action in their Customer Portal but cannot assign users even if it is permitted by action setup.`]</p>
                             </div>
                             <div class="clear-both"></div>
                         </div>

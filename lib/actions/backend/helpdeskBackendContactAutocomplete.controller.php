@@ -20,9 +20,10 @@ class helpdeskBackendContactAutocompleteController extends waController
         // The plan is: try queries one by one (starting with fast ones),
         // until we find 5 rows total.
         $sqls = array();
+        $fields = 'c.id, c.firstname, c.middlename, c.lastname, e.email, c.is_company, c.company, d.value AS phone, c.is_user';
 
         // Name starts with requested string
-        $sqls[] = "SELECT c.id, c.firstname, c.middlename, c.lastname, e.email, d.value AS phone, c.is_user
+        $sqls[] = "SELECT $fields
                    FROM wa_contact AS c
                        LEFT JOIN wa_contact_emails AS e
                            ON e.contact_id=c.id AND e.sort=0
@@ -37,7 +38,7 @@ class helpdeskBackendContactAutocompleteController extends waController
                    LIMIT {LIMIT}";
 
         // Email starts with requested string
-        $sqls[] = "SELECT c.id, c.firstname, c.middlename, c.lastname, e.email, d.value AS phone, c.is_user
+        $sqls[] = "SELECT $fields
                    FROM wa_contact AS c
                        JOIN wa_contact_emails AS e
                            ON e.contact_id=c.id
@@ -49,7 +50,7 @@ class helpdeskBackendContactAutocompleteController extends waController
 
         // Phone contains requested string
         if (preg_match('~^[wp0-9\-\+\#\*\(\)\. ]+$~', $term)) {
-            $sqls[] = "SELECT c.id, c.firstname, c.middlename, c.lastname, e.email, d.value as phone, c.is_user
+            $sqls[] = "SELECT $fields
                        FROM wa_contact AS c
                            JOIN wa_contact_data AS d
                                ON d.contact_id=c.id AND d.field='phone'
@@ -68,7 +69,7 @@ class helpdeskBackendContactAutocompleteController extends waController
             }
         }
         if ($conditions) {
-            $sqls[] = "SELECT c.id, c.firstname, c.middlename, c.lastname, e.email, d.value AS phone, c.is_user
+            $sqls[] = "SELECT $fields
                        FROM wa_contact AS c
                            LEFT JOIN wa_contact_emails AS e
                                ON e.contact_id=c.id AND e.sort=0
@@ -80,7 +81,7 @@ class helpdeskBackendContactAutocompleteController extends waController
         }
 
         // Email contains requested string
-        $sqls[] = "SELECT c.id, c.firstname, c.middlename, c.lastname, e.email, d.value AS phone, c.is_user
+        $sqls[] = "SELECT $fields
                    FROM wa_contact AS c
                        JOIN wa_contact_emails AS e
                            ON e.contact_id=c.id

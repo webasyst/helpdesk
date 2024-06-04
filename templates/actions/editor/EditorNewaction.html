@@ -10,7 +10,7 @@
                 {if $actions}
                     <p><label>
                         <input type="radio" name="new_or_existing" value="existing"{if ifempty($data.new_or_existing) != 'new'} checked{/if}>
-                        [`Add existing actions from other states, which are not used in the current state:`]
+                        [`Choose an existing action:`]
                     </label></p>
 
                     <ul class="menu-v with-icons" id="action-selector">
@@ -135,7 +135,7 @@
                 }));
             }
         });
-    
+
 })();</script>
 
 {else}

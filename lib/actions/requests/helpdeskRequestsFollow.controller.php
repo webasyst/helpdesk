@@ -16,17 +16,17 @@ class helpdeskRequestsFollowController extends helpdeskJsonController
         $status = waRequest::request('status');
         if ($status) {
             $fm->add($ids);
-            $message = _w('%d request has been marked as Follow', '%d requests have been marked as Follow', count($ids));
+            $message = _w('%d request has been marked as “Follow”', '%d requests have been marked as “Follow”', count($ids));
         } else {
             $fm->deleteByField('request_id', $ids);
-            $message = _w('%d request has been removed from the Follow list', '%d requests have been removed from the Follow list', count($ids));
+            $message = _w('%d request has been removed from the “Follow” list', '%d requests have been removed from the “Follow” list', count($ids));
         }
 
         $this->response = array(
             'follow_count' => $fm->countByContact(),
             'message' => $message
         );
-        
+
         if (waRequest::request('follow_not_show_message')) {
             wa()->getUser()->setSettings('helpdesk', 'follow_not_show_message', '1');
         } else {

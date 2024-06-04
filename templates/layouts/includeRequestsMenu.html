@@ -7,19 +7,19 @@
                 <li style="min-width:220px; margin-left: -15px;">
                     <a href="javascript:void(0);" class="inline-link h-action-with-selected-link"><b><i>[`Actions with selected`] (<span class="selected-count">0</span>)</i></b> <i class="icon10 darr-tiny"></i></a>
                     <ul class="menu-v">
-                    
+
                         {% if (o.filters_hash === 'unread') { %}
                             <li><a href="javascript:void(0)" class="requests-operation mass-mark-as-read"><i class="icon16 checkbox"></i>[`Mark as read`]</a></li>
                         {% } else { %}
                             <li><a href="javascript:void(0)" class="requests-operation mass-mark-as-unread"><i class="icon16 mark-unread"></i>[`Mark as unread`]</a></li>
                         {% } %}
-                    
+
                         {% if (o.filters_hash === 'follow') { %}
-                            <li><a href="javascript:void(0)" class="requests-operation mass-unmark-as-follow"><i class="icon16 checkbox"></i>[`Unmark as Follow`]</a></li>
+                            <li><a href="javascript:void(0)" class="requests-operation mass-unmark-as-follow"><i class="icon16 checkbox"></i>[`Unmark as “Follow”`]</a></li>
                         {% } else { %}
-                            <li><a href="javascript:void(0)" class="requests-operation mass-mark-as-follow"><i class="icon16 checkbox"></i>[`Mark as Follow`]</a></li>
+                            <li><a href="javascript:void(0)" class="requests-operation mass-mark-as-follow"><i class="icon16 checkbox"></i>[`Mark as “Follow”`]</a></li>
                         {% } %}
-                    
+
                         {% if (o.admin) { %}
                             <li><a href="javascript:void(0)" class="requests-operation mass-change-status"><i class="icon16 export"></i>[`Change status`]</a></li>
                             <li><a href="javascript:void(0)" class="requests-operation mass-change-assignment"><i class="icon16 user"></i>[`Change assignment`]</a></li>
@@ -40,6 +40,6 @@
                         <li><a href="javascript:void(0)" class="h-sort-link" data-order="!updated">[`recently updated on top`]</a></li>
                     </ul>
                 </li>
-            </ul>    
+            </ul>
     </script>
 {/literal}

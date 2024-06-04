@@ -149,12 +149,12 @@
                 <label class="radio">
                     <input type="radio" name="customer_portal" value=""{if empty($options.client_visible)} checked{/if}>
                     [`Not available`]
-                    <br><span class="hint">[`Clients do not see any information associated with this action in their Customer Portal`]</span>
+                    <br><span class="hint">[`Clients cannot see any information associated with this action in their Customer Portal.`]</span>
                 </label>
                 <label class="radio">
                     <input type="radio" name="customer_portal" value="visible_all"{if !empty($options.client_visible) && empty($options.client_triggerable)} checked{/if}>
                     [`Available for viewing only`]
-                    <br><span class="hint">[`Clients can see this action record and it's description (except assignments info) in their Customer Portal`]</span>
+                    <br><span class="hint">[`Clients can see information about this action in their Customer Portal, except for names of assigned users.`]</span>
                 </label>
             </div>
         </div>
@@ -200,7 +200,7 @@
                                 <div class="expandable expanded">
                                     <label class="expandable-legend">
                                         <input type="checkbox" class="remove-message-checkbox" checked>
-                                        [`Send email message`]
+                                        [`Send an email message`]
                                     </label>
 
                                     <div class="editor-wrapper" data-i="{$i}">
@@ -225,7 +225,7 @@
                             <div class="field-group expandable expanded">
                                 <label class="expandable-legend">
                                     <input type="checkbox" class="remove-message-checkbox" checked>
-                                    [`Send email message`]
+                                    [`Send an email message`]
                                 </label>
                                 <div class="editor-wrapper" style="min-width:530px;">
                                     <div class="block"><i class="icon16 loading"></i></div>
@@ -240,7 +240,7 @@
                             <label>
                                 <input type="checkbox" class="add-message-checkbox">
                                 <span class="when-no-messages">
-                                    [`Send email message`]
+                                    [`Send an email message`]
                                 </span>
                                 <span class="when-messages">
                                     [`Send another email message`]

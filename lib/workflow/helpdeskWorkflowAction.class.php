@@ -217,7 +217,7 @@ class helpdeskWorkflowAction extends waWorkflowAction
             if ($this->getOption('user_button_border_color')) {
                 $attrs = ' data-action-color="'.htmlspecialchars($this->getOption('user_button_border_color')).'"';
             }
-            return '<input type="submit" name="'.$this->getId().'" value="'.htmlspecialchars(waLocale::fromArray($this->getOption('user_button_value'))).'"'.$attrs.'>';
+            return '<input type="submit" class="button" name="'.$this->getId().'" value="'.htmlspecialchars(waLocale::fromArray($this->getOption('user_button_value'))).'"'.$attrs.'>';
         }
 
         return null;

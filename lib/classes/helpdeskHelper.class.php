@@ -1057,11 +1057,11 @@ class helpdeskHelper
             foreach ($fields as $field_id => $field) {
                 $str = '';
                 if ($prefix === 'CUSTOMER_') {
-                    $str = _w('Value of customer field "%s"');
+                    $str = _w('Value of customer field “%s”');
                 } elseif ($prefix === 'ACTOR_') {
-                    $str = _w('Value of actor field "%s"');
+                    $str = _w('Value of actor field “%s”');
                 } else {
-                    $str = _w('Value of assigned user field "%s"');
+                    $str = _w('Value of assigned user field “%s”');
                 }
                 $vars['{' . $prefix . strtoupper($field_id) . '}'] = sprintf($str, $field->getName());
             }

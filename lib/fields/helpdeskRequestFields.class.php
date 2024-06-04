@@ -76,7 +76,7 @@ class helpdeskRequestFields
         $vars = array();
         $all_fields = self::getFields();
         foreach ($all_fields as $field_id => $field) {
-            $vars['${' . $field_id . '}'] = sprintf(_w('Value of the field "%s"'), $field->getName());
+            $vars['${' . $field_id . '}'] = sprintf(_w('Value of the “%s” field'), $field->getName());
         }
         return $vars;
     }

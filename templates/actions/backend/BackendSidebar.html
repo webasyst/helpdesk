@@ -68,7 +68,7 @@
          *}
         <li class="s-search top-spaced">
             <form id="search-form" onsubmit="$.wa.helpdesk_controller.simpleSearch();return false">
-                <input id="search-text" type="search" class="search-input-only" value="" placeholder="[`search by request, name, or email`]">
+                <input id="search-text" type="search" class="search-input-only" value="" placeholder="[`request ID, name, or email`]">
                 <a href="javascript:void(0)" class="small no-underline float-right" id="hd-search-history-link" style="display:none;">[`History`]</a>
                 <a href="#/requests/search/" class="small no-underline">[`Advanced search`]</a>
             </form>
@@ -203,7 +203,7 @@
 
             {if !empty($specials)}
                 <a href="javascript:void(0)" class="inline-link small">
-                    <i class="icon10 add"></i> [`Add a filter`]<i class="icon10 darr-tiny"></i>
+                    <i class="icon10 add"></i> [`Add filter`]<i class="icon10 darr-tiny"></i>
                 </a>
                 <ul class="menu-v" id="h-special-filters">
                     {if !empty($all_requests_hide) && $admin}
@@ -221,7 +221,7 @@
                 </ul>
             {else}
                 <a href="#/requests/add_filter/" class="inline-link small h-add-filter">
-                    <i class="icon10 add"></i> [`Add a filter`]
+                    <i class="icon10 add"></i> [`Add filter`]
                 </a>
             {/if}
 
@@ -243,7 +243,7 @@
                 </li>
                 <li class="sidebar-customer-portal-settings-link">
                     <a href="#/settings/portal/">
-                        <i class="icon16 source-my"></i>[`Customer portal`]
+                        <i class="icon16 source-my"></i>[`Customer Portal`]
                     </a>
                 </li>
                 *}
@@ -276,7 +276,7 @@
                 {if $workflows}
                     <h5 class="heading" id="h-workflows-header">[`Workflows`]</h5>
                     <div class="block not-padded">
-                        <span class="hint">[`Sources, states and actions with requests are customized separately for every workflow.`]</span>
+                        <span class="hint">[`Sources, states, and actions are customized separately for each workflow.`]</span>
                         <ul class="menu-v compact" id="h-sidebar-workflow-list">
                             {foreach $workflows as $wid => $wname}
                                 <li data-workflow-id="{$wid}"><a href="#/settings/workflow/{$wid}">
@@ -355,7 +355,7 @@
                 $('#h-add-fiter-dialog').waDialog({
                     onLoad: function() {
                         var d = $(this);
-                        d.find('h1').html('[`Add a filter`] ' + '<span style="text-transform: uppercase">' + item.text() + '<span>');
+                        d.find('h1').html('[`Add filter`] ' + '<span style="text-transform: uppercase">' + item.text() + '<span>');
                         d.find('.h-default').attr('checked', true);
                     },
                     onSubmit: function(d) {

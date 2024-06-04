@@ -38,7 +38,7 @@ return array(
             'type' => 'radio_select',
             'items' => array(
                 0 => array(
-                    'name' => _w('With public frontend'),
+                    'name' => _w('With publicly available website pages'),
                     'description' => _w('<br>Includes Customer Portal') . $url_type_script,
                 ),
                 1 => array(

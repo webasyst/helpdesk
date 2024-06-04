@@ -487,9 +487,9 @@ $.wa.helpdesk_controller = {
                                 marginTop: 7
                             })
                             .click(function() {
-                                var d = $('<div><h1>' + $_('Follow mark') +
+                                var d = $('<div><h1>' + $_('“Follow” mark') +
                                         ' <i class="icon16 binocular" style="margin-top:8px;"></i></h1>' +
-                                            '<p>' + $_('After you set "Follow" mark, next time someone performs an action with this request it will appear as "Unread" for you and you will receive email notification about this action. So you will be able to follow all further activity related to this request.') +
+                                            '<p>' + $_('After you set the “Follow” mark, the next time someone performs an action with this request it will appear as “Unread” for you and you will receive email notification about this action. So you will be able to follow all further activity related to this request.') +
                                                 '</p></div>')
                                     .waDialog({
                                         width: 500,

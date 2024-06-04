@@ -84,7 +84,7 @@
                                 </ul>
                             </li>
                         </ul>
-                        <div class="hint hidden">[`Search requests that were added via selected sources`]</div>
+                        <div class="hint hidden">[`Search requests added via selected sources`]</div>
                     </div>
                 </div>
             </div>
@@ -121,7 +121,7 @@
                                         </ul>
                                     </li>
                                 </ul>
-                                <div class="hint hidden">[`Search requests that are currently in selected states`]</div>
+                                <div class="hint hidden">[`Search requests which are currently in selected states`]</div>
                             </div>
                         {else}
                             <div class="h-dialogable">
@@ -150,7 +150,7 @@
                                         </ul>
                                     </li>
                                 </ul>
-                                <div class="hint hidden">[`Search requests that are currently in selected states`]</div>
+                                <div class="hint hidden">[`Search requests which are currently in selected states`]</div>
                             </div>
                         {/if}
                     </div>
@@ -200,7 +200,7 @@
                                 </ul>
                             </li>
                         </ul>
-                        <div class="hint hidden">[`Search by users who performed actions with requests`]</div>
+                        <div class="hint hidden">[`Search by users who performed selected actions with requests`]</div>
                     </div>
                 </div>
             </div>
@@ -232,7 +232,7 @@
                                 </ul>
                             </li>
                         </ul>
-                        <div class="hint hidden">[`Search requests that were ever subjected to selected actions`]</div>
+                        <div class="hint hidden">[`Search requests on which selected actions have ever been executed`]</div>
                     </div>
                 </div>
             </div>
@@ -255,7 +255,7 @@
                                 </ul>
                             </li>
                         </ul>
-                        <div class="hint hidden">[`Search requests that have selected tags assigned`]</div>
+                        <div class="hint hidden">[`Search requests with selected tags assigned`]</div>
                     </div>
                 </div>
             </div>
@@ -273,7 +273,7 @@
                         <input type="radio" name="words_search_where" value="text,summary" {if $filters.search.val[1]|default:'' === 'text,summary' || empty($filters.search.val[1])}checked="checked"{/if}> [`Search in request subject and text`]
                     </label></p>
                     <p class="last compact"><label>
-                        <input type="radio" name="words_search_where" value="log_text" {if $filters.search.val[1]|default:'' === 'log_text'}checked="checked"{/if}> [`Search in discussion, comments and response to client`]
+                        <input type="radio" name="words_search_where" value="log_text" {if $filters.search.val[1]|default:'' === 'log_text'}checked="checked"{/if}> [`Search in discussions, comments, and responses sent to a client`]
                     </label></p>
                 </div>
             </div>

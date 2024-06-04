@@ -146,7 +146,7 @@
                     <div class="block">
                         <div class="block not-padded fieldset no-border h-other-fields">
                             <h2 class="black">[`Additional fields`]</h2>
-                            <p class="gray">[`Additional fields allow you to add a number of multiple parameters to requests content. These parameters essentially depend on a type of product and services you deliver to your customers. For example, if you accept requests to repair household appliances, you may wish to know some manufacturing details, e.g. model name, and etc. Additional fields can be added to the request form to be submitted by your client, or be available on the request page for your Helpdesk app users manipulations.`]</p>
+                            <p class="gray">[`Additional fields allow customers to specify extra multiple parameters when sending a support requests. These parameters essentially depend on the types of products and services you deliver to your customers. For example, if you accept requests to repair household appliances, you may wish to know some additional details; e.g. model name, date of manufacture, etc. Additional fields can be added to a request-sending form and be available on the request-viewing page for your Helpdesk app users.`]</p>
                             <div class="fields">
                                 {foreach $fields as $field}
                                     <div data-field-id="{$field.id}" class="field sortable">
@@ -627,7 +627,7 @@
                         </div>
                     </div>
                     <div class="field">
-                        <div class="name">[`Type of field`]</div>
+                        <div class="name">[`Field type`]</div>
                         <div class="value">
                             <select name="ftype">
                                 {foreach $field_types as $ftype => $ftype_str}
@@ -643,10 +643,10 @@
                         </div>
                     </div>
                     <div class="field">
-                        <div class="name">[`Customer portal`]</div>
+                        <div class="name">[`Customer Portal`]</div>
                         <div class="value">
                             <input type="checkbox" name="my_visible" value="1">
-                            <div class="hint">[`If enabled, data in this field are available for clients in their Customer portal.`]</div>
+                            <div class="hint">[`If enabled, data in this field are available to clients in the Customer Portal.`]</div>
                         </div>
                     </div>
                     <em class="errormsg common-errors"></em>

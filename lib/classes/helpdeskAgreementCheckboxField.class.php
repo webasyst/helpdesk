@@ -9,7 +9,6 @@ class helpdeskAgreementCheckboxField extends waContactCheckboxField
     public function __construct($id, $name, array $options = array())
     {
         parent::__construct($id, $name, $options);
-        $this->default_link_text = _w($this->default_link_text);
         $this->default_link_href_placeholder = _w($this->default_link_href_placeholder);
     }
 

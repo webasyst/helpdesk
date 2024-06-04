@@ -105,7 +105,7 @@
 
                             <div class="h-allow-attachments-settings hidden" style="margin-left: 40px;">
 
-                                [`Default assignee:`]
+                                [`User assigned by default:`]
                                 <select name="options[default_assignee]">
                                     <option value="0"{if ifset($options.default_assignee) === '0' || ifset($options.default_assignee) === 0} selected{/if}>[`clear previous assignment`]</option>
                                     <option value=""{if !isset($options.default_assignee) || $options.default_assignee == ''} selected{/if}>[`keep previous assignment`]</option>
@@ -339,7 +339,7 @@
                 };
 
                 name_field.on('keypress', handler).on('change', handler);
-                
+
             })();
             container.find('input:text:first').focus();
         {/if}
