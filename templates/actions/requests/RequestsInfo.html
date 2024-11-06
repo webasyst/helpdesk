@@ -204,25 +204,24 @@
 
                     {* Assigned *}
                     {if $request.assigned_contact_id && !empty($right_fields.assigned) || !empty($right_fields.assigned) && $request.assigned_contact_id}
-                        <div class="h-request-assigned custom-mt-16 flexbox middle space-8">
-                            {if !empty($request.assigned_contact_photo)}
-                                <img class="userpic userpic-20" src="{$request.assigned_contact_photo}">
-                            {/if}
-                            {$request.assigned_name|escape}
-                            <span class="hint">[`Assigned contact`]</span>
-                            {* old logic
-                            <p>
-                                <span class="gray">[`Assigned:`]</span>
-                                <span class="bold">
-                                    {if $request.assigned_contact_id > 0}
-                                         {$request.assigned_name|escape}
-                                    {elseif $request.assigned_contact_id < 0}
-                                        {$request.assigned_name|escape} <span class="gray">([`group`])</span>
-                                    {else}
-                                        <span class="gray"></span>
-                                    {/if}
+                        <div class="h-request-assigned fields custom-mt-16">
+                            <div class="field">
+                                <span class="name">[`Assigned`]</span>
+                                <span class="value small">
+                                    <div class="flexbox middle space-8">
+                                        {if !empty($request.assigned_contact_photo)}
+                                            <img class="userpic userpic-20" src="{$request.assigned_contact_photo}">
+                                        {/if}
+                                        {if $request.assigned_contact_id > 0}
+                                            {$request.assigned_name|escape}
+                                        {elseif $request.assigned_contact_id < 0}
+                                            {$request.assigned_name|escape} <span class="gray">([`group`])</span>
+                                        {else}
+                                            <span class="gray"></span>
+                                        {/if}
+                                    </div>
                                 </span>
-                            </p>*}
+                            </div>
                         </div>
                     {/if}
 
@@ -400,10 +399,12 @@
 
                         {if $action.attachment}
                             <div class="attachment">
-                                <i class="fas fa-file-download text-blue"></i>
                                 {foreach $action.attachment as $a}
-                                    <a href="{$a.link}" class="same-tab">{$a.orig_name|escape}</a>
-                                    <span class="gray-hint">{$a.size|wa_format_file_size}</span>{if !$a@last}, {/if}
+                                    <div{if !$a@last} class="custom-mb-4"{/if}>
+                                        <i class="fas fa-file-download text-blue"></i>
+                                        <a href="{$a.link}" class="same-tab">{$a.orig_name|escape}</a>
+                                        <span class="gray-hint">{$a.size|wa_format_file_size}</span>
+                                    </div>
                                 {/foreach}
                             </div>
                         {/if}
@@ -495,7 +496,7 @@
                             <div class="s-fields">
                                 {foreach $original_fields as $field}
                                     <div>
-                                        <span class="small gray">{$field.name|escape}:</span> <span class="small">{$field.value}</span>
+                                        <span class="js-field-name small gray">{$field.name|escape}:</span> <span class="js-field-value small">{$field.value}</span>
                                     </div>
                                 {/foreach}
                             </div>
@@ -504,10 +505,12 @@
 
                         {if $request.attachments}
                             <div class="attachment">
-                                <i class="fas fa-file-download text-blue"></i>
                                 {foreach $request.attachments as $a}
-                                    <a href="{$a.link}" class="same-tab">{$a.orig_name|escape}</a>
-                                    <span class="gray-hint">{$a.size|wa_format_file_size}</span>{if !$a@last},{/if}
+                                    <div{if !$a@last} class="custom-mb-4"{/if}>
+                                        <i class="fas fa-file-download text-blue"></i>
+                                        <a href="{$a.link}" class="same-tab">{$a.orig_name|escape}</a>
+                                        <span class="gray-hint">{$a.size|wa_format_file_size}</span>
+                                    </div>
                                 {/foreach}
                             </div>
                         {/if}
@@ -1190,4 +1193,9 @@
         }
     }
 
+    $.wa.helpers.initImageViewer({
+        $container: $('#wa-app'),
+        $img_link: $('.s-comments .js-img-link, .s-comments figure > img'),
+        esc: true
+    });
 })();</script>

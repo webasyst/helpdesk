@@ -6,7 +6,6 @@ class helpdeskBackendSidebarAction extends helpdeskViewAction
 {
     // Data for 'sidebar' hook
     public $unread_count;
-    public $all_count;
     public $wf_create;
     public $wf_view;
     public $history;
@@ -47,9 +46,6 @@ class helpdeskBackendSidebarAction extends helpdeskViewAction
             $this->unread_count = $um->countByContact();
         }
 
-        $c = helpdeskRequestsCollection::create();
-        $this->all_count = $c->count();
-
         $this->follow_count = null;
         $fm = new helpdeskFollowModel();
         $this->follow_count = $fm->countByContact();
@@ -74,7 +70,6 @@ class helpdeskBackendSidebarAction extends helpdeskViewAction
         $this->view->assign('common_filters', $this->common_filters);
         $this->view->assign('personal_filters', $this->personal_filters);
         $this->view->assign('unread_count', $this->unread_count);
-        $this->view->assign('all_count', $this->all_count);
         $this->view->assign('follow_count', $this->follow_count);
         $this->view->assign('workflows', $this->workflows);
         $this->view->assign('history', $this->history);

@@ -2623,9 +2623,6 @@ msgstr "Добавить поле"
 msgid "Create new tag"
 msgstr "Создать новый тег"
 
-msgid "Assigned contact"
-msgstr "Назначенный"
-
 msgid "Popular tags"
 msgstr "Популярные теги"
 

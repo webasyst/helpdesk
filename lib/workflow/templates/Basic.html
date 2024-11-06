@@ -219,7 +219,8 @@
                     lang: "{substr($wa->locale(), 0, 2)}",
                     convertUrlLinks: true,
                     convertLinks: false,
-                    toolbarFixed: false,
+                    toolbarFixed: true,
+                    toolbarFixedTopOffset: $("#wa-nav").outerHeight() || 0,
                     callbacks: {
                         change: function () {
                             cleditor_text_changed = true;

@@ -828,10 +828,6 @@ $.wa.helpdesk_controller = {
             $.waDialog({
                 html: dialog_html,
                 onOpen: function (_, dialog) {
-                    if (!data.admin) {
-                        return;
-                    }
-
                     const $form = dialog.$block;
                     $.wa.helpers.watchChangeForm($form);
                     $form.find('input[type=checkbox]').change(function() {
@@ -901,12 +897,13 @@ $.wa.helpdesk_controller = {
         if (settings_block.length && settings_block.data('id') !== data.id) {
             settings_block.remove();
         }
+        var filter_dialog = null;
         if (!settings_block.length) {
             if (data.f.hash === '@all') {
                 block.append(tmpl('h-template-all-records-filter-settings', data));
             } else {
                 const dialog_html = tmpl('h-template-filter-settings-dialog', data);
-                $.waDialog({
+                filter_dialog = $.waDialog({
                     html: dialog_html,
                     onOpen: function (_, dialog) {
                         const $form = dialog.$block;
@@ -950,7 +947,7 @@ $.wa.helpdesk_controller = {
                     onClose: function () {
                         closeSettings();
                     }
-                })
+                });
             }
 
             $('.buttons', block).find('.cancel').click(function() {
@@ -972,7 +969,8 @@ $.wa.helpdesk_controller = {
                                 if (filter_id) {
                                     closeSettings();
                                 }
-                                submit_loading.hide()
+                                submit_loading.hide();
+                                filter_dialog && filter_dialog.hide();
                             });
                     }
                 });
@@ -1489,6 +1487,7 @@ $.wa.helpdesk_controller = {
             $.wa.helpdesk_controller.restoreCollapsibleStatusInSidebar();
             $.wa.helpdesk_controller.bindToggleCollapseMenuSidebar();
             $.wa.helpdesk_controller.hideLoading();
+            $(window).trigger('wa_sidebar_loaded.helpdesk');
         });
     },
 
@@ -1556,18 +1555,18 @@ $.wa.helpdesk_controller = {
         var p = (match.is('.brick') ? match : match.closest('li')).addClass('selected');
 
         // Update grid count in localStorage and in sidebar
-        var skey = 'helpdesk/count/'+$.wa.helpdesk_controller.options.user_id+'/'+p.children('a').attr('href');
+        var $link = p.prop('tagName') === 'A' ? p : p.children('a');
+        var skey = 'helpdesk/count/'+$.wa.helpdesk_controller.options.user_id+'/'+$link.attr('href');
         if (!$.wa.helpdesk_controller.currentGrid) {
             $.storage.del(skey);
             return;
         }
-        if ($.wa.helpdesk_controller.currentGrid.isActive() && !p.hasClass('no-count')) {
+        if ($.wa.helpdesk_controller.currentGrid.isActive() && !$link.hasClass('no-count')) {
 
             var count = $.wa.helpdesk_controller.currentGrid.getTotal();
             $.storage.set(skey, count);
 
-            var item = p.children('a');
-            this.updateItemCountSidebar(item, count);
+            this.updateItemCountSidebar($link, count);
         }
     },
 

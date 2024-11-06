@@ -644,7 +644,7 @@
         return !ul.find('input:checked').length;
     };
 
-    $('.h-clean-checklist').click(function() {
+    $('.h-clean-checklist', form).click(function() {
         var item = $(this);
         var ul = item.closest('.value').find('ul');
         ul.find(':checked').prop('checked', false);
@@ -652,7 +652,18 @@
         item.hide();
     });
 
-    $('.h-open-dialog').click(function() {
+    $('.h-dialogable', form).each(function () {
+        const $d = $(this);
+        const $ul = $d.find('> ul');
+        const filter_str = getChecklistTitle($ul);
+        if (filter_str) {
+            const $item = $d.closest('.value').find('.h-open-dialog');
+            $item.text(filter_str);
+            $item.closest('.field').find('.h-clean-checklist').show();
+            $item.removeClass('small gray-link');
+        }
+    });
+    $('.h-open-dialog', form).click(function() {
         var item = $(this);
         var $dialogable = $('.h-dialogable[data-id="' + item.data('dialog') + '"]');
         var name = $dialogable.data('name');

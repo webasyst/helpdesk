@@ -75,13 +75,13 @@
 
                 {% if (f.id) { %}
                 <div class="custom-mt-12">
-                    <p class="hint">
+                    <p class="hint break-word custom-mb-8">
                         [`This list is the search result:`]
                         <a href="#/requests/search/{%#f.hash%}">{%#o.collection_header%}</a>
-                        {% if (f.creator && f.creator.name) { %}
-                            <br>[`Created by`] {%=f.creator.name%}, {%#f.create_datetime_str%}
-                        {% } %}
                     </p>
+                    {% if (f.creator && f.creator.name) { %}
+                        <div class="hint">[`Created by`] {%=f.creator.name%}, {%#f.create_datetime_str%}</div>
+                    {% } %}
                 </div>
                 {% } %}
             </footer>

@@ -45,20 +45,18 @@
         },
 
         initMobileSidebar: function() {
-            if (this.$window.width() > 768) {
-                if (this.sidebarData) {
-                    this.sidebar.removeData('sidebar');
-                    this.sidebarData.unbindEvents();
-                    delete this.sidebarData;
-                }
+            if (this.sidebarData) {
+                this.sidebar.removeData('sidebar');
+                this.sidebarData.unbindEvents();
+                delete this.sidebarData;
+            }
 
+            if (this.$window.width() > 768) {
                 return;
             }
 
-            if (!this.sidebarData) {
-                this.sidebar.waShowSidebar();
-                this.sidebarData = this.sidebar.data('sidebar');
-            }
+            this.sidebar.waShowSidebar();
+            this.sidebarData = this.sidebar.data('sidebar');
         },
 
         slideUpSidebar: function() {

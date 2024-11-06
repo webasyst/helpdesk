@@ -265,11 +265,11 @@ class helpdeskRequest extends helpdeskRequestRecord
         } elseif($fullseconds < 60 * 60) {
             return sprintf(_w('%dm'), round(($fullseconds) / 60));
         } else {
-            $minutes = round(($fullseconds / 60) % 60);
-            $hours = round(($fullseconds / (60*60)) % 24);
-            $days = round(($fullseconds / (60*60*24)) % 31);
-            $months = round(($fullseconds / (60*60*24*31)) % 12);
-            $years = round(($fullseconds / (60*60*24*31*12)));
+            $minutes = floor($fullseconds / 60) % 60;
+            $hours = floor($fullseconds / (60*60)) % 24;
+            $days = floor($fullseconds / (60*60*24)) % 31;
+            $months = floor($fullseconds / (60*60*24*31)) % 12;
+            $years = floor($fullseconds / (60*60*24*31*12));
 
             if($fullseconds < 60 * 60 * 24) {
                 return  sprintf(_w('%dh %dm'), $hours, $minutes );
@@ -548,7 +548,7 @@ class helpdeskRequest extends helpdeskRequestRecord
                         $this->info['text'] = str_replace('cid:'.$data['cid'], $link, $this->info['text']);
                     } else if (preg_match('~\.(jpg|jpeg|gif|png)$~i', $data['name'])) {
                         // Show image at the bottom of the request text
-                        $img_link = '<a class="same-tab" href="'.$link.'">'.
+                        $img_link = '<a class="same-tab js-img-link" href="'.$link.'">'.
                                 '<img src="'.$link.'" class="h-request-attachment-image" data-request-id="'.$this->id.'" data-attach-id="'.basename($data['file']).'">'.
                         '</a>';
                         $attachments_html[] = '<div class="h-request-image"><hr><p>' . $img_link . '</p></div>';
@@ -793,7 +793,7 @@ class helpdeskRequest extends helpdeskRequestRecord
                             $l['text'] = str_replace('cid:'.$data['cid'], $link, $l['text']);
                         } else if (preg_match('~\.(jpg|jpeg|gif|png)$~i', $data['name'])) {
                             // Show image at the bottom of the request text
-                            $img_link = '<a class="same-tab" href="'.$link.'">'.
+                            $img_link = '<a class="same-tab js-img-link" href="'.$link.'">'.
                                             '<img src="'.$link.'"
                                     class="h-request-attachment-image"
                                     data-request-id="'.$this->id.'"

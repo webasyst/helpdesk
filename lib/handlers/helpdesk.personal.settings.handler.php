@@ -53,7 +53,7 @@ class helpdeskHelpdeskPersonalSettingsHandler extends waEventHandler
                 $res[] = $p;
                 $source_params[] = array(
                     'source_id' => $p['id'],
-                    'sort_domain_' . $domain,
+                    'name' => 'sort_domain_' . $domain,
                     'value' => $sort++
                 );
             }

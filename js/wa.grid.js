@@ -109,13 +109,9 @@ $.wa.Grid = function(options) { "use strict";
 
             // Make checkbox in header toggle all checkboxes in table
             $('.js-select-all-checkbox').unbind('change').bind('change', function() {
-                if ($(this).is(':checked')) {
-                    $('.requests-table td :checkbox').prop('checked', true);
-                    $('.requests-table tr').addClass('selected');
-                } else {
-                    $('.requests-table td :checkbox').prop('checked', false);
-                    $('.requests-table tr').removeClass('selected');
-                }
+                const is_checked = $(this).is(':checked');
+                $('.requests-table td :checkbox').prop('checked', is_checked).trigger('change');
+                $('.requests-table tr').toggleClass('selected', is_checked);
                 $(this).prop('indeterminate', false);
             });
             $('.js-select-all-item').unbind('click').bind('click', function(e) {
@@ -232,13 +228,12 @@ $.wa.Grid = function(options) { "use strict";
             // dummy: empty list
             if (total == 0) {
                 return domElement.append($(`
-                    <div class="flexbox gray height-75 justify-content-center middle space-8 vertical">
+                    <div class="h-no-requests-dummy flexbox gray height-75 justify-content-center middle space-8 vertical">
                         <div class="icon size-96 text-light-gray"><i class="far fa-life-ring"></i></div>
                         <div>${$_('No requests.')}</div>
                     </div>
                 `));
             }
-
 
             var domTable = null;
             if (settings.view === 'table') {
@@ -269,7 +264,7 @@ $.wa.Grid = function(options) { "use strict";
                     <th>${$_('ID')}</th>
                     <th>${$_('Subject and text')}</th>
                     <th>${$_('Time has passed')}</th>
-                    <th>${$_('Created')}</th>
+                    <th>${$_('Updated')}</th>
                     <th>${$_('From')}</th>
                     <th>${$_('Assigned')}</th>
                 </tr>`);
@@ -476,6 +471,9 @@ $.wa.Grid = function(options) { "use strict";
      * @returns {Object} jquery DOM-object
      */
     this.getPaging = function(total, show_total, show_options, is_render_hidden_button) {
+        if (total == 0) {
+            return;
+        }
         var paging = $('<div class="hd-paging"></div>');
 
         var settings = this.getSettings();

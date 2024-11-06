@@ -160,7 +160,7 @@
         <a href="#/requests/all/" rel="all" class="brick full-width text-ellipsis">
             <span class="icon"><i class="fas fa-folder-open"></i></span>
             <span class="nowrap" title="[`All requests`]">[`All requests`]</span>
-            <span class="count no-autorestore">{$all_count}</span>
+            <span class="count"></span>
         </a>
     {/if}
 </div>
@@ -303,7 +303,7 @@
                 {/if}
                 {if $wa->user()->getRights($wa->app(), 'design')}
                 <li class="sidebar-design-link">
-                    <a href="#/design/">
+                    <a href="#/design/themes/">
                         <i class="fas fa-palette"></i>[`Design`]
                     </a>
                 </li>
@@ -409,6 +409,9 @@
         $('#hd-personal-filters{if $admin}, #hd-common-filters{/if}').each(function() {
             $(this).sortable({
                 draggable: 'li',
+                delay: 150,
+	            delayOnTouchOnly: true,
+                fallbackTolerance: 5,
                 onEnd: function(evt) {
                     const $item = $(evt.item);
                     const id = $item.attr('rel');

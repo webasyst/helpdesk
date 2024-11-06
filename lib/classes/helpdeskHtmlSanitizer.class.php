@@ -233,11 +233,15 @@ class helpdeskHtmlSanitizer
         $content = str_replace(array($attr_start, $attr_end), '', $content);
 
         // Fix blockquotes
+        $text_blockquotes_replaced = false;
         while (preg_match("~(\r?\n\s?(&gt;|>)[^\r\n]*)~uis", $content)) {
             $content = preg_replace_callback("~(\r?\n\s?(&gt;|>)[^\r\n]*)~uis", array($this, 'blockquote'), $content);
+            $text_blockquotes_replaced = true;
         }
-        while (preg_match('~</blockquote>[\s\r\t\n]*(<br ?/?>)?[\s\r\t\n]*<blockquote[^>]*>~uis', $content)) {
-            $content = preg_replace('~</blockquote>[\s\r\t\n]*(<br ?/?>)?[\s\r\t\n]*<blockquote[^>]*>~uis', '', $content);
+        if ($text_blockquotes_replaced) {
+            while (preg_match('~</blockquote>[\s\r\t\n]*(<br ?/?>)?[\s\r\t\n]*<blockquote data-from-text=1>~uis', $content)) {
+                $content = preg_replace('~</blockquote>[\s\r\t\n]*(<br ?/?>)?[\s\r\t\n]*<blockquote data-from-text=1>~uis', '', $content);
+            }
         }
 
         $content = preg_replace('@<[^>]+$@usi', '', $content);
@@ -371,7 +375,7 @@ class helpdeskHtmlSanitizer
             $str = $str[1];
         }
         $str = preg_replace("~\r?\n\s?(&gt;|>)\s*([^\r\n]*)~ui", "\n$2", $str);
-        return "\n<blockquote>".stripcslashes($str)."\n</blockquote>";
+        return "\n<blockquote data-from-text=1>".stripcslashes($str)."\n</blockquote>";
     }
 
     /**
