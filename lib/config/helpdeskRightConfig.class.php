@@ -23,7 +23,7 @@ class helpdeskRightConfig extends waRightConfig
         $workflows = helpdeskWorkflow::getWorkflows();
         foreach ($workflows as $id => $wf) {
             if (count($workflows) > 1) {
-                $this->addItem('wf.'.$id, sprintf(_w('Workflow &ldquo;%s&rdquo;'), $wf->getName()), 'header');
+                $this->addItem('wf.'.$id, sprintf(_w('Workflow “%s”'), $wf->getName()), 'header');
             }
             $this->addItem('wf.'.$id.'.create', _w('Can add new requests'), 'checkbox');
             $this->addItem('wf.'.$id.'.create_tag', _w('Can add new tags'), 'checkbox');

@@ -1,0 +1,195 @@
+<link type="text/css" href="{$wa_url}wa-content/js/codemirror/lib/codemirror.css" rel="stylesheet" />
+<link type="text/css" href="{$wa_url}wa-content/js/codemirror/mode/xml/xml.css" rel="stylesheet" />
+<link type="text/css" href="{$wa_url}wa-content/js/codemirror/mode/javascript/javascript.css" rel="stylesheet" />
+<link type="text/css" href="{$wa_url}wa-content/js/codemirror/mode/css/css.css" rel="stylesheet" />
+<style>
+    .design-link { float: right; margin-top: -30px; text-decoration: none; }
+    .CodeMirror-wrap { padding: 10px 0 !important; }
+    .CodeMirror-scroll { border: 1px solid silver; overflow-y: hidden; overflow-x: auto; height: auto; }
+    .wa-design-save-panel {
+        background: none repeat scroll 0 0 #eee;
+        bottom: 0;
+        left: 0;
+        padding-left: 420px;
+        position: fixed;
+        right: 0;
+        z-index: 10;
+    }
+    .tab-content { padding-top: 15px; }
+    .tab-content .name { font-size: 1em; }
+    .ibutton-wrapper { margin-top: -8px !important; }
+    #helpdesk-personal-settings .field .name .text { margin-left: 20px; margin-top: -15px; }
+</style>
+<script src="{$wa_url}wa-content/js/codemirror/lib/codemirror.js"></script>
+<script src="{$wa_url}wa-content/js/codemirror/mode/xml/xml.js"></script>
+<script src="{$wa_url}wa-content/js/codemirror/mode/javascript/javascript.js"></script>
+<script src="{$wa_url}wa-content/js/codemirror/mode/css/css.js"></script>
+<script src="{$wa_url}wa-content/js/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+
+<form id="helpdesk-personal-settings" method="post" action="{$wa_backend_url}helpdesk/?module=personal&action=settingsSave">
+
+    <div class="block">
+
+        <ul class="tabs menu">
+            <li class="selected"><a href="#">[`Forms`]</a></li>
+            <li><a href="#">[`Settings`]</a></li>
+        </ul>
+
+        <div class="tab-content">
+
+            <p>[`Choose new request forms that should be available for clients in their Customer portals:`]</p>
+
+            <div class="fields">
+                {foreach $customer_portals as $p}
+                <div class="field">
+                    <div class="name"{if !empty($domain_sources[$p.id])} style="color:#000;"{/if}><i class="icon16 sort"></i>
+                        <div class="text">{$p.name}</div>
+                    </div>
+                    <div class="value">
+                        <input type="checkbox" name="customer_portals[{$p.id}]" value="1" class="i-button customer_portal"{if !empty($domain_sources[$p.id])} checked{/if} />
+                        <input type="hidden" name="customer_portals_source[]" value="{$p.id}">
+                    </div>
+                </div>
+                {/foreach}
+            </div>
+
+        </div>
+
+        <div class="tab-content" style="display:none;">
+
+            <p>[`Specify what should be displayed as an action executor in Customer Portal:`]</p>
+			<div class="block">
+            <label class="radio">
+                <input type="radio" name="portal_actor_display" value="contact_name"{if ifset($settings.portal_actor_display) == 'contact_name'} checked{/if}>
+                [`Assigned person name`]
+            </label>
+			</div>
+            <div class="block">
+                <label class="radio" for="custom-radio">
+                    <input type="radio" id="custom-radio" name="portal_actor_display" value="custom"{if ifset($settings.portal_actor_display) != 'contact_name'} checked{/if}>
+                    [`Company name:`]
+
+                    {if in_array(ifset($settings.portal_actor_display), ['company_name', 'contact_name'])}
+                        {$settings.portal_actor_display = "{$wa->accountName()}"}
+                    {/if}
+                    <input type="text" name="portal_actor_display_custom" value="{$settings.portal_actor_display|escape}" style="min-width:300px;display:inline-block;">
+                </label>
+            </div>
+
+        </div>
+
+        <input type="hidden" name="domain" value="{$domain}" />
+
+    </div>
+
+    <div class="wa-design-save-panel block bordered-top">
+        <input type="submit" value="[`Save`]" class="button green">
+        <i class="icon16 loading" style="margin-top: 0.5em; display: none;"></i>
+        <span class="save-msg-icon" style="display: none;"><i class="icon16 yes after-button" style="margin-top: 0.5em;"></i>[`Saved`]</span>
+    </div>
+
+</form>
+
+<script>
+$(function(){
+    var editors = [], editor_options = {
+        lineNumbers: false,
+        lineWrapping: true
+    };
+    var $personal_form = $('#helpdesk-personal-settings');
+
+    $personal_form.on('click', '.tabs.menu li a', function (e) {
+        e.preventDefault();
+        var $tab = $(this).parent(), idx = $tab.index();
+        $tab.addClass('selected').siblings().removeClass('selected');
+        $tab.parent().parent().find('>.tab-content:eq(' + idx + ')').show().siblings('.tab-content').hide();
+        if (idx == 1 && typeof editors[1] == 'undefined') {
+            CodeMirror.fromTextArea(document.getElementById('ta1'), editor_options);
+            editors[1] = 1;
+        }
+    });
+
+    $personal_form.on('click', '.tabs.forms li a', function (e) {
+        e.preventDefault();
+        var $tab = $(this).closest('li'),
+            id = $tab.data('tab'),
+            $tabContent = $personal_form.find('[data-tab-content="'+id+'"]').parent();
+            file_idx = $tab.attr('id').substr(2);
+        $tab.addClass('selected').siblings().removeClass('selected');
+        $tabContent.show().siblings('.tab-content').hide();
+        if (typeof editors[file_idx] == 'undefined') {
+            CodeMirror.fromTextArea(document.getElementById('ta' + file_idx), editor_options);
+            editors[file_idx] = 1;
+        }
+    });
+
+    iButton($('.i-button'), {
+        labelOn: "[`Enabled`]",
+        labelOff: "[`Disabled`]"
+    });
+
+    $personal_form.submit(function () {
+        var f = $(this),
+                $saved_msg = f.find('.save-msg-icon'),
+                $loading = f.find('.loading');
+        $loading.show();
+        $.post(f.attr('action'), f.serialize(), function () {
+            $loading.hide();
+            $saved_msg.fadeIn( 500 ).delay( 500).fadeOut( 500 );
+            backlightButton();
+        }, 'json');
+        return false;
+    });
+    $('input.i-button').change(function() {
+        var color = $(this).is(':checked') ? '#000' : '#888';
+        $(this).closest('.field').find('.name').css('color', color);
+        highlightButton();
+    });
+
+    $personal_form.find('.fields').sortable({
+        distance: 5,
+        items: '.field',
+        handle: '',
+        opacity: 0.75,
+        update: highlightButton
+    });
+
+    function highlightButton()
+    {
+        $personal_form.find('input[type=submit]').removeClass('green').addClass('yellow');
+    }
+
+    function backlightButton()
+    {
+        $personal_form.find('input[type=submit]').removeClass('yellow').addClass('green');
+    }
+
+});
+function iButton($checkboxes, options) {
+    options = options || {};
+    return $checkboxes.each(function() {
+        var cb = $(this);
+        var id = cb.attr('id');
+        if (!id) {
+            do {
+                id = 'cb'+Date.now()+'-'+(((1+Math.random())*0x10000)|0).toString(16).substring(1);
+            } while (document.getElementById(id));
+            cb.attr('id', id);
+        }
+        if (!options.inside_labels) {
+            $($.parseHTML(
+                '<ul class="menu-h ibutton-wrapper">'+
+                    '<li><label class="gray" for="'+id+'">'+(options.labelOff||'')+'</label></li>'+
+                    '<li class="ibutton-li"></li>'+
+                    '<li><label for="'+id+'">'+(options.labelOn||'')+'</label></li>'+
+                '</ul>'
+            )).insertAfter(cb).find('.ibutton-li').append(cb);
+        }
+    }).iButton($.extend({
+        className: 'mini'
+    }, options, options.inside_labels ? {} : {
+        labelOn : "",
+        labelOff : ""
+    }));
+}
+</script>

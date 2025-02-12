@@ -24,7 +24,7 @@ class helpdeskHelpdeskPersonalSettingsHandler extends waEventHandler
         $view->assign('domain', $params['domain']);
         $view->assign('settings', $settings);
 
-        $template = wa()->getAppPath('templates/handlers/PersonalSettings.html', 'helpdesk');
+        $template = wa()->getAppPath('templates/handlers'.(wa()->whichUI() == '1.3' ? '-legacy' : '').'/PersonalSettings.html', 'helpdesk');
         return $view->fetch($template);
     }
 

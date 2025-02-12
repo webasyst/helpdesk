@@ -2,7 +2,7 @@
 return array(
     'name' => 'Helpdesk',
     'icon' => 'img/helpdesk.svg',
-    'version' => '2.0.4',
+    'version' => '2.0.6',
     'vendor' => 'webasyst',
     'csrf' => true,
 

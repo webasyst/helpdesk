@@ -177,135 +177,223 @@
         initImageViewer (options) {
             class ImageViewer {
                 constructor ({ $container, $img_link, max_scale, inner_indent, esc }) {
-                    this.$container_viewport = $container;
+                    this.$container = $container;
                     this.$img_link = $img_link;
-                    this.max_scale = max_scale || 2;
-                    this.inner_indent = inner_indent || 74;
+                    this.$img = null;
 
-                    this.$current_img = null;
-                    this.isZoomIn = false;
+                    this.inner_indent = inner_indent || 74;
                     this.esc = !!esc;
 
-                    this.bindEvents();
+                    this.max_scale = (typeof max_scale === 'undefined' || max_scale < 2 ? 6 : max_scale);
+                    this.min_scale = 1;
+                    this.transformation = {
+                        originX: 0,
+                        originY: 0,
+                        translateX: 0,
+                        translateY: 0,
+                        scale: this.min_scale
+                    };
+                    this.prev_position = {
+                        x: null,
+                        y: null
+                    };
+
+                    this.init();
                 }
 
-                bindEvents () {
+                init () {
                     const that = this;
-                    this.$img_link.on('click', function (e) {
+
+                    that.$img_link.on('click', function (e) {
                         e.preventDefault();
-
-                        const $self = $(this);
-                        that.$current_img = $self.prop('tagName') === 'IMG' ? $self.clone() : $self.find('img').clone();
-                        const href = $self.prop('tagName') === 'A' ? $self.prop('href') : that.$current_img.prop('src');
-
-                        that.$current_img.addClass('img-view__img').prop('draggable', false);
-                        that.$container_viewport.prepend('<div class="img-view"><div class="img-view__box" /></div>');
 
                         $('body').css('overflow', 'hidden');
 
-                        const $img_view = that.$container_viewport.find('.img-view');
+                        const $self = $(this);
+                        that.$img = $self.prop('tagName') === 'IMG' ? $self.clone() : $self.find('img').clone();
+                        that.$img.addClass('img-view__img').prop('draggable', false);
+                        that.$container.prepend('<div class="img-view"><div class="img-view__box" /></div>');
+                        const $img_view = that.$container.find('.img-view');
+
+                        const href = $self.prop('tagName') === 'A' ? $self.prop('href') : that.$img.prop('src');
                         $img_view.append(`
                             <div class="img-view-controls">
                                 <a href="javascript:void(0);" class="img-view-zoom-in"><i class="fas fa-search-plus"></i></a>
-                                <a href="javascript:void(0);" class="img-view-zoom-out hidden"><i class="fas fa-search-minus"></i></a>
+                                <a href="javascript:void(0);" class="img-view-zoom-out"><i class="fas fa-search-minus"></i></a>
                                 <a href="${href}" class="img-view-download" download><i class="fas fa-cloud-download-alt"></i></a>
                                 <a href="javascript:void(0);" class="img-view-close"><i class="fas fa-times"></i></a>
                             </div>`);
-                        $img_view.find('.img-view__box').append(that.$current_img);
-
-                        const resizeImage = that.resizeImage.bind(that);
-                        $(window).on('resize', resizeImage);
-                        resizeImage();
+                        $img_view.find('.img-view__box').append(that.$img);
 
                         const closeView = () => {
+                            that.clearPosition();
                             $img_view.remove();
-                            $(window).off('resize', resizeImage);
                             $('body').css('overflow', 'auto');
+                            that.$container.off('wheel');
+                            that.$img_link.blur();
                         };
-                        $img_view.find('.img-view-close').one('click', closeView);
+
+                        that.resizeImage();
+
+                        // EVENTS
+
                         if (that.esc) {
-                            $(document).off('keyup.image_viewer').on('keyup.image_viewer', (e) => {
+                            $(document).off('keyup.image_viewer').one('keyup.image_viewer', (e) => {
                                 if (e.key === 'Escape') {
                                     closeView();
                                 }
                             });
                         }
 
-                        $img_view.find('.img-view-zoom-in').on('click', function () {
-                            that.$current_img.css('transform', `matrix(${that.max_scale}, 0, 0, ${that.max_scale}, 0, 0)`);
-                            setTimeout(() => {
-                                that.$current_img.addClass('img-view__img--zoom-in');
-                            }, 300);
+                        $img_view.find('.img-view-close').one('click', closeView);
 
-                            $(this).addClass('hidden');
-                            $img_view.find('.img-view-zoom-out').removeClass('hidden');
+                        // Zoom In
+                        $img_view.find('.img-view-zoom-in').on('click', function (e) {
+                            e.preventDefault();
+                            that.startZoom();
 
-                            that.isZoomIn = true;
-                            that.initMoveImg();
+                            const prev_scale = that.transformation.scale;
+                            that.transformation.scale += 1;
+                            that.transformation.scale = Math.min(that.transformation.scale, that.max_scale);
+
+                            // находим центральную точку изображения
+                            if (that.prev_position.x === null) {
+                                const rect = that.$img[0].getBoundingClientRect();
+                                that.prev_position.x = (rect.right + rect.left)/that.transformation.scale;
+                                that.prev_position.y = (rect.bottom + rect.top)/that.transformation.scale;
+                            }
+
+                            that.updateTransformWithOrigin({ ...that.prev_position,  prev_scale });
                         });
-                        $img_view.find('.img-view-zoom-out').on('click', function () {
-                            that.$current_img.css('transform', 'matrix(1, 0, 0, 1, 0, 0)');
-                            that.$current_img.removeClass('img-view__img--zoom-in');
 
-                            $(this).addClass('hidden');
-                            $img_view.find('.img-view-zoom-in').removeClass('hidden');
+                        // Zoom Out
+                        $img_view.find('.img-view-zoom-out').on('click', function (e) {
+                            e.preventDefault();
+                            that.startZoom();
 
-                            that.isZoomIn = false;
-                            that.clearLastMousePosition();
+                            that.transformation.scale -= 1;
+                            that.transformation.scale = Math.max(that.transformation.scale, that.min_scale);
+
+                            that.updateTransform();
                         });
+
+                        that.initMoveImage();
                     });
                 }
 
-                initMoveImg () {
-                    this.isDragging = false;
-                    this.previousMousePosition = { x: 0, y: 0 };
-                    this.lastMousePosition = { x: 0, y: 0 };
+                initMoveImage () {
+                    const that = this;
 
-                    this.$current_img.on('mousedown touchstart', (e) => {
+                    // Обработка колесика мыши для увеличения и уменьшения с центровкой
+                    that.$container.on('wheel', function(e) {
+                        if (!e.ctrlKey) {
+                            return;
+                        }
                         e.preventDefault();
-                        if (!this.isZoomIn) {
+
+                        that.startZoom();
+
+                        const prev_scale = that.transformation.scale;
+                        const delta = e.originalEvent.deltaY;
+                        if (delta < 0) {
+                            that.transformation.scale += 0.1;
+                            that.transformation.scale = Math.min(that.transformation.scale, that.max_scale);
+                        } else {
+                            that.transformation.scale -= 0.1
+                            that.transformation.scale = Math.max(that.transformation.scale, that.min_scale);
+                        }
+
+                        that.updateTransformWithOrigin({ ...that.getCoords(e), prev_scale });
+                    })
+
+                    that.$img.on('mousedown touchstart', (e) => {
+                        e.preventDefault();
+                        if (this.transformation.scale === this.min_scale) {
                             return false;
                         }
 
-                        this.isDragging = true;
-                        const coords = this.getCoords(e);
-                        this.previousMousePosition = {
-                            x: coords.x - this.lastMousePosition.x,
-                            y: coords.y - this.lastMousePosition.y
-                        };
-                    });
-                    this.$current_img.on('mouseup touchend', (e) => {
-                        this.isDragging = false;
-                    });
-                    this.$current_img.on('mousemove touchmove', (e) => {
-                        const coords = this.getCoords(e);
-                        if (this.isDragging) {
-                            const deltaMove = {
-                                x: coords.x - this.previousMousePosition.x,
-                                y: coords.y - this.previousMousePosition.y
-                            };
+                        that.prev_position = { x: null, y: null };
+                        const previous_position = this.getCoords(e);
 
-                            this.lastMousePosition.x = deltaMove.x;
-                            this.lastMousePosition.y = deltaMove.y;
-                            this.updateImagePosition(deltaMove);
-                        }
+                        that.$container.on('mousemove touchmove', (e) => {
+                            const { x, y } = that.getCoords(e);
+                            const originX = that.prev_position.x === null ? previous_position.x - x : x - that.prev_position.x; // originX: e.originalEvent.movementX,
+                            const originY = that.prev_position.y === null ? previous_position.y - y : y - that.prev_position.y; // originY: e.originalEvent.movementY,
+
+                            that.transformation.translateX += originX;
+                            that.transformation.translateY += originY;
+                            that.updateTransform();
+
+                            that.prev_position.x = x;
+                            that.prev_position.y = y;
+                        });
+
+                        that.$img.one('mouseup touchend', (e) => {
+                            e.preventDefault();
+                            that.$container.off('mousemove touchmove');
+                        });
                     });
                 }
 
                 resizeImage () {
-                    this.$current_img.css({
+                    this.$img.css({
                         'max-height': (window.innerHeight - this.inner_indent) + 'px',
                         'max-width': '100vw'
                     });
                 }
 
-                updateImagePosition(deltaMove) {
-                    this.$current_img.css('transform', `matrix(${this.max_scale}, 0, 0, ${this.max_scale}, ${deltaMove.x}, ${deltaMove.y})`);
+                updateTransform () {
+                    if (this.transformation.scale === this.min_scale) {
+                        this.finishZoom();
+                        this.clearPosition();
+                    }
+
+                    const { scale, translateX, translateY } = this.transformation;
+                    this.$img[0].style.transform = `matrix(${scale}, 0, 0, ${scale}, ${translateX}, ${translateY})`;
+                };
+
+                updateTransformWithOrigin ({ x, y, prev_scale }) {
+                    const img = this.$img[0];
+                    const rect = img.getBoundingClientRect();
+
+                    const originX = x - rect.left;
+                    const originY = y - rect.top;
+
+                    // Корректируем позицию, чтобы центрировать масштабирование
+                    const newOriginX = originX / prev_scale;
+                    const newOriginY = originY / prev_scale;
+                    // Перемещаем размер изображения так, чтобы курсор оставался на месте
+                    img.style.transformOrigin = `${newOriginX}px ${newOriginY}px`;
+
+                    const translate = this.getTranslate(prev_scale);
+                    this.transformation.translateX = translate({ pos: originX, prevPos: this.transformation.originX, translate: this.transformation.translateX });
+                    this.transformation.translateY = translate({ pos: originY, prevPos: this.transformation.originY, translate: this.transformation.translateY });
+
+                    this.transformation.originX = newOriginX;
+                    this.transformation.originY = newOriginY;
+                    this.updateTransform();
                 }
 
-                clearLastMousePosition () {
-                    this.lastMousePosition.x = 0;
-                    this.lastMousePosition.y = 0;
+                getTranslate (scale) {
+                    const valueInRange = (scale) => scale <= this.max_scale && scale >= this.min_scale;
+
+                    return ({ pos, prevPos, translate }) => {
+                        return valueInRange(scale) && pos !== prevPos
+                            ? translate + (pos - prevPos * scale) * (1 - 1 / scale)
+                            : translate;
+                    }
+                }
+
+                clearPosition () {
+                    this.transformation = {
+                        originX: 0,
+                        originY: 0,
+                        translateX: 0,
+                        translateY: 0,
+                        scale: this.min_scale
+                    };
+                    this.prev_position = { x: null, y: null };
+                    this.$img[0].style.transformOrigin = '50% 50%';
                 }
 
                 getCoords(e) {
@@ -315,6 +403,15 @@
                         y: e.clientY
                     }
                 }
+
+                startZoom () {
+                    this.$img.addClass('img-view__img--zoom');
+                }
+
+                finishZoom () {
+                    setTimeout(() => this.$img.removeClass('img-view__img--zoom'));
+                }
+
             };
 
             return new ImageViewer(options);

@@ -78,10 +78,10 @@ class helpdeskRequestsChangeController extends helpdeskJsonController
                 'fake_state_id' => $fake_state_id,
             )
         );
-        
+
         // Update helpdesk_request
         $rm = new helpdeskRequestModel();
-        
+
         if ($new_workflow_id) {
             foreach ($ids as $id) {
                 $request = $rm->getById($id);
@@ -143,7 +143,7 @@ class helpdeskRequestsChangeController extends helpdeskJsonController
 
         // Human readable success message
         if ($field == 'assigned_contact_id') {
-            $str = waLocale::$adapter->ngettext('%1$s request changed assignment to &laquo;%2$s&raquo;', '%1$s requests changed assignment to &laquo;%2$s&raquo;', count($ids));
+            $str = waLocale::$adapter->ngettext('%1$s request changed assignment to “%2$s”', '%1$s requests changed assignment to “%2$s”', count($ids));
             if ($value > 0) {
                 try {
                     $c = new waContact($value);
@@ -166,7 +166,7 @@ class helpdeskRequestsChangeController extends helpdeskJsonController
             }
             try {
                 $state_name = $wf->getStateById($value)->getName();
-                $str = waLocale::$adapter->ngettext('%1$s request changed state to &laquo;%2$s&raquo;', '%1$s requests changed state to &laquo;%2$s&raquo;', count($ids));
+                $str = waLocale::$adapter->ngettext('%1$s request changed state to “%2$s”', '%1$s requests changed state to “%2$s”', count($ids));
                 $this->response = sprintf($str, count($ids), htmlspecialchars($state_name));
             } catch (Exception $e) {
             }
@@ -178,6 +178,6 @@ class helpdeskRequestsChangeController extends helpdeskJsonController
             $this->response = _w('Updated %s request', 'Updated %s requests', count($ids));
         }
     }
-    
+
 }
 

@@ -752,7 +752,7 @@ $(function() { "use strict";
                             if (sid !== state_id && states_data[sid] && states_data[sid].actions) {
                                 for(var ai in states_data[sid].actions) {
                                     if (states_data[sid].actions[ai] === action_id) {
-                                        are_you_sure = "[`The action will be eliminated only for the state &ldquo;%s&rdquo;. For other states this action will stay available.`]".replace('%s', states_data[state_id].name);
+                                        are_you_sure = "[`The action will be eliminated only for the state “%s”. For other states this action will stay available.`]".replace('%s', states_data[state_id].name);
                                         break;
                                     }
                                 }

@@ -1,5 +1,5 @@
 {if $actions || !$auto_action_already_exists}
-    <h1>[`Add a new action`] <span class="hint" style="font-size:12px;">{sprintf_wp('for state &ldquo;%s&rdquo;', $state->getName())}</span></h1>
+    <h1>[`Add a new action`] <span class="hint" style="font-size:12px;">{sprintf_wp('for state “%s”', $state->getName())}</span></h1>
 
     <div class="h-action-create-block">
         <form>
@@ -124,7 +124,7 @@
                         dialog_buttons.append('<i class="icon16 loading"></i>');
                         var action_class = radios.filter(':checked').val();
                         $.wa.dialogHide();
-                        $.wa.helpdesk_controller.showActionSettings('{$wf->getId()}', "{$state->getId()}", '', action_class, "[`Save`]", "[`or`]", "[`cancel`]", "[`Delete this action`]", "[`The action will be eliminated only for the state &ldquo;%s&rdquo;. For other states this action will stay available.`]", function() {
+                        $.wa.helpdesk_controller.showActionSettings('{$wf->getId()}', "{$state->getId()}", '', action_class, "[`Save`]", "[`or`]", "[`cancel`]", "[`Delete this action`]", "[`The action will be eliminated only for the state “%s”. For other states this action will stay available.`]", function() {
                             dialog.remove();
                         });
                     }
@@ -144,7 +144,7 @@
             $.wa.helpdesk_controller.showActionSettings(
                 "{$wf->getId()}", "{$state->getId()}", "", "helpdeskWorkflowBasicAction",
                 "[`Save`]", "[`or`]", "[`cancel`]", "[`Delete this action`]",
-                "{sprintf_wp('The action will be eliminated only for the state &ldquo;%s&rdquo;. For other states this action will stay available.',
+                "{sprintf_wp('The action will be eliminated only for the state “%s”. For other states this action will stay available.',
                     $state->getName())}"
             );
         })();

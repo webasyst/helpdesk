@@ -51,7 +51,7 @@
                                 {foreach from=$assignees key=user_id item=user_name}
                                     <option value="{$user_id}"{if $assignee_selected == $user_id} selected{/if}>{$user_name|escape}</option>
                                 {/foreach}
-                            <select>
+                            </select>
                         </div>
                     </div>
                 {/if}

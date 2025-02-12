@@ -74,7 +74,7 @@
                                 {foreach $assignees as $user_id => $user_name}
                                     <option value="{$user_id}" {if !empty($source->params->new_request_assign_contact_id) && $source->params->new_request_assign_contact_id == $user_id}selected="selected"{/if}>{$user_name|escape}</option>
                                 {/foreach}
-                            <select>
+                            </select>
                         </div>
                     </div>
 

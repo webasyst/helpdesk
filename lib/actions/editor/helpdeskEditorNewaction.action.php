@@ -126,7 +126,7 @@ class helpdeskEditorNewactionAction extends helpdeskViewAction
         echo '<script>(function() { "use strict";
             $.wa.dialogHide();
             $.wa.helpdesk_controller.redispatch();
-            $.wa.helpdesk_controller.showActionSettings("'.$wf_id.'", "'.$state_id.'", "'.$action_id.'", "'.$action_class.'", "'._w('Save').'", "'._w('or').'", "'._w('cancel').'", "'._w('Delete this action').'", "'.sprintf_wp('The action will be eliminated only for the state &ldquo;%s&rdquo;. For other states this action will stay available.', $state->getName()).'");
+            $.wa.helpdesk_controller.showActionSettings("'.$wf_id.'", "'.$state_id.'", "'.$action_id.'", "'.$action_class.'", "'._w('Save').'", "'._w('or').'", "'._w('cancel').'", "'._w('Delete this action').'", "'.sprintf_wp('The action will be eliminated only for the state “%s”. For other states this action will stay available.', $state->getName()).'");
         })();</script>';
         exit;
     }
