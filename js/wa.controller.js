@@ -1160,12 +1160,16 @@ $.wa.helpdesk_controller = {
         }
 
         // Ids for next/prev request traversal
-        if (r.request_ids && !r.is_update) {
-            $.wa.helpdesk_controller.lastView = $.extend($.wa.helpdesk_controller.lastView || {}, {
-                ids: r.request_ids,
-                offset: r.ids_offset,
-                count: r.count
-            });
+        if (r.request_ids) {
+            if (r.is_update) {
+                $.wa.helpdesk_controller.lastView.ids = [...r.request_ids, ...$.wa.helpdesk_controller.lastView.ids];
+            } else {
+                $.wa.helpdesk_controller.lastView = $.extend($.wa.helpdesk_controller.lastView || {}, {
+                    ids: r.request_ids,
+                    offset: r.ids_offset,
+                    count: r.count
+                });
+            }
         }
     },
 

@@ -4,7 +4,7 @@
 // unless all requirements specified here are met.
 return array(
     'app.installer' => array(
-        'version' => '>=1.14.2',
+        'version' => 'latest',
         'strict' => true,
     ),
     'app.site' => array(

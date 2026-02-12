@@ -157,8 +157,8 @@ $routes_with_public_frontend = array(
         'secure' => false,
     ),
 
-    // This will trigger an error since there's no such class
-    '*' => 'routeNotFound',
+    // Will show 404 using proper design theme template
+    '*' => 'frontend/page',
 
 );
 
