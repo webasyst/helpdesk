@@ -3,7 +3,7 @@ return array(
     'name' => 'Helpdesk',
     'icon' => 'img/helpdesk.svg',
     'sash_color' => '#EA5A47',
-    'version' => '2.0.7',
+    'version' => '2.0.8',
     'vendor' => 'webasyst',
     'csrf' => true,
 

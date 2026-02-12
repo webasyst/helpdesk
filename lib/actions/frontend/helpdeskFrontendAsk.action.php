@@ -9,7 +9,7 @@ class helpdeskFrontendAskAction extends helpdeskFrontendViewAction
         $main_form_id = waRequest::param('main_form_id', 0, 'int');
         if ($main_form_id) {
 
-            $source = $this->source = new helpdeskSource($main_form_id);
+            $source = new helpdeskSource($main_form_id);
             $st = $source->getSourceType();
             if ($source->status <= 0 || !$st instanceof helpdeskFormSTInterface) {
                 throw new waException('Not found', 404);

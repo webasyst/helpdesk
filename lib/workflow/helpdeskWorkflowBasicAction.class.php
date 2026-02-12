@@ -801,10 +801,9 @@ class helpdeskWorkflowBasicAction extends helpdeskWorkflowAction
         $actor = wa()->getUser();
 
         $r_info = $request->getInfo();
-        $vars = array_map('htmlspecialchars', array(
+        $vars = array_map(function ($elem) {return htmlspecialchars((string) $elem);}, array(
             '{REQUEST_ID}' => $request->id,
             '{REQUEST_SUBJECT}' => $request->summary,
-//            '{REQUEST_SUBJECT_WITH_ID}' => trim($request->summary." [ID:{".$request->id."}]"),
             '{REQUEST_SUBJECT_WITH_ID}' => trim($request->summary." [ID:".$request->id."-" . abs(crc32($request->created)) . "]"),
             '{REQUEST_BACKEND_URL}' => wa('helpdesk')->getConfig()->getHelpdeskBackendUrl() . '/#/request/' . $request->id . '/',
             '{REQUEST_CUSTOMER_PORTAL_URL}' => wa()->getRouteUrl('helpdesk/frontend/myRequest', array('id' => $request->id), true),

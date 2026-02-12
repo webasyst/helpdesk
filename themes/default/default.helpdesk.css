@@ -11,6 +11,19 @@
  *
  * ... extends base Site app's default.css
  */
+
+:root {
+  --h-sidebar-menu-selected-bg: light-dark(var(--gray5), var(--gray2));
+  --h-sidebar-menu-hover-bg: light-dark(var(--gray6), var(--gray1));
+}
+
+@supports not (color: light-dark(white, black)) {
+  :root {
+    --h-sidebar-menu-selected-bg: var(--gray5);
+    --h-sidebar-menu-hover-bg: var(--gray6);
+  }
+}
+
 .page-content {
   padding: 0;
 }
@@ -42,26 +55,24 @@ h3 .hint {
 .log-text {
   padding: 10px 0;
 }
-.h-main-wrapper .h-sidebar-wrapper .menu-v {
-  border-bottom: 1px solid rgba(0,0,0,0.13);
-}
 .h-main-wrapper .h-sidebar-wrapper .menu-v li {
   border: 0;
-  color: rgba(0,0,0,0.87);
-  -webkit-transition: background 200ms linear;
-  -moz-transition: background 200ms linear;
-  -o-transition: background 200ms linear;
-  -ms-transition: background 200ms linear;
+  border-radius: var(--element-border-radius);
+  color: var(--text-color);
   transition: background 200ms linear;
 }
+.h-main-wrapper .h-sidebar-wrapper .menu-v li:not(:last-child) {
+  margin-bottom: 3px;
+}
+
 .h-main-wrapper .h-sidebar-wrapper .menu-v li a {
   color: inherit;
 }
 .h-main-wrapper .h-sidebar-wrapper .menu-v li:hover {
-  background: #f8f8f8;
+  background: var(--h-sidebar-menu-hover-bg);
 }
 .h-main-wrapper .h-sidebar-wrapper .menu-v li.selected {
-  background: #f0f0f0;
+  background: var(--h-sidebar-menu-selected-bg);
   font-weight: bold;
 }
 
@@ -76,6 +87,7 @@ h3 .hint {
 }
 .h-header .h-header-right {
   display: flex;
+  gap: 1rem;
 }
 .h-header .pages li { margin: 0.5rem 0; }
 .h-header .h-search-wrapper {
@@ -85,24 +97,21 @@ h3 .hint {
 .h-header .h-search-wrapper .h-text-input {
   height: 42px;
   min-width: 200px;
-  padding-left: 2.7rem;
+  padding-left: 3.5rem;
   border: 1px solid rgba(127,127,127,0.1);
-  -webkit-transition: all 333ms ease-in-out;
-  -moz-transition: all 333ms ease-in-out;
-  -o-transition: all 333ms ease-in-out;
-  -ms-transition: all 333ms ease-in-out;
   transition: all 333ms ease-in-out;
 }
 .h-header .h-search-wrapper .h-text-input:focus {
   border-color: rgba(127,127,127,0.5);
 }
-.h-header .add-request-wrapper {
-  margin-top: 0.1rem;
-  text-align: center;
+.h-header .add-request-wrapper .add-request-button {
+  padding: 0.7em 1.25em;
 }
 .h-header .h-search-wrapper .h-submit-input {
   position: absolute;
-  left: 10px;
+  left: 0;
+  top: 0;
+  padding:7px;
 }
 
 .h-main-wrapper .h-content-wrapper {
@@ -171,8 +180,5 @@ main.maincontent .container {
     padding-top: 3rem;
     margin-right: 3rem;
     width: 200px;
-  }
-  .h-header .h-search-wrapper .h-text-input:focus {
-    width: 200%;
   }
 }
